@@ -13,6 +13,7 @@ import java.net.URI;
 
 @RestController
 public class MemberController {
+
     private MemberService memberService;
 
     public MemberController(MemberService memberService) {
@@ -23,6 +24,21 @@ public class MemberController {
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity login(
+        HttpServletResponse httpServletResponse,
+        @RequestBody LoginRequest loginRequest
+    ) {
+        memberService.login(loginRequest, httpServletResponse);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
+        LoginCheckResponse loginCheck = memberService.loginCheck(request);
+        return ResponseEntity.ok(loginCheck);
     }
 
     @PostMapping("/logout")
