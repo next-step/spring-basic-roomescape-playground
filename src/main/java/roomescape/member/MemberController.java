@@ -5,8 +5,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kotlin.reflect.jvm.internal.impl.util.Check;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +35,23 @@ public class MemberController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = memberService.extractTokenFromCookie(cookies);
+
+        LoginCheckResponse loginCheckResponse = new LoginCheckResponse(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().get("name").toString());
+
+        return ResponseEntity.ok()
+                .body(loginCheckResponse);
+    }
+
+
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {

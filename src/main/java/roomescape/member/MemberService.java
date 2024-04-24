@@ -49,6 +49,16 @@ public class MemberService {
         return cookie;
     }
 
+    public String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+
+        throw new AuthorizationException();
+    }
+
     public boolean checkValidLogin(String principal, String credentials) {
         return memberDao.existByEmailAndPassword(principal, credentials);
     }
