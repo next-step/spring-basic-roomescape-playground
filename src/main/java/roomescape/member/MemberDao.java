@@ -40,6 +40,12 @@ public class MemberDao {
         );
     }
 
+    public boolean existByEmailAndPassword(String email, String password) {
+        final Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM member WHERE email = ? AND password = ?", Long.class, email, password);
+        return count != null && count > 0;
+    }
+
+
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",

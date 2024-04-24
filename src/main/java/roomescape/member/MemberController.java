@@ -1,8 +1,12 @@
 package roomescape.member;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kotlin.reflect.jvm.internal.impl.util.Check;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +27,15 @@ public class MemberController {
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        String accessToken = memberService.createToken(loginRequest);
+        Cookie cookie = memberService.createCookie(accessToken);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
