@@ -77,12 +77,40 @@ public class MissionStepTest {
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
+
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+
     public String createToken(String mail, String password) {
         String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+        Member member = new Member(1L, "어드민", "admin@email.com", "ADMIN");
+        if (mail.equals("admin@email.com")) {
+            member = new Member(1L, "어드민", "admin@email.com", "ADMIN");
+        } else if (mail.equals("brown@email.com")) {
+            member = new Member(2L, "브라운", "brown@email.com", "USER");
+        }
+
         String accessToken = Jwts.builder()
-                .setSubject("1")
-                .claim("name", "어드민")
-                .claim("role", "admin")
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
 
