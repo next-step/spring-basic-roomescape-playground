@@ -27,6 +27,19 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
     }
 
+    public Member findById(Long id) {
+        return jdbcTemplate.queryForObject(
+                "SELECT id, name, email, role FROM member WHERE id = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                ),
+                id
+        );
+    }
+
     public Member findByEmailAndPassword(String email, String password) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
