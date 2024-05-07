@@ -24,24 +24,24 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public MemberResponse findMember(String email, String password){
+    public Member findMember(String email, String password){
         Member member=memberDao.findByEmailAndPassword(email,password);
-        return new MemberResponse(member.getId(),member.getName(),member.getEmail());
+        return member;
     }
 
-    public MemberResponse findByToken(String token){
+    public Member findByToken(String token){
         Long memberId = Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
         Member member = memberDao.findById(memberId);
-        return new MemberResponse(member.getId(),member.getName(),member.getEmail());
+        return member;
 
     }
 
-    public String createToken(MemberResponse memberResponse){
-        String accessToken = jwtTokenProvider.createToken(memberResponse);
+    public String createToken(Member member){
+        String accessToken = jwtTokenProvider.createToken(member);
         return accessToken;
     }
 

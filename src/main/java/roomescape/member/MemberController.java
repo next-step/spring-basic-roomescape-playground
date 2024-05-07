@@ -32,7 +32,7 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response){
-        MemberResponse member = memberService.findMember(memberRequest.getEmail(),memberRequest.getPassword()); //멤버조회
+        Member member = memberService.findMember(memberRequest.getEmail(),memberRequest.getPassword()); //멤버조회
         String token=memberService.createToken(member); //조회된 멤버 정보로 토큰 생성
         memberService.createCookie(response, token); //생성된 토큰으로 쿠키 생성해 response에 담기
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -42,8 +42,9 @@ public class MemberController {
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token=memberService.extractTokenFromCookie(cookies); // 쿠키에서 토큰 추출
-        MemberResponse member = memberService.findByToken(token); // 추출한 토큰으로 멤버 찾기
-        return ResponseEntity.ok(member);
+        Member member = memberService.findByToken(token); // 추출한 토큰으로 멤버 찾기
+        MemberResponse memberResponse = new MemberResponse(member.getId(),member.getName(),member.getEmail());
+        return ResponseEntity.ok(memberResponse);
     }
 
     @PostMapping("/logout")
