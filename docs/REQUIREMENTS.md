@@ -9,6 +9,6 @@
 ## step2
 - [x] 사용자의 정보를 조회하는 로직을 리팩터링
   - [x] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리
-- [ ] 예약 생성 API 및 기능을 리팩터링
-  - [ ] ReservationReqeust의 name이 없는 경우 Cookie에 담긴 정보를 활용하도록 리팩터링
-    - [ ] ReservationReqeust에 name값이 있으면 name으로 Member를 찾고 없으면 로그인 정보를 활용해서 Member를 찾도록 수정
+- [x] 예약 생성 API 및 기능을 리팩터링
+  - [x] ReservationReqeust의 name이 없는 경우 Cookie에 담긴 정보를 활용하도록 리팩터링
+    - [x] ReservationReqeust에 name값이 있으면 name으로 Member를 찾고 없으면 로그인 정보를 활용해서 Member를 찾도록 수정
