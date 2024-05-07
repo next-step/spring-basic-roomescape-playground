@@ -1,5 +1,8 @@
 package roomescape.reservation;
 
+import lombok.Setter;
+
+@Setter
 public class ReservationRequest {
     private String name;
     private String date;
