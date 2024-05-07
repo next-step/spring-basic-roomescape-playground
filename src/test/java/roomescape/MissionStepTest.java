@@ -5,9 +5,14 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.login.JwtTokenProvider;
+import roomescape.reservation.ReservationRequest;
+import roomescape.reservation.ReservationResponse;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+
 public class MissionStepTest {
 
     @Test
@@ -35,4 +41,56 @@ public class MissionStepTest {
 
         assertThat(token).isNotBlank();
     }
+
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Test
+    void 이단계() {
+        //토큰 생성
+        String token = createToken("admin@email.com", "password");
+
+        //예약 생성에 필요한 파라미터 설정
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        //예약 생성 API호출
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        //API 응답 검증
+        assertThat(response.statusCode()).isEqualTo(201);
+        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+
+        //이름을 지정하여 예약 생성
+        params.put("name", "브라운");
+
+        ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        // API응답 검증
+        assertThat(adminResponse.statusCode()).isEqualTo(201);
+        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    private String createToken(String email, String password) {
+        return jwtTokenProvider.generateToken(email);
+    }
+
+
+
+
 }
