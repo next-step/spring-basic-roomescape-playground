@@ -31,4 +31,16 @@ public class MemberService {
         return accessToken;
     }
 
+    public MemberResponse checkLogin (String token) {
+        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+        Long memberId = Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().getSubject());
+        Member member = memberDao.findById(memberId);
+
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
 }
