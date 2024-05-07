@@ -49,4 +49,9 @@ public class MemberService {
         Member member = memberDao.findById(memberId);
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
+
+    public MemberResponse findById(Long id) {
+        Member member = memberDao.findById(id);
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
 }

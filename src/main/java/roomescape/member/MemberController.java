@@ -54,8 +54,8 @@ public class MemberController {
             return null;
         }
 
-        MemberResponse member = memberService.checkMember(token);
-        return ResponseEntity.ok(member);
+        MemberResponse result = memberService.checkMember(token);
+        return ResponseEntity.ok(result);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
