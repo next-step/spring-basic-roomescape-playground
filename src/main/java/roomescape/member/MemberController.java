@@ -38,23 +38,12 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin (HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        MemberResponse memberResponse = memberService.checkLogin(token);
+    public ResponseEntity<MemberResponse> checkLogin (MemberResponse memberResponse) {
 
         return ResponseEntity.ok(memberResponse);
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
 
-        return "";
-    }
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
