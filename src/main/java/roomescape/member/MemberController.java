@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.reservation.ReservationRequest;
 
 import java.net.URI;
 
@@ -33,23 +34,15 @@ public class MemberController {
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response){
         MemberResponse member = memberService.findMember(memberRequest.getEmail(),memberRequest.getPassword()); //멤버조회
         String token=memberService.createToken(member); //조회된 멤버 정보로 토큰 생성
-        Cookie cookie = new Cookie("token", token); //생성한 토큰으로 쿠키를 생성
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        memberService.createCookie(response, token); //생성된 토큰으로 쿠키 생성해 response에 담기
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token=memberService.extractTokenFromCookie(cookies);
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
-        MemberResponse member = memberService.findMemberById(memberId);
+        String token=memberService.extractTokenFromCookie(cookies); // 쿠키에서 토큰 추출
+        MemberResponse member = memberService.findByToken(token); // 추출한 토큰으로 멤버 찾기
         return ResponseEntity.ok(member);
     }
 
