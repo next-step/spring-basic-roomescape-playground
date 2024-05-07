@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.infrastructure.JwtTokenProvider;
@@ -25,8 +26,23 @@ public class MemberService {
         return new MemberResponse(member.getId(),member.getName(),member.getEmail());
     }
 
+    public MemberResponse findMemberById(Long memberId){
+        Member member=memberDao.findById(memberId);
+        return new MemberResponse(member.getId(),member.getName(),member.getEmail());
+    }
+
     public String createToken(MemberResponse memberResponse){
         String accessToken = jwtTokenProvider.createToken(memberResponse);
         return accessToken;
+    }
+
+    public String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+
+        return "";
     }
 }
