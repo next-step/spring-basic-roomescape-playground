@@ -32,8 +32,8 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        String accessToken = tokenProvider.createAccessToken(loginRequest);
+    public ResponseEntity login(@RequestBody Member member, HttpServletResponse response) {
+        String accessToken = tokenProvider.createAccessToken(member);
         Cookie cookie = cookieProvider.createCookie(accessToken);
         response.addCookie(cookie);
 
