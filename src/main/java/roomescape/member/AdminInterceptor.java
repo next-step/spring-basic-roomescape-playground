@@ -15,11 +15,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = memberService.extractTokenFromCookie(request.getCookies());
-        System.out.println("token = " + token);
         Member member = memberService.extractMemberFromToken(token);
-        System.out.println("member = " + member);
-        System.out.println("member.getRole() = " + member.getRole());
-        System.out.println("member.getName() = " + member.getName());
 
         if (member == null || !member.getRole().equals("ADMIN")) {
             response.setStatus(401);
