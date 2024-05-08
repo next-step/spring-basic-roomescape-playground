@@ -1,20 +1,27 @@
 package roomescape.member;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class LoginRequest {
 
     private String password;
     private String email;
 
-    public LoginRequest(String password, String email) {
-        this.password = password;
-        this.email = email;
-    }
+//    @AllArgsConsrtuctor가 대신 구현
+//    public LoginRequest(String password, String email) {
+//        this.password = password;
+//        this.email = email;
+//    }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
+//    @Getter가 대신 구현
+//    public String getEmail() {
+//        return email;
+//    }
+//
+//    public String getPassword() {
+//        return password;
+//    }
 }
