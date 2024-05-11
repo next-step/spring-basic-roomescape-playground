@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.util.CookieUtil;
 
 import java.net.URI;
 
@@ -15,13 +16,16 @@ import java.net.URI;
 public class MemberController {
     private MemberService memberService;
 
-    public MemberController(MemberService memberService) {
+    private CookieUtil cookieUtil;
+
+    public MemberController(MemberService memberService, CookieUtil cookieUtil) {
         this.memberService = memberService;
+        this.cookieUtil = cookieUtil;
     }
 
     @PostMapping("/members")
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
-        MemberResponse member = memberService.createMember(memberRequest);
+        MemberResponse.MemberInfoResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
 
@@ -33,5 +37,20 @@ public class MemberController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
+        String token = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
+        Cookie cookie = cookieUtil.createCookie("token", token, true, "/", -1);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity check(HttpServletRequest request) {
+
+        return ResponseEntity.ok().body(memberService.check(request));
     }
 }
