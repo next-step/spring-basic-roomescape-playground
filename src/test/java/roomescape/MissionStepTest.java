@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.auth.JwtService;
+import roomescape.global.auth.JwtService;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.reservation.ReservationResponse;
@@ -80,6 +80,25 @@ public class MissionStepTest {
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
 
+    @Test
+    void 삼단계() {
+        Member brown = memberDao.findByEmailAndPassword("brown@email.com", "password");
+        String brownToken = jwtService.generateToken(brown);
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        Member admin = memberDao.findByEmailAndPassword("admin@email.com", "password");
+        String adminToken = jwtService.generateToken(admin);
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 }

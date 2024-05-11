@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.global.auth;
 
 
 import io.jsonwebtoken.Jwts;
@@ -21,6 +21,7 @@ public class JwtService {
     }
 
     public Long decodeToken(String token) {
+        if (token == null) return null;
         return Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
@@ -29,11 +30,15 @@ public class JwtService {
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
+        try {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("token")) {
+                    return cookie.getValue();
+                }
             }
+        } catch (NullPointerException e) {
+            return null;
         }
-        return "";
+        return null;
     }
 }

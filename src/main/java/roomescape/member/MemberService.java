@@ -2,7 +2,7 @@ package roomescape.member;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.auth.JwtService;
+import roomescape.global.auth.JwtService;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
@@ -31,9 +31,9 @@ public class MemberService {
     public LoginMember checkLogin(Cookie[] cookies) {
         String token = jwtService.extractTokenFromCookie(cookies);
         Long userId = jwtService.decodeToken(token);
+        if (userId == null) return null;
 
         Member member = memberDao.findById(userId);
-
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 }
