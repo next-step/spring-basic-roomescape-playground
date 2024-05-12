@@ -38,7 +38,7 @@ public class MemberService {
                 .parseClaimsJws(accessToken)
                 .getBody().getSubject());
         Member member = memberDao.findById(memberId);
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public String extractToken(Cookie[] cookies){
@@ -48,5 +48,17 @@ public class MemberService {
             }
         }
         return "";
+    }
+
+    public String login(String email, String password){
+        Member member = memberDao.findByEmailAndPassword(email, password);
+
+        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+        return Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
     }
 }

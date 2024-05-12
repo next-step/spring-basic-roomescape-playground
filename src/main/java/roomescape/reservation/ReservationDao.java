@@ -4,6 +4,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.member.Member;
+import roomescape.member.MemberResponse;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -43,12 +45,12 @@ public class ReservationDao {
                         )));
     }
 
-    public Reservation save(ReservationRequest reservationRequest) {
+    public Reservation save(ReservationRequest reservationRequest, MemberResponse member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
             ps.setString(1, reservationRequest.getDate());
-            ps.setString(2, reservationRequest.getName());
+            ps.setString(2, member.getName());
             ps.setLong(3, reservationRequest.getTheme());
             ps.setLong(4, reservationRequest.getTime());
             return ps;
@@ -64,7 +66,7 @@ public class ReservationDao {
 
         return new Reservation(
                 keyHolder.getKey().longValue(),
-                reservationRequest.getName(),
+                member.getName(),
                 reservationRequest.getDate(),
                 time,
                 theme

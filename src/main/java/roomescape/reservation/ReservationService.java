@@ -1,6 +1,8 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import roomescape.member.Member;
+import roomescape.member.MemberResponse;
 
 import java.util.List;
 
@@ -12,10 +14,10 @@ public class ReservationService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    public ReservationResponse save(ReservationRequest reservationRequest, MemberResponse member) {
+        Reservation reservation = reservationDao.save(reservationRequest, member);
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(reservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
