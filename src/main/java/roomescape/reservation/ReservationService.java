@@ -29,7 +29,6 @@ public class ReservationService {
         this.themeRepository = themeRepository;
         this.waitingRepository = waitingRepository;
     }
-
     public ReservationResponse save(MemberResponse memberResponse, ReservationRequest reservationRequest) {
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow(RuntimeException::new);
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow(RuntimeException::new);
@@ -46,6 +45,10 @@ public class ReservationService {
         Reservation reservation = reservationRepository.save(new Reservation(member, name, reservationRequest.getDate(), time, theme));
 
         return new ReservationResponse(reservation.getId(), reservation.getName() != null ? reservation.getName() : member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+    }
+
+    private String findMemberName(MemberResponse loginMember) {
+        return memberService.findById(loginMember.getId()).getName();
     }
 
     private String findMemberName(MemberResponse loginMember) {
