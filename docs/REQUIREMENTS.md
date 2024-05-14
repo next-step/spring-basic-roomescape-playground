@@ -17,6 +17,6 @@
 - [x] HandlerInterceptor를 활용하여 권한이 없는 경우 401코드를 응답
 
 ## step4
-- [ ] gradle 의존성 추가
+- [x] gradle 의존성 추가
 - [ ] 엔티티 매핑
 - [ ] 연관관계 매핑
