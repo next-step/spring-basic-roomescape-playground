@@ -28,11 +28,12 @@ public class Time {
     public Time(Long id, String value) {
         this.id = id;
         this.value = value;
-
+        this.deleted = false;
     }
 
     public Time(String value) {
         this.value = value;
+        this.deleted = false;
     }
 
     public Time() {
