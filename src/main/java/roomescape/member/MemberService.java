@@ -43,11 +43,15 @@ public class MemberService {
                 .getBody().getSubject());
        Member member = memberRepository.findById(memberId).orElse(new Member());
 
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail(),member.getRole());
+        return findById(member.getId());
     }
 
     public MemberResponse findById(Long id) {
         Member member = memberRepository.findById(id).orElse(new Member());
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
+    }
+
+    public Member findMemberById(Long id) {
+        return memberRepository.findById(id).orElse(new Member());
     }
 }
