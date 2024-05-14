@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.global.auth.JwtService;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
@@ -24,9 +24,8 @@ public class MissionStepTest {
 
     @Autowired
     private JwtService jwtService;
-
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @Test
     void 일단계() {
@@ -49,7 +48,7 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        Member member = memberDao.findByEmailAndPassword("admin@email.com", "password");
+        Member member = memberRepository.findByEmailAndPassword("admin@email.com", "password");
         String token = jwtService.generateToken(member);
 
         Map<String, String> params = new HashMap<>();
@@ -84,7 +83,10 @@ public class MissionStepTest {
 
     @Test
     void 삼단계() {
-        Member brown = memberDao.findByEmailAndPassword("brown@email.com", "password");
+        Member brown = memberRepository.findByEmailAndPassword("brown@email.com", "password");
+        System.out.println(brown.getEmail());
+        System.out.println(brown.getId());
+
         String brownToken = jwtService.generateToken(brown);
         RestAssured.given().log().all()
                 .cookie("token", brownToken)
@@ -92,7 +94,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(401);
 
-        Member admin = memberDao.findByEmailAndPassword("admin@email.com", "password");
+        Member admin = memberRepository.findByEmailAndPassword("admin@email.com", "password");
         String adminToken = jwtService.generateToken(admin);
 
         RestAssured.given().log().all()
