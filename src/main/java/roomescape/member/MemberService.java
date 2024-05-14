@@ -3,19 +3,16 @@ package roomescape.member;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
-    private MemberDao memberDao;
-
-
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
-    }
+    final private MemberRepository memberRepository;
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
@@ -24,7 +21,7 @@ public class MemberService {
             throw new AuthorizationException();
         }
 
-        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
 
         String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         String accessToken = Jwts.builder()
@@ -61,10 +58,10 @@ public class MemberService {
                 .parseClaimsJws(token)
                 .getBody().getSubject());
 
-        return memberDao.findById(memberId);
+        return memberRepository.findById(memberId).get();
     }
 
     public boolean checkValidLogin(String principal, String credentials) {
-        return memberDao.existByEmailAndPassword(principal, credentials);
+        return memberRepository.existsByEmailAndPassword(principal, credentials);
     }
 }

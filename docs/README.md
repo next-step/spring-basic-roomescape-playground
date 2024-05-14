@@ -16,3 +16,4 @@
 - [x] gradle 의존성 추가
 - [x] 엔티티 매핑
 - [x] 연관관계 매핑
+- [x] DAO를 Repository로 변경

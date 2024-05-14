@@ -1,30 +1,37 @@
 package roomescape.reservation;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationService {
-    private ReservationDao reservationDao;
-
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
-    }
+    final private ReservationRepository reservationRepository;
+    final private TimeRepository timeRepository;
+    final private ThemeRepository themeRepository;
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+        Time time = timeRepository.findById(reservationRequest.getTime()).get();
+        Theme theme = themeRepository.findById(reservationRequest.getTheme()).get();
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        Reservation reservation = reservationRepository.save(new Reservation(null, reservationRequest.getName(), reservationRequest.getDate(), time, theme));
+
+        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getTime_value());
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationRepository.findAll().stream()
+                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime_value()))
                 .toList();
     }
 }
