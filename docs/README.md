@@ -13,6 +13,6 @@
 
 ## Spring Data JPA
 ### 4단계
-- [ ] gradle 의존성 추가
+- [x] gradle 의존성 추가
 - [ ] 엔티티 매핑
 - [ ] 연관관계 매핑
