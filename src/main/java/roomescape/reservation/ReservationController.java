@@ -36,6 +36,10 @@ public class ReservationController {
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> mine( MemberResponse memberResponse) {
+        return reservationService.findMine(memberResponse);
+    }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
