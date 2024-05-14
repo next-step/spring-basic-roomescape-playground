@@ -1,13 +1,21 @@
 package roomescape.reservation;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+@Entity
 public class Reservation {
+    @Id @GeneratedValue
     private Long id;
     private String name;
     private String date;
+    @OneToOne
     private Time time;
+    @OneToOne
     private Theme theme;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
