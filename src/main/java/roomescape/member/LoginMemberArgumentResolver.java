@@ -27,10 +27,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
-        MemberResponse member = memberService.loginCheck(memberService.extractToken(cookies));
+        MemberResponse member = memberService.loginCheck(cookies);
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
-
-
 }

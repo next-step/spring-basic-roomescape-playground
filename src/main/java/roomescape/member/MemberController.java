@@ -3,6 +3,7 @@ package roomescape.member;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,7 @@ public class MemberController {
     @GetMapping("/login/check")
     public ResponseEntity loginCheck(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
-        MemberResponse member = memberService.loginCheck(memberService.extractToken(cookies));
+        MemberResponse member = memberService.loginCheck(cookies);
         return ResponseEntity.ok().body(member);
 
     }

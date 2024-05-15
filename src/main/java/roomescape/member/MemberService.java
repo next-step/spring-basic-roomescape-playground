@@ -3,12 +3,16 @@ package roomescape.member;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class MemberService {
     private MemberDao memberDao;
+
+    @Value("${roomescape.auth.jwt.secret}")
+    public String secretKey;
 
     public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
@@ -22,7 +26,6 @@ public class MemberService {
     public String login(MemberRequest request){
         Member member = memberDao.findByEmailAndPassword(request.getEmail(), request.getPassword());
 
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
@@ -31,9 +34,13 @@ public class MemberService {
                 .compact();
     }
 
-    public MemberResponse loginCheck(String accessToken){
+    public MemberResponse loginCheck(Cookie[] cookies){
+        String accessToken = extractToken(cookies);
+        if (accessToken.isEmpty()) {
+            throw new IllegalArgumentException("토큰을 찾을 수 없습니다.");
+        }
         Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(accessToken)
                 .getBody().getSubject());
@@ -41,7 +48,7 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
-    public String extractToken(Cookie[] cookies){
+    private String extractToken(Cookie[] cookies){
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
@@ -53,7 +60,6 @@ public class MemberService {
     public String login(String email, String password){
         Member member = memberDao.findByEmailAndPassword(email, password);
 
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
