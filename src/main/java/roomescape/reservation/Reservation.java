@@ -6,14 +6,17 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
+@Builder
 public class Reservation {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String date;
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "time_id")
     private Time time;
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theme_id")
     private Theme theme;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
