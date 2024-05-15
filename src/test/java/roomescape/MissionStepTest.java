@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,9 +12,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.global.auth.JwtService;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
-import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.dto.MyReservationResponse;
+import roomescape.reservation.dto.ReservationResponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -102,5 +105,20 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    void 오단계() {
+        Member admin = memberRepository.findByEmailAndPassword("admin@email.com", "password");
+        String adminToken = jwtService.generateToken(admin);
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        Assertions.assertThat(reservations).hasSize(3);
     }
 }
