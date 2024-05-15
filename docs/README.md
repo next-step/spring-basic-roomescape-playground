@@ -17,3 +17,7 @@
 - [x] 엔티티 매핑
 - [x] 연관관계 매핑
 - [x] DAO를 Repository로 변경
+
+### 5단계
+- [ ] 내 예약 목록 조회 API 구현
+- [ ] Reservation 테이블 컬럼에 member id 추가
