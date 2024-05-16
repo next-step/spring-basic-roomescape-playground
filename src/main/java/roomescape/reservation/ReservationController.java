@@ -35,9 +35,9 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations-mine")
-    public List<MyReservationResponse> findMyReservations(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        return reservationService.findMyReservations(cookies);
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+
+        return reservationService.findMyReservations(loginMember);
     }
 
     @PostMapping("/reservations")
