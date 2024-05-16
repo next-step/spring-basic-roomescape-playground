@@ -41,4 +41,10 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<MyReservationResponse> findByMemberId(Long id) {
+        List<Reservation> reservations = reservationRepository.findByMemberId(id);
+        return reservations.stream()
+                .map(MyReservationResponse::from)
+                .toList();
+    }
 }

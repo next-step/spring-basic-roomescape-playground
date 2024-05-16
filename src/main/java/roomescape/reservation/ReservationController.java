@@ -58,4 +58,15 @@ public class ReservationController {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity reservationsMine(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = memberService.extractTokenFromCookie(cookies);
+        Member member = memberService.extractMemberFromToken(token);
+
+        List<MyReservationResponse> responses = reservationService.findByMemberId(member.getId());
+
+        return ResponseEntity.ok().body(responses);
+    }
 }
