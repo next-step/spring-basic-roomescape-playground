@@ -50,4 +50,3 @@ public class WaitingService {
         waitingRepository.deleteById(id);
     }
 }
-
