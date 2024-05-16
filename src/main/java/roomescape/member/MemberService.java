@@ -52,6 +52,6 @@ public class MemberService {
     }
 
     public Member findMemberById(Long id) {
-        return memberRepository.findById(id).orElse(new Member());
+        return memberRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 }
