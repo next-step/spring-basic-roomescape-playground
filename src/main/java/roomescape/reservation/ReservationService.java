@@ -2,6 +2,9 @@ package roomescape.reservation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -10,19 +13,22 @@ import roomescape.time.TimeRepository;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ReservationService {
     final private ReservationRepository reservationRepository;
     final private TimeRepository timeRepository;
     final private ThemeRepository themeRepository;
+    final private MemberRepository memberRepository;
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Time time = timeRepository.findById(reservationRequest.getTime()).get();
-        Theme theme = themeRepository.findById(reservationRequest.getTheme()).get();
+    public ReservationResponse save(CreateReservationDto reservationDto) {
+        Member member = memberRepository.findById(reservationDto.getMemberId()).get();
+        Time time = timeRepository.findById(reservationDto.getTime()).get();
+        Theme theme = themeRepository.findById(reservationDto.getTheme()).get();
 
-        Reservation reservation = reservationRepository.save(new Reservation(null, reservationRequest.getName(), reservationRequest.getDate(), time, theme));
+        Reservation reservation = reservationRepository.save(new Reservation(member, reservationDto.getName(), reservationDto.getDate(), time, theme));
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getTime_value());
+        return new ReservationResponse(reservation.getId(), reservationDto.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getTime_value());
     }
 
     public void deleteById(Long id) {
@@ -34,4 +40,5 @@ public class ReservationService {
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime_value()))
                 .toList();
     }
+
 }

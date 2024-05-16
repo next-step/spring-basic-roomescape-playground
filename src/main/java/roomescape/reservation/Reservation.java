@@ -1,33 +1,42 @@
 package roomescape.reservation;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
-@Builder
 public class Reservation {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     private String name;
+
     private String date;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
     private Time time;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
+    public Reservation(Long id, Member member, String name, String date, Time time, Theme theme) {
         this.id = id;
+        this.member = member;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(Member member, String name, String date, Time time, Theme theme) {
+        this.member = member;
         this.name = name;
         this.date = date;
         this.time = time;
@@ -40,6 +49,10 @@ public class Reservation {
 
     public Long getId() {
         return id;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public String getName() {
