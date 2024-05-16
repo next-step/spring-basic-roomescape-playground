@@ -42,5 +42,12 @@ public class WaitingService {
         return new WaitingResponse(waiting.getId(), theme.getId(), waiting.getDate(), waiting.getTime(), waitings.size());
     }
 
+    public void deleteWaiting(Long id, MemberResponse memberResponse) {
+        Waiting waiting = waitingRepository.findById(id).orElseThrow(RuntimeException::new);
+        if (!waiting.isMyReservation(memberResponse.getId())) {
+            throw new IllegalArgumentException("삭제할 권한이 없습니다.");
+        }
+        waitingRepository.deleteById(id);
+    }
 }
 
