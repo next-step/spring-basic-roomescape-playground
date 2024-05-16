@@ -1,0 +1,46 @@
+package roomescape.waiting;
+
+import org.springframework.stereotype.Service;
+import roomescape.member.MemberResponse;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
+
+import java.util.List;
+
+@Service
+public class WaitingService {
+    private final WaitingRepository waitingRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
+
+    public WaitingService(WaitingRepository waitingRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+        this.waitingRepository = waitingRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
+    }
+
+    public WaitingResponse createWaiting(MemberResponse memberResponse, WaitingRequest waitingRequest) {
+        Time time = timeRepository.findById(waitingRequest.getTime()).orElseThrow(RuntimeException::new);
+        Theme theme = themeRepository.findById(waitingRequest.getTheme()).orElseThrow(RuntimeException::new);
+
+        List<Waiting> waitings = waitingRepository.findByThemeIdAndDateAndTime(waitingRequest.getTheme(), waitingRequest.getDate(), time.getValue());
+
+        waitings.stream()
+                .filter(it -> it.isMyReservation(memberResponse.getId()))
+                .filter(it -> it.getTheme().getId() == waitingRequest.getTheme())
+                .filter(it -> it.getDate().equals(waitingRequest.getDate()))
+                .filter(it -> it.getTime().equals(waitingRequest.getTime()))
+                .findAny()
+                .ifPresent(it -> {
+                    throw new IllegalArgumentException("이미 대기 중인 시간입니다.");
+                });
+
+        Waiting waiting = waitingRepository.save(new Waiting(theme, memberResponse.getId(), waitingRequest.getDate(), time.getValue()));
+
+        return new WaitingResponse(waiting.getId(), theme.getId(), waiting.getDate(), waiting.getTime(), waitings.size());
+    }
+
+}
+
