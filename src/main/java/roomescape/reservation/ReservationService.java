@@ -29,6 +29,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
         this.waitingRepository = waitingRepository;
     }
+
     public ReservationResponse save(MemberResponse memberResponse, ReservationRequest reservationRequest) {
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow(RuntimeException::new);
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow(RuntimeException::new);
