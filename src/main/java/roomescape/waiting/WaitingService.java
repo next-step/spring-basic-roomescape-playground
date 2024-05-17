@@ -5,9 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
-import roomescape.reservation.CreateReservationDto;
-import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationResponse;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -34,4 +31,7 @@ public class WaitingService {
         return new WaitingResponse(waiting.getId(), theme.getName(), waitingRequest.getDate(), time.getTime_value(), 1);
     }
 
+    public void deleteById(Long id) {
+        waitingRepository.deleteById(id);
+    }
 }
