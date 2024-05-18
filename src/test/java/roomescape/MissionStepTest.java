@@ -19,6 +19,7 @@ import roomescape.waiting.dto.WaitingResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -155,7 +156,7 @@ public class MissionStepTest {
 
         // 예약 대기 상태 확인
         String status = myReservations.stream()
-                .filter(it -> it.getReservationId() == waiting.getId())
+                .filter(it -> Objects.equals(it.getReservationId(), waiting.getId()))
                 .filter(it -> !it.getStatus().equals("예약"))
                 .findFirst()
                 .map(it -> it.getStatus())
