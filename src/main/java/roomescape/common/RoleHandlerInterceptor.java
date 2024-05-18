@@ -6,21 +6,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import roomescape.util.CookieUtil;
-import roomescape.util.JwtUtil;
+import roomescape.util.JwtProvider;
 
 @Component
 public class RoleHandlerInterceptor implements HandlerInterceptor {
-    private CookieUtil cookieUtil;
-    private JwtUtil jwtUtil;
 
-    public RoleHandlerInterceptor(CookieUtil cookieUtil, JwtUtil jwtUtil) {
-        this.cookieUtil = cookieUtil;
-        this.jwtUtil = jwtUtil;
+    private JwtProvider jwtProvider;
+
+    public RoleHandlerInterceptor( JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
     }
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = cookieUtil.extractTokenFromCookie(request);
-        String role = jwtUtil.getRole(token);
+        String token = CookieUtil.extractTokenFromCookie(request);
+        String role = jwtProvider.getRole(token);
         if (!role.equals("ADMIN")) {
             response.setStatus(401);
             return false;

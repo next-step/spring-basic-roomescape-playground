@@ -16,11 +16,9 @@ import java.net.URI;
 public class MemberController {
     private MemberService memberService;
 
-    private CookieUtil cookieUtil;
 
-    public MemberController(MemberService memberService, CookieUtil cookieUtil) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.cookieUtil = cookieUtil;
     }
 
     @PostMapping("/members")
@@ -42,7 +40,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         String token = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
-        Cookie cookie = cookieUtil.createCookie("token", token, true, "/", -1);
+        Cookie cookie = CookieUtil.createCookie(token, true, "/", -1);
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();

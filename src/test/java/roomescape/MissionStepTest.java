@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
-import roomescape.util.CookieUtil;
-import roomescape.util.JwtUtil;
+import roomescape.util.JwtProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,8 +52,8 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        JwtUtil jwtUtil = new JwtUtil();
-        String token = jwtUtil.createToken(1L, "어드민", "ADMIN");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+        JwtProvider jwtProvider = new JwtProvider();
+        String token = jwtProvider.createToken(1L, "어드민", "ADMIN");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -88,9 +87,9 @@ public class MissionStepTest {
 
     @Test
     void 삼단계() {
-        JwtUtil jwtUtil = new JwtUtil();
-        String brownToken = jwtUtil.createToken(2L, "브라운", "USER");
-        String adminToken = jwtUtil.createToken(1L, "어드민", "ADMIN");
+        JwtProvider jwtProvider = new JwtProvider();
+        String brownToken = jwtProvider.createToken(2L, "브라운", "USER");
+        String adminToken = jwtProvider.createToken(1L, "어드민", "ADMIN");
 
         RestAssured.given().log().all()
                 .cookie("token", brownToken)

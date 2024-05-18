@@ -1,6 +1,7 @@
 package roomescape.util;
 
 
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -9,9 +10,21 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class JwtUtil {
+public class JwtProvider {
 
-    private final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private JwtParser jwtParser;
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
+
+    @PostConstruct
+    public void init(){
+        this.jwtParser = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build();
+    }
+
+
+
 
     public  String createToken(Long id, String name, String role) {
 
@@ -24,23 +37,17 @@ public class JwtUtil {
     }
 
     public String getName(String token) {
-         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
+         return jwtParser
                 .parseClaimsJws(token).getBody().get("name").toString();
     }
 
     public  String getRole(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
+        return jwtParser
                 .parseClaimsJws(token).getBody().get("role").toString();
     }
 
     public Long getMemberId(String token) {
-        return Long.parseLong(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
+        return Long.parseLong(jwtParser
                 .parseClaimsJws(token).getBody().getSubject());
     }
 

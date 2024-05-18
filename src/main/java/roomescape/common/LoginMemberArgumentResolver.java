@@ -8,20 +8,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.AuthenticationMember;
-import roomescape.member.MemberService;
 import roomescape.util.CookieUtil;
-import roomescape.util.JwtUtil;
+import roomescape.util.JwtProvider;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private MemberService memberService;
-    private JwtUtil jwtUtil;
-    private CookieUtil cookieUtil;
+    private JwtProvider jwtProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtUtil jwtUtil, CookieUtil cookieUtil) {
-        this.memberService = memberService;
-        this.cookieUtil = cookieUtil;
-        this.jwtUtil = jwtUtil;
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -32,10 +27,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = cookieUtil.extractTokenFromCookie(request);
-        Long memberId = jwtUtil.getMemberId(token);
-        String name = jwtUtil.getName(token);
-        String role = jwtUtil.getRole(token);
+        String token = CookieUtil.extractTokenFromCookie(request);
+        Long memberId = jwtProvider.getMemberId(token);
+        String name = jwtProvider.getName(token);
+        String role = jwtProvider.getRole(token);
 
         return new AuthenticationMember(memberId, name, role);
     }

@@ -5,10 +5,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 
-@Component
+
 public class CookieUtil {
 
-    public String extractTokenFromCookie(HttpServletRequest request) {
+    public static String extractTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
@@ -20,8 +20,8 @@ public class CookieUtil {
     }
 
 
-    public Cookie createCookie(String name, String value, boolean httpOnly, String path, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
+    public static Cookie createCookie( String value, boolean httpOnly, String path, int maxAge) {
+        Cookie cookie = new Cookie("token", value);
         cookie.setHttpOnly(httpOnly);
         cookie.setPath(path);
         cookie.setMaxAge(maxAge);
