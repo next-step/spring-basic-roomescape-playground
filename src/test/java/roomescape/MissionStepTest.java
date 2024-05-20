@@ -7,10 +7,13 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.member.Member;
 import roomescape.reservation.ReservationResponse;
+import roomescape.time.Time;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -98,4 +101,40 @@ public class MissionStepTest {
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
+
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+//
+//    @Autowired
+//    private TestEntityManager entityManager;
+//
+//    @Autowired
+//    private TimeRepository timeRepository;
+//
+//    @Test
+//    void 사단계() {
+//        Time time = new Time("10:00");
+//        entityManager.persist(time);
+//        entityManager.flush();
+//
+//        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
+//
+//        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+//    }
 }

@@ -1,9 +1,15 @@
 package roomescape.member;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class MemberResponse {
     private Long id;
     private String name;
     private String email;
+    private String role;
 
     public MemberResponse(Long id, String name, String email) {
         this.id = id;

@@ -36,6 +36,7 @@ public class MemberService {
                 .parseClaimsJws(token)
                 .getBody().getSubject());
         Member member = memberDao.findById(memberId);
+//        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
         return member;
 
     }
