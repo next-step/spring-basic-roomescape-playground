@@ -120,21 +120,4 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200);
     }
-//
-//    @Autowired
-//    private TestEntityManager entityManager;
-//
-//    @Autowired
-//    private TimeRepository timeRepository;
-//
-//    @Test
-//    void 사단계() {
-//        Time time = new Time("10:00");
-//        entityManager.persist(time);
-//        entityManager.flush();
-//
-//        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
-//
-//        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
-//    }
 }

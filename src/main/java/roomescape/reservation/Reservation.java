@@ -1,13 +1,22 @@
 package roomescape.reservation;
 
+import jakarta.persistence.*;
+import lombok.Builder;
+import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+@Entity
+@Builder
 public class Reservation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String date;
+    @ManyToOne
     private Time time;
+    @ManyToOne
     private Theme theme;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {

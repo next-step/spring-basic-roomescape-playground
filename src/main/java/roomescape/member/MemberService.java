@@ -11,21 +11,21 @@ import roomescape.infrastructure.JwtTokenProvider;
 @Service
 public class MemberService {
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberDao) {
+        this.memberRepository = memberDao;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(),member.getRole());
     }
 
     public Member findMember(String email, String password){
-        Member member=memberDao.findByEmailAndPassword(email,password);
+        Member member= memberRepository.findByEmailAndPassword(email,password);
         return member;
     }
 
@@ -35,7 +35,7 @@ public class MemberService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
-        Member member = memberDao.findById(memberId);
+        Member member = memberRepository.findById(memberId).orElse(null);
 //        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
         return member;
 
