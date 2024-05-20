@@ -43,7 +43,7 @@ public class MemberController {
         Cookie[] cookies = request.getCookies();
         String token=memberService.extractTokenFromCookie(cookies); // 쿠키에서 토큰 추출
         Member member = memberService.findByToken(token); // 추출한 토큰으로 멤버 찾기
-        MemberResponse memberResponse = new MemberResponse(member.getId(),member.getName(),member.getEmail());
+        MemberResponse memberResponse = new MemberResponse(member.getId(),member.getName(),member.getEmail(), member.getRole());
         return ResponseEntity.ok(memberResponse);
     }
 

@@ -53,8 +53,8 @@ public class MissionStepTest {
 
     public String createToken( String email, String password) {
         Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
+        params.put("email", email);
+        params.put("password", password);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
