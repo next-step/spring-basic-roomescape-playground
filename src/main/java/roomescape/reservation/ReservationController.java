@@ -16,8 +16,10 @@ import roomescape.member.LoginCheckResponse;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
+import roomescape.waiting.WaitingService;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -26,6 +28,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
     private final MemberService memberService;
+    private final WaitingService waitingService;
 
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
@@ -65,8 +68,14 @@ public class ReservationController {
         String token = memberService.extractTokenFromCookie(cookies);
         Member member = memberService.extractMemberFromToken(token);
 
-        List<MyReservationResponse> responses = reservationService.findByMemberId(member.getId());
+        List<MyReservationResponse> reservations = reservationService.findByMemberId(member.getId());
+        List<MyReservationResponse> waitings = waitingService.findByMemberId(member.getId());
+
+        List<MyReservationResponse> responses = new ArrayList<>();
+        responses.addAll(reservations);
+        responses.addAll(waitings);
 
         return ResponseEntity.ok().body(responses);
     }
+
 }

@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
+import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
+import roomescape.reservation.ReservationResponse;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -36,6 +38,20 @@ public class WaitingService {
     }
 
 
+    public List <MyReservationResponse> findByMemberId(Long memberId){
+        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(memberId);
+
+        List<MyReservationResponse> responses = waitingRepository.findWaitingsWithRankByMemberId(memberId).stream()
+                .map(it -> new MyReservationResponse(it.getWaiting().getId(),
+                        it.getWaiting().getTheme().getName(), it.getWaiting().getDate(),
+                        it.getWaiting().getTime().getTime_value(), (it.getRank() + 1) + "번째 예약대기"))
+                .toList();
+        for (MyReservationResponse response : responses) {
+            System.out.println("response.getId() = " + response.getId());
+        }
+
+        return responses;
+    }
 
     public void deleteById(Long id) {
         waitingRepository.deleteById(id);
