@@ -6,9 +6,6 @@ import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.reservation.MyReservationResponse;
-import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationRepository;
-import roomescape.reservation.ReservationResponse;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -25,13 +22,15 @@ public class WaitingService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     public WaitingResponse save(LoginMember loginMember, WaitingRequest waitingRequest) {
-
         Member member = memberRepository.findById(loginMember.getId()).get();
         Time time = timeRepository.findById(waitingRequest.getTime()).get();
         Theme theme = themeRepository.findById(waitingRequest.getTheme()).get();
 
-        Waiting waiting = waitingRepository.save(new Waiting(null, member, waitingRequest.getDate(), time, theme));
+        if (waitingRepository.existsByThemeIdAndTimeIdAndDateAndMemberId(theme.getId(), time.getId(), waitingRequest.getDate(), member.getId())) {
+            throw new DuplicationWaitingException();
+        }
 
+        Waiting waiting = waitingRepository.save(new Waiting(null, member, waitingRequest.getDate(), time, theme));
         int waitingNumber = waitingRepository.countWaitingNumber(waiting.getId(), theme.getId(), time.getId(), waiting.getDate()) + 1;
 
         return new WaitingResponse(waiting.getId(), theme.getName(), waitingRequest.getDate(), time.getTime_value(), waitingNumber);

@@ -15,4 +15,5 @@ public interface WaitingRepository extends CrudRepository<Waiting, Long> {
     @Query("SELECT COUNT(w) FROM Waiting w WHERE w.theme.id = :themeId AND w.date = :date AND w.time.id = :timeId AND w.id < :waitingId ")
     int countWaitingNumber(Long waitingId, Long themeId, Long timeId, String date);
 
+    boolean existsByThemeIdAndTimeIdAndDateAndMemberId(Long themeId, Long timeId, String date, Long memberId);
 }
