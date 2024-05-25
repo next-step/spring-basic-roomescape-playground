@@ -18,8 +18,6 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private MemberService memberService;
-    private CookieProvider cookieProvider;
-    private TokenProvider tokenProvider;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -32,27 +30,35 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody Member member, HttpServletResponse response) {
-        String accessToken = tokenProvider.createAccessToken(member);
-        Cookie cookie = cookieProvider.createCookie(accessToken);
+    public ResponseEntity login (@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        String token = memberService.login(loginRequest);
+
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
     }
 
+
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
+    public ResponseEntity<MemberResponse> checkLogin (HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token = cookieProvider.extractTokenFromCookie(cookies);
+        String token = extractTokenFromCookie(cookies);
+        MemberResponse memberResponse = memberService.checkLogin(token);
 
-        LoginResponse loginResponse = new LoginResponse(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().get("name").toString());
+        return ResponseEntity.ok(memberResponse);
+    }
 
-        return ResponseEntity.ok()
-                .body(loginResponse);
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+
+        return "";
     }
 
     @PostMapping("/logout")

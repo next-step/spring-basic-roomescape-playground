@@ -1,5 +1,7 @@
 package roomescape.member;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,32 +12,40 @@ import roomescape.provider.TokenProvider;
 @Service
 public class MemberService {
     private MemberDao memberDao;
-    private TokenProvider tokenProvider;
-    private CookieProvider cookieProvder;
 
-    public MemberService(MemberDao memberDao, TokenProvider tokenProvider, CookieProvider cookieProvder) {
+    public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
-        this.tokenProvider = tokenProvider;
-        this.cookieProvder = cookieProvder;
     }
+
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public void login(LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
-        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
-        if(member == null) throw new IllegalArgumentException();
-        String token = tokenProvider.createAccessToken(member);
-        Cookie cookie = cookieProvder.createCookie(token);
-        httpServletResponse.addCookie(cookie);
+    public String login(LoginRequest loginRequest) {
+        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(),loginRequest.getPassword());
+
+        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+        String accessToken = Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
+
+        return accessToken;
     }
 
-    public LoginResponse loginCheck(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = cookieProvder.extractTokenFromCookie(cookies);
-        String memberName = tokenProvider.getMemberFromToken(token);
-        Member member = memberDao.findByName(memberName);
-        return new LoginResponse(member.getName());
+    public MemberResponse checkLogin (String token) {
+        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+        Long memberId = Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().getSubject());
+        Member member = memberDao.findById(memberId);
+
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 }
