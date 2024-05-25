@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -12,13 +13,8 @@ import roomescape.provider.CookieProvider;
 import roomescape.provider.TokenProvider;
 
 @Component
-@RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private MemberService memberService;
-    private TokenProvider tokenProvider;
-    private CookieProvider cookieProvider;
-
-    private MemberDao memberDao;
 
     public LoginMemberArgumentResolver(MemberService memberService) {
         this.memberService = memberService;
@@ -26,15 +22,26 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Member.class);
+        return parameter.getParameterType().equals(MemberResponse.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = cookieProvider.extractTokenFromCookie(httpServletRequest.getCookies());
-        String name = tokenProvider.getMemberFromToken(token);
-        Member member = memberDao.findByName(name);
-        return new Member(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        Cookie[] cookies = request.getCookies();
+        String token = extractTokenFromCookie(cookies);
+        MemberResponse memberResponse = memberService.checkLogin(token);
+
+        return new MemberResponse(memberResponse.getId(), memberResponse.getName(), memberResponse.getEmail());
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+
+        return "";
     }
 }
