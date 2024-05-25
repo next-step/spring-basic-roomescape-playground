@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -111,5 +112,20 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+
+    @Test
+    void 오단계() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", ReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 }
