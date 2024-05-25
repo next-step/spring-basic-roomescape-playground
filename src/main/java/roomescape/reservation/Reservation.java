@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -19,11 +20,14 @@ public class Reservation {
     private String name;
     private String date;
     @ManyToOne
+    private Member member;
+    @ManyToOne
     private Time time;
     @ManyToOne
     private Theme theme;
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(Member member,String name, String date, Time time, Theme theme) {
+        this.member = member;
         this.name = name;
         this.date = date;
         this.time = time;
