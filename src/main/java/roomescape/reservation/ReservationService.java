@@ -11,9 +11,12 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -21,6 +24,8 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private ReservationRepository reservationRepository;
     private MemberRepository memberRepository;
+    @Autowired
+    private WaitingRepository waitingRepository;
     @Autowired
     private MemberService memberService;
 
@@ -74,6 +79,18 @@ public class ReservationService {
                     .build();
             myReservationResponseList.add(myReservationResponse);
         }
+
+//        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(memberResponse.getId()).stream()
+//                .map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
+//                .toList();
+//
+        List<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(memberId).stream()
+                .map(it -> new MyReservationResponse(it.getWaiting().getId(), it.getWaiting().getTheme().getName(), it.getWaiting().getDate(), it.getWaiting().getTime().getValue(), (it.getRank() + 1) + "번째 예약대기"))
+                .toList();
+
+        List<MyReservationResponse> results = Stream.concat(myReservationResponseList.stream(), waitings.stream())
+                .sorted(Comparator.comparing(MyReservationResponse::getDate))
+                .toList();
         return myReservationResponseList;
     }
 }
