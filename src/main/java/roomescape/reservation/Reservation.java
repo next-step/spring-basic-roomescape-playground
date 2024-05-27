@@ -2,7 +2,6 @@ package roomescape.reservation;
 
 import jakarta.persistence.*;
 import lombok.Builder;
-import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;

@@ -2,7 +2,6 @@ package roomescape.reservation;
 
 import lombok.Builder;
 import lombok.Data;
-import roomescape.theme.Theme;
 
 @Data
 @Builder
