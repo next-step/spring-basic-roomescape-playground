@@ -103,6 +103,7 @@ public class MissionStepTest {
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
+
     @Test
     void 삼단계() {
         String brownToken = createToken("brown@email.com", "password");
@@ -180,5 +181,6 @@ public class MissionStepTest {
     void 칠단계() {
         Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
         assertThat(componentAnnotation).isNull();
+
     }
 }

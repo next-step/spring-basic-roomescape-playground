@@ -1,5 +1,3 @@
-
-
 INSERT INTO member (name, email, password, role)
 VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
        ('브라운', 'brown@email.com', 'password', 'USER');
@@ -29,3 +27,7 @@ VALUES (1, '', '2024-03-01', 1, 1),
 
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('브라운', '2024-03-01', 1, 2);
+
+INSERT INTO waiting (member_id, date, time, theme_id)
+VALUES (1, '2024-03-02', '12:00', 2),
+       (2, '2024-03-02', '12:00', 2);

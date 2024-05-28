@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
+
     List<Waiting> findByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, String date );
 
     @Query("SELECT new roomescape.waiting.WaitingWithRank(" +
@@ -23,3 +24,4 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
     List<Waiting> findByMemberId(Long memberId);
 }
+

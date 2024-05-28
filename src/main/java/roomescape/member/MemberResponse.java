@@ -12,6 +12,7 @@ public class MemberResponse {
     private String role;
 
     public MemberResponse(Long id, String name, String email, String role) {
+
         this.id = id;
         this.name = name;
         this.email = email;
@@ -33,5 +34,4 @@ public class MemberResponse {
     public String getRole() {
         return role;
     }
-
 }

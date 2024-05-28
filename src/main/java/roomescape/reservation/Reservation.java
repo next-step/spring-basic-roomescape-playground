@@ -30,7 +30,8 @@ public class Reservation {
         this.member = member;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(Member member,String name, String date, Time time, Theme theme) {
+        this.member = member;
         this.name = name;
         this.date = date;
         this.time = time;
@@ -53,6 +54,9 @@ public class Reservation {
         return date;
     }
 
+    public Member getMember() {
+        return member;
+    }
     public Time getTime() {
         return time;
     }

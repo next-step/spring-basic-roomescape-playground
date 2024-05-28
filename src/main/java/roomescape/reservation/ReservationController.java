@@ -12,18 +12,15 @@ import roomescape.member.LoginMember;
 import roomescape.member.MemberService;
 import roomescape.waiting.WaitingRequest;
 import roomescape.waiting.WaitingResponse;
-import roomescape.waiting.WaitingService;
 
 import java.net.URI;
 import java.util.List;
 
 @RestController
 public class ReservationController {
-
     private final ReservationService reservationService;
     private final MemberService memberService;
     private final ReservationRepository reservationRepository;
-
     private final WaitingService waitingService;
 
     public ReservationController(ReservationService reservationService, MemberService memberService, ReservationRepository reservationRepository,  WaitingService waitingService) {
@@ -40,7 +37,6 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember member) {
-
         if (reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
                 || reservationRequest.getTime() == null) {
@@ -49,6 +45,10 @@ public class ReservationController {
         ReservationResponse reservation = reservationService.save(reservationRequest,member.getId());
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    }
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> mine( MemberResponse memberResponse) {
+        return reservationService.findMine(memberResponse);
     }
 
     @DeleteMapping("/reservations/{id}")
