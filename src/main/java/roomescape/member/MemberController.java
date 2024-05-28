@@ -1,5 +1,7 @@
 package roomescape.member;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +26,32 @@ public class MemberController {
         MemberResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        String accessToken = memberService.createToken(loginRequest);
+        Cookie cookie = memberService.createCookie(accessToken);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = memberService.extractTokenFromCookie(cookies);
+
+        LoginCheckResponse loginCheckResponse = new LoginCheckResponse(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().get("name").toString());
+
+        return ResponseEntity.ok()
+                .body(loginCheckResponse);
+    }
+
+
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {

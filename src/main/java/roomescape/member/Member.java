@@ -8,8 +8,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "member")
 public class Member {
-
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
