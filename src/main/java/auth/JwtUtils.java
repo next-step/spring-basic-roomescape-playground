@@ -5,10 +5,12 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import roomescape.member.Member;
+import org.springframework.beans.factory.annotation.Value;
 
 public class JwtUtils {
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
     public String createToken( Member member) {
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E="; // 암호화를 위한 비밀키
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
@@ -21,7 +23,7 @@ public class JwtUtils {
 
     public String extractSubject(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject();
@@ -29,7 +31,7 @@ public class JwtUtils {
 
     public String extractClaim(String token, String key) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody().get(key).toString();
