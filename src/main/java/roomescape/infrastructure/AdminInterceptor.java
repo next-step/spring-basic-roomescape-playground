@@ -1,30 +1,29 @@
-package roomescape.Auth;
+package roomescape.infrastructure;
 
+import auth.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 
-@Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private MemberService memberService;
+    private JwtUtils jwtUtils;
 
-    public AdminInterceptor(MemberService memberService) {
-        this.memberService = memberService;
+    public AdminInterceptor(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = request.getCookies();
-        String token = memberService.extractTokenFromCookie(cookies);
-        Member member = memberService.findByToken(token);
+        String token = jwtUtils.extractTokenFromCookie(cookies);
+        String role = jwtUtils.extractClaim(token, "role");
 
-        if (member == null || !member.getRole().equals("ADMIN")) {
+        if (!"ADMIN".equals(role)) {
             response.setStatus(401);
             return false;
         }

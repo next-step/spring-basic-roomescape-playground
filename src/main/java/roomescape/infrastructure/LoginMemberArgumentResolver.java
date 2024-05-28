@@ -1,25 +1,21 @@
-package roomescape.Auth;
+package roomescape.infrastructure;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import auth.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
 
-@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private MemberService memberService;
+    private JwtUtils jwtUtils;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -33,8 +29,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         //...
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token=memberService.extractTokenFromCookie(request.getCookies()); //토큰 추출
-        Member member = memberService.findByToken(token);
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        String token=jwtUtils.extractTokenFromCookie(request.getCookies()); //토큰 추출
+        Long memberId = Long.valueOf(jwtUtils.extractSubject(token));
+
+        return new LoginMember(memberId);
     }
 }
