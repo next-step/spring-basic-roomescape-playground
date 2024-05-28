@@ -1,8 +1,6 @@
 package roomescape.member;
 
 import auth.JwtUtils;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,7 +9,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private JwtUtils jwtUtils;
+
+    private final JwtUtils jwtUtils;
 
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));

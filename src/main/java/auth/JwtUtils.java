@@ -4,21 +4,18 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-import roomescape.member.AuthorizationException;
-import roomescape.member.LoginRequest;
-import roomescape.member.Member;
-import roomescape.member.MemberRepository;
 
-@Component
+@Configuration
 @RequiredArgsConstructor
 public class JwtUtils {
-
-    private final MemberRepository memberRepository;
 
     @Value("${roomescape.auth.jwt.secret}")
     private String secret;
 
+    @Bean
     public String createToken(Long id, String name, String role) {
         String secretKey = secret;
         String accessToken = Jwts.builder()
@@ -31,6 +28,7 @@ public class JwtUtils {
         return accessToken;
     }
 
+    @Bean
     public Long extractIdFromToken(String token) {
         return Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
