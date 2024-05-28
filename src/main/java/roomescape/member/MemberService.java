@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-
     private final JwtUtils jwtUtils;
 
     public MemberResponse createMember(MemberRequest memberRequest) {
