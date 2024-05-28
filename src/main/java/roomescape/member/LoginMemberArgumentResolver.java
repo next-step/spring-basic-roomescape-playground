@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import auth.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -9,14 +10,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private MemberService memberService;
+    private JwtUtils jwtUtils;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
-
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType().equals(MemberResponse.class);
@@ -27,9 +26,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
-        MemberResponse memberResponse = memberService.checkLogin(token);
+        Long memberId = Long.valueOf(jwtUtils.extractSubject(token));
 
-        return new MemberResponse(memberResponse.getId(), memberResponse.getName(), memberResponse.getEmail(), memberResponse.getRole());
+        return new MemberResponse(memberId);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

@@ -13,6 +13,11 @@ public class MemberResponse {
         this.role = role;
     }
 
+    public MemberResponse(Long id) {
+        this.id = id;
+    }
+
+
     public Long getId() {
         return id;
     }

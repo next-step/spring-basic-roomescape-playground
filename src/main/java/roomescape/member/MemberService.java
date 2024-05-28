@@ -1,17 +1,21 @@
 package roomescape.member;
 
+import auth.JwtUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class MemberService {
     private MemberRepository memberRepository;
+    private JwtUtils jwtUtils;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
+        this.jwtUtils=jwtUtils;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -22,15 +26,7 @@ public class MemberService {
     public String login(LoginRequest loginRequest) {
         Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(),loginRequest.getPassword());
 
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
-
-        return accessToken;
+        return jwtUtils.createToken(member.getId().toString(), Map.of("name", member.getName(), "role", member.getRole()));
     }
 
     public MemberResponse checkLogin (String token) {
