@@ -6,14 +6,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import roomescape.infrastructure.JwtTokenProvider;
+import auth.JwtUtils;
 
 @Service
 public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
 
     public MemberService(MemberRepository memberDao) {
         this.memberRepository = memberDao;
@@ -29,37 +27,10 @@ public class MemberService {
         return member;
     }
 
-    public Member findByToken(String token){
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
+    public Member findById(Long memberId){
         Member member = memberRepository.findById(memberId).orElse(null);
-//        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
         return member;
 
     }
 
-    public String createToken(Member member){
-        String accessToken = jwtTokenProvider.createToken(member);
-        return accessToken;
-    }
-
-    public void createCookie(HttpServletResponse response, String token){
-        Cookie cookie = new Cookie("token", token); //생성한 토큰으로 쿠키를 생성
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-    }
-
-    public String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) { //쿠키 배열에서 원하는 토큰을 추출합니다.
-                return cookie.getValue();
-            }
-        }
-
-        return "";
-    }
 }

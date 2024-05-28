@@ -40,10 +40,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember member) {
-        // 관리자 예약 생성
-        if(member != null && reservationRequest.getName()==null) {
-            reservationRequest.setName(member.getName());
-        }
+
         if (reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
                 || reservationRequest.getTime() == null) {

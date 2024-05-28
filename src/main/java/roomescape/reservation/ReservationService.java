@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import auth.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +25,18 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private ReservationRepository reservationRepository;
     private MemberRepository memberRepository;
+    private JwtUtils jwtUtils;
     @Autowired
     private WaitingRepository waitingRepository;
     @Autowired
     private MemberService memberService;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.jwtUtils=jwtUtils;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, Long memberId) {
@@ -42,7 +45,7 @@ public class ReservationService {
         Member member = memberRepository.findById(memberId).orElse(null);
 
         Reservation reservation = Reservation.builder()
-                .name(reservationRequest.getName())
+                .name(reservationRequest.getName() == null? member.getName() : reservationRequest.getName())
                 .date(reservationRequest.getDate())
                 .theme(theme)
                 .time(time)
@@ -64,9 +67,9 @@ public class ReservationService {
 
     public List<MyReservationResponse> findMyReservation(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
-        String token=memberService.extractTokenFromCookie(cookies); // 쿠키에서 토큰 추출
-        Member member = memberService.findByToken(token); // 추출한 토큰으로 멤버 찾기
-        Long memberId = member.getId(); // 내 아이디
+        String token=jwtUtils.extractTokenFromCookie(cookies); //토큰 추출
+        Long memberId = Long.valueOf(jwtUtils.extractSubject(token));
+
         List<Reservation> reservationList = reservationRepository.findByMemberId(memberId);
         List<MyReservationResponse> myReservationResponseList = new ArrayList<>();
         for(Reservation reservation : reservationList) {
@@ -80,10 +83,6 @@ public class ReservationService {
             myReservationResponseList.add(myReservationResponse);
         }
 
-//        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(memberResponse.getId()).stream()
-//                .map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
-//                .toList();
-//
         List<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(memberId).stream()
                 .map(it -> new MyReservationResponse(it.getWaiting().getId(), it.getWaiting().getTheme().getName(), it.getWaiting().getDate(), it.getWaiting().getTime().getValue(), (it.getRank() + 1) + "번째 예약대기"))
                 .toList();

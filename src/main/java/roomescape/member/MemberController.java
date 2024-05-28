@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import auth.JwtUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -18,10 +19,12 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private MemberService memberService;
+    private JwtUtils jwtUtils;
 
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, JwtUtils jwtUtils) {
         this.memberService = memberService;
+        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/members")
@@ -33,16 +36,17 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response){
         Member member = memberService.findMember(memberRequest.getEmail(),memberRequest.getPassword()); //멤버조회
-        String token=memberService.createToken(member); //조회된 멤버 정보로 토큰 생성
-        memberService.createCookie(response, token); //생성된 토큰으로 쿠키 생성해 response에 담기
+        String token=jwtUtils.createToken(member); //조회된 멤버 정보로 토큰 생성
+        jwtUtils.createCookie(response, token); //생성된 토큰으로 쿠키 생성해 response에 담기
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token=memberService.extractTokenFromCookie(cookies); // 쿠키에서 토큰 추출
-        Member member = memberService.findByToken(token); // 추출한 토큰으로 멤버 찾기
+        String token=jwtUtils.extractTokenFromCookie(request.getCookies()); //토큰 추출
+        Long memberId = Long.valueOf(jwtUtils.extractSubject(token));
+
+        Member member = memberService.findById(memberId);
         MemberResponse memberResponse = new MemberResponse(member.getId(),member.getName(),member.getEmail(), member.getRole());
         return ResponseEntity.ok(memberResponse);
     }

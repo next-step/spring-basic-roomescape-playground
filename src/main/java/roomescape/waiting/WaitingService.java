@@ -1,5 +1,6 @@
 package roomescape.waiting;
 
+import auth.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,18 @@ public class WaitingService {
     private TimeRepository timeRepository;
     @Autowired
     private ThemeRepository themeRepository;
+    private JwtUtils jwtUtils;
+
+    public WaitingService(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
+    }
+
 
 
     public WaitingResponse save(WaitingRequest waitingRequest, HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token=memberService.extractTokenFromCookie(cookies); // 쿠키에서 토큰 추출
-        Member member = memberService.findByToken(token); // 추출한 토큰으로 멤버 찾기
-        Long memberId = member.getId(); // 내 아이디
+        String token=jwtUtils.extractTokenFromCookie(cookies); //토큰 추출
+        Long memberId = Long.valueOf(jwtUtils.extractSubject(token));
 
         List<Waiting> waitingList = waitingRepository.findByThemeIdAndTimeIdAndDate(waitingRequest.getTheme(),waitingRequest.getTime(), waitingRequest.getDate());
         for(Waiting waiting:waitingList){
