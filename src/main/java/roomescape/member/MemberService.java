@@ -15,7 +15,7 @@ import java.util.Map;
 @Service
 public class MemberService {
     private MemberRepository memberRepository;
-    private JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
     public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;

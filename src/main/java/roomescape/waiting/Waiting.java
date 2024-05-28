@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import roomescape.theme.Theme;
+import roomescape.time.Time;
 
 @Entity
 @Getter
@@ -25,9 +26,10 @@ public class Waiting {
     private Theme theme;
     private Long memberId;
     private String date;
-    private  String time;
+    @ManyToOne
+    private Time time;
 
-    public Waiting(Theme theme, Long memberId, String date, String time) {
+    public Waiting(Theme theme, Long memberId, String date, Time time) {
         this.theme = theme;
         this.memberId = memberId;
         this.date = date;

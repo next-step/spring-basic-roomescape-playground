@@ -1,7 +1,9 @@
 package roomescape.waiting;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,25 +13,23 @@ import roomescape.member.MemberResponse;
 
 import java.net.URI;
 
-@RestController
+
+@Controller
+@RequiredArgsConstructor
 public class WaitingController {
     private final WaitingService waitingService;
 
-    public WaitingController(WaitingService waitingService) {
-        this.waitingService = waitingService;
-    }
-
     @PostMapping("/waitings")
-    public ResponseEntity<WaitingResponse> createWaiting(@RequestBody WaitingRequest waitingRequest, MemberResponse memberResponse) {
-        WaitingResponse waitingResponse = waitingService.createWaiting(memberResponse, waitingRequest);
-        return ResponseEntity.created(URI.create("/waitings/" + waitingResponse.getId())).body(waitingResponse);
+    public ResponseEntity create(@RequestBody WaitingRequest waitingRequest, LoginMember member) {
+        if (member == null
+                || waitingRequest.getDate() == null
+                || waitingRequest.getTheme() == null
+                || waitingRequest.getTime() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        WaitingResponse waiting = waitingService.save(member, waitingRequest);
+
+        return ResponseEntity.created(URI.create("/waitings/" + waiting.getId())).body(waiting);
     }
-
-
-    @DeleteMapping("/waitings/{id}")
-    public ResponseEntity deleteWaiting(@PathVariable Long id, MemberResponse memberResponse) {
-        waitingService.deleteWaiting(id, memberResponse);
-        return ResponseEntity.noContent().build();
-    }
-
 }
