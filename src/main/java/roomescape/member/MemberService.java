@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import auth.JwtUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-    final private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
+    private JwtUtils jwtUtils;
 
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
@@ -23,15 +25,7 @@ public class MemberService {
 
         Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
 
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
-
-        return accessToken;
+        return jwtUtils.createToken(member.getId(), member.getName(), member.getRole());
     }
 
     public Cookie createCookie(String accessToken) {
@@ -52,11 +46,7 @@ public class MemberService {
     }
 
     public Member extractMemberFromToken(String token) {
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
+        Long memberId = jwtUtils.extractIdFromToken(token);
 
         return memberRepository.findById(memberId).get();
     }

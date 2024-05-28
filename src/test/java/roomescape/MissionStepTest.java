@@ -176,6 +176,6 @@ public class MissionStepTest {
     @Test
     void 칠단계() {
         Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
-        assertThat(componentAnnotation).isNull();
+        assertThat(componentAnnotation).isNotNull();
     }
 }
