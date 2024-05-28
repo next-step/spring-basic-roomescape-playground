@@ -6,17 +6,21 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
+import roomescape.auth.JwtUtils;
 import roomescape.provider.CookieProvider;
 import roomescape.provider.TokenProvider;
+
+import java.util.Map;
 
 @Service
 public class MemberService {
     private MemberRepository memberRepository;
+    private JwtUtils jwtUtils;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
+        this.jwtUtils = jwtUtils;
     }
-
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(),member.getRole());
@@ -25,15 +29,7 @@ public class MemberService {
     public String login(LoginRequest loginRequest) {
         Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(),loginRequest.getPassword());
 
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
-
-        return accessToken;
+        return jwtUtils.createToken(member.getId().toString(), Map.of("name", member.getName(), "role", member.getRole()));
     }
 
     public MemberResponse checkLogin (String token) {

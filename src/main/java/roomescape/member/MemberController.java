@@ -45,7 +45,8 @@ public class MemberController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin (MemberResponse memberResponse) {
 
-        return ResponseEntity.ok(memberResponse);
+        MemberResponse checkMember = memberService.findById(memberResponse.getId());
+        return ResponseEntity.ok(checkMember);
     }
 
     @PostMapping("/logout")

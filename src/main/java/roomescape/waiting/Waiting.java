@@ -34,21 +34,6 @@ public class Waiting {
         this.time = time;
     }
 
-    public Waiting(Theme theme, String date, String time, Long id, Long memberId) {
-        this.theme = theme;
-        this.memberId = memberId;
-        this.date = date;
-        this.time = time;
-        this.id = id;
-    }
-
-    public Waiting(Theme theme, String date, String time, Long id) {
-        this.theme = theme;
-        this.date = date;
-        this.time = time;
-        this.id = id;
-    }
-
 
     public boolean isMyReservation(Long memberId) {
         return this.memberId.equals(memberId);
