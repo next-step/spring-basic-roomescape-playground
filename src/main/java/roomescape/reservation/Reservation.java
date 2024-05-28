@@ -30,7 +30,7 @@ public class Reservation {
         this.member = member;
     }
 
-    public Reservation(Member member,String name, String date, Time time, Theme theme) {
+    public Reservation(Member member, String name, String date, Time time, Theme theme) {
         this.member = member;
         this.name = name;
         this.date = date;

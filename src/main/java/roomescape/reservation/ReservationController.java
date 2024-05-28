@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
+import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
 import roomescape.waiting.WaitingRequest;
 import roomescape.waiting.WaitingResponse;
+import roomescape.waiting.WaitingService;
 
 import java.net.URI;
 import java.util.List;
@@ -45,10 +47,6 @@ public class ReservationController {
         ReservationResponse reservation = reservationService.save(reservationRequest,member.getId());
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
-    }
-    @GetMapping("/reservations-mine")
-    public List<MyReservationResponse> mine( MemberResponse memberResponse) {
-        return reservationService.findMine(memberResponse);
     }
 
     @DeleteMapping("/reservations/{id}")

@@ -12,5 +12,4 @@ public class WaitingResponse {
     private Theme theme;
     private Time time;
     private String date;
-
 }
