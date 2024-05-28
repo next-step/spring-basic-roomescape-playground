@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+
 import jakarta.persistence.*;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
@@ -8,7 +9,7 @@ import roomescape.time.Time;
 @Table(name = "reservation")
 public class Reservation {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
