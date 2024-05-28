@@ -52,9 +52,6 @@ public class ReservationService {
         return memberService.findById(loginMember.getId()).getName();
     }
 
-    private String findMemberName(MemberResponse loginMember) {
-        return memberService.findById(loginMember.getId()).getName();
-    }
 
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
