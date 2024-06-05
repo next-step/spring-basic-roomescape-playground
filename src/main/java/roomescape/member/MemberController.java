@@ -24,6 +24,8 @@ public class MemberController {
         MemberResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
+    @PostMapping("/login")
+
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
