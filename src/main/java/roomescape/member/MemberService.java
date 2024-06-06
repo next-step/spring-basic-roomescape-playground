@@ -15,7 +15,7 @@ public class MemberService {
 
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
-        String jwtToken = jwtService.createJwtToken(member);
+        String token = jwtService.createJwtToken(member);
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 }
