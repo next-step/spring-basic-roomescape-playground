@@ -2,7 +2,7 @@ package roomescape.auth;
 
 public interface AuthorizationProvider {
 
-    MemberAuthorization createByPayload(String payload);
+    MemberCredential create(MemberAuthContext member);
 
-    String parseAuthorization(String token);
+    MemberAuthContext parseCredential(MemberCredential token);
 }

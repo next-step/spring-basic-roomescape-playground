@@ -8,12 +8,14 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.auth.AuthorizationProvider;
-import roomescape.auth.MemberAuthorization;
+import roomescape.auth.MemberAuthContext;
+import roomescape.auth.MemberCredential;
 
 @Component
 public class JwtProvider implements AuthorizationProvider {
 
-    private static final String USER_IDX = "email";
+    private static final String USER_NAME = "name";
+    private static final String USER_ROLE = "role";
 
     private final String jwtSecret;
     private final Long validityInMilliseconds;
@@ -26,26 +28,30 @@ public class JwtProvider implements AuthorizationProvider {
         this.validityInMilliseconds = expireMilliseconds;
     }
 
-    public MemberAuthorization createByPayload(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    public MemberCredential create(MemberAuthContext context) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
         String tokenValue = Jwts.builder()
-                .claim(USER_IDX, payload)
+                .claim(USER_NAME, context.name())
+                .claim(USER_ROLE, context.role())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(jwtSecret)))
                 .compact();
-        return new MemberAuthorization(tokenValue);
+        return new MemberCredential(tokenValue);
     }
 
     @Override
-    public String parseAuthorization(String token) {
-        return Jwts.parserBuilder()
+    public MemberAuthContext parseCredential(MemberCredential token) {
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(jwtSecret)))
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get(USER_IDX, String.class);
+                .parseClaimsJws(token.authorization())
+                .getBody();
+
+        return new MemberAuthContext(
+                claims.get(USER_NAME, String.class),
+                claims.get(USER_ROLE, String.class)
+        );
     }
 }

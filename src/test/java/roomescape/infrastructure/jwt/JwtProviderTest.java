@@ -7,9 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import roomescape.auth.MemberAuthorization;
+import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.MemberAuthContext;
+import roomescape.auth.MemberCredential;
+import roomescape.member.Member;
+import roomescape.member.MemberFixture;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class JwtProviderTest {
 
     @Autowired
@@ -17,20 +22,24 @@ class JwtProviderTest {
 
     @Test
     void create_token() {
-        String payload = "test";
+        String memberName = "test";
+        Member member = MemberFixture.memberWithName(memberName);
+        MemberAuthContext authContext = new MemberAuthContext(member.getName(), member.getRole());
 
-        MemberAuthorization token = jwtProvider.createByPayload(payload);
+        MemberCredential token = jwtProvider.create(authContext);
 
         assertThat(token.authorization()).isNotNull();
     }
 
     @Test
     void parse_token() {
-        String payload = "test";
-        MemberAuthorization token = jwtProvider.createByPayload(payload);
+        String memberName = "test";
+        Member member = MemberFixture.memberWithName(memberName);
+        MemberAuthContext authContext = new MemberAuthContext(member.getName(), member.getRole());
+        MemberCredential token = jwtProvider.create(authContext);
 
-        String actual = jwtProvider.parseAuthorization(token.authorization());
+        MemberAuthContext actual = jwtProvider.parseCredential(token);
 
-        Assertions.assertThat(actual).isEqualTo(payload);
+        Assertions.assertThat(actual).isEqualTo(authContext);
     }
 }

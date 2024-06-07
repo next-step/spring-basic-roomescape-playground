@@ -1,6 +1,6 @@
 package roomescape.auth;
 
-public record MemberAuthorization(
+public record MemberCredential(
         String authorization
 ) {
 }
