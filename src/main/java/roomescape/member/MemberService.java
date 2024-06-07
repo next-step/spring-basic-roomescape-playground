@@ -27,7 +27,12 @@ public class MemberService {
         }
     }
 
-    public Member checkLogin(MemberAuthContext authContext) {
-
+    public MemberResponse checkLogin(MemberAuthContext authContext) {
+        try {
+            Member member = memberDao.findByName(authContext.name());
+            return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        } catch (DataAccessException exception) {
+            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
+        }
     }
 }
