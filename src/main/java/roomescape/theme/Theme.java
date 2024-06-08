@@ -22,6 +22,11 @@ public class Theme {
         this.description = description;
     }
 
+    public Theme(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
     public Long getId() {
         return id;
     }
