@@ -1,57 +1,41 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import auth.JwtUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
+    private JwtUtils jwtUtils;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
+        this.memberRepository = memberRepository;
+        this.jwtUtils = jwtUtils;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public String login(LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
 
         if (member == null) {
             throw new RuntimeException();
         }
 
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
-
-        return accessToken;
+        return jwtUtils.createToken(member.getId().toString(), Map.of("name", member.getName(), "role", member.getRole()));
     }
 
-    public MemberResponse checkMember(String token) {
-        if (token.isBlank()) {
-            return null;
-        }
-
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
-
-        Member member = memberDao.findById(memberId);
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
+    public Member findMemberById(Long id) {
+        return memberRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 
-    public MemberResponse findById(Long id) {
-        Member member = memberDao.findById(id);
+    public MemberResponse findResponseById(Long id) {
+        Member member = memberRepository.findById(id).orElse(new Member());
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 }
