@@ -20,6 +20,20 @@ public class MemberService {
     public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
         this.jwtUtils = jwtUtils;
+
+import roomescape.provider.CookieProvider;
+import roomescape.provider.TokenProvider;
+
+@Service
+public class MemberService {
+    private MemberDao memberDao;
+    private TokenProvider tokenProvider;
+    private CookieProvider cookieProvder;
+
+    public MemberService(MemberDao memberDao, TokenProvider tokenProvider, CookieProvider cookieProvder) {
+        this.memberDao = memberDao;
+        this.tokenProvider = tokenProvider;
+        this.cookieProvder = cookieProvder;
     }
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
@@ -52,5 +66,22 @@ public class MemberService {
 
     public Member findMemberById(Long id) {
         return memberRepository.findById(id).orElseThrow(RuntimeException::new);
+    }
+}
+
+    public void login(LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
+        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
+        if(member == null) throw new IllegalArgumentException();
+        String token = tokenProvider.createAccessToken(member);
+        Cookie cookie = cookieProvder.createCookie(token);
+        httpServletResponse.addCookie(cookie);
+    }
+
+    public LoginResponse loginCheck(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = cookieProvder.extractTokenFromCookie(cookies);
+        String memberName = tokenProvider.getMemberFromToken(token);
+        Member member = memberDao.findByName(memberName);
+        return new LoginResponse(member.getName());
     }
 }

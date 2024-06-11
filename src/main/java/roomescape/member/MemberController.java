@@ -18,6 +18,8 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private MemberService memberService;
+    private CookieProvider cookieProvider;
+    private TokenProvider tokenProvider;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -36,6 +38,9 @@ public class MemberController {
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+    public ResponseEntity login(@RequestBody Member member, HttpServletResponse response) {
+        String accessToken = tokenProvider.createAccessToken(member);
+        Cookie cookie = cookieProvider.createCookie(accessToken);
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
@@ -47,6 +52,19 @@ public class MemberController {
 
         MemberResponse checkMember = memberService.findById(memberResponse.getId());
         return ResponseEntity.ok(checkMember);
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = cookieProvider.extractTokenFromCookie(cookies);
+
+        LoginResponse loginResponse = new LoginResponse(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().get("name").toString());
+
+        return ResponseEntity.ok()
+                .body(loginResponse);
     }
 
     @PostMapping("/logout")
