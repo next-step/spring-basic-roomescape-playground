@@ -38,4 +38,8 @@ public class MemberService {
         }
         return MemberResponse.Check.from(member);
     }
+
+    public Member findById(Long id) {
+        return memberDao.findById(id);
+    }
 }
