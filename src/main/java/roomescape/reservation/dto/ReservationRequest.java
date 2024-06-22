@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.dto;
 
 public class ReservationRequest {
     private String name;
@@ -20,5 +20,9 @@ public class ReservationRequest {
 
     public Long getTime() {
         return time;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
