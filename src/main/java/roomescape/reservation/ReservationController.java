@@ -27,7 +27,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, @roomescape.util.LoginMember LoginMember member) {
+    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember member) {
         System.out.println("reservationName: " + reservationRequest.getName());
         if(reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null

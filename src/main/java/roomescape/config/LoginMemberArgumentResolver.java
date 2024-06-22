@@ -11,7 +11,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.api.JwtDecoder;
 import roomescape.auth.AuthService;
 import roomescape.member.Member;
-import roomescape.util.LoginMember;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -23,9 +22,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        boolean hasLoginMemberAnnotation = parameter.hasParameterAnnotation(LoginMember.class);
-        boolean isUserType = Member.class.isAssignableFrom(parameter.getParameterType());
-        return hasLoginMemberAnnotation && isUserType;
+        //boolean hasLoginMemberAnnotation = parameter.hasParameterAnnotation(LoginMember.class);
+        return Member.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
