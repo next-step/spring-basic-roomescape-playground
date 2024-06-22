@@ -21,27 +21,25 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
 
     public String login(MemberRequest memberRequest) {
-        Member member = memberRepository.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
-        if (member == null) throw new MemberNotFoundException();
-
-
+        Member member = memberRepository.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword()).orElseThrow(() -> new MemberNotFoundException());
         return jwtService.generateToken(member);
     }
 
     public LoginMember checkLogin(Cookie[] cookies) {
-        String token = jwtService.extractTokenFromCookie(cookies);
-        Long userId = jwtService.decodeToken(token);
+        try {
+            String token = jwtService.extractTokenFromCookie(cookies);
+            Long userId = jwtService.decodeToken(token);
 
-        Optional<Member> memberOptional = memberRepository.findById(userId);
-        if (memberOptional.isEmpty()) throw new MemberNotFoundException();
-
-        Member member = memberOptional.get();
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+            Member member = memberRepository.findById(userId).orElseThrow(() -> new MemberNotFoundException());
+            return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

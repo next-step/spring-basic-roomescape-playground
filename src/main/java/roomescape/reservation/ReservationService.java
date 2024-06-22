@@ -39,6 +39,16 @@ public class ReservationService {
         this.jwtService = jwtService;
     }
 
+    public MyReservationResponse CustomWaitingResponse(WaitingWithRank waitingWithRank) {
+        return new MyReservationResponse(
+                waitingWithRank.getWaiting().getId(),
+                waitingWithRank.getWaiting().getTheme().getName(),
+                waitingWithRank.getWaiting().getDate(),
+                waitingWithRank.getWaiting().getTime().getValue(),
+                (waitingWithRank.getRank() + 1) + "번째 예약대기"
+        );
+    }
+
     public ReservationResponse save(ReservationRequest reservationRequest) {
 
         Optional<Time> timeOptional = timeRepository.findById(reservationRequest.getTime());
@@ -67,7 +77,7 @@ public class ReservationService {
                 .toList();
 
         List<MyReservationResponse> waitings = waitingRepository.findWaitingWithRankByMemberId(loginMember.getId()).stream()
-                .map(it -> new MyReservationResponse(it.getWaiting().getId(), it.getWaiting().getTheme().getName(),  it.getWaiting().getDate(), it.getWaiting().getTime().getValue(), (it.getRank() + 1) + "번째 예약대기"))
+                .map(this::CustomWaitingResponse)
                 .toList();
 
         return Stream.concat(reservations.stream(), waitings.stream())

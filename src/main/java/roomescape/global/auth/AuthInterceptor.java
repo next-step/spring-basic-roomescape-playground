@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.MemberService;
+import roomescape.member.Role;
 import roomescape.member.dto.LoginMember;
 
 
@@ -28,8 +29,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         LoginMember member = memberService.checkLogin(cookies);
 
-        if (member == null || !member.getRole().equals("ADMIN")) {
-            response.setStatus(401);
+        if (member == null || !member.getRole().equals(Role.ADMIN)) {
+            response.sendError(401, "You are not allowed to access this resource");
             return false;
         }
         return true;

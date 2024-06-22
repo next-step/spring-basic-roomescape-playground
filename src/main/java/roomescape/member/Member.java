@@ -9,20 +9,25 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "name", nullable = false)
     private String name;
+
     @Column(name = "email", nullable = false)
     private String email;
+
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private String role;
+    private Role role;
 
     @Column(name = "deleted", nullable = false)
     @ColumnDefault("false")
     private Boolean deleted;
 
-    public Member(Long id, String name, String email, String role, Boolean deleted) {
+    public Member(Long id, String name, String email, Role role, Boolean deleted) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -30,14 +35,14 @@ public class Member {
         this.deleted = deleted;
     }
 
-    public Member(Long id, String name, String email, String role) {
+    public Member(Long id, String name, String email, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.role = role;
     }
 
-    public Member(String name, String email, String password, String role) {
+    public Member(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -62,7 +67,7 @@ public class Member {
         return password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 }

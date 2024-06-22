@@ -4,12 +4,14 @@ package roomescape.global.auth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 
 @Service
 public class JwtService {
-    private final static String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
 
     public String generateToken(Member member) {
         return Jwts.builder()
