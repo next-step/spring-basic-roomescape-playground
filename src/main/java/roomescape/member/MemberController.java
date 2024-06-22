@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import roomescape.member.dto.MemberLoginCheckResponse;
+import roomescape.member.dto.MemberLoginRequest;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 @RestController
 public class MemberController {

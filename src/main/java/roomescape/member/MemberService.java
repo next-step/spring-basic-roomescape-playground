@@ -3,6 +3,9 @@ package roomescape.member;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
+import roomescape.member.dto.MemberLoginRequest;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 @Service
 public class MemberService {
