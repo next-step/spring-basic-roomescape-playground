@@ -24,7 +24,7 @@ public class MemberService {
 	}
 
 	public MemberCheckResponse checkMember(String token) {
-		Long memberId = JwtUtil.decodeToken(token);
+		Long memberId = JwtUtil.getIdFromToken(token);
 		Member member = memberDao.findById(memberId);
 		if (member == null) {
 			throw new IllegalArgumentException("Invalid member");
@@ -33,7 +33,7 @@ public class MemberService {
 	}
 
 	public Member getMemberFromToken(String token) {
-		Long memberId = JwtUtil.decodeToken(token);
+		Long memberId = JwtUtil.getIdFromToken(token);
 		return memberDao.findById(memberId);
 	}
 

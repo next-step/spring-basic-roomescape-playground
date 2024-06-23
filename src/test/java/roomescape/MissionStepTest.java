@@ -21,7 +21,7 @@ import roomescape.reservation.ReservationResponse;
 @TestPropertySource(locations = "classpath:application.properties")
 public class MissionStepTest {
 
-	String createToken(String email, String password) {
+	private String createToken(String email, String password) {
 		Map<String, String> params = new HashMap<>();
 
 		params.put("email", email);

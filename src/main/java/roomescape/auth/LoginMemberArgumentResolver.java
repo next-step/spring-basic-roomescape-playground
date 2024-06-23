@@ -10,7 +10,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import roomescape.jwt.JwtUtil;
-import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 

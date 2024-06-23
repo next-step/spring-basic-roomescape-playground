@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.auth;
 
 import java.util.List;
 
@@ -8,17 +8,15 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import roomescape.auth.AdminInterceptor;
-import roomescape.auth.LoginMemberArgumentResolver;
-
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class AuthWebConfiguration implements WebMvcConfigurer {
 
 	private final LoginMemberArgumentResolver loginMemberArgumentResolver;
 	private final AdminInterceptor adminInterceptor;
 
 	@Autowired
-	public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver, AdminInterceptor adminInterceptor) {
+	public AuthWebConfiguration(LoginMemberArgumentResolver loginMemberArgumentResolver,
+		AdminInterceptor adminInterceptor) {
 		this.loginMemberArgumentResolver = loginMemberArgumentResolver;
 		this.adminInterceptor = adminInterceptor;
 	}

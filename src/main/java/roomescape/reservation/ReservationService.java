@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import roomescape.member.LoginMember;
+import roomescape.auth.LoginMember;
 
 @Service
 public class ReservationService {

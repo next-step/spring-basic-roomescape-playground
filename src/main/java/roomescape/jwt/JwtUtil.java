@@ -15,12 +15,11 @@ public class JwtUtil {
 		return "";
 	}
 
-	public static Long decodeToken(String token) {
+	public static Long getIdFromToken(String token) {
 		return Long.valueOf(Jwts.parserBuilder()
 			.setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
 			.build()
 			.parseClaimsJws(token)
 			.getBody().getSubject());
 	}
-
 }
