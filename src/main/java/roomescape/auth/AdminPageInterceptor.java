@@ -7,6 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.api.JwtDecoder;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
+import roomescape.util.CookieUtil;
 
 @Component
 public class AdminPageInterceptor implements HandlerInterceptor {
@@ -18,7 +19,7 @@ public class AdminPageInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = JwtDecoder.extractTokenFromCookie(request.getCookies());
+        String token = CookieUtil.extractTokenFromCookie(request.getCookies());
         Long id = JwtDecoder.decodeJwtToken(token);
         Member member = memberService.findById(id);
 

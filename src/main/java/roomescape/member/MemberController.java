@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.api.JwtDecoder;
+import roomescape.util.CookieUtil;
 
 import java.net.URI;
 
@@ -39,7 +40,7 @@ public class MemberController {
     @GetMapping("/login/check")
     public ResponseEntity checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token = JwtDecoder.extractTokenFromCookie(cookies);
+        String token = CookieUtil.extractTokenFromCookie(cookies);
         MemberResponse.Check response = memberService.checkMember(token);
         return ResponseEntity.ok(response);
     }

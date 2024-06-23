@@ -11,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.api.JwtDecoder;
 import roomescape.auth.AuthService;
 import roomescape.member.Member;
+import roomescape.util.CookieUtil;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -30,7 +31,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
-        String token = JwtDecoder.extractTokenFromCookie(cookies);
+        String token = CookieUtil.extractTokenFromCookie(cookies);
         if(token == null){
             return null;
         }
