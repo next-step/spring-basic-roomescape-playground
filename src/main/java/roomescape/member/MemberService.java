@@ -32,6 +32,11 @@ public class MemberService {
 		return new MemberCheckResponse(member.getName());
 	}
 
+	public Member getMemberFromToken(String token) {
+		Long memberId = JwtUtil.decodeToken(token);
+		return memberDao.findById(memberId);
+	}
+
 	public MemberResponse createMember(MemberRequest memberRequest) {
 		Member member = memberDao.save(
 			new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));

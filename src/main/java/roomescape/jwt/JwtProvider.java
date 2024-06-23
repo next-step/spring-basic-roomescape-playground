@@ -19,4 +19,11 @@ public class JwtProvider {
 			.signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
 			.compact();
 	}
+
+	public String createToken(String email, String password) {
+		return Jwts.builder()
+			.claim("email", email)
+			.signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+			.compact();
+	}
 }
