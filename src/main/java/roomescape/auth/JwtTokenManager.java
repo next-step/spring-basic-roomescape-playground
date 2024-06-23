@@ -33,4 +33,15 @@ public class JwtTokenManager {
         // 토큰에 담긴 "key"를 추출
         return claims.get(key, String.class);
     }
+
+    public Long getTokenPrincipal(final String token) {
+        // Principal은 토큰의 사용자 ID를 의미
+        return Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(
+                        secretKey.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject());
+    }
 }
