@@ -14,6 +14,7 @@ import roomescape.api.JwtDecoder;
 import roomescape.api.JwtProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.member.MemberRequest;
 import roomescape.member.MemberService;
 import roomescape.reservation.ReservationResponse;
 
@@ -25,9 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
-
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey;
 
     @Autowired
     private MemberService memberService;
@@ -114,7 +112,9 @@ public class MissionStepTest {
     }
 
     private String createToken(String email, String password) {
-        Member member = memberService.findByEmailAndPassword(email, password);
-        return JwtProvider.createToken(member, secretKey);
+        MemberRequest.Login request = new MemberRequest.Login(email, password);
+        System.out.println(request.getEmail() + " , " + request.getPassword());
+        String token = memberService.loginMember(request);
+        return token;
     }
 }

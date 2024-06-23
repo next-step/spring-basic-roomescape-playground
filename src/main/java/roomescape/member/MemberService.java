@@ -7,14 +7,12 @@ import roomescape.api.JwtProvider;
 
 @Service
 public class MemberService {
-
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secret;
-
     private MemberDao memberDao;
+    private JwtProvider jwtProvider;
 
-    public MemberService(MemberDao memberDao) {
+    public MemberService(MemberDao memberDao, JwtProvider jwtProvider) {
         this.memberDao = memberDao;
+        this.jwtProvider = jwtProvider;
     }
 
     public MemberResponse.Create createMember(MemberRequest.Create memberRequest) {
@@ -27,7 +25,7 @@ public class MemberService {
         if(member == null){
             return null;
         }
-        return JwtProvider.createToken(member, secret);
+        return jwtProvider.createToken(member);
     }
 
     public MemberResponse.Check checkMember(String token) {
