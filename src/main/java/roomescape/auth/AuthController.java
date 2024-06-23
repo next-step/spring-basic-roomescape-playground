@@ -1,13 +1,9 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,9 +18,12 @@ public class AuthController {
     public static final String TOKEN_NAME = "token";
 
     private final MemberService memberService;
+    private final JwtTokenManager jwtTokenManager;
 
-    public AuthController(final MemberService memberService) {
+    public AuthController(final MemberService memberService,
+                          final JwtTokenManager jwtTokenManager) {
         this.memberService = memberService;
+        this.jwtTokenManager = jwtTokenManager;
     }
 
     @PostMapping("/login")
@@ -46,28 +45,22 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity loginCheck(HttpServletRequest request) {
         final Cookie[] cookies = request.getCookies();
+        final String token = getTokenFromCookie(cookies, TOKEN_NAME);
+        final String memberName = jwtTokenManager.getValueFromJwtToken(token, "name");
+        return ResponseEntity.ok().body(new MemberLoginCheckResponse(memberName));
+    }
 
+    private String getTokenFromCookie(final Cookie[] cookies, final String key) {
         // 쿠키에 있는 항목들 중 토큰 값 추출
         String token = null;
         for (final Cookie cookie : cookies) {
             final String name = cookie.getName();
-            if (name.equals(TOKEN_NAME)) {
+            if (name.equals(key)) {
                 token = cookie.getValue();
                 break;
             }
         }
-
-        // 해당 토큰에서 인증 정보 조회
-        final Claims claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(
-                        "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        // 토큰에 담긴 name을 추출
-        final String name = claims.get("name", String.class);
-        return ResponseEntity.ok().body(new MemberLoginCheckResponse(name));
+        return token;
     }
 
     @PostMapping("/logout")

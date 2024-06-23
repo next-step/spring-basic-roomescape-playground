@@ -10,8 +10,8 @@
   - 따라서 토큰을 복호화하여 Payload에 담긴 `name` 값을 가져올 수 있음.
     
 [x] 패키지 리팩토링 - `dto` 패키지 분리
-[ ] 토큰 생성하는 객체 분리
-[ ] `Closed` 된 리뷰 참고하기(https://github.com/next-step/spring-roomescape-auth/pulls?q=is%3Apr+is%3Aclosed+sort%3Acomments-desc)
+[x] 토큰 생성하는 객체 분리
+[x] `Closed` 된 리뷰 참고하기(https://github.com/next-step/spring-roomescape-auth/pulls?q=is%3Apr+is%3Aclosed+sort%3Acomments-desc)
 
 ## 2단계 - 로그인 리팩터링
 [ ] 쿠키를 통해 회원을 조회하는 기능 리팩터링
