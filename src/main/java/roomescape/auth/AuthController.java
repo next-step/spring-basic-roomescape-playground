@@ -15,8 +15,6 @@ import roomescape.member.dto.MemberLoginRequest;
 @RestController
 public class AuthController {
 
-    public static final String TOKEN_NAME = "token";
-
     private final MemberService memberService;
     private final JwtTokenManager jwtTokenManager;
 
@@ -31,7 +29,7 @@ public class AuthController {
                                 HttpServletResponse response) {
         final String token = memberService.findMember(request); // 요청받은 email과 비밀번호로 사용자 조회 후, 토큰 발급
 
-        Cookie cookie = new Cookie(TOKEN_NAME, token); // 해당 토큰을 담은 쿠키 생성
+        Cookie cookie = new Cookie(AuthConfig.TOKEN.getKey(), token); // 해당 토큰을 담은 쿠키 생성
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -44,14 +42,14 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity loginCheck(HttpServletRequest request) {
-        final String token = CookieUtil.getTokenFromCookie(request, TOKEN_NAME);
+        final String token = CookieUtil.getTokenFromCookie(request, AuthConfig.TOKEN.getKey());
         final String memberName = jwtTokenManager.getValueFromJwtToken(token, "name");
         return ResponseEntity.ok().body(new MemberLoginCheckResponse(memberName));
     }
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(TOKEN_NAME, "");
+        Cookie cookie = new Cookie(AuthConfig.TOKEN.getKey(), "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
