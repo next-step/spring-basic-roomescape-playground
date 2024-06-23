@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.api.JwtDecoder;
 import roomescape.api.JwtProvider;
