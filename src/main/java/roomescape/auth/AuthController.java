@@ -44,23 +44,9 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity loginCheck(HttpServletRequest request) {
-        final Cookie[] cookies = request.getCookies();
-        final String token = getTokenFromCookie(cookies, TOKEN_NAME);
+        final String token = CookieUtil.getTokenFromCookie(request, TOKEN_NAME);
         final String memberName = jwtTokenManager.getValueFromJwtToken(token, "name");
         return ResponseEntity.ok().body(new MemberLoginCheckResponse(memberName));
-    }
-
-    private String getTokenFromCookie(final Cookie[] cookies, final String key) {
-        // 쿠키에 있는 항목들 중 토큰 값 추출
-        String token = null;
-        for (final Cookie cookie : cookies) {
-            final String name = cookie.getName();
-            if (name.equals(key)) {
-                token = cookie.getValue();
-                break;
-            }
-        }
-        return token;
     }
 
     @PostMapping("/logout")
