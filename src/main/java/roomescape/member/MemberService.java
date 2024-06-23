@@ -21,7 +21,7 @@ public class MemberService {
     public MemberAuthContext loginByEmailAndPassword(MemberLoginRequest request) {
         try {
             Member member = memberDao.findByEmailAndPassword(request.email(), request.password());
-            return new MemberAuthContext(member.getName(), member.getEmail());
+            return new MemberAuthContext(member.getName(), member.getRole());
         } catch (DataAccessException exception) {
             throw new IllegalArgumentException("로그인 정보가 불일치 합니다.");
         }
