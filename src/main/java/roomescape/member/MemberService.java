@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.api.JwtDecoder;
 import roomescape.api.JwtProvider;
+import roomescape.exception.NotFoundException;
 
 @Service
 public class MemberService {
@@ -23,7 +24,7 @@ public class MemberService {
     public String loginMember(MemberRequest.Login request) {
         Member member = memberDao.findByEmailAndPassword(request.getEmail(), request.getPassword());
         if(member == null){
-            return null;
+            throw new NotFoundException("유저를 찾을 수 없습니다.");
         }
         return jwtProvider.createToken(member);
     }
@@ -32,7 +33,7 @@ public class MemberService {
         Long memberId = JwtDecoder.decodeJwtToken(token);
         Member member =  memberDao.findById(memberId);
         if(member == null) {
-            return null;
+            throw new NotFoundException("유저를 찾을 수 없습니다.");
         }
         return MemberResponse.Check.from(member);
     }
@@ -44,7 +45,7 @@ public class MemberService {
     public Member findByEmailAndPassword(String email, String password) {
         Member member = memberDao.findByEmailAndPassword(email, password);
         if(member == null ){
-            return null;
+            throw new NotFoundException("유저를 찾을 수 없습니다.");
         }
         return member;
     }

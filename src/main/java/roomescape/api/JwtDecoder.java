@@ -2,7 +2,6 @@ package roomescape.api;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
 
 public class JwtDecoder {
     public static Long decodeJwtToken(String token) {
