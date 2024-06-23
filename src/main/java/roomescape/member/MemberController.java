@@ -3,12 +3,15 @@ package roomescape.member;
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import roomescape.jwt.JwtUtil;
 
 @RestController
 public class MemberController {
@@ -31,6 +34,13 @@ public class MemberController {
 		cookie.setHttpOnly(true);
 		cookie.setPath("/");
 		response.addCookie(cookie);
+	}
+
+	@GetMapping("/login/check")
+	public MemberCheckResponse checkLogin(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		String token = JwtUtil.extractTokenFromCookie(cookies);
+		return memberService.checkMember(token);
 	}
 
 	@PostMapping("/logout")
