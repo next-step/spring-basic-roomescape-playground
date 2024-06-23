@@ -14,9 +14,10 @@
 [x] `Closed` 된 리뷰 참고하기(https://github.com/next-step/spring-roomescape-auth/pulls?q=is%3Apr+is%3Aclosed+sort%3Acomments-desc)
 
 ## 2단계 - 로그인 리팩터링
-[ ] 쿠키를 통해 회원을 조회하는 기능 리팩터링
+[x] 쿠키를 통해 회원을 조회하는 기능 리팩터링
 - `ArgumentResolver`를 통해 컨트롤러에서 인증정보를 조회하는 로직을 분리.
-- 
+- 구현한 `ArgumentResolver`를 활용하여 `/reservation API` 리팩토링 후 테스트
+
 
 
 
