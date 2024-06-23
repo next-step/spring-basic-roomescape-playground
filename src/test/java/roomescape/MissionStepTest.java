@@ -19,11 +19,11 @@ import roomescape.reservation.ReservationResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
-	@Test
-	void 일단계() {
+	String createToken(String email, String password) {
 		Map<String, String> params = new HashMap<>();
-		params.put("email", "admin@email.com");
-		params.put("password", "password");
+
+		params.put("email", email);
+		params.put("password", password);
 
 		ExtractableResponse<Response> response = RestAssured.given().log().all()
 			.contentType(ContentType.JSON)
@@ -33,7 +33,12 @@ public class MissionStepTest {
 			.statusCode(200)
 			.extract();
 
-		String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+		return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+	}
+
+	@Test
+	void 일단계() {
+		String token = createToken("admin@email.com", "password");
 		assertThat(token).isNotBlank();
 
 		ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
@@ -50,6 +55,7 @@ public class MissionStepTest {
 	@Test
 	void 이단계() {
 		String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+
 		Map<String, String> params = new HashMap<>();
 		params.put("date", "2024-03-01");
 		params.put("time", "1");
