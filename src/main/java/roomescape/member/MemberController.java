@@ -25,6 +25,8 @@ public class MemberController {
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
 
+    @PostMapping("/login"){}
+
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", "");
