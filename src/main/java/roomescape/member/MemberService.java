@@ -42,4 +42,12 @@ public class MemberService {
     public Member findById(Long id) {
         return memberDao.findById(id);
     }
+
+    public Member findByEmailAndPassword(String email, String password) {
+        Member member = memberDao.findByEmailAndPassword(email, password);
+        if(member == null ){
+            return null;
+        }
+        return member;
+    }
 }

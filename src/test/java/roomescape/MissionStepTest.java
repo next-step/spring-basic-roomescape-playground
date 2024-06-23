@@ -5,11 +5,16 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.api.JwtDecoder;
 import roomescape.api.JwtProvider;
 import roomescape.member.Member;
+import roomescape.member.MemberDao;
+import roomescape.member.MemberService;
 import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
@@ -24,10 +29,8 @@ public class MissionStepTest {
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
-    private String createToken(String email, String password) {
-        Member member = new Member(1L, "어드민", email, password, "ADMIN");
-        return JwtProvider.createToken(member, secretKey);
-    }
+    @Autowired
+    private MemberService memberService;
 
     @Test
     void 일단계() {
@@ -89,5 +92,29 @@ public class MissionStepTest {
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    private String createToken(String email, String password) {
+        Member member = memberService.findByEmailAndPassword(email, password);
+        return JwtProvider.createToken(member, secretKey);
     }
 }
