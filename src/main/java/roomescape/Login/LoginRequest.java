@@ -1,6 +1,6 @@
-package roomescape.member;
+package roomescape.Login;
 
-public record MemberLoginRequest(
+public record LoginRequest(
         String email,
         String password
 ) {

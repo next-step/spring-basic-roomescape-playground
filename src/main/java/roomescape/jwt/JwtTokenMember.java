@@ -1,4 +1,4 @@
-package roomescape.Login;
+package roomescape.jwt;
 
 public record JwtTokenMember(
         String name,
