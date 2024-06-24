@@ -16,8 +16,8 @@ public class JwtTokenManager {
     public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .claim(AuthConfig.NAME.getKey(), member.getName())
+                .claim(AuthConfig.ROLE.getKey(), member.getRole())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }

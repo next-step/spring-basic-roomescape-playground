@@ -2,7 +2,10 @@ package roomescape.auth;
 
 public enum AuthConfig {
 
-    TOKEN("token");
+    TOKEN("token"),
+    ROLE("role"),
+    NAME("name"),
+    ADMIN("admin");
 
     private String key;
 

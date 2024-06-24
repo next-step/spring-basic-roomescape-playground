@@ -21,9 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
-    @Autowired
-    private JwtTokenManager jwtTokenManager;
-
     @Test
     void 일단계() {
         Map<String, String> params = new HashMap<>();
@@ -54,9 +51,7 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        String token = jwtTokenManager.createToken(
-                new Member(1L, "어드민", "admin@mail.com", "ADMIN")
-        );  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+        String token = createToken("admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -88,5 +83,42 @@ public class MissionStepTest {
         // 이름O, 토큰O
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    @Test
+    void 삼단계() {
+        // 해당 ID와 비밀번호로 조회한 멤버에 담긴 권한은 "admin"이 아니므로 "/admin" 요청 불가
+        String brownToken = createToken("brown@email.com", "password");
+        
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        // 해당 ID와 비밀번호로 조회한 멤버에 담긴 권한은 "admin"이므로 "/admin" 요청 가능
+        String adminToken = createToken("admin@email.com", "password");
+        
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    private String createToken(String email, String password) {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+
+        return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
     }
 }
