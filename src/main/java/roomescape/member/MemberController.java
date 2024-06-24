@@ -37,10 +37,12 @@ public class MemberController {
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response){
         MemberResponse member = memberService.findMember(memberRequest.getEmail(),memberRequest.getPassword()); //멤버조회
         String token = memberService.createToken(member);
+
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -49,14 +51,17 @@ public class MemberController {
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token=memberService.extractTokenFromCookie(cookies);
+
         Long memberId = Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
         MemberResponse member = memberService.findMemberById(memberId);
+
         return ResponseEntity.ok(member);
     }
+
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", "");

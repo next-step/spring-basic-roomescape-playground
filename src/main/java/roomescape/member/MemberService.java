@@ -22,12 +22,12 @@ public class MemberService {
 
 
     public MemberResponse findMember(String email, String password){
-        Member member=memberDao.findByEmailAndPassword(email,password);
+        Member member = memberDao.findByEmailAndPassword(email,password);
         return new MemberResponse(member.getId(),member.getName(),member.getEmail());
     }
 
     public MemberResponse findMemberById(Long memberId){
-        Member member=memberDao.findById(memberId);
+        Member member = memberDao.findById(memberId);
         return new MemberResponse(member.getId(),member.getName(),member.getEmail());
     }
 

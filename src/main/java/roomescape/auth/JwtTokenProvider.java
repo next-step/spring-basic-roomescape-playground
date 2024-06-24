@@ -17,6 +17,7 @@ public class JwtTokenProvider {
                 .claim("email", member.getEmail())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
+
         return accessToken;
     }
 }
