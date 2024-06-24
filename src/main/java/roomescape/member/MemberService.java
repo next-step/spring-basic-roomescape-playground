@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -35,28 +36,32 @@ public class MemberService {
         response.addCookie(cookie);
     }
 
-    public String getNameFromToken(Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
-        if (token.isEmpty()) {
-            throw new RuntimeException("Token not found");
-        }
-
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
-
-        Member member = memberDao.findById(memberId);
-        return member.getName();
+    public Member findById(Long id) {
+        return memberDao.findById(id);
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
+    public String getNameFromToken(Cookie[] cookies) {
+        String token = extractTokenFromCookies(cookies);
+        if (token != null) {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.get("name", String.class);
+        }
+        return null;
+    }
+
+    private String extractTokenFromCookies(Cookie[] cookies) {
+        if (cookies == null) {
+            return null;
+        }
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
+            if ("token".equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }
-        return "";
+        return null;
     }
 }
