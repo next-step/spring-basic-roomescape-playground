@@ -19,3 +19,7 @@
 - 예약 생성 시 ReservationReqeust의 name이 없는 경우 Cookie에 담긴 정보를 활용하도록 리팩터링 합니다.
   - ReservationReqeust에 name값이 있으면 name으로 Member를 찾고
   - 없으며 로그인 정보를 활용해서 Member를 찾도록 수정합니다.
+
+### 3단계 - 관리자 기능
+- 어드민 페이지 진입은 admin권한이 있는 사람만 할 수 있도록 제한하세요.
+- HandlerInterceptor를 활용하여 권한이 없는 경우 401코드를 응답하세요.

@@ -67,6 +67,7 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
+//        String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
         TokenRequest tokenRequest = new TokenRequest("admin@email.com", "password");
         String token = authService.createToken(tokenRequest).getAccessToken();
 
@@ -98,5 +99,28 @@ public class MissionStepTest {
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    @Test
+    void 삼단계() {
+        //        String brownToken = createToken("brown@email.com", "password");
+        TokenRequest brownTokenRequest = new TokenRequest("brown@email.com", "password");
+        String brownToken = authService.createToken(brownTokenRequest).getAccessToken();
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        //        String adminToken = createToken("admin@email.com", "password");
+        TokenRequest adminTokenRequest = new TokenRequest("admin@email.com", "password");
+        String adminToken = authService.createToken(adminTokenRequest).getAccessToken();
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 }
