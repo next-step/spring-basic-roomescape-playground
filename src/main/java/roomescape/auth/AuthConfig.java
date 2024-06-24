@@ -7,13 +7,13 @@ public enum AuthConfig {
     NAME("name"),
     ADMIN("admin");
 
-    private String key;
+    private String value;
 
-    AuthConfig(final String key) {
-        this.key = key;
+    AuthConfig(final String value) {
+        this.value = value;
     }
 
-    public String getKey() {
-        return key;
+    public String getValue() {
+        return value;
     }
 }

@@ -16,13 +16,13 @@ public class JwtTokenManager {
     public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim(AuthConfig.NAME.getKey(), member.getName())
-                .claim(AuthConfig.ROLE.getKey(), member.getRole())
+                .claim(AuthConfig.NAME.getValue(), member.getName())
+                .claim(AuthConfig.ROLE.getValue(), member.getRole())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
-    public String getValueFromJwtToken(final String token, final String key) {
+    public String getValueFromJwtToken(final String token, final AuthConfig key) {
         // 해당 토큰에서 인증 정보 조회
         final Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(
@@ -31,7 +31,7 @@ public class JwtTokenManager {
                 .parseClaimsJws(token)
                 .getBody();
         // 토큰에 담긴 "key"를 추출
-        return claims.get(key, String.class);
+        return claims.get(key.getValue(), String.class);
     }
 
     public Long getTokenPrincipal(final String token) {

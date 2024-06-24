@@ -31,9 +31,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   final WebDataBinderFactory binderFactory)
             throws Exception {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        final String token = CookieUtil.getTokenFromCookie(request, AuthConfig.TOKEN.getKey());
-        final String parsedName = jwtTokenManager.getValueFromJwtToken(token, "name");
-        final String parsedRole = jwtTokenManager.getValueFromJwtToken(token, "role");
+        final String token = CookieUtil.getTokenFromCookie(request, AuthConfig.TOKEN);
+        final String parsedName = jwtTokenManager.getValueFromJwtToken(token, AuthConfig.NAME);
+        final String parsedRole = jwtTokenManager.getValueFromJwtToken(token, AuthConfig.ROLE);
         final Long parsedId = jwtTokenManager.getTokenPrincipal(token);
 
         return new LoginMember(parsedId, parsedName, parsedRole);

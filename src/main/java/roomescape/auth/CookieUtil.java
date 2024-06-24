@@ -5,12 +5,13 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class CookieUtil {
 
-    public static String getTokenFromCookie(final HttpServletRequest request, final String key) {
+    public static String getTokenFromCookie(final HttpServletRequest request,
+                                            final AuthConfig key) {
         final Cookie[] cookies = request.getCookies();
         String token = null;
         for (final Cookie cookie : cookies) {
             final String name = cookie.getName();
-            if (name.equals(key)) {
+            if (name.equals(key.getValue())) {
                 token = cookie.getValue();
                 break;
             }
