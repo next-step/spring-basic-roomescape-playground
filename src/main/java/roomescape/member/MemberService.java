@@ -30,4 +30,13 @@ public class MemberService {
         }
         return null;
     }
+
+    // New method to find member by name
+    public ViewMemberResponse findMemberByName(String name) {
+        Member member = memberDao.findByName(name);
+        if (member != null) {
+            return new ViewMemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        }
+        return null;
+    }
 }
