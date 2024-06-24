@@ -9,9 +9,9 @@ public class MemberService {
     private MemberDao memberDao;
     private TokenController tokenController;
 
-    public MemberService(MemberDao memberDao) {
+    public MemberService(MemberDao memberDao, TokenController tokenController) {
         this.memberDao = memberDao;
-        this.tokenController = new TokenController();
+        this.tokenController = tokenController;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {

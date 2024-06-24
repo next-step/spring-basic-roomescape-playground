@@ -11,8 +11,8 @@ import roomescape.member.TokenResponse;
 @Component
 public class TokenController {
 
-    //    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
 
     public String createToken(Member member) {
         return Jwts.builder()
@@ -29,7 +29,6 @@ public class TokenController {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        System.out.println("claims = " + claims);
         return new TokenResponse(claims.get("name", String.class), claims.get("role", String.class));
     }
 }
