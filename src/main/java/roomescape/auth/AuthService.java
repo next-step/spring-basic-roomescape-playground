@@ -1,21 +1,21 @@
-package roomescape.application;
+package roomescape.auth;
 
-import java.lang.module.FindException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
-import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.infrastructure.JwtTokenUtil;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
-import roomescape.member.MemberResponse;
 import roomescape.token.TokenRequest;
 import roomescape.token.TokenResponse;
 
 @Service
 public class AuthService {
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtTokenUtil jwtTokenUtil;
     private MemberDao memberDao;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AuthService(JwtTokenUtil jwtTokenUtil, MemberDao memberDao) {
+        this.jwtTokenUtil = jwtTokenUtil;
         this.memberDao = memberDao;
     }
 
@@ -29,14 +29,13 @@ public class AuthService {
         return member;
     }
 
-    public Member findMemberByToken(String token) {
-        Long memberId = jwtTokenProvider.getPayload(token);
-        return memberDao.findById(memberId);
+    public Long findMemberIdByToken(HttpServletRequest request) {
+        return jwtTokenUtil.getPayload(request);
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         Member member = checkInvalidLogin(tokenRequest.getEmail(), tokenRequest.getPassword());
-        String accessToken = jwtTokenProvider.createToken(member);
+        String accessToken = jwtTokenUtil.createToken(member);
         return new TokenResponse(accessToken);
     }
 }

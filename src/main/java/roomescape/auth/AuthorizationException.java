@@ -1,4 +1,4 @@
-package roomescape.application;
+package roomescape.auth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
