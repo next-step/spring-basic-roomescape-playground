@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class MemberDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -24,16 +24,17 @@ public class MemberDao {
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
+        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     public Member findByEmailAndPassword(String email, String password) {
         return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
+                "SELECT id, name, email, password, role FROM member WHERE email = ? AND password = ?",
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
+                        rs.getString("password"),
                         rs.getString("role")
                 ),
                 email, password
@@ -42,14 +43,29 @@ public class MemberDao {
 
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE name = ?",
+                "SELECT id, name, email, password, role FROM member WHERE name = ?",
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
+                        rs.getString("password"),
                         rs.getString("role")
                 ),
                 name
+        );
+    }
+
+    public Member findById(Long id) {
+        return jdbcTemplate.queryForObject(
+                "SELECT id, name, email, password, role FROM member WHERE id = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("role")
+                ),
+                id
         );
     }
 }
