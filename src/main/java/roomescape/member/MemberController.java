@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.infrastructure.TokenExtractor;
 
 import java.net.URI;
 
@@ -24,6 +25,27 @@ public class MemberController {
         MemberResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity login (@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        String token = memberService.login(loginRequest);
+
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("login/check")
+    public ResponseEntity checkLogin(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        String token = TokenExtractor.extractTokenFromCookie(cookies);
+        LoginResponse loginResponse= memberService.checkLogin(token);
+        return ResponseEntity.ok(loginResponse);
+    }
+
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
