@@ -42,6 +42,6 @@ public class MissionStepTest {
                 .statusCode(200)
                 .extract();
 
-//        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
+        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
 }

@@ -29,10 +29,9 @@ public class AuthService {
         return member;
     }
 
-    public void findMemberByToken(String token) {
+    public Member findMemberByToken(String token) {
         Long memberId = jwtTokenProvider.getPayload(token);
-        System.out.println("mmmmmmmmmmm test : " +memberId);
-//        return memberDao.findById(memberId);
+        return memberDao.findById(memberId);
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {

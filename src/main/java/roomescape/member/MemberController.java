@@ -37,7 +37,7 @@ public class MemberController {
         TokenRequest tokenRequest = request;
         TokenResponse tokenResponse = authService.createToken(tokenRequest);
 
-        Cookie cookie = new Cookie("token", "eyJhbGciOiJIUzI1NiJ9.ey...");
+        Cookie cookie = new Cookie("token", tokenResponse.getAccessToken());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -53,8 +53,10 @@ public class MemberController {
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
-        authService.findMemberByToken(token);
-        return ResponseEntity.ok().build();
+        Member member = authService.findMemberByToken(token);
+        MemberResponse response = new MemberResponse(member.getName());
+        return ResponseEntity.ok()
+                .body(response);
     }
 
     @PostMapping("/logout")
