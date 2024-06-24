@@ -9,8 +9,8 @@
   - JWT를 생성할 때, Payload의 덩어리 중 하나인 `Claim`에 `name`이라는 키를 갖는 값을 넣어두었음.
   - 따라서 토큰을 복호화하여 Payload에 담긴 `name` 값을 가져올 수 있음.
     
-[x] 패키지 리팩토링 - `dto` 패키지 분리
-[x] 토큰 생성하는 객체 분리
+[x] 패키지 리팩토링 - `dto` 패키지 분리  
+[x] 토큰 생성하는 객체 분리  
 [x] `Closed` 된 리뷰 참고하기(https://github.com/next-step/spring-basic-roomescape-playground/pull/9/files#diff-00b248eb7ee095af211541b6c6ae4b2cd3c82b99efcedbabed5a23d3c908d6e9)
 
 ## 2단계 - 로그인 리팩터링
