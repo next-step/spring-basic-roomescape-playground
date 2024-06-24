@@ -10,13 +10,14 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
-
     @Test
     void 일단계() {
         Map<String, String> params = new HashMap<>();
@@ -32,7 +33,16 @@ public class MissionStepTest {
                 .extract();
 
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
-
         assertThat(token).isNotBlank();
+
+        ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+
+        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
 }
