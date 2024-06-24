@@ -33,4 +33,8 @@ public class MemberService {
         }
         return new MemberCheckResponse(member.getName());
     }
+
+    public Member findByName(String name) {
+        return memberDao.findByName(name);
+    }
 }
