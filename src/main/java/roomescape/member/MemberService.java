@@ -1,5 +1,8 @@
 package roomescape.member;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities;
 import org.springframework.stereotype.Service;
 import roomescape.provider.TokenProvider;
@@ -25,5 +28,23 @@ public class MemberService {
         String accessToken = TokenProvider.createToken(member);
         return accessToken;
     }
+    String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
 
+        return "";
+    }
+
+    public MemberResponse findByToken(String token) {
+        Long memberId = Long.valueOf(Jwts.parserBuilder()
+            .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+            .build()
+            .parseClaimsJws(token)
+            .getBody().getSubject());
+        Member member = memberDao.findById(memberId);
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
 }
