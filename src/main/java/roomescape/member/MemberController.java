@@ -25,6 +25,19 @@ public class MemberController {
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
     @PostMapping("/login")
+    public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
+        MemberResponse member = memberService.findMemberByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
+        if (member == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        String token = memberService.createToken(member);
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+
+    }
 
 
     @PostMapping("/logout")
