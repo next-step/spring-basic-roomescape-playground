@@ -12,7 +12,6 @@ import java.util.List;
 
 @Repository
 public class ReservationDao {
-
     private final JdbcTemplate jdbcTemplate;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
@@ -27,7 +26,6 @@ public class ReservationDao {
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
                         "JOIN time ti ON r.time_id = ti.id",
-
                 (rs, rowNum) -> new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
@@ -82,7 +80,7 @@ public class ReservationDao {
                         "ti.id AS time_id, ti.time_value AS time_value " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
-                        "JOIN time ti ON r.time_id = ti.id" +
+                        "JOIN time ti ON r.time_id = ti.id " +
                         "WHERE r.date = ? AND r.theme_id = ?",
                 new Object[]{date, themeId},
                 (rs, rowNum) -> new Reservation(
