@@ -3,7 +3,6 @@ package roomescape.member;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
-import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities;
 import org.springframework.stereotype.Service;
 import roomescape.provider.TokenProvider;
 
@@ -20,15 +19,15 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public MemberResponse findMemberByEmailAndPassword(String email, String password) {
+    public Member findMemberByEmailAndPassword(String email, String password) {
         Member member = memberDao.findByEmailAndPassword(email, password);
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return member;
     }
-    public String createToken(MemberResponse member) {
+    public String createToken(Member member) {
         String accessToken = TokenProvider.createToken(member);
         return accessToken;
     }
-    String extractTokenFromCookie(Cookie[] cookies) {
+    public String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
@@ -38,13 +37,13 @@ public class MemberService {
         return "";
     }
 
-    public MemberResponse findByToken(String token) {
+    public Member findByToken(String token) {
         Long memberId = Long.valueOf(Jwts.parserBuilder()
             .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
             .build()
             .parseClaimsJws(token)
             .getBody().getSubject());
         Member member = memberDao.findById(memberId);
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return member;
     }
 }

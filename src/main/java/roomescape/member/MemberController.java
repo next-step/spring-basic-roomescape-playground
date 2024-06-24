@@ -28,7 +28,7 @@ public class MemberController {
     }
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
-        MemberResponse member = memberService.findMemberByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
+        Member member = memberService.findMemberByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
         if (member == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -47,8 +47,9 @@ public class MemberController {
             return ResponseEntity.badRequest().build();
         }
         String token = memberService.extractTokenFromCookie(cookies);
-        MemberResponse member = memberService.findByToken(token);
-        return ResponseEntity.ok(member);
+        Member member = memberService.findByToken(token);
+        MemberResponse memberResponse = new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return ResponseEntity.ok(memberResponse);
     }
 
 
