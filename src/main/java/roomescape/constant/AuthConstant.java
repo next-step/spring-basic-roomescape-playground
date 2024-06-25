@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.constant;
 
 public enum AuthConstant {
 
