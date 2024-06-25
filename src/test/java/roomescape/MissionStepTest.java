@@ -74,8 +74,8 @@ public class MissionStepTest {
 
     private String createToken(String mail, String password) {
         Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
+        params.put("email", mail);
+        params.put("password", password);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -86,5 +86,23 @@ public class MissionStepTest {
                 .extract();
 
         return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+    }
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 }

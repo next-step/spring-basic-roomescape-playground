@@ -28,20 +28,40 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public boolean supportsParameter(MethodParameter parameter) {
         boolean isLoginUserAnnotation = parameter.getParameterAnnotation(LoginUser.class) != null;
         boolean isUserClass = LoginMember.class.equals(parameter.getParameterType());
-        return isLoginUserAnnotation && isUserClass;    }
+        return isLoginUserAnnotation && isUserClass;
+    }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Cookie [] cookies = request.getCookies();
-        if(cookies != null ) {
-            for(Cookie cookie : cookies) {
-                if(cookie.getName().equals("token")) {
-                    String token = cookie.getValue();
-                    Claims claims = jwtProvider.getClaimsFromToken(token);
-                    ViewMemberResponse member = memberService.findMemberById(Long.parseLong(claims.getSubject()));
+        Cookie[] cookies = request.getCookies();
 
-                    return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("token")) {
+                    String token = cookie.getValue();
+                    System.out.println("==========");
+                    System.out.println("token == " + token);
+                    System.out.println("==========");
+
+                    Claims claims = jwtProvider.getClaimsFromToken(token);
+                    if (claims != null && claims.getSubject() != null) {
+                        System.out.println("claims == " + claims.getSubject());
+                        Long memberId = Long.parseLong(claims.getSubject());
+                        ViewMemberResponse member = memberService.findMemberById(memberId);
+
+                        if (member != null) {
+                            System.out.println("==========");
+                            System.out.println("member == " + member.getEmail());
+                            System.out.println("==========");
+
+                            return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+                        } else {
+                            throw new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다.");
+                        }
+                    } else {
+                        throw new IllegalArgumentException("토큰에서 유효한 클레임을 추출할 수 없습니다.");
+                    }
                 }
             }
         }
