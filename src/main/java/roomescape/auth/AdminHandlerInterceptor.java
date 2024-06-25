@@ -18,13 +18,13 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(final HttpServletRequest request,
                              final HttpServletResponse response,
                              final Object handler) throws Exception {
-        final String token = CookieUtil.getTokenFromCookie(request, AuthConfig.TOKEN);
+        final String token = CookieUtil.getTokenFromCookie(request, AuthConstant.TOKEN);
         if (token == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-        final String role = jwtTokenManager.getValueFromJwtToken(token, AuthConfig.ROLE);
-        if (!role.equalsIgnoreCase(AuthConfig.ADMIN.getValue())) {
+        final String role = jwtTokenManager.getValueFromJwtToken(token, AuthConstant.ROLE);
+        if (!role.equalsIgnoreCase(AuthConstant.ADMIN.getValue())) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }

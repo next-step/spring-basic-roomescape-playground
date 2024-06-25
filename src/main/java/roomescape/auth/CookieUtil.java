@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class CookieUtil {
 
     public static String getTokenFromCookie(final HttpServletRequest request,
-                                            final AuthConfig key) {
+                                            final AuthConstant key) {
         final Cookie[] cookies = request.getCookies();
         String token = null;
         for (final Cookie cookie : cookies) {

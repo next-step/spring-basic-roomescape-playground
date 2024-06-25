@@ -16,13 +16,13 @@ public class JwtTokenManager {
     public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim(AuthConfig.NAME.getValue(), member.getName())
-                .claim(AuthConfig.ROLE.getValue(), member.getRole())
+                .claim(AuthConstant.NAME.getValue(), member.getName())
+                .claim(AuthConstant.ROLE.getValue(), member.getRole())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
-    public String getValueFromJwtToken(final String token, final AuthConfig key) {
+    public String getValueFromJwtToken(final String token, final AuthConstant key) {
         // 해당 토큰에서 인증 정보 조회
         final Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(

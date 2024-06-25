@@ -1,6 +1,6 @@
 package roomescape.auth;
 
-public enum AuthConfig {
+public enum AuthConstant {
 
     TOKEN("token"),
     ROLE("role"),
@@ -9,7 +9,7 @@ public enum AuthConfig {
 
     private String value;
 
-    AuthConfig(final String value) {
+    AuthConstant(final String value) {
         this.value = value;
     }
 
