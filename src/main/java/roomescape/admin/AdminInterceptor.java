@@ -33,7 +33,6 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     private boolean isAdmin(String token) {
-        System.out.println("Debug 1: " + token);
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
@@ -41,7 +40,6 @@ public class AdminInterceptor implements HandlerInterceptor {
                     .parseClaimsJws(token)
                     .getBody();
             String role = claims.get("role", String.class);
-            System.out.println("role test" + role);
             return "ADMIN".equals(role);
         } catch (Exception e) {
             return false;
