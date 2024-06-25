@@ -34,18 +34,20 @@ public class MemberController {
     public ResponseEntity<Map<String, String>> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            return ResponseEntity.status(401).build(); // Unauthorized
+            return ResponseEntity.status(401).build();
         }
 
-        String name;
+        String name, role;
         try {
             name = memberService.getNameFromToken(cookies);
+            role = memberService.getRoleFromToken(cookies);
         } catch (Exception e) {
-            return ResponseEntity.status(401).build(); // Unauthorized
+            return ResponseEntity.status(401).build();
         }
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("name", name);
+        responseBody.put("role", role);
 
         return ResponseEntity.ok(responseBody);
     }

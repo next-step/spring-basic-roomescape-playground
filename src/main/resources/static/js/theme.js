@@ -33,7 +33,7 @@ function render(data) {
 }
 
 function addRow() {
-  if (isEditing) return;  // 이미 편집 중인 경우 추가하지 않음
+  if (isEditing) return;
 
   const tableBody = document.getElementById('table-body');
   const row = tableBody.insertRow();

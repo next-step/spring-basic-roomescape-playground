@@ -33,7 +33,7 @@ public class ReservationController {
             if (name != null) {
                 reservationRequest.setName(name);
             } else {
-                return ResponseEntity.badRequest().build(); // name이 없으면 400 응답
+                return ResponseEntity.badRequest().build();
             }
         }
 

@@ -7,6 +7,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+
 @Service
 public class MemberService {
     private final MemberDao memberDao;
@@ -52,6 +54,19 @@ public class MemberService {
         }
         return null;
     }
+    public String getRoleFromToken(Cookie[] cookies) {
+        String token = extractTokenFromCookies(cookies);
+        if (token != null) {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.get("role", String.class);
+        }
+        return null;
+    }
+
 
     private String extractTokenFromCookies(Cookie[] cookies) {
         if (cookies == null) {
