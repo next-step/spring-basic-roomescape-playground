@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,8 @@ public class JwtTokenUtil {
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
+
+    private final String INVALID_COOKIES = "쿠키 정보가 없습니다.";
 
     public String createToken(Member member) {
         Date now = new Date();
@@ -43,8 +46,9 @@ public class JwtTokenUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(secretKey)
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .build()
                     .parseClaimsJws(token);
 
             return !claims.getBody().getExpiration().before(new Date());
@@ -55,11 +59,13 @@ public class JwtTokenUtil {
 
     private String extractTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
+        if(cookies == null) {
+            throw new IllegalArgumentException(INVALID_COOKIES);
         }
-        return "";
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse("");
     }
 }

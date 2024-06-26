@@ -11,8 +11,10 @@ import roomescape.token.TokenResponse;
 
 @Service
 public class AuthService {
-    private JwtTokenUtil jwtTokenUtil;
-    private MemberDao memberDao;
+    private final String INVALID_MEMBER_MSG = "존재하지 않는 email 또는 password 입니다.";
+
+    private final JwtTokenUtil jwtTokenUtil;
+    private final MemberDao memberDao;
 
     public AuthService(JwtTokenUtil jwtTokenUtil, MemberDao memberDao) {
         this.jwtTokenUtil = jwtTokenUtil;
@@ -20,12 +22,11 @@ public class AuthService {
     }
 
     public Member checkInvalidLogin(String principal, String credentials) {
-        Member member = null;
-        try {
-        member = memberDao.findByEmailAndPassword(principal, credentials);
-        } catch(AuthorizationException e) {
-            e.printStackTrace();
+        Member member = memberDao.findByEmailAndPassword(principal, credentials);
+        if(member == null) {
+            throw new AuthorizationException(INVALID_MEMBER_MSG);
         }
+
         return member;
     }
 

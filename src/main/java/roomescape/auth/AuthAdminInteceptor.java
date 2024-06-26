@@ -10,8 +10,8 @@ import roomescape.member.MemberService;
 
 @Component
 public class AuthAdminInteceptor implements HandlerInterceptor {
-    private MemberService memberService;
-    private JwtTokenUtil jwtTokenUtil;
+    private final MemberService memberService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     public AuthAdminInteceptor(MemberService memberService, JwtTokenUtil jwtTokenUtil) {
         this.memberService = memberService;

@@ -16,8 +16,8 @@ import roomescape.token.TokenResponse;
 
 @RestController
 public class MemberController {
-    private MemberService memberService;
-    private AuthService authService;
+    private final MemberService memberService;
+    private final AuthService authService;
 
     public MemberController(MemberService memberService, AuthService authService) {
         this.memberService = memberService;

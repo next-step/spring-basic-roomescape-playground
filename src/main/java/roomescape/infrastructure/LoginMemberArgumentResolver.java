@@ -1,6 +1,7 @@
 package roomescape.infrastructure;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -13,13 +14,13 @@ import roomescape.member.MemberService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+    @Autowired
     private MemberService memberService;
+    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenUtil jwtTokenUtil) {
-        this.memberService = memberService;
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
+    private final String INVALID_MEMBERID = "회원 아이디를 찾을 수 없습니다.";
+    private final String INVALID_MEMBER = "유효하지 않은 회원 정보입니다.";
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -34,7 +35,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
 
         Long memberId = jwtTokenUtil.getPayload(httpServletRequest);
+        if(memberId == null) {
+            throw new IllegalArgumentException(INVALID_MEMBERID);
+        }
+
         Member member = memberService.findMemberById(memberId);
+        if(member == null) {
+            throw new IllegalArgumentException(INVALID_MEMBER);
+        }
 
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
