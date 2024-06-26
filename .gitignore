@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 
 ### application.properties 안보이게 만들기 ###
-!**/src/main/resources/application.properties
+application.properties
 
 ### STS ###
 .apt_generated
