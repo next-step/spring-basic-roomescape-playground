@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### application.properties 안보이게 만들기 ###
+!**/src/main/resources/application.properties
+
 ### STS ###
 .apt_generated
 .classpath
