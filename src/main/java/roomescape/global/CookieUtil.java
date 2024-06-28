@@ -2,6 +2,7 @@ package roomescape.global;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import roomescape.constant.AuthConstant;
 
 public class CookieUtil {
@@ -10,13 +11,10 @@ public class CookieUtil {
                                             final AuthConstant key) {
         final Cookie[] cookies = request.getCookies();
         String token = null;
-        for (final Cookie cookie : cookies) {
-            final String name = cookie.getName();
-            if (name.equals(key.getValue())) {
-                token = cookie.getValue();
-                break;
-            }
-        }
-        return token;
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals(key.getValue()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new IllegalArgumentException("로그인이 필요합니다."));
     }
 }
