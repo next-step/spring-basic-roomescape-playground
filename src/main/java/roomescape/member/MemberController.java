@@ -1,7 +1,5 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.instructure.JwtTokenProvider;
 
 import java.net.URI;
 
@@ -35,13 +33,12 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response){
-        MemberResponse member = memberService.findMember(memberRequest.getEmail(),memberRequest.getPassword()); //멤버조회
+        MemberResponse member = memberService.findMember(memberRequest.getEmail(), memberRequest.getPassword());
+        if (member == null) { //멤버 X
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         String token = memberService.createToken(member);
-
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        memberService.createCookie(response, token);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -50,16 +47,13 @@ public class MemberController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token=memberService.extractTokenFromCookie(cookies);
+        String token = memberService.extractTokenFromCookie(cookies);
 
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
+        Long memberId = memberService.extractMemberIdFromToken(token);
         MemberResponse member = memberService.findMemberById(memberId);
 
-        return ResponseEntity.ok(member);
+        MemberResponse memberResponse = new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return ResponseEntity.ok().body(memberResponse);
     }
 
     @PostMapping("/logout")
