@@ -12,10 +12,10 @@ import roomescape.member.MemberService;
 import roomescape.util.CookieUtil;
 
 @Component
-public class AdminPageInterceptor implements HandlerInterceptor {
+public class AdminInterceptor implements HandlerInterceptor {
     private MemberService memberService;
 
-    public AdminPageInterceptor(MemberService memberService) {
+    public AdminInterceptor(MemberService memberService) {
         this.memberService = memberService;
     }
 

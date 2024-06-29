@@ -3,19 +3,20 @@ package roomescape.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.AdminPageInterceptor;
+import roomescape.auth.AdminInterceptor;
 
 @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
-    private AdminPageInterceptor adminPageInterceptor;
+    private AdminInterceptor adminInterceptor;
 
-    public InterceptorConfig(AdminPageInterceptor adminPageInterceptor) {
-        this.adminPageInterceptor = adminPageInterceptor;
+
+    public InterceptorConfig(AdminInterceptor adminInterceptor) {
+        this.adminInterceptor = adminInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(adminPageInterceptor)
+        registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin");
     }
 }
