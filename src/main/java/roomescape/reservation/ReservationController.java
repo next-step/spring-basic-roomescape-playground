@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.LoginMember;
 
 import java.net.URI;
 import java.util.List;
@@ -26,7 +27,12 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginmember) {
+
+        if(loginmember != null && reservationRequest.getName()==null) { //멤버가 아닌경우 (참고)
+            reservationRequest.setName(loginmember.getName());
+        }
+
         if (reservationRequest.getName() == null
                 || reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
