@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
@@ -10,30 +11,38 @@ import roomescape.member.MemberResponse;
 public class AuthService {
     private MemberDao memberDao;
     private TokenProvider tokenProvider;
-    private AuthrizationExctractor tokenExtractor;
+    private Extractor extractor;
 
-    public AuthService(MemberDao memberDao, TokenProvider tokenProvider, AuthrizationExctractor tokenExtractor) {
+    public AuthService(MemberDao memberDao, TokenProvider tokenProvider, Extractor extractor) {
         this.memberDao = memberDao;
         this.tokenProvider = tokenProvider;
-        this.tokenExtractor = tokenExtractor;
+        this.extractor = extractor;
     }
 
-    public String createToken(LoginRequest request) {
-        Member member = memberDao.findByEmailAndPassword(request.email(), request.password());
-        return tokenProvider.createToken(member);
+    public String loginByEmailAndPassword(LoginRequest request) {
+        try {
+            Member member = memberDao.findByEmailAndPassword(request.email(), request.password());
+            return tokenProvider.createToken(member);
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("로그인 정보가 불일치 합니다.");
+        }
     }
 
-    public String extractToken(HttpServletRequest request) {
-        return tokenExtractor.extractToken(request);
-    }
+    public MemberResponse checkLogin(HttpServletRequest request) {
 
-    public Long extractIdByToken(String token) {
-        return tokenExtractor.extractIdByToken(token);
-    }
+        String token = extractToken(request);
+        Long memberId = extractId(token);
 
-    public MemberResponse findById(Long id) {
-        Member member = memberDao.findById(id);
+        Member member = memberDao.findById(memberId);
         return MemberResponse.from(member);
+    }
+
+    private Long extractId(String token) {
+        return extractor.extractId(token);
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        return extractor.extractToken(request);
     }
 
 }

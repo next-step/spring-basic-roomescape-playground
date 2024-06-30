@@ -21,7 +21,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> tokenLogin(@RequestBody LoginRequest request, HttpServletResponse response) {
 
-        String accessToken = authService.createToken(request);
+        String accessToken = authService.loginByEmailAndPassword(request);
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
@@ -34,10 +34,7 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> loginCheck(HttpServletRequest request) {
 
-        String token = authService.extractToken(request);
-        Long memberId = authService.extractIdByToken(token);
-
-        MemberResponse memberResponse = authService.findById(memberId);
+        MemberResponse memberResponse = authService.checkLogin(request);
 
         return ResponseEntity.ok().body(memberResponse);
     }

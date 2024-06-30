@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthrizationExctractor {
+public class Extractor {
 
     public String extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
@@ -20,7 +20,7 @@ public class AuthrizationExctractor {
         return "";
     }
 
-    public Long extractIdByToken(String token) {
+    public Long extractId(String token) {
         Long memberId = Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
                 .build()
