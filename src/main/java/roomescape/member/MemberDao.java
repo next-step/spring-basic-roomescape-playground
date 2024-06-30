@@ -40,6 +40,12 @@ public class MemberDao {
         );
     }
 
+    public boolean existByEmailAndPassword(String email, String password) {
+        final Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM member WHERE email = ? AND password = ?", Long.class, email, password);
+        return count != null && count > 0;
+    }
+
+
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
@@ -48,19 +54,8 @@ public class MemberDao {
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("role")
-                ), name
-        );
-    }
-
-    public Member findById(Long id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE id = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ), id
+                ),
+                name
         );
     }
 }
