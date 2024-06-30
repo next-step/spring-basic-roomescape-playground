@@ -9,9 +9,9 @@ import roomescape.member.MemberResponse;
 
 @Service
 public class AuthService {
-    private MemberDao memberDao;
-    private TokenProvider tokenProvider;
-    private Extractor extractor;
+    private final MemberDao memberDao;
+    private final TokenProvider tokenProvider;
+    private final Extractor extractor;
 
     public AuthService(MemberDao memberDao, TokenProvider tokenProvider, Extractor extractor) {
         this.memberDao = memberDao;
