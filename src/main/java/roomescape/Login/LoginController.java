@@ -23,7 +23,6 @@ public class LoginController {
         response.addCookie(cookie);
     }
 
-
     @GetMapping("/login/check")
     public MemberResponse loginCheck(
             @CookieValue("token") String token) {

@@ -26,6 +26,11 @@ public class AuthInterceptor implements HandlerInterceptor {
                 .findFirst()
                 .map(Cookie::getValue).orElseThrow(() -> new IllegalArgumentException("토큰이 없습니다."));
 
+        if (token.isEmpty()) {
+            response.setStatus(401);
+            return false;
+        }
+
         Member member = loginService.findByName(loginService.checkLogin(token).getName());
 
         if (member == null || !member.getRole().equals("ADMIN")) {

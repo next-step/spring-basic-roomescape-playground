@@ -1,5 +1,6 @@
 package roomescape.Login;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.jwt.JwtController;
 import roomescape.jwt.JwtTokenMember;
@@ -18,15 +19,22 @@ public class LoginService {
     }
 
     public String login(LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
-        return jwtController.createToken(member);
+        try {
+            Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
+            return jwtController.createToken(member);
+        } catch (DataAccessException e){
+            throw new IllegalArgumentException("로그인 정보가 일치하지 않습니다.");
+        }
     }
 
     public MemberResponse checkLogin(String token) {
         JwtTokenMember jwtTokenMember = jwtController.extractToken(token);
-        Member member = memberDao.findByName(jwtTokenMember.name());
-        System.out.println(member.getId()+member.getName());
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        try {
+            Member member = memberDao.findByName(jwtTokenMember.name());
+            return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        } catch (DataAccessException exception){
+            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
+        }
     }
 
     public Member findByName(String name) {
