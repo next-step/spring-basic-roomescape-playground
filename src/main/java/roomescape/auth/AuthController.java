@@ -8,20 +8,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.member.MemberResponse;
+import roomescape.member.LoginMember;
+import roomescape.member.MemberService;
 
 @Controller
 public class AuthController {
-    AuthService authService;
+    MemberService memberService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    public AuthController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> tokenLogin(@RequestBody LoginRequest request, HttpServletResponse response) {
 
-        String accessToken = authService.loginByEmailAndPassword(request);
+        String accessToken = memberService.loginByEmailAndPassword(request);
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
@@ -32,10 +33,10 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> loginCheck(HttpServletRequest request) {
+    public ResponseEntity<LoginMember> loginCheck(HttpServletRequest request) {
 
-        MemberResponse memberResponse = authService.checkLogin(request);
+        LoginMember loginMember = memberService.checkLogin(request);
 
-        return ResponseEntity.ok().body(memberResponse);
+        return ResponseEntity.ok().body(loginMember);
     }
 }
