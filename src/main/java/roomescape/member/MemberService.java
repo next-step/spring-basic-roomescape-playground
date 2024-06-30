@@ -51,6 +51,16 @@ public class MemberService {
         throw new AuthorizationException();
     }
 
+    public Member extractMemberFromToken(String token) {
+        Long memberId = Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().getSubject());
+
+        return memberDao.findById(memberId);
+    }
+
     public Cookie createCookie(String accessToken) {
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
