@@ -24,12 +24,15 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity create(@Authentication LoginMember loginMember ,@RequestBody ReservationRequest reservationRequest ) {
-        reservationRequest = new ReservationRequest(
-                loginMember.getName(),
-                reservationRequest.date(),
-                reservationRequest.theme(),
-                reservationRequest.time()
-        );
+
+        if (reservationRequest.name() == null) {
+            reservationRequest = new ReservationRequest(
+                    loginMember.getName(),
+                    reservationRequest.date(),
+                    reservationRequest.theme(),
+                    reservationRequest.time()
+            );
+        }
 
         if (reservationRequest.name() == null
                 || reservationRequest.date() == null

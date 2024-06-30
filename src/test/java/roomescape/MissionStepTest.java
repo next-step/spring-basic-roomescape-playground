@@ -69,19 +69,19 @@ public class MissionStepTest {
 
         assertThat(response.statusCode()).isEqualTo(201);
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
-//
-//        params.put("name", "브라운");
-//
-//        ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
-//                .body(params)
-//                .cookie("token", token)
-//                .contentType(ContentType.JSON)
-//                .post("/reservations")
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(adminResponse.statusCode()).isEqualTo(201);
-//        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+
+        params.put("name", "브라운");
+
+        ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        assertThat(adminResponse.statusCode()).isEqualTo(201);
+        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
 }
