@@ -44,18 +44,17 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("로그인이 필요합니다."));
 
         String token = extractToken(request);
-
         Long memberId = extractId(token);
 
         Member member = memberDao.findById(memberId);
         return LoginMember.from(member);
     }
 
-    private Long extractId(String token) {
-        return extractor.extractId(token);
-    }
-
     private String extractToken(HttpServletRequest request) {
         return extractor.extractToken(request);
+    }
+
+    private Long extractId(String token) {
+        return extractor.extractId(token);
     }
 }
