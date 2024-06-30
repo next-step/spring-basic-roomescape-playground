@@ -18,4 +18,6 @@ public class MyReservationResponse {
         this.status = status;
     }
 
+    public MyReservationResponse() {
+    }
 }
