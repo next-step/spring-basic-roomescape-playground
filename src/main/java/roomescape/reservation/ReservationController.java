@@ -3,6 +3,7 @@ package roomescape.reservation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.Login.LoginMember;
 import roomescape.jwt.JwtController;
 import roomescape.jwt.JwtTokenMember;
 
@@ -26,16 +27,15 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, @CookieValue("token") String token) {
+    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, @CookieValue("token") String token, LoginMember member) {
         if (reservationRequest.date() == null
                 || reservationRequest.theme() == null
                 || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
         if (reservationRequest.name() == null) {
-            JwtTokenMember jwtTokenMember = jwtController.extractToken(token);
             reservationRequest = new ReservationRequest(
-                    jwtTokenMember.name(),
+                    member.name(),
                     reservationRequest.date(),
                     reservationRequest.theme(),
                     reservationRequest.time()
