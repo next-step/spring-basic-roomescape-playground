@@ -8,10 +8,14 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.dto.WaitingWithRank;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -19,12 +23,14 @@ public class ReservationService {
     private TimeRepository timeRepository;
     private ThemeRepository themeRepository;
     private MemberRepository memberRepository;
+    private WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
@@ -59,7 +65,8 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findAllByMember(LoginMember loginMember) {
-        return reservationRepository.findByMemberId(loginMember.getId())
+        List<MyReservationResponse> responseList =
+                reservationRepository.findByMemberId(loginMember.getId())
                 .stream()
                 .map(reservation -> new MyReservationResponse(
                         reservation.getId(),
@@ -68,5 +75,26 @@ public class ReservationService {
                         reservation.getDate(),
                         "예약"))
                 .toList();
+
+        List<MyReservationResponse> waitingList =
+                waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId()).stream()
+                        .map(this::covertWaitingWithRankToMyReservationResponse)
+                        .toList();
+
+        return Stream.concat(responseList.stream(), waitingList.stream())
+                .sorted(Comparator.comparing(MyReservationResponse::getDate))
+                .toList();
+    }
+
+    private MyReservationResponse covertWaitingWithRankToMyReservationResponse(
+            WaitingWithRank waitingWithRank
+    ) {
+        return new MyReservationResponse(
+                waitingWithRank.getWaiting().getId(),
+                waitingWithRank.getWaiting().getTheme().getName(),
+                waitingWithRank.getWaiting().getTime().getValue(),
+                waitingWithRank.getWaiting().getDate(),
+                (waitingWithRank.getRank() + 1) + "번째 예약대기"
+        );
     }
 }

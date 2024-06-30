@@ -37,7 +37,8 @@ public class ReservationController {
 
         if(reservationRequest.getName() == null){
             reservationRequest.setName(member.getName());
-        } else if(reservationRequest.getMember() == null) {
+        }
+        if(reservationRequest.getMember() == null) {
             reservationRequest.setMember(member.getId());
         }
 

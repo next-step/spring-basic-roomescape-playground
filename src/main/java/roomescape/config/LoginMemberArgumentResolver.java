@@ -23,10 +23,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        /*
-        커스텀 어노테이션 사용 시 사용할 수 있는 코드
-        boolean hasLoginMemberAnnotation = parameter.hasParameterAnnotation(LoginMember.class);
-         */
         return Member.class.isAssignableFrom(parameter.getParameterType());
     }
 
