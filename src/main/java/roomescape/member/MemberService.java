@@ -8,19 +8,19 @@ import roomescape.provider.TokenProvider;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member findMemberByEmailAndPassword(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password);
         return member;
     }
     public String createToken(Member member) {
@@ -43,7 +43,7 @@ public class MemberService {
             .build()
             .parseClaimsJws(token)
             .getBody().getSubject());
-        Member member = memberDao.findById(memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow();
         return member;
     }
 }
