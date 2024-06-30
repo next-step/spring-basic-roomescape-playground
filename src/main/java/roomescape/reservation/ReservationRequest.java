@@ -5,6 +5,11 @@ public class ReservationRequest {
     private String date;
     private Long theme;
     private Long time;
+    private Long member;
+
+    public Long getMember() {
+        return member;
+    }
 
     public String getName() {
         return name;

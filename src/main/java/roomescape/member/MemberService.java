@@ -10,38 +10,45 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.instructure.JwtTokenProvider;
 
+import java.util.Optional;
+
 @Service
 public class MemberService {
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+        this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     @Value("${roomescape.auth.jwt.secret}")
     String secretKey;
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-
-    public MemberResponse findMember(String email, String password){
-        Member member = memberDao.findByEmailAndPassword(email,password);
-        return new MemberResponse(member.getId(),member.getName(),member.getEmail());
+    public MemberResponse findMember(String email, String password) {
+        Member member = memberRepository.findByEmailAndPassword(email, password);
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public MemberResponse findMemberById(Long memberId){
-        Member member = memberDao.findById(memberId);
-        return new MemberResponse(member.getId(),member.getName(),member.getEmail());
+    public MemberResponse findMemberById(Long memberId) {
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Member member = optionalMember.orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public String createToken(MemberResponse memberResponse){
+    public String createToken(MemberResponse memberResponse) {
         String accessToken = jwtTokenProvider.createToken(memberResponse);
         return accessToken;
     }
 
-    public void createCookie(HttpServletResponse response, String token){
+    public void createCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -51,12 +58,13 @@ public class MemberService {
     public Member extractMemberFromToken(String token) {
         Long memberId = extractMemberIdFromToken(token);
         if (memberId != null) {
-            return memberDao.findById(memberId);
+            Optional<Member> optionalMember = memberRepository.findById(memberId);
+            return optionalMember.orElse(null);
         }
         return null;
     }
 
-    public Long extractMemberIdFromToken(String token){
+    public Long extractMemberIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
@@ -71,8 +79,6 @@ public class MemberService {
                 return cookie.getValue();
             }
         }
-
         return "";
     }
-
 }
