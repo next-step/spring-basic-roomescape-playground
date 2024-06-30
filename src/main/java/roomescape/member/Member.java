@@ -1,11 +1,22 @@
 package roomescape.member;
 
+import jakarta.persistence.*;
+
+@Table(name = "\"member\"")
+@Entity
 public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String email;
     private String password;
     private String role;
+
+    public Member() {
+    }
 
     public Member(Long id, String name, String email, String role) {
         this.id = id;
