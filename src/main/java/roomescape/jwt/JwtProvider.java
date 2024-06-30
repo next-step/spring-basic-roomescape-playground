@@ -1,5 +1,6 @@
 package roomescape.jwt;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
@@ -9,7 +10,8 @@ import roomescape.member.Member;
 @Component
 public class JwtProvider {
 
-	private String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+	@Value("${roomescape.auth.jwt.secret}")
+	private String secretKey;
 
 	public String createToken(Member member) {
 		return Jwts.builder()
@@ -20,3 +22,5 @@ public class JwtProvider {
 			.compact();
 	}
 }
+
+

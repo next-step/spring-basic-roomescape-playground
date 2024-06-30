@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import roomescape.jwt.JwtProvider;
@@ -10,9 +11,10 @@ public class MemberService {
 	private MemberDao memberDao;
 	private JwtProvider jwtProvider;
 
-	public MemberService(MemberDao memberDao) {
+	@Autowired
+	public MemberService(MemberDao memberDao, JwtProvider jwtProvider) {
 		this.memberDao = memberDao;
-		this.jwtProvider = new JwtProvider();
+		this.jwtProvider = jwtProvider;
 	}
 
 	public String login(MemberLoginRequest request) {
