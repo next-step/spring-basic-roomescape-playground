@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import jakarta.persistence.*;
 import roomescape.member.Member;
+import roomescape.member.MemberResponse;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -22,11 +23,14 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    @ManyToOne // ManyToOne 관계 설정
+    @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
     public Reservation() {
+    }
+
+    public Reservation(String name, String date, Time time, Theme theme, MemberResponse member) {
     }
 
     public Reservation(String name, String date, Time time, Theme theme, Member member) {
@@ -58,10 +62,11 @@ public class Reservation {
     }
 
     public Member getMember() {
-        return member; // Member 객체의 getter 메서드 추가
+        return member;
     }
 
     public void setMember(Member member) {
-        this.member = member; // Member 객체의 setter 메서드 추가
+        this.member = member;
     }
+
 }

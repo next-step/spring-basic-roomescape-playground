@@ -30,6 +30,6 @@ public class WebMvcConfigure implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/admin/**"); // Apply to all paths under /admin
+                .addPathPatterns("/admin/**"); //admin에 적용
     }
 }

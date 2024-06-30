@@ -23,7 +23,6 @@ public class AdminInterceptor implements HandlerInterceptor {
                         response.setStatus(401);
                         return false;
                 }
-
                 return true;
         }
 }

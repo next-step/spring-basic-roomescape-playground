@@ -30,7 +30,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         if (member == null) {
             throw new RuntimeException("인증되지 않은 사용자입니다.");
         }
-
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 }

@@ -1,14 +1,15 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.instructure.JwtTokenProvider;
+import roomescape.member.*;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -16,15 +17,14 @@ public class ReservationService {
     private ThemeRepository themeRepository;
     private TimeRepository timeRepository;
     private MemberRepository memberRepository;
+    private MemberService memberService;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ThemeRepository themeRepository,
-                              TimeRepository timeRepository,
-                              MemberRepository memberRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository, TimeRepository timeRepository, MemberRepository memberRepository, MemberService memberService) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
         this.memberRepository = memberRepository;
+        this.memberService = memberService;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
@@ -59,6 +59,7 @@ public class ReservationService {
         );
     }
 
+
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
     }
@@ -67,5 +68,15 @@ public class ReservationService {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
+    }
+
+    public List<MyReservationResponse> findReservation(LoginMember loginMember) {
+        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.getId()).stream()
+                .map(it -> new MyReservationResponse(it.getId(),
+                        it.getTheme().getName(),
+                        it.getDate(),
+                        it.getTime().getValue(), "예약"))
+                .collect(Collectors.toList());
+        return reservations;
     }
 }
