@@ -1,33 +1,42 @@
 package roomescape.theme;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Theme {
-    private Long id;
-    private String name;
-    private String description;
 
-    public Theme() {
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String name;
+	private String description;
 
-    public Theme(Long id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
+	public Theme() {
+	}
 
-    public Theme(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
+	public Theme(Long id, String name, String description) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Theme(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getName() {
+		return name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
 }
