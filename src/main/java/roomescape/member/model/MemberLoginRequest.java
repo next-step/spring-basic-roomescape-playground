@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class LoginResponse {
-    private String name;
+public class MemberLoginRequest {
+
+    private String email;
+    private String password;
+
 }

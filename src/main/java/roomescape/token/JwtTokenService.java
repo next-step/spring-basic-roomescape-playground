@@ -5,8 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.member.LoginResponse;
-import roomescape.member.Member;
+import roomescape.member.model.MemberLoginResponse;
+import roomescape.member.model.Member;
 
 @Component
 public class JwtTokenService {
@@ -22,12 +22,12 @@ public class JwtTokenService {
                 .compact();
     }
 
-    public LoginResponse verifyToken(String token) {
+    public MemberLoginResponse verifyToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return new LoginResponse(claims.get("name", String.class));
+        return new MemberLoginResponse(claims.get("name", String.class));
     }
 }

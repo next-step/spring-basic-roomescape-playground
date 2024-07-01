@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.member.Member;
+import roomescape.member.model.Member;
 
 @Repository
 public class MemberDao {
@@ -41,7 +41,7 @@ public class MemberDao {
         );
     }
 
-    public roomescape.member.Member findByName(String name) {
+    public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
                 (rs, rowNum) -> new Member(

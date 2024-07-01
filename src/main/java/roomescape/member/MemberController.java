@@ -5,10 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.member.*;
-import roomescape.member.MemberRequest;
-import roomescape.member.MemberResponse;
-import roomescape.member.MemberService;
+import roomescape.annotation.MemberSession;
+import roomescape.member.model.Member;
+import roomescape.member.model.MemberLoginRequest;
+import roomescape.member.model.MemberLoginResponse;
 
 import java.net.URI;
 
@@ -28,10 +28,10 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity login(
             @RequestBody
-            LoginRequest loginRequest,
+            MemberLoginRequest memberLoginRequest,
             HttpServletResponse httpServletResponse
     ){
-        String token = memberService.login(loginRequest);
+        String token = memberService.login(memberLoginRequest);
         Cookie cookie = new Cookie("token",token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -42,13 +42,12 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> checkLogin(
-            @CookieValue("token") String token
+    public ResponseEntity<Member> checkLogin(
+            @MemberSession Member member
     ){
-        LoginResponse loginResponse = memberService.checkLogin(token);
 
         return ResponseEntity.status(200)
-                .body(loginResponse);
+                .body(member);
     }
 
     @PostMapping("/logout")

@@ -2,7 +2,9 @@ package roomescape.member;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.member.Member;
+import roomescape.member.model.MemberLoginRequest;
+import roomescape.member.model.MemberLoginResponse;
+import roomescape.member.model.Member;
 import roomescape.token.JwtTokenService;
 
 @Service
@@ -17,22 +19,20 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public String login(LoginRequest loginRequest){
-        roomescape.member.Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(),loginRequest.getPassword());
+    public String login(MemberLoginRequest memberLoginRequest){
+        Member member = memberDao.findByEmailAndPassword(memberLoginRequest.getEmail(), memberLoginRequest.getPassword());
         return jwtTokenService.create(member);
     }
 
-    public LoginResponse checkLogin(String token) {
-        LoginResponse loginResponse = jwtTokenService.verifyToken(token);
-        Member member = memberDao.findByName(loginResponse.getName());
+    public Member checkLogin(String token) {
+        MemberLoginResponse memberLoginResponse = jwtTokenService.verifyToken(token);
+        Member member = memberDao.findByName(memberLoginResponse.getName());
 
         if(member==null){
             throw new RuntimeException("멤버 존재 하지 않음");
         }
 
-        return LoginResponse.builder()
-                .name(member.getName())
-                .build();
+        return member;
 
     }
 }
