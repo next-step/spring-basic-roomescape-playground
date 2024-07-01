@@ -12,24 +12,24 @@ import java.util.Arrays;
 
 @Service
 public class MemberService {
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
     private final Extractor extractor;
 
-    public MemberService(MemberDao memberDao, TokenProvider tokenProvider, Extractor extractor) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository, TokenProvider tokenProvider, Extractor extractor) {
+        this.memberRepository = memberRepository;
         this.tokenProvider = tokenProvider;
         this.extractor = extractor;
     }
 
     public LoginMember createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new LoginMember(member.getId(), member.getName(), member.getEmail());
     }
 
     public String loginByEmailAndPassword(LoginRequest request) {
         try {
-            Member member = memberDao.findByEmailAndPassword(request.email(), request.password());
+            Member member = memberRepository.findByEmailAndPassword(request.email(), request.password());
             return tokenProvider.createToken(member);
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("로그인 정보가 불일치 합니다.");
@@ -46,7 +46,7 @@ public class MemberService {
         String token = extractToken(request);
         Long memberId = extractId(token);
 
-        Member member = memberDao.findById(memberId);
+        Member member = memberRepository.findById(memberId).get();
         return LoginMember.from(member);
     }
 
