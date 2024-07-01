@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import roomescape.exception.NotFoundException;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
@@ -37,20 +38,16 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
 
-        Optional<Time> timeOptional = timeRepository.findById(reservationRequest.getTime());
-        Optional<Theme> themeOptional = themeRepository.findById(reservationRequest.getTheme());
-        Optional<Member> memberOptional = memberRepository.findById(reservationRequest.getMember());
-
-        if(timeOptional.isEmpty() || themeOptional.isEmpty()) {
-            return null;
-        }
+        Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow(RuntimeException::new);
+        Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow(RuntimeException::new);
+        Member member = memberRepository.findById(reservationRequest.getMember()).orElseThrow(RuntimeException::new);
 
         Reservation reservation = reservationRepository.save(new Reservation(
                 reservationRequest.getName(),
                 reservationRequest.getDate(),
-                memberOptional.orElseThrow(),
-                timeOptional.get(),
-                themeOptional.get()
+                member,
+                time,
+                theme
         ));
 
         return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
