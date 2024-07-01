@@ -22,7 +22,12 @@ public class AuthorizationInterceptor implements HandlerInterceptor
 
         try{
             String token = CookieService.extractTokenFromCookie(request.getCookies());
+            Member member = memberService.checkLogin(token);
 
+            if (member == null || !member.getRole().equals("ADMIN")) {
+                response.setStatus(401);
+                return false;
+            }
 
 
             return true;
