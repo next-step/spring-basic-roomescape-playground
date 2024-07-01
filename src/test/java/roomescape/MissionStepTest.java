@@ -1,12 +1,9 @@
 package roomescape;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +14,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.HashMap;
 import java.util.Map;
 import roomescape.auth.AuthService;
-import roomescape.member.Member;
-import roomescape.member.MemberDao;
-import roomescape.member.MemberService;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.token.TokenRequest;
-import roomescape.token.TokenResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

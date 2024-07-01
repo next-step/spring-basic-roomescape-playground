@@ -4,7 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -16,11 +18,14 @@ public class Reservation {
     private String name;
     private String date;
 
-    @OneToOne
+    @ManyToOne
     private Time time;
 
-    @OneToOne
+    @ManyToOne
     private Theme theme;
+
+    @ManyToOne
+    private Member member;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
         this.id = id;

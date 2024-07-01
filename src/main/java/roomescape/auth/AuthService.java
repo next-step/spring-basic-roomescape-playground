@@ -1,11 +1,10 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import roomescape.infrastructure.JwtTokenUtil;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.token.TokenRequest;
 import roomescape.token.TokenResponse;
 
@@ -14,15 +13,15 @@ public class AuthService {
     private final String INVALID_MEMBER_MSG = "존재하지 않는 email 또는 password 입니다.";
 
     private final JwtTokenUtil jwtTokenUtil;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public AuthService(JwtTokenUtil jwtTokenUtil, MemberDao memberDao) {
+    public AuthService(JwtTokenUtil jwtTokenUtil, MemberRepository memberRepository) {
         this.jwtTokenUtil = jwtTokenUtil;
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
     }
 
     public Member checkInvalidLogin(String principal, String credentials) {
-        Member member = memberDao.findByEmailAndPassword(principal, credentials);
+        Member member = memberRepository.findByEmailAndPassword(principal, credentials);
         if(member == null) {
             throw new AuthorizationException(INVALID_MEMBER_MSG);
         }
