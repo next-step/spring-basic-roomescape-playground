@@ -17,8 +17,6 @@ import java.net.URI;
 public class MemberController {
     private final MemberService memberService;
 
-
-
     @PostMapping("/members")
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
@@ -30,9 +28,9 @@ public class MemberController {
             @RequestBody
             MemberLoginRequest memberLoginRequest,
             HttpServletResponse httpServletResponse
-    ){
+    ) {
         String token = memberService.login(memberLoginRequest);
-        Cookie cookie = new Cookie("token",token);
+        Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(3600);
@@ -44,12 +42,11 @@ public class MemberController {
     @GetMapping("/login/check")
     public ResponseEntity<Member> checkLogin(
             @MemberSession Member member
-    ){
+    ) {
 
         return ResponseEntity.status(200)
                 .body(member);
     }
-
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {

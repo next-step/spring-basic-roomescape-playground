@@ -18,8 +18,6 @@ public class WebConfig implements WebMvcConfigurer {
     private final AuthorizationInterceptor authorizationInterceptor;
     private final UserSessionResolver userSessionResolver;
 
-
-
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userSessionResolver);

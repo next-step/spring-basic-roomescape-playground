@@ -13,14 +13,13 @@ import roomescape.member.model.MemberLoginResponse;
 
 @RequiredArgsConstructor
 @Component
-public class AuthorizationInterceptor implements HandlerInterceptor
-{
+public class AuthorizationInterceptor implements HandlerInterceptor {
     private final MemberService memberService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        try{
+        try {
             String token = CookieService.extractTokenFromCookie(request.getCookies());
             Member member = memberService.checkLogin(token);
 
@@ -29,13 +28,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor
                 return false;
             }
 
-
             return true;
 
-
-
-
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

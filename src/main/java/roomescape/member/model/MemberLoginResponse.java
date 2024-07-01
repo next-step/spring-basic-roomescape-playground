@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MemberLoginResponse {
+
     private String name;
 }
