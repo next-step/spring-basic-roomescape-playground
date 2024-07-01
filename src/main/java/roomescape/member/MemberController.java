@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.api.JwtDecoder;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 import roomescape.util.CookieUtil;
 
 import java.net.URI;

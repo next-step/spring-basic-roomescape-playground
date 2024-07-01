@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.member.MemberRequest;
+import roomescape.member.dto.MemberRequest;
 import roomescape.member.MemberService;
-import roomescape.reservation.MyReservationResponse;
-import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.dto.MyReservationResponse;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.waiting.dto.WaitingResponse;
 
 import java.util.HashMap;

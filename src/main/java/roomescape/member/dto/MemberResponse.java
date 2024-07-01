@@ -1,4 +1,6 @@
-package roomescape.member;
+package roomescape.member.dto;
+
+import roomescape.member.Member;
 
 public class MemberResponse {
 

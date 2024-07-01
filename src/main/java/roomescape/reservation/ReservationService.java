@@ -1,9 +1,12 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-import roomescape.member.LoginMember;
+import roomescape.member.dto.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
+import roomescape.reservation.dto.MyReservationResponse;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -11,7 +14,6 @@ import roomescape.time.TimeRepository;
 import roomescape.waiting.WaitingRepository;
 import roomescape.waiting.dto.WaitingWithRank;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;

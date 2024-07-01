@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import roomescape.api.JwtDecoder;
 import roomescape.api.JwtProvider;
 import roomescape.exception.NotFoundException;
-
-import java.util.Optional;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 @Service
 public class MemberService {

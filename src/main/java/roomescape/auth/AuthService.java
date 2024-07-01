@@ -2,7 +2,7 @@ package roomescape.auth;
 
 import org.springframework.stereotype.Service;
 import roomescape.api.JwtDecoder;
-import roomescape.member.LoginMember;
+import roomescape.member.dto.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 
