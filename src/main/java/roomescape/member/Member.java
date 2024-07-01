@@ -29,6 +29,10 @@ public class Member {
         this.role = role;
     }
 
+    public Member(){
+
+    }
+
     public Long getId() {
         return id;
     }

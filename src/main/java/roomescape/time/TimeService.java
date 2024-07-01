@@ -34,8 +34,9 @@ public class TimeService {
     }
 
     public List<Time> findAll() {
-        return StreamSupport.stream(timeRepository.findAll().spliterator(), false)
+        List<Time> times = StreamSupport.stream(timeRepository.findAll().spliterator(), false)
                 .toList();
+        return times;
     }
 
     public Time save(Time time) {

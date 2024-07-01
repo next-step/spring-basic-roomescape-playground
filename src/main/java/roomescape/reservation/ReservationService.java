@@ -1,22 +1,37 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.TimeRepository;
 
 import java.util.List;
 import java.util.stream.StreamSupport;
 
 @Service
 public class ReservationService {
-    private ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            TimeRepository timeRepository,
+            ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationRepository.save(reservationRequest);
+        Reservation reservation = reservationRepository.save(requestToDao(reservationRequest));
 
         return new ReservationResponse(reservation.getId(), reservationRequest.name(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+    }
+
+    private Reservation requestToDao(ReservationRequest request) {
+        return new Reservation(request.name(), request.date(), timeRepository.findById(request.time()).get(), themeRepository.findById(request.theme()).get());
+
     }
 
     public void deleteById(Long id) {

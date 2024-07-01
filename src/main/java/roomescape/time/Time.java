@@ -1,5 +1,3 @@
-// 모두 존재
-
 package roomescape.time;
 
 import jakarta.persistence.*;
