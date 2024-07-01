@@ -39,4 +39,16 @@ public class ReservationService {
     }
 
 
+    public List<MyReservationResponse> findMyReservations(Long memberId) {
+
+        return reservationRepository.findByMemberId(memberId).stream()
+                .map(it-> MyReservationResponse.builder()
+                        .reservationId(it.getReservationId())
+                        .date(it.getDate())
+                        .status(it.getStatus())
+                        .time(it.getTime())
+                        .theme(it.getTheme())
+                        .build())
+                .toList();
+    }
 }
