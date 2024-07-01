@@ -1,12 +1,9 @@
 package roomescape.reservation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import roomescape.auth.Authentication;
+import roomescape.member.LoginMember;
 
 import java.net.URI;
 import java.util.List;
@@ -26,11 +23,21 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest) {
-        if (reservationRequest.getName() == null
-                || reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
+    public ResponseEntity create(@Authentication LoginMember loginMember ,@RequestBody ReservationRequest reservationRequest ) {
+
+        if (reservationRequest.name() == null) {
+            reservationRequest = new ReservationRequest(
+                    loginMember.getName(),
+                    reservationRequest.date(),
+                    reservationRequest.theme(),
+                    reservationRequest.time()
+            );
+        }
+
+        if (reservationRequest.name() == null
+                || reservationRequest.date() == null
+                || reservationRequest.theme() == null
+                || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
         ReservationResponse reservation = reservationService.save(reservationRequest);
