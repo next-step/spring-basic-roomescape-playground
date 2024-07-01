@@ -11,22 +11,22 @@ import roomescape.token.JwtTokenService;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final JwtTokenService jwtTokenService;
 
     public roomescape.member.MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public String login(MemberLoginRequest memberLoginRequest){
-        Member member = memberDao.findByEmailAndPassword(memberLoginRequest.getEmail(), memberLoginRequest.getPassword());
+        Member member = memberRepository.findByEmailAndPassword(memberLoginRequest.getEmail(), memberLoginRequest.getPassword());
         return jwtTokenService.create(member);
     }
 
     public Member checkLogin(String token) {
         MemberLoginResponse memberLoginResponse = jwtTokenService.verifyToken(token);
-        Member member = memberDao.findByName(memberLoginResponse.getName());
+        Member member = memberRepository.findByName(memberLoginResponse.getName());
 
         if(member==null){
             throw new RuntimeException("멤버 존재 하지 않음");
