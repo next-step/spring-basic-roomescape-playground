@@ -48,7 +48,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        Long memberId = authService.findMemberIdByToken(request);
+        Long memberId = authService.findMemberIdByToken(request.getCookies());
         Member member = memberService.findMemberById(memberId);
         MemberResponse response = new MemberResponse(member.getName());
         return ResponseEntity.ok()

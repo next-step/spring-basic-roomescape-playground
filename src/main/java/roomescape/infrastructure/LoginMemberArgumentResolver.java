@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
 
-        Long memberId = jwtTokenUtil.getPayload(httpServletRequest);
+        Long memberId = jwtTokenUtil.getPayload(httpServletRequest.getCookies());
         if(memberId == null) {
             throw new IllegalArgumentException(INVALID_MEMBERID);
         }

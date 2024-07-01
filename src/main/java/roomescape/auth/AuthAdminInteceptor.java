@@ -20,7 +20,8 @@ public class AuthAdminInteceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Long memberId = jwtTokenUtil.getPayload(request);
+        System.out.println("--------- : " + request.getCookies());
+        Long memberId = jwtTokenUtil.getPayload(request.getCookies());
         Member member = memberService.findMemberById(memberId);
         if (member == null || !member.getRole().equals("ADMIN")) {
             response.setStatus(401);

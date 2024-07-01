@@ -1,4 +1,4 @@
-## 요구사항 분석
+## Spring MVC 요구사항 분석
 ### 1단계 - 로그인
 - 로그인 기능을 구현하세요.
 - 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현하세요.
@@ -23,3 +23,19 @@
 ### 3단계 - 관리자 기능
 - 어드민 페이지 진입은 admin권한이 있는 사람만 할 수 있도록 제한하세요.
 - HandlerInterceptor를 활용하여 권한이 없는 경우 401코드를 응답하세요.
+
+## Spring JPA 요구사항 분석
+### 4단계 - JPA 전환 
+- JPA를 활용하여 데이터베이스에 접근하도록 수정하세요.
+
+#### gradle 의존성 추가
+- build.gradle 파일을 이용하여 다음 의존성을 대체하세요.
+  - as is: `spring-boot-stater-jdbc` to be: `spring-boot-starter-data-jpa`
+
+#### 엔티티 매핑
+- 다른 클래스를 의존하지 않는 클래스 먼저 엔티티 설정을 하세요.
+  - ex) Theme나 Time 등
+
+#### 연관관계 매핑
+- 다른 클래스에 의존하는 클래스는 연관관계 매핑을 추가로 하세요.
+  - ex) Reservation은 Member나 Theme 등의 객체에 의존합니다.

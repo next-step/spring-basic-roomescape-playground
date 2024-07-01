@@ -35,8 +35,8 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    public Long getPayload(HttpServletRequest request) {
-        String token = extractTokenFromCookie(request);
+    public Long getPayload(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
          return Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
@@ -57,12 +57,11 @@ public class JwtTokenUtil {
         }
     }
 
-    private String extractTokenFromCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
+    private String extractTokenFromCookie(Cookie[] cookies) {
         if(cookies == null) {
             throw new IllegalArgumentException(INVALID_COOKIES);
         }
-        return Arrays.stream(request.getCookies())
+        return Arrays.stream(cookies)
                 .filter(cookie -> "token".equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()

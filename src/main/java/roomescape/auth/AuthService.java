@@ -30,8 +30,8 @@ public class AuthService {
         return member;
     }
 
-    public Long findMemberIdByToken(HttpServletRequest request) {
-        return jwtTokenUtil.getPayload(request);
+    public Long findMemberIdByToken(Cookie[] cookies) {
+        return jwtTokenUtil.getPayload(cookies);
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
