@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
 import roomescape.reservation.MyReservationResponse;
+import roomescape.waiting.WaitingResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -151,7 +152,7 @@ public class MissionStepTest {
 
         // 예약 대기 상태 확인
         String status = myReservations.stream()
-                .filter(it -> it.getId() == waiting.getId())
+                .filter(it -> it.getReservationId() == waiting.getId())
                 .filter(it -> !it.getStatus().equals("예약"))
                 .findFirst()
                 .map(it -> it.getStatus())
