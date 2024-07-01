@@ -7,6 +7,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Date;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import roomescape.auth.AuthService;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.member.MemberService;
+import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.token.TokenRequest;
 import roomescape.token.TokenResponse;
@@ -122,5 +124,21 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    void 오단계() {
+//        String adminToken = createToken("admin@email.com", "password");
+        TokenRequest tokenRequest = new TokenRequest("admin@email.com", "password");
+        String adminToken = authService.createToken(tokenRequest).getAccessToken();
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 }
