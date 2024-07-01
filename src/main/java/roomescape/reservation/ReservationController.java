@@ -29,8 +29,7 @@ public class ReservationController {
     @GetMapping("/reservations-mine")
     public List<MyReservationResponse> myList(
             @Authentication MemberAuthContext authContext) {
-        List<ReservationResponse> reservationResponses = reservationService.findAllByMemberName(authContext.name());
-        return MyReservationResponse.from(reservationResponses);
+        return reservationService.findMyReservationsByName(authContext.name());
     }
 
     @PostMapping("/reservations")
