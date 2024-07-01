@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import roomescape.member.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -18,21 +20,19 @@ public class ReservationService {
     private TimeRepository timeRepository;
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
+        Member member = memberRepository.findById(loginMember.getId()).orElseThrow();
 
-        if(loginMember.getRole().equals("ADMIN")) {
-            reservationRequest.setName(loginMember.getName());
-        } else if (loginMember.getRole().equals("USER")) {
-            reservationRequest.setMemberId(loginMember.getId());
-        } else {
-            throw new IllegalArgumentException("ERROR");
-        }
+        reservationRequest.setName(loginMember.getName());
+        reservationRequest.setMemberId(loginMember.getId());
 
         Reservation reservation =
-                reservationRepository.save(new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme));
+                reservationRepository.save(new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme, member));
 
         return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
