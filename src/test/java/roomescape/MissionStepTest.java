@@ -17,6 +17,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.waiting.WaitingResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -154,10 +155,10 @@ public class MissionStepTest {
 
 		// 예약 대기 상태 확인
 		String status = myReservations.stream()
-			.filter(it -> it.getId() == waiting.getId())
-			.filter(it -> !it.getStatus().equals("예약"))
+			.filter(it -> it.reservationId() == waiting.waitingId())
+			.filter(it -> !it.status().equals("예약"))
 			.findFirst()
-			.map(it -> it.getStatus())
+			.map(it -> it.status())
 			.orElse(null);
 
 		assertThat(status).isEqualTo("1번째 예약대기");
