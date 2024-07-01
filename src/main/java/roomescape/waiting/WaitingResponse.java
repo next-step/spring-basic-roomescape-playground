@@ -10,9 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class WaitingResponse {
+
     private Long id;
+
     private Long themeId;
+
     private String date;
+
     private String time;
+
     private int waitingCount;
 }

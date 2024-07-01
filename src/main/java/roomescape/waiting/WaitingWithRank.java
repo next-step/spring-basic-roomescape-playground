@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WaitingWithRank {
+
     private Waiting waiting;
+
     private Long rank;
 
 }

@@ -14,8 +14,11 @@ public class Waiting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     private Theme theme;
+
     private String date;
+
     private String time;
 }

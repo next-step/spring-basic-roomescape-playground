@@ -10,6 +10,7 @@ import roomescape.time.TimeRepository;
 import java.util.List;
 
 public class WaitingService {
+
     private final WaitingRepository waitingRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
@@ -20,7 +21,7 @@ public class WaitingService {
         this.themeRepository = themeRepository;
     }
 
-    public WaitingResponse addWaiting(WaitingRequest request, @MemberSession Member member){
+    public WaitingResponse addWaiting(WaitingRequest request, @MemberSession Member member) {
         Time time = timeRepository.findById(request.getTime()).orElseThrow();
         Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow();
 

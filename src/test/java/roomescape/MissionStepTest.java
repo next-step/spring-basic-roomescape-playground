@@ -91,7 +91,7 @@ public class MissionStepTest {
                 .statusCode(200)
                 .extract();
 
-        return  response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+        return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
     }
 
     @Test
