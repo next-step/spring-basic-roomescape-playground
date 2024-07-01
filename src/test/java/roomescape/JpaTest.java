@@ -4,17 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-
 @DataJpaTest
+@ContextConfiguration(classes = RoomescapeApplication.class)
 public class JpaTest {
     @Autowired
     private TestEntityManager entityManager;
@@ -33,4 +30,3 @@ public class JpaTest {
         assertThat(persistTime.getTime()).isEqualTo(time.getTime());
     }
 }
-
