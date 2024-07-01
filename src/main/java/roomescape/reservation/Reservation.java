@@ -17,6 +17,9 @@ public class Reservation {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@ManyToOne
+	private Member member;
+
 	@Column(nullable = false)
 	private String name;
 
@@ -28,9 +31,6 @@ public class Reservation {
 
 	@ManyToOne
 	private Theme theme;
-
-	@ManyToOne
-	private Member member;
 
 	public Reservation(Long id, String name, String date, Time time, Theme theme) {
 		this.id = id;

@@ -54,10 +54,12 @@ public class ReservationService {
 	}
 
 	public List<MyReservationResponse> findAllMyReservations(LoginMember loginMember) {
-		System.out.println(loginMember.id());
-		return reservationRepository.findByMemberId(loginMember.id()).stream().map(
-			reservation -> new MyReservationResponse(reservation.getId(), reservation.getTheme().getName(),
-				reservation.getDate(), reservation.getTime().getValue(), "예약")
-		).toList();
+		return reservationRepository.findByMemberId(loginMember.id())
+			.stream()
+			.map(reservation -> new MyReservationResponse(reservation.getId(),
+				reservation.getTheme().getName(),
+				reservation.getDate(),
+				reservation.getTime().getValue(), "예약"))
+			.toList();
 	}
 }

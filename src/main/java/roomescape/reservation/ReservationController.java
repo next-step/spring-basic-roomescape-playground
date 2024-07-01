@@ -34,7 +34,6 @@ public class ReservationController {
 			|| reservationRequest.getTime() == null) {
 			return ResponseEntity.badRequest().build();
 		}
-		System.out.println(member.name());
 		ReservationResponse reservation = reservationService.save(reservationRequest, member);
 
 		return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);

@@ -1,5 +1,7 @@
 package roomescape.jwt;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,12 +20,15 @@ public class JwtUtil {
 	}
 
 	public static String extractTokenFromCookie(Cookie[] cookies) {
-		for (Cookie cookie : cookies) {
-			if (cookie.getName().equals("token")) {
-				return cookie.getValue();
-			}
+		if (cookies == null) {
+			throw new IllegalArgumentException("Cookies array is null");
 		}
-		return "";
+
+		return Arrays.stream(cookies)
+			.filter(cookie -> "token".equals(cookie.getName()))
+			.map(Cookie::getValue)
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("Token cookie not found"));
 	}
 
 	public static Long getIdFromToken(String token) {
