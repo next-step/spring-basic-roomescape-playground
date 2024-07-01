@@ -49,7 +49,7 @@ public class ReservationService {
 
     public List<MyReservationResponse> findMyList(LoginMember loginMember) {
         return reservationRepository.findByMemberId(loginMember.getId()).stream()
-                .map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), it.getName()))
+                .map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
                 .toList();
     }
 }
