@@ -1,5 +1,6 @@
 package roomescape.waiting;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
@@ -39,6 +40,17 @@ public class WaitingService {
 
         waitingRepository.save(waiting);
 
-        return new WaitingResponse(waiting.getId(), waitingRequest.name(), waiting.getTheme().getName(), waiting.getDate(), waiting.getTime().getValue());
+        List<Waiting> waitings = waitingRepository.findByDateAndTimeIdAndThemeId(waiting.getDate(), time.getId(), theme.getId());
+
+        return new WaitingResponse(waiting.getId(),
+                                   waitingRequest.name(),
+                                   waiting.getTheme().getName(),
+                                   waiting.getDate(),
+                                   waiting.getTime().getValue(),
+                                   (long) waitings.size());
+    }
+
+    public void deleteById(final Long id) {
+        waitingRepository.deleteById(id);
     }
 }

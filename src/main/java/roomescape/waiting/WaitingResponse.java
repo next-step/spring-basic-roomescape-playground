@@ -4,5 +4,6 @@ public record WaitingResponse(Long id,
                               String name,
                               String theme,
                               String date,
-                              String time) {
+                              String time,
+                              Long waitingNumber) {
 }
