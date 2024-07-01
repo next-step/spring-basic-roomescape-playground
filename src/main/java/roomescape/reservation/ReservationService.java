@@ -3,22 +3,33 @@ package roomescape.reservation;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ThemeRepository themeRepository;
+    private final TimeRepository timeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository) {
+    public ReservationService(final ReservationRepository reservationRepository,
+                              final ThemeRepository themeRepository,
+                              final TimeRepository timeRepository) {
         this.reservationRepository = reservationRepository;
+        this.themeRepository = themeRepository;
+        this.timeRepository = timeRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        final Reservation reservation = new Reservation(reservationRequest.name(),
-                                                        reservationRequest.date(),
-                                                        new Time(reservationRequest.time()),
-                                                        new Theme(reservationRequest.theme(), ""));
+        Theme theme = themeRepository.getById(reservationRequest.theme());
+        Time time = timeRepository.getById(reservationRequest.time());
+
+        Reservation reservation = new Reservation(reservationRequest.name(),
+                                                  reservationRequest.date(),
+                                                  time,
+                                                  theme);
 
         reservationRepository.save(reservation);
 

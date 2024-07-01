@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.auth.MemberAuthContext;
 
@@ -20,20 +19,14 @@ public class MemberService {
     }
 
     public MemberAuthContext loginByEmailAndPassword(MemberLoginRequest request) {
-        try {
-            Member member = memberRepository.findByEmailAndPassword(request.email(), request.password());
-            return new MemberAuthContext(member.getName(), member.getRole());
-        } catch (DataAccessException exception) {
-            throw new IllegalArgumentException("로그인 정보가 불일치 합니다.");
-        }
+        Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
+                                        .orElseThrow(() -> new IllegalArgumentException("로그인 정보가 불일치 합니다."));
+        return new MemberAuthContext(member.getName(), member.getRole());
     }
 
     public MemberResponse checkLogin(MemberAuthContext authContext) {
-        try {
-            Member member = memberRepository.findByName(authContext.name());
-            return new MemberResponse(member.getId(), member.getName(), member.getEmail());
-        } catch (DataAccessException exception) {
-            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
-        }
+        Member member = memberRepository.findByName(authContext.name())
+                                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 }

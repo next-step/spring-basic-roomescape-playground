@@ -37,10 +37,7 @@ public class Reservation {
     }
 
     public Reservation(String name, String date, Time time, Theme theme) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+        this(null, name, date, time, theme);
     }
 
     public Reservation() {
