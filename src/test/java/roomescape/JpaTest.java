@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 @DataJpaTest
 public class JpaTest {
@@ -24,6 +25,6 @@ public class JpaTest {
 
         Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
-        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+        assertThat(persistTime.getValue()).isEqualTo(time.getValue());
     }
 }

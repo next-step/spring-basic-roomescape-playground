@@ -10,32 +10,21 @@ import java.util.List;
 
 @Repository
 public class TimeDao {
-    private final JdbcTemplate jdbcTemplate;
+    private final TimeRepository timeRepository;
 
-    public TimeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public TimeDao(TimeRepository timeRepository) {
+        this.timeRepository = timeRepository;
     }
 
     public List<Time> findAll() {
-        return jdbcTemplate.query(
-                "SELECT * FROM time WHERE deleted = false",
-                (rs, rowNum) -> new Time(
-                        rs.getLong("id"),
-                        rs.getString("time_value")));
+        return timeRepository.findAll();
     }
 
     public Time save(Time time) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        this.jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO time(time_value) VALUES (?)", new String[]{"id"});
-            ps.setString(1, time.getValue());
-            return ps;
-        }, keyHolder);
-
-        return new Time(keyHolder.getKey().longValue(), time.getValue());
+        return timeRepository.save(time);
     }
 
     public void deleteById(Long id) {
-        jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ?", id);
+        timeRepository.deleteById(id);
     }
 }
