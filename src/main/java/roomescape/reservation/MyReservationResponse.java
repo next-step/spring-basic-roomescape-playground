@@ -5,7 +5,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import roomescape.waiting.WaitingWithRank;
 
-public record MyReservationResponse(Long myReservationId,
+public record MyReservationResponse(Long id,
                                     String theme,
                                     String date,
                                     String time,
