@@ -7,14 +7,20 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SuppressWarnings("NonAsciiCharacters")
+@DisplayNameGeneration(ReplaceUnderscores.class)
 public class MissionStepTest {
 
     @Test
@@ -23,12 +29,12 @@ public class MissionStepTest {
         assertThat(token).isNotBlank();
 
         ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookie("token", token)
-                .when().get("/login/check")
-                .then().log().all()
-                .statusCode(200)
-                .extract();
+                                                                 .contentType(ContentType.JSON)
+                                                                 .cookie("token", token)
+                                                                 .when().get("/login/check")
+                                                                 .then().log().all()
+                                                                 .statusCode(200)
+                                                                 .extract();
 
         assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
@@ -39,12 +45,12 @@ public class MissionStepTest {
         params.put("password", password);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract();
+                                                            .contentType(ContentType.JSON)
+                                                            .body(params)
+                                                            .when().post("/login")
+                                                            .then().log().all()
+                                                            .statusCode(200)
+                                                            .extract();
 
         return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
     }
@@ -59,28 +65,28 @@ public class MissionStepTest {
         params.put("theme", "1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .cookie("token", token)
-                .contentType(ContentType.JSON)
-                .post("/reservations")
-                .then().log().all()
-                .extract();
+                                                            .body(params)
+                                                            .cookie("token", token)
+                                                            .contentType(ContentType.JSON)
+                                                            .post("/reservations")
+                                                            .then().log().all()
+                                                            .extract();
 
         assertThat(response.statusCode()).isEqualTo(201);
-        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+        assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
 
         params.put("name", "브라운");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
-                .body(params)
-                .cookie("token", token)
-                .contentType(ContentType.JSON)
-                .post("/reservations")
-                .then().log().all()
-                .extract();
+                                                                 .body(params)
+                                                                 .cookie("token", token)
+                                                                 .contentType(ContentType.JSON)
+                                                                 .post("/reservations")
+                                                                 .then().log().all()
+                                                                 .extract();
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
-        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+        assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
     }
 
     @Test
@@ -88,17 +94,31 @@ public class MissionStepTest {
         String brownToken = createToken("brown@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("token", brownToken)
-                .get("/admin")
-                .then().log().all()
-                .statusCode(401);
+                   .cookie("token", brownToken)
+                   .get("/admin")
+                   .then().log().all()
+                   .statusCode(401);
 
         String adminToken = createToken("admin@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
-                .get("/admin")
-                .then().log().all()
-                .statusCode(200);
+                   .cookie("token", adminToken)
+                   .get("/admin")
+                   .then().log().all()
+                   .statusCode(200);
+    }
+
+    @Test
+    void 오단계() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                                                              .cookie("token", adminToken)
+                                                              .get("/reservations-mine")
+                                                              .then().log().all()
+                                                              .statusCode(200)
+                                                              .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 }
