@@ -26,11 +26,18 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> myList(
+            @Authentication MemberAuthContext authContext) {
+        List<ReservationResponse> reservationResponses = reservationService.findAllByMemberName(authContext.name());
+        return MyReservationResponse.from(reservationResponses);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(
             @Authentication MemberAuthContext authContext,
             @RequestBody ReservationRequest reservationRequest
-    ) {
+                                ) {
         if (reservationRequest.date() == null
                 || reservationRequest.theme() == null
                 || reservationRequest.time() == null) {
@@ -46,7 +53,7 @@ public class ReservationController {
             );
         }
         ReservationResponse reservation = reservationService.save(reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
