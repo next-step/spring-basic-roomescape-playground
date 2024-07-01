@@ -24,4 +24,8 @@ public class Time {
     public String getValue() {
         return value;
     }
+
+    public Time getTime() {
+        return new Time(id, value);
+    }
 }
