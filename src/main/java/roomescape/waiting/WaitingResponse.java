@@ -6,15 +6,15 @@ public class WaitingResponse {
     private String time;
     private String theme;
     private Long memberId;
-    private int rank;
+    private Long waitingNumber;
 
-    public WaitingResponse(Long id, String date, String time, String theme, Long memberId, int rank) {
+    public WaitingResponse(Long id, String date, String time, String theme, Long memberId, Long waitingNumber) {
         this.id = id;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.memberId = memberId;
-        this.rank = rank;
+        this.waitingNumber = waitingNumber;
     }
 
     public Long getId() {
@@ -37,7 +37,7 @@ public class WaitingResponse {
         return memberId;
     }
 
-    public int getRank() {
-        return rank;
+    public Long getWaitingNumber() {
+        return waitingNumber;
     }
 }

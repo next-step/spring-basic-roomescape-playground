@@ -32,6 +32,10 @@ public class Waiting {
         this.member = member;
     }
 
+    public Waiting() {
+
+    }
+
     public Long getId() {
         return id;
     }

@@ -2,9 +2,9 @@ package roomescape.waiting;
 
 public class WaitingWithRank {
     private Waiting waiting;
-    private int rank;
+    private Long rank;
 
-    public WaitingWithRank(Waiting waiting, int rank) {
+    public WaitingWithRank(Waiting waiting, Long rank) {
         this.waiting = waiting;
         this.rank = rank;
     }
@@ -13,7 +13,7 @@ public class WaitingWithRank {
         return waiting;
     }
 
-    public int getRank() {
+    public Long getRank() {
         return rank;
     }
 }

@@ -31,26 +31,12 @@ public class WaitingService {
 
         Waiting waiting =
                 waitingRepository.save(new Waiting(request.getDate(), time, theme, member));
-//        int rank = waitingRepository.findWaitingsWithRankByMemberId(member.getId());
+        Long rank = waitingRepository.findWaitingsWithRankByMemberId(member.getId()).stream()
+                .filter(it -> it.getWaiting().getId().equals(waiting.getId()))
+                .findFirst().get().getRank();
 
-        return new WaitingResponse(waiting.getId(), waiting.getDate(), time.getValue(), theme.getName(), member.getId(), 1);
+        return new WaitingResponse(waiting.getId(), waiting.getDate(), time.getValue(), theme.getName(), member.getId(), rank + 1);
     }
-
-//    @GetMapping("/waitings-mine")
-//    public List<WaitingResponse> findWaitingList(WaitingRequest request, Long memberId) {
-//        Theme theme = themeRepository.findById(request.getTheme()).orElseThrow();
-//        Time time = timeRepository.findById(request.getTime()).orElseThrow();
-//
-//        return waitingRepository.findWaitingsWithRankByMemberId(request.getMemberId()).stream()
-//                .map(it -> new WaitingResponse(
-//                        it.getWaiting().getId(),
-//                        it.getWaiting().getDate(),
-//                        time.getValue(),
-//                        theme.getName(),
-//                        request.getMemberId(),
-//                        it.getRank()))
-//                .toList();
-//    }
 
     public void deleteById(Long id) {
         waitingRepository.deleteById(id);
