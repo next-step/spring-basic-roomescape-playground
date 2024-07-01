@@ -48,6 +48,7 @@ public class MemberController {
                 .body(member);
     }
 
+
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", "");
