@@ -2,7 +2,6 @@ package roomescape.reservation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.Theme;
 
 import java.util.List;
 
@@ -12,24 +11,23 @@ public class ReservationDao {
 
     private final ReservationRepository reservationRepository;
 
-
     public List<Reservation> findAll() {
         return reservationRepository.findAll();
-    }
-
-    public Reservation save(ReservationRequest reservationRequest) {
-        return reservationRepository.save(reservationRequest);
     }
 
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
     }
-//
-//    public List<Reservation> findReservationsByDateAndTheme(String date, Theme theme) {
-//        return reservationRepository.findReservationsByDateAndTheme(date, theme);
-//    }
 
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
         return reservationRepository.findByDateAndThemeId(date, themeId);
+    }
+
+    public List<Reservation> findByMemberId(Long memberId) {
+        return reservationRepository.findByMemberId(memberId);
+    }
+
+    public Reservation save(Reservation reservation) {
+        return reservationRepository.save(reservation);
     }
 }

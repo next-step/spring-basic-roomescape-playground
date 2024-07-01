@@ -21,4 +21,8 @@ public class ThemeDao {
     public void deleteById(Long id) {
         themeRepository.deleteById(id);
     }
+
+    public Theme findById(Long id) {
+        return themeRepository.findById(id).orElseThrow();
+    }
 }

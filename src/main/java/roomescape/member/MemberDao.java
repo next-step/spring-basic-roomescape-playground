@@ -19,4 +19,8 @@ public class MemberDao {
     public Member findByName(String name) {
         return memberRepository.findByName(name);
     }
+
+    public Member findMemberById(Long id){
+        return memberRepository.findMemberById(id);
+    }
 }

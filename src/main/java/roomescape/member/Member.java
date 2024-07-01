@@ -2,7 +2,6 @@ package roomescape.member;
 
 import jakarta.persistence.*;
 
-@Table(name = "\"member\"")
 @Entity
 public class Member {
 

@@ -21,4 +21,8 @@ public class TimeDao {
     public void deleteById(Long id) {
         timeRepository.deleteById(id);
     }
+
+    public Time findById(Long id) {
+        return timeRepository.findById(id).orElseThrow();
+    }
 }
