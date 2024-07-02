@@ -59,7 +59,6 @@ public class ReservationService {
         );
     }
 
-
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
     }
@@ -71,11 +70,11 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findReservation(LoginMember loginMember) {
-        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.getId()).stream()
+        List<MyReservationResponse> reservations = reservationRepository.findByMemberIdOrName(loginMember.getId(), loginMember.getName()).stream()
                 .map(it -> new MyReservationResponse(it.getId(),
                         it.getTheme().getName(),
                         it.getDate(),
-                        it.getTime().getValue(), "예약"))
+                        it.getTime().getValue(), "예약", null)) // 예약에는 rank가 없으므로 null
                 .collect(Collectors.toList());
         return reservations;
     }

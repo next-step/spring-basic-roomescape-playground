@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long>{
     List<Reservation> findByDateAndThemeId(String date, Long themeId);
-    List<Reservation> findByMemberId(Long memberId);
+    List<Reservation> findByMemberIdOrName(Long memberId, String name);
 }

@@ -11,6 +11,10 @@ public class Time {
     @Column(name = "time_value")
     private String value;
 
+    public Time() {
+
+    }
+
     public Time(Long id, String value) {
         this.id = id;
         this.value = value;
@@ -18,10 +22,6 @@ public class Time {
 
     public Time(String value) {
         this.value = value;
-    }
-
-    public Time() {
-
     }
 
     public Long getId() {

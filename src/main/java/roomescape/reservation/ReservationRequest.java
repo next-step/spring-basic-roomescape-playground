@@ -5,6 +5,11 @@ public class ReservationRequest {
     private String date;
     private Long theme;
     private Long time;
+
+    public void setMember(Long member) {
+        this.member = member;
+    }
+
     private Long member;
 
     public Long getMember() {
@@ -41,4 +46,6 @@ public class ReservationRequest {
     public void setTime(Long time) {
         this.time = time;
     }
+
+
 }

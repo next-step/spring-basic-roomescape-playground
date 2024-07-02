@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
