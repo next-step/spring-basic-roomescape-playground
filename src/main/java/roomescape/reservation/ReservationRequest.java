@@ -3,8 +3,8 @@ package roomescape.reservation;
 public class ReservationRequest {
     private String name;
     private String date;
-    private Long theme;
-    private Long time;
+    private String theme;
+    private String time;
 
     public String getName() {
         return name;
@@ -14,11 +14,11 @@ public class ReservationRequest {
         return date;
     }
 
-    public Long getTheme() {
+    public String getTheme() {
         return theme;
     }
 
-    public Long getTime() {
+    public String getTime() {
         return time;
     }
 
