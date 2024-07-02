@@ -1,26 +1,20 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
@@ -29,7 +23,7 @@ public class MemberService {
             throw new AuthorizationException();
         }
 
-        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
 
         String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         String accessToken = Jwts.builder()
@@ -57,8 +51,7 @@ public class MemberService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
-
-        return memberDao.findById(memberId);
+        return memberRepository.findById(memberId).get();
     }
 
     public Cookie createCookie(String accessToken) {
@@ -69,6 +62,6 @@ public class MemberService {
     }
 
     public boolean checkValidLogin(String principal, String credentials) {
-        return memberDao.existByEmailAndPassword(principal, credentials);
+        return memberRepository.existsByEmailAndPassword(principal, credentials);
     }
 }
