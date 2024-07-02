@@ -56,7 +56,7 @@ public class ReservationService {
                 .map(it -> new MyReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
          List<MyReservationResponse> myWaitingResponseList = waitingRepository.findWaitingsWithRankByMemberId(memberId).stream()
-                 .map(it -> new MyReservationResponse(it.getWaiting().getId(), it.getWaiting().getTheme().getName(), it.getWaiting().getDate(), it.getWaiting().getTime(), (it.getRank()+1) + "번째 대기"))
+                 .map(it -> new MyReservationResponse(it.getWaiting().getId(), it.getWaiting().getTheme().getName(), it.getWaiting().getDate(), it.getWaiting().getTime(), (it.getRank()+1) + "번째 예약대기"))
                  .toList();
 
          return Stream.concat(myReservationResponseList.stream(), myWaitingResponseList.stream())

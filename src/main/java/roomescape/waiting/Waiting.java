@@ -14,14 +14,19 @@ public class Waiting {
     private Theme theme;
     private String date;
     private String time;
+    private Long memberId;
 
-    public Waiting(Long id, Theme theme, String date, String time) {
-        this.id = id;
+    public Waiting() {
+    }
+
+    public Waiting(Long memberId, Theme theme, String date, String time) {
+        this.memberId = memberId;
         this.theme = theme;
         this.date = date;
         this.time = time;
     }
 
-    public Waiting() {
+    public boolean isMyReservation(Long memberId) {
+        return this.memberId.equals(memberId);
     }
 }
