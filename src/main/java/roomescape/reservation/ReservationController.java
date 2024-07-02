@@ -26,7 +26,6 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
-
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember member) {
         if (reservationRequest.getDate() == null
@@ -34,7 +33,7 @@ public class ReservationController {
                 || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
-        ReservationResponse reservation = reservationService.save(reservationRequest, member);
+        ReservationResponse reservation = reservationService.save(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
@@ -43,5 +42,10 @@ public class ReservationController {
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> findAllMyReservations(LoginMember loginMember) {
+        return reservationService.findMyReservations(loginMember);
     }
 }

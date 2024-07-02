@@ -1,42 +1,45 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.infrastructure.JwtTokenDecoder;
 import roomescape.infrastructure.JwtTokenProvider;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
-    private JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberDao memberDao,JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
-        this.jwtTokenProvider = jwtTokenProvider;
+    private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtProvider;
+
+    @Autowired
+    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtProvider) {
+        this.memberRepository = memberRepository;
+        this.jwtProvider = jwtProvider;
+    }
+
+    public String login(LoginRequest request) {
+        Member member = memberRepository.findByEmailAndPassword(request.getEmail(), request.getPassword());
+        if (member == null) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
+        return jwtProvider.createToken(member);
+    }
+
+    public LoginResponse checkMember(String token) {
+        Long memberId = JwtTokenDecoder.decodeToken(token);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid member"));
+        return new LoginResponse(member.getName());
+    }
+
+    public Member getMemberFromToken(String token) {
+        Long memberId = JwtTokenDecoder.decodeToken(token);
+        return memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid member"));
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(
+                new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
-    }
-
-    public String login(LoginRequest loginRequest){
-        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(),loginRequest.getPassword());
-
-        String accessToken = jwtTokenProvider.createToken(member);
-
-        return accessToken;
-    }
-
-    public LoginResponse checkLogin (String token) {
-
-        Long memberId = JwtTokenDecoder.decodeToken(token);
-        Member member = memberDao.findById(memberId);
-
-        return new LoginResponse(member.getName());
-    }
-    public Member findById(Long id) {
-        return memberDao.findById(id);
     }
 }

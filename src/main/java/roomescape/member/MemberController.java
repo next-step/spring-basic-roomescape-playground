@@ -42,7 +42,7 @@ public class MemberController {
     public ResponseEntity checkLogin(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
         String token = TokenExtractor.extractTokenFromCookie(cookies);
-        LoginResponse loginResponse= memberService.checkLogin(token);
+        LoginResponse loginResponse= memberService.checkMember(token);
         return ResponseEntity.ok(loginResponse);
     }
 
