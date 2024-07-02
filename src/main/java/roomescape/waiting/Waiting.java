@@ -1,19 +1,21 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import jakarta.persistence.*;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
-import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
-public class Reservation {
+public class Waiting {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    private String name;
+
     private String date;
+
     @ManyToOne
     @JoinColumn(name = "time_id")
     private Time time;
@@ -26,33 +28,26 @@ public class Reservation {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme, Member member) {
+    public Waiting(Long id, String date, Time time, Theme theme, Member member) {
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme, Member member) {
-        this.name = name;
+    public Waiting(String date, Time time, Theme theme, Member member) {
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
     }
 
-    public Reservation() {
-
+    public Waiting() {
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getDate() {
@@ -65,5 +60,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }
