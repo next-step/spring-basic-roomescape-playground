@@ -4,12 +4,15 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.reservation.waiting.WaitingDao;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeDao;
 import roomescape.time.Time;
 import roomescape.time.TimeDao;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -17,12 +20,14 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final MemberDao memberDao;
     private final ThemeDao themeDao;
+    private final WaitingDao waitingDao;
 
-    public ReservationService(TimeDao timeDao, ReservationDao reservationDao, MemberDao memberDao, ThemeDao themeDao) {
+    public ReservationService(TimeDao timeDao, ReservationDao reservationDao, MemberDao memberDao, ThemeDao themeDao, WaitingDao waitingDao) {
         this.timeDao = timeDao;
         this.reservationDao = reservationDao;
         this.memberDao = memberDao;
         this.themeDao = themeDao;
+        this.waitingDao = waitingDao;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
@@ -52,9 +57,15 @@ public class ReservationService {
 
     public List<MyReservationsResponse> findMyReservations(LoginMember loginMember) {
         List<Reservation> reservations = reservationDao.findByMemberId(loginMember.id());
-        return reservations.stream()
+
+        Stream<MyReservationsResponse> str1 = reservations.stream()
                 .map(it -> new MyReservationsResponse(it.getId(), it.getTheme().getName(),
-                        it.getDate(), it.getTime().getValue(), "예약"))
-                .toList();
+                        it.getDate(), it.getTime().getValue(), "예약"));
+
+        Stream<MyReservationsResponse> str2 = waitingDao.findWaitingsWithRankByMemberId(loginMember.id()).stream()
+                .map(it -> new MyReservationsResponse(it.waiting().getId(), it.waiting().getTheme().getName(),
+                        it.waiting().getDate(), it.waiting().getTime(), (it.rank() + 1) + "번째 예약대기"));
+
+        return Stream.concat(str1, str2).collect(Collectors.toList());
     }
 }
