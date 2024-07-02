@@ -6,6 +6,7 @@ import roomescape.auth.Authentication;
 import roomescape.member.LoginMember;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,7 +24,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@Authentication LoginMember loginMember ,@RequestBody ReservationRequest reservationRequest ) {
+    public ResponseEntity create(@Authentication LoginMember loginMember, @RequestBody ReservationRequest reservationRequest) {
 
         if (reservationRequest.name() == null) {
             reservationRequest = new ReservationRequest(
@@ -49,5 +50,13 @@ public class ReservationController {
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> reservations(@Authentication LoginMember loginMember) {
+        String name = loginMember.getName();
+        List<MyReservationResponse> response = reservationService.findReservationsByName(name);
+
+        return ResponseEntity.ok(response);
     }
 }

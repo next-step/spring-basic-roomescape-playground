@@ -12,10 +12,12 @@ public class Reservation {
     private String name;
     private String date;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "time_id")
     private Time time;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "theme_id")
     private Theme theme;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
