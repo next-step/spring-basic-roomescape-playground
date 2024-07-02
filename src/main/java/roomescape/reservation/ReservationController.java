@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.Login.LoginMember;
 import roomescape.jwt.JwtController;
 import roomescape.jwt.JwtTokenMember;
+import roomescape.member.MemberResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -24,6 +25,11 @@ public class ReservationController {
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
         return reservationService.findAll();
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> findReservations(LoginMember loginMember) {
+        return reservationService.findMyReservations(loginMember);
     }
 
     @PostMapping("/reservations")
@@ -52,4 +58,6 @@ public class ReservationController {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }
