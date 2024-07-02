@@ -23,6 +23,13 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> myReservation(
+            @LoginUser LoginMember loginMember
+    ) {
+        List<ReservationResponse> reservationResponses = reservationService.findAllByMemberName(loginMember.getName());
+        return MyReservationResponse.from(reservationResponses);
+    }
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
         return reservationService.findAll();

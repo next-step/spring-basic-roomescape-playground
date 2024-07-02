@@ -8,6 +8,7 @@ import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -39,5 +40,13 @@ public class ReservationService {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
+    }
+
+    public List<ReservationResponse> findAllByMemberName(String name) {
+        return reservationRepository.findByName(name)
+                .stream()
+                .map(reservation -> new ReservationResponse(
+                        reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue()
+                )).collect(Collectors.toList());
     }
 }
