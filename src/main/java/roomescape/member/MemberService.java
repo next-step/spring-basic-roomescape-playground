@@ -16,7 +16,7 @@ public class MemberService {
     }
 
     public ViewMemberResponse findMemberByEmailAndPassword (String email, String password) {
-        Member member = memberRepository.findByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         return new ViewMemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 

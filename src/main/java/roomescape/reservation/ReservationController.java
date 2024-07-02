@@ -28,7 +28,7 @@ public class ReservationController {
             @LoginUser LoginMember loginMember
     ) {
         List<ReservationResponse> reservationResponses = reservationService.findAllByMemberName(loginMember.getName());
-        return MyReservationResponse.from(reservationResponses);
+        return reservationService.findMyReservationsByMemberName(loginMember.getName());
     }
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
