@@ -56,11 +56,11 @@ public class ReservationService {
 
     public MyReservationResponse CustomWaitingResponse(WaitingWithRank waitingWithRank) {
         return new MyReservationResponse(
-                waitingWithRank.getWaiting().getId(),
-                waitingWithRank.getWaiting().getTheme().getName(),
-                waitingWithRank.getWaiting().getDate(),
-                waitingWithRank.getWaiting().getTime().getValue(),
-                (waitingWithRank.getRank() + 1) + "번째 예약대기"
+                waitingWithRank.waiting().getId(),
+                waitingWithRank.waiting().getTheme().getName(),
+                waitingWithRank.waiting().getDate(),
+                waitingWithRank.waiting().getTime().getValue(),
+                (waitingWithRank.rank() + 1) + "번째 예약대기"
         );
     }
 

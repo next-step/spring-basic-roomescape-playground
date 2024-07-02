@@ -50,7 +50,7 @@ public class ReservationController {
 
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
