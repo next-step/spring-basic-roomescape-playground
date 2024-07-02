@@ -1,5 +1,7 @@
 package roomescape.reservation;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberService;
 
 import java.net.URI;
 import java.util.List;
@@ -16,9 +20,11 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final MemberService memberService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService,MemberService memberService) {
         this.reservationService = reservationService;
+        this.memberService=memberService;
     }
 
     @GetMapping("/reservations")
@@ -28,17 +34,22 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember member) {
-        if (member != null && reservationRequest.getName() == null) {
-            reservationRequest.setName(member.getName());
-        }
-
-        if (reservationRequest.getName() == null
+        if (member == null
                 || reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
                 || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+
+        String name = reservationRequest.getName();
+        if (name == null) {
+            name = member.getName();
+        }
+        CreateReservationDto reservationDto = new CreateReservationDto(member.getId(), name,
+                reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime());
+
+        ReservationResponse reservation = reservationService.save(reservationDto);
+
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
@@ -47,5 +58,16 @@ public class ReservationController {
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity reservationsMine(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = memberService.extractTokenFromCookie(cookies);
+        Member member = memberService.extractMemberFromToken(token);
+
+        List<MyReservationResponse> responses = reservationService.findByMemberId(member.getId());
+
+        return ResponseEntity.ok().body(responses);
     }
 }
