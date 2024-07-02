@@ -23,5 +23,7 @@ public class AuthorizationExtractor {
                 .getBody().getSubject());
         return memberId;
     }
+
+
 }
 
