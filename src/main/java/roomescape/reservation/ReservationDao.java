@@ -1,4 +1,4 @@
-package roomescape.reservation;
+/*package roomescape.reservation;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -123,3 +123,4 @@ public class ReservationDao {
                         )));
     }
 }
+*/

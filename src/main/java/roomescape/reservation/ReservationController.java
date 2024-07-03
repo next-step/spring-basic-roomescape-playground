@@ -2,7 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.member.LoginMember;
+import roomescape.login.LoginMember;
 import roomescape.member.MemberService;
 import roomescape.member.ViewMemberResponse;
 

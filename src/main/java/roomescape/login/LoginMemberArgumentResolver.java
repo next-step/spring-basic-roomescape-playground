@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.login;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -10,6 +10,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import roomescape.login.LoginMember;
+import roomescape.member.MemberService;
+import roomescape.member.ViewMemberResponse;
+
 import java.security.Key;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {

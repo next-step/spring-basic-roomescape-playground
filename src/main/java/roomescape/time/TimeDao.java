@@ -1,4 +1,4 @@
-package roomescape.time;
+/*package roomescape.time;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -39,3 +39,4 @@ public class TimeDao {
         jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ?", id);
     }
 }
+*/
