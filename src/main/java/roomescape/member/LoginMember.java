@@ -13,9 +13,6 @@ public class LoginMember {
         this.role = role;
     }
 
-    // Getters and setters
-
-
     public Long getId() {
         return id;
     }

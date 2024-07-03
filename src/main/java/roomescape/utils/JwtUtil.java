@@ -20,7 +20,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Claims parseToken(String token) {
+    public static Claims parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
                 .build()
@@ -28,7 +28,7 @@ public class JwtUtil {
                 .getBody();
     }
 
-    public Long getUserIdFromToken(String token) {
+    public static Long getUserIdFromToken(String token) {
         Claims claims = parseToken(token);
         return Long.parseLong(claims.getSubject());
     }
