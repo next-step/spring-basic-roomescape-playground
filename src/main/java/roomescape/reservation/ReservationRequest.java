@@ -5,8 +5,7 @@ public class ReservationRequest {
     private Long theme;
     private Long time;
     private String name;
-
-    // Getters and setters
+    private Long memberId;
 
     public String getDate() {
         return date;
@@ -38,5 +37,10 @@ public class ReservationRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    public Long getMemberId() {
+        return memberId;
     }
 }

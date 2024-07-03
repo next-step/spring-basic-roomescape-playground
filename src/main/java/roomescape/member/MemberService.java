@@ -1,21 +1,19 @@
 package roomescape.member;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
+import roomescape.JwtUtil;
 
 @Service
 public class MemberService {
     private final MemberDao memberDao;
-    private final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private final JwtUtil jwtUtil;
 
-    public MemberService(MemberDao memberDao) {
+    public MemberService(MemberDao memberDao, JwtUtil jwtUtil) {
         this.memberDao = memberDao;
+        this.jwtUtil = jwtUtil;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -25,12 +23,7 @@ public class MemberService {
 
     public void login(MemberRequest memberRequest, HttpServletResponse response) {
         Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
+        String accessToken = jwtUtil.generateToken(member.getId().toString(), member.getName(), member.getRole());
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
@@ -45,28 +38,20 @@ public class MemberService {
     public String getNameFromToken(Cookie[] cookies) {
         String token = extractTokenFromCookies(cookies);
         if (token != null) {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            Claims claims = jwtUtil.parseToken(token);
             return claims.get("name", String.class);
         }
         return null;
     }
+
     public String getRoleFromToken(Cookie[] cookies) {
         String token = extractTokenFromCookies(cookies);
         if (token != null) {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            Claims claims = jwtUtil.parseToken(token);
             return claims.get("role", String.class);
         }
         return null;
     }
-
 
     private String extractTokenFromCookies(Cookie[] cookies) {
         if (cookies == null) {

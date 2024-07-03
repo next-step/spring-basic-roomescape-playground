@@ -20,22 +20,26 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
+    private Long memberId;
+
     public Reservation() {
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(String name, String date, Time time, Theme theme, Long memberId) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.memberId = memberId;
     }
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
+    public Reservation(Long id, String name, String date, Time time, Theme theme, Long memberId) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.memberId = memberId;
     }
 
     public Long getId() {
@@ -56,5 +60,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Long getMemberId() {
+        return memberId;
     }
 }
