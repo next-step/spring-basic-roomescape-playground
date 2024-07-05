@@ -2,9 +2,11 @@ package roomescape.reservation.waiting;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomescape.theme.Theme;
 
 @Getter
+@NoArgsConstructor
 @Entity
 public class Waiting {
 
@@ -18,9 +20,6 @@ public class Waiting {
     private Long memberId;
     private String date;
     private String time;
-
-    public Waiting() {
-    }
 
     public Waiting(Theme theme, Long memberId, String date, String time) {
         this.theme = theme;

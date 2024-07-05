@@ -4,8 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 public class Theme {
 
     @Id
@@ -13,9 +15,6 @@ public class Theme {
     private Long id;
     private String name;
     private String description;
-
-    public Theme() {
-    }
 
     public Theme(Long id, String name, String description) {
         this.id = id;

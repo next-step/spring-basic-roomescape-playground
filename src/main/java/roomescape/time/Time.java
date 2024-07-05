@@ -1,8 +1,10 @@
 package roomescape.time;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 public class Time {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,10 +20,6 @@ public class Time {
 
     public Time(String value) {
         this.value = value;
-    }
-
-    public Time() {
-
     }
 
     public Long getId() {

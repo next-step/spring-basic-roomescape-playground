@@ -1,8 +1,10 @@
 package roomescape.member;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 public class Member {
 
     @Id
@@ -13,9 +15,6 @@ public class Member {
     private String email;
     private String password;
     private String role;
-
-    public Member() {
-    }
 
     public Member(Long id, String name, String email, String role) {
         this.id = id;

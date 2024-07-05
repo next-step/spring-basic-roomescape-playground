@@ -2,12 +2,14 @@ package roomescape.reservation;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Reservation {
 
     @Id
@@ -46,9 +48,5 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Reservation() {
-
     }
 }
