@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
 
 import roomescape.auth.LoginMember;
+import roomescape.member.MemberRepository;
 import roomescape.reservation.waiting.Waiting;
 import roomescape.reservation.waiting.WaitingRepository;
 import roomescape.reservation.waiting.WaitingResponse;
@@ -22,13 +23,15 @@ public class ReservationService {
 	private final TimeRepository timeRepository;
 	private final ThemeRepository themeRepository;
 	private final WaitingRepository waitingRepository;
+	private final MemberRepository memberRepository;
 
 	public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
-		ThemeRepository themeRepository, WaitingRepository waitingRepository) {
+		ThemeRepository themeRepository, WaitingRepository waitingRepository, MemberRepository memberRepository) {
 		this.reservationRepository = reservationRepository;
 		this.timeRepository = timeRepository;
 		this.themeRepository = themeRepository;
 		this.waitingRepository = waitingRepository;
+		this.memberRepository = memberRepository;
 	}
 
 	public ReservationResponse save(ReservationRequest reservationRequest, LoginMember member) {
@@ -46,9 +49,8 @@ public class ReservationService {
 		if (reservationExists) {
 			throw new IllegalArgumentException("Reservation already exists");
 		}
-
 		Reservation reservation = reservationRepository.save(
-			new Reservation(member.name(), reservationRequest.getDate(), time, theme));
+			new Reservation(member.id(), member.name(), reservationRequest.getDate(), time, theme));
 
 		return new ReservationResponse(reservation.getId(), reservationRequest.getName(),
 			reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
@@ -82,7 +84,8 @@ public class ReservationService {
 	}
 
 	public List<MyReservationResponse> findAllMyReservations(LoginMember loginMember) {
-		List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
+		List<Reservation> reservations = reservationRepository.findByName(loginMember.name());
+
 		List<MyReservationResponse> reservationResponses = reservations.stream()
 			.map(reservation -> new MyReservationResponse(
 				reservation.getId(),

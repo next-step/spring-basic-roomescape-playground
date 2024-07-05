@@ -9,7 +9,7 @@ import roomescape.time.Time;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-	List<Reservation> findByMemberId(Long id);
+	List<Reservation> findByName(String name);
 
 	List<Reservation> findByDateAndThemeId(String date, Long themeId);
 

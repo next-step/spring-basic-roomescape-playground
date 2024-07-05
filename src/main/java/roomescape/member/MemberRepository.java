@@ -15,5 +15,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 		return this.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid member id"));
 	}
 
+	default Member getByName(String name) {
+		return this.findByName(name).orElseThrow(() -> new IllegalArgumentException("Invalid member name"));
+	}
+
 	Optional<Member> findByEmailAndPassword(String email, String password);
+
+	Optional<Member> findByName(String name);
+
 }

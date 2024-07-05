@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
@@ -18,6 +19,7 @@ public class Reservation {
 	private Long id;
 
 	@ManyToOne
+	@JoinColumn(name = "member_id")
 	private Member member;
 
 	@Column(nullable = false)
