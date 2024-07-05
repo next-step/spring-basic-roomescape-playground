@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import roomescape.member.Member;
@@ -9,7 +10,7 @@ import roomescape.time.Time;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Reservation {
 
     @Id
