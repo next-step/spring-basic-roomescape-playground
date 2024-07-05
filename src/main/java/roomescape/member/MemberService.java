@@ -19,17 +19,13 @@ public class MemberService {
 	}
 
 	public String login(MemberLoginRequest request) {
-		Member member = memberRepository.findByEmailAndPassword(request.email(), request.password());
-		if (member == null) {
-			throw new IllegalArgumentException("Invalid email or password");
-		}
+		Member member = memberRepository.getByEmailAndPassword(request.email(), request.password());
 		return jwtProvider.createToken(member);
 	}
 
 	public MemberCheckResponse checkMember(String token) {
 		Long memberId = JwtUtil.getIdFromToken(token);
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid member"));
+		Member member = memberRepository.getById(memberId);
 		return new MemberCheckResponse(member.getName());
 	}
 

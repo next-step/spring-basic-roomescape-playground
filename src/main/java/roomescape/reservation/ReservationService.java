@@ -37,18 +37,14 @@ public class ReservationService {
 				reservationRequest.getTheme(), reservationRequest.getTime());
 		}
 
-		Time time = timeRepository.findById(reservationRequest.getTime())
-			.orElseThrow(() -> new IllegalArgumentException("Invalid time ID"));
-		Theme theme = themeRepository.findById(reservationRequest.getTheme())
-			.orElseThrow(() -> new IllegalArgumentException("Invalid theme ID"));
+		Time time = timeRepository.getById(reservationRequest.getTime());
+		Theme theme = themeRepository.getById(reservationRequest.getTheme());
 
 		boolean reservationExists = reservationRepository.existsByDateAndTimeAndTheme(reservationRequest.getDate(),
 			time, theme);
 
 		if (reservationExists) {
-			throw new IllegalArgumentException("예약이 이미 존재합니다.");
-			// return new ReservationResponse(null, reservationRequest.getName(), theme.getName(),
-			// 	reservationRequest.getDate(), time.getValue());
+			throw new IllegalArgumentException("Reservation already exists");
 		}
 
 		Reservation reservation = reservationRepository.save(
@@ -64,10 +60,8 @@ public class ReservationService {
 				reservationRequest.getTheme(), reservationRequest.getTime());
 		}
 
-		Time time = timeRepository.findById(reservationRequest.getTime())
-			.orElseThrow(() -> new IllegalArgumentException("Invalid time ID"));
-		Theme theme = themeRepository.findById(reservationRequest.getTheme())
-			.orElseThrow(() -> new IllegalArgumentException("Invalid theme ID"));
+		Time time = timeRepository.getById(reservationRequest.getTime());
+		Theme theme = themeRepository.getById(reservationRequest.getTheme());
 
 		Waiting waiting = waitingRepository.save(
 			new Waiting(member.name(), reservationRequest.getDate(), time, theme));
