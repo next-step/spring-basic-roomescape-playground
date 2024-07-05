@@ -3,28 +3,30 @@ package roomescape.reservation.waiting;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.theme.Theme;
-import roomescape.theme.ThemeDao;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
-import roomescape.time.TimeDao;
+import roomescape.time.TimeRepository;
 
 import java.util.List;
 
 @Service
 public class WaitingService {
-    private final WaitingDao waitingDao;
-    private final TimeDao timeDao;
-    private final ThemeDao themeDao;
+    private final WaitingRepository waitingRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public WaitingService(WaitingDao waitingDao, TimeDao timeDao, ThemeDao themeDao) {
-        this.waitingDao = waitingDao;
-        this.timeDao = timeDao;
-        this.themeDao = themeDao;
+    public WaitingService(WaitingRepository waitingRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+        this.waitingRepository = waitingRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public WaitingResponse createWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
-        Time time = timeDao.findById(waitingRequest.getTime());
-        Theme theme = themeDao.findById(waitingRequest.getTheme());
-        List<Waiting> waitings = waitingDao.findByThemeIdAndDateAndTime(theme.getId(), waitingRequest.getDate(), time.getValue());
+        Time time = timeRepository.findById(waitingRequest.getTime())
+                .orElseThrow(() -> new IllegalArgumentException("Time not found"));
+        Theme theme = themeRepository.findById(waitingRequest.getTheme())
+                .orElseThrow(() -> new IllegalArgumentException("Theme not found"));
+        List<Waiting> waitings = waitingRepository.findByThemeIdAndDateAndTime(theme.getId(), waitingRequest.getDate(), time.getValue());
         int cnt = waitings.size();
 
         waitings.stream()
@@ -34,15 +36,15 @@ public class WaitingService {
                 .filter(it -> it.getTime().equals(waitingRequest.getTime()))
                 .findAny()
                 .ifPresent(it -> {
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("대기 없음");
                 });
 
-        Waiting waiting = waitingDao.save(new Waiting(theme, loginMember.id(), waitingRequest.getDate(), time.getValue()));
+        Waiting waiting = waitingRepository.save(new Waiting(theme, loginMember.id(), waitingRequest.getDate(), time.getValue()));
         return new WaitingResponse(waiting.getId(), waiting.getDate(),
                 waiting.getTime(), waiting.getTheme().getId(), cnt);
     }
 
     public void cancelWaiting(Long id) {
-        waitingDao.deleteById(id);
+        waitingRepository.deleteById(id);
     }
 }

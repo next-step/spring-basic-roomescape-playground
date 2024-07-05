@@ -6,28 +6,28 @@ import roomescape.token.TokenController;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
     private TokenController tokenController;
 
-    public MemberService(MemberDao memberDao, TokenController tokenController) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository, TokenController tokenController) {
+        this.memberRepository = memberRepository;
         this.tokenController = tokenController;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     //email 이랑 password받아서 토큰 생성 후 리턴
     public String login(@RequestBody LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
         return tokenController.createToken(member);
     }
 
     public MemberCheckResponse memberChecking(String token) throws IllegalAccessException {
         TokenResponse tokenResponse = tokenController.verifyToken(token);
-        Member member = memberDao.findByName(tokenResponse.getName());
+        Member member = memberRepository.findByName(tokenResponse.getName());
         if (member == null) {
             throw new IllegalAccessException("Invalid");
         }
@@ -35,6 +35,6 @@ public class MemberService {
     }
 
     public Member findByName(String name) {
-        return memberDao.findByName(name);
+        return memberRepository.findByName(name);
     }
 }
