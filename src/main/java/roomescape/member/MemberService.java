@@ -6,8 +6,8 @@ import roomescape.token.TokenController;
 
 @Service
 public class MemberService {
-    private MemberRepository memberRepository;
-    private TokenController tokenController;
+    private final MemberRepository memberRepository;
+    private final TokenController tokenController;
 
     public MemberService(MemberRepository memberRepository, TokenController tokenController) {
         this.memberRepository = memberRepository;
