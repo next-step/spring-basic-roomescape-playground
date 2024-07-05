@@ -1,43 +1,64 @@
 package roomescape.member;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Member {
-    private Long id;
-    private String name;
-    private String email;
-    private String password;
-    private String role;
 
-    public Member(Long id, String name, String email, String role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    public Member(String name, String email, String password, String role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
+	@Column(nullable = false)
+	private String name;
 
-    public Long getId() {
-        return id;
-    }
+	@Column(nullable = false, unique = true)
+	private String email;
 
-    public String getName() {
-        return name;
-    }
+	@Column(nullable = false)
+	private String password;
 
-    public String getEmail() {
-        return email;
-    }
+	@Column(nullable = false)
+	private String role;
 
-    public String getPassword() {
-        return password;
-    }
+	public Member() {
+	}
 
-    public String getRole() {
-        return role;
-    }
+	public Member(Long id, String name, String email, String role) {
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.role = role;
+	}
+
+	public Member(String name, String email, String password, String role) {
+		this.name = name;
+		this.email = email;
+		this.password = password;
+		this.role = role;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public String getRole() {
+		return role;
+	}
 }
