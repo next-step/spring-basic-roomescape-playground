@@ -5,6 +5,7 @@ public record WaitingResponse(
 	String name,
 	String theme,
 	String date,
-	String time
+	String time,
+	int waitingNumber
 ) {
 }

@@ -46,8 +46,9 @@ public class ReservationService {
 			time, theme);
 
 		if (reservationExists) {
-			return new ReservationResponse(null, reservationRequest.getName(), theme.getName(),
-				reservationRequest.getDate(), time.getValue());
+			throw new IllegalArgumentException("예약이 이미 존재합니다.");
+			// return new ReservationResponse(null, reservationRequest.getName(), theme.getName(),
+			// 	reservationRequest.getDate(), time.getValue());
 		}
 
 		Reservation reservation = reservationRepository.save(
@@ -72,7 +73,7 @@ public class ReservationService {
 			new Waiting(member.name(), reservationRequest.getDate(), time, theme));
 
 		return new WaitingResponse(waiting.getId(), reservationRequest.getName(),
-			waiting.getTheme().getName(), waiting.getDate(), waiting.getTime().getValue());
+			waiting.getTheme().getName(), waiting.getDate(), waiting.getTime().getValue(), getWaitingRank(waiting));
 	}
 
 	public void deleteById(Long id) {

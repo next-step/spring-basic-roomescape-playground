@@ -29,6 +29,6 @@ public class WaitingController {
 		}
 		WaitingResponse waiting = reservationService.wait(reservationRequest, member);
 
-		return ResponseEntity.created(URI.create("/reservations/" + waiting.waitingId())).body(waiting);
+		return ResponseEntity.created(URI.create("/waitings/" + waiting.waitingId())).body(waiting);
 	}
 }
