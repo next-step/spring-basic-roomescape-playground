@@ -1,18 +1,15 @@
-package roomescape.infrastructure.jwt;
+package roomescape.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import roomescape.auth.AuthorizationProvider;
 import roomescape.auth.MemberAuthContext;
 import roomescape.auth.MemberCredential;
 
-@Component
-public class JwtProvider implements AuthorizationProvider {
+public class JwtUtils implements AuthorizationProvider {
 
     private static final String USER_NAME = "name";
     private static final String USER_ROLE = "role";
@@ -20,10 +17,8 @@ public class JwtProvider implements AuthorizationProvider {
     private final String jwtSecret;
     private final Long validityInMilliseconds;
 
-    public JwtProvider(
-            @Value("${roomescape.auth.jwt.secret}") String jwtSecret,
-            @Value("${roomescape.auth.jwt.expiration}") Long expireMilliseconds
-    ) {
+    public JwtUtils(String jwtSecret,
+                    Long expireMilliseconds) {
         this.jwtSecret = jwtSecret;
         this.validityInMilliseconds = expireMilliseconds;
     }

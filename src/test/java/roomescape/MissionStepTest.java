@@ -13,7 +13,9 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.jwt.JwtUtils;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.waiting.WaitingResponse;
@@ -161,5 +163,11 @@ public class MissionStepTest {
                                       .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 }
