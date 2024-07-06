@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import roomescape.time.Time;
@@ -22,6 +23,9 @@ public class JpaTest {
     @Autowired
     private TimeRepository timeRepository;
 
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
+
     @Test
     void 사단계() {
         Time time = new Time("10:00");
@@ -31,5 +35,10 @@ public class JpaTest {
         Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
         assertThat(persistTime.getValue()).isEqualTo(time.getValue());
+    }
+
+    @Test
+    void 팔단계() {
+        assertThat(secretKey).isNotBlank();
     }
 }
