@@ -23,23 +23,30 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     public Reservation() {}
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
+    public Reservation(Long id, String name, String date, Time time, Theme theme, Member member) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(String name, String date, Time time, Theme theme, Member member) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -78,5 +85,13 @@ public class Reservation {
 
     public void setTheme(Theme theme) {
         this.theme = theme;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
     }
 }

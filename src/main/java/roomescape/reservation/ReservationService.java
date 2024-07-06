@@ -7,6 +7,7 @@ import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -20,6 +21,18 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
+    public List<MyReservationResponse> findReservationsByMemberId(Long memberId) {
+        return reservationRepository.findByMemberId(memberId).stream()
+                .map(reservation -> new MyReservationResponse(
+                        reservation.getId(),
+                        reservation.getTheme().getName(),
+                        reservation.getDate(),
+                        reservation.getTime().getValue(),
+                        "예약"
+                ))
+                .collect(Collectors.toList());
+    }
+
     public ReservationResponse save(ReservationRequest reservationRequest) {
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow(() -> new IllegalArgumentException("Invalid time ID"));
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow(() -> new IllegalArgumentException("Invalid theme ID"));
@@ -28,7 +41,8 @@ public class ReservationService {
                 reservationRequest.getName(),
                 reservationRequest.getDate(),
                 time,
-                theme
+                theme,
+                null
         ));
 
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
