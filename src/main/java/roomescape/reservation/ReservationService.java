@@ -1,7 +1,6 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-import roomescape.instructure.JwtTokenProvider;
 import roomescape.member.*;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
