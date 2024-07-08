@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import auth.JwtUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -18,9 +19,11 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private MemberService memberService;
+    private JwtUtils jwtUtils;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService,JwtUtils jwtUtils) {
         this.memberService = memberService;
+        this.jwtUtils=jwtUtils;
     }
 
     @PostMapping("/members")
@@ -31,8 +34,8 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        String accessToken = memberService.createToken(loginRequest);
-        Cookie cookie = memberService.createCookie(accessToken);
+        String accessToken = jwtUtils.createToken(loginRequest);
+        Cookie cookie = jwtUtils.createCookie(accessToken);
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
@@ -51,7 +54,7 @@ public class MemberController {
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token = memberService.extractTokenFromCookie(cookies);
+        String token = jwtUtils.extractTokenFromCookie(cookies);
 
         LoginCheckResponse loginCheckResponse = new LoginCheckResponse(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))

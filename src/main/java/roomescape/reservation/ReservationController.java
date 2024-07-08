@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import auth.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +25,13 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final MemberService memberService;
     private final WaitingService waitingService;
+    private final JwtUtils jwtUtils;
 
-    public ReservationController(ReservationService reservationService,MemberService memberService,WaitingService waitingService) {
+    public ReservationController(ReservationService reservationService,MemberService memberService,WaitingService waitingService,JwtUtils jwtUtils) {
         this.reservationService = reservationService;
         this.memberService=memberService;
         this.waitingService=waitingService;
+        this.jwtUtils=jwtUtils;
     }
 
     @GetMapping("/reservations")
@@ -67,8 +70,8 @@ public class ReservationController {
     @GetMapping("/reservations-mine")
     public ResponseEntity reservationsMine(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token = memberService.extractTokenFromCookie(cookies);
-        Member member = memberService.extractMemberFromToken(token);
+        String token = jwtUtils.extractTokenFromCookie(cookies);
+        Member member = jwtUtils.extractMemberFromToken(token);
 
         List<MyReservationResponse> reservations = reservationService.findByMemberId(member.getId());
         List<MyReservationResponse> waitings = waitingService.findByMemberId(member.getId());

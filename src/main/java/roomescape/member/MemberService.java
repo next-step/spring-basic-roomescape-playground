@@ -18,7 +18,7 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public String createToken(LoginRequest loginRequest) {
+    /*public String createToken(LoginRequest loginRequest) {
         if (!checkValidLogin(loginRequest.getEmail(), loginRequest.getPassword())) {
             throw new AuthorizationException();
         }
@@ -34,34 +34,34 @@ public class MemberService {
                 .compact();
 
         return accessToken;
-    }
+    }*/
 
-    public String extractTokenFromCookie(Cookie[] cookies) {
+    /*public String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
             }
         }
         throw new AuthorizationException();
-    }
+    }*/
 
-    public Member extractMemberFromToken(String token) {
+    /*public Member extractMemberFromToken(String token) {
         Long memberId = Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
         return memberRepository.findById(memberId).get();
-    }
+    }*/
 
-    public Cookie createCookie(String accessToken) {
+   /* public Cookie createCookie(String accessToken) {
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
-    }
+    }*/
 
-    public boolean checkValidLogin(String principal, String credentials) {
+    /*public boolean checkValidLogin(String principal, String credentials) {
         return memberRepository.existsByEmailAndPassword(principal, credentials);
-    }
+    }*/
 }
