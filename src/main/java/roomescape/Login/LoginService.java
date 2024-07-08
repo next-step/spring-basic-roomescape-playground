@@ -2,7 +2,7 @@ package roomescape.Login;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import roomescape.jwt.JwtUtils;
+import auth.JwtUtils;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.member.MemberResponse;

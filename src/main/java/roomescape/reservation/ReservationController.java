@@ -3,7 +3,7 @@ package roomescape.reservation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.Login.LoginMember;
-import roomescape.jwt.JwtUtils;
+import auth.JwtUtils;
 
 import java.net.URI;
 import java.util.List;

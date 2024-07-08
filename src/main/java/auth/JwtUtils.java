@@ -1,9 +1,8 @@
-package roomescape.jwt;
+package auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import roomescape.member.Member;
 
 public class JwtUtils {

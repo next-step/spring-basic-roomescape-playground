@@ -1,6 +1,6 @@
 package roomescape;
 
-import roomescape.jwt.JwtUtils;
+import auth.JwtUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
