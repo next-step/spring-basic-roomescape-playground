@@ -1,17 +1,26 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
+    @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        Member member = new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER");
+        Member savedMember = memberRepository.save(member);
+        return new MemberResponse(savedMember.getId(), savedMember.getName(), savedMember.getEmail());
+    }
+
+    @Transactional(readOnly = true)
+    public Member login(String email, String password) {
+        return memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
     }
 }
