@@ -5,14 +5,14 @@ import org.springframework.stereotype.Service;
 import roomescape.member.model.MemberLoginRequest;
 import roomescape.member.model.MemberLoginResponse;
 import roomescape.member.model.Member;
-import roomescape.token.JwtTokenService;
+import auth.JwtUtils;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenService jwtTokenService;
+    private final JwtUtils jwtUtils;
 
     public roomescape.member.MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
@@ -21,11 +21,11 @@ public class MemberService {
 
     public String login(MemberLoginRequest memberLoginRequest){
         Member member = memberRepository.findByEmailAndPassword(memberLoginRequest.getEmail(), memberLoginRequest.getPassword());
-        return jwtTokenService.create(member);
+        return jwtUtils.create(member);
     }
 
     public Member checkLogin(String token) {
-        MemberLoginResponse memberLoginResponse = jwtTokenService.verifyToken(token);
+        MemberLoginResponse memberLoginResponse = jwtUtils.verifyToken(token);
         Member member = memberRepository.findByName(memberLoginResponse.getName());
 
         if(member==null){
