@@ -11,7 +11,6 @@ import roomescape.member.LoginRequest;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 
-@Component
 @RequiredArgsConstructor
 public class JwtUtils {
 
