@@ -7,6 +7,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.stereotype.Component;
@@ -20,15 +21,16 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 @DataJpaTest
 public class JpaTest {
     @Autowired
     private TestEntityManager entityManager;
-
     @Autowired
     private TimeRepository timeRepository;
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
 
     @Test
     void 사단계() {
@@ -114,7 +116,11 @@ public class JpaTest {
     @Test
     void 칠단계() {
         Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
-        assertNotNull(componentAnnotation, "JwtUtils should be annotated with @Component");
+        assertThat(componentAnnotation).isNull();
     }
 
+    @Test
+    void 팔단계() {
+        assertThat(secretKey).isNotBlank();
+    }
 }

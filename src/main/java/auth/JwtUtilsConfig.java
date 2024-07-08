@@ -6,6 +6,7 @@ import roomescape.member.MemberRepository;
 
 @Configuration
 public class JwtUtilsConfig {
+
     private final MemberRepository memberRepository;
 
     public JwtUtilsConfig(MemberRepository memberRepository) {
