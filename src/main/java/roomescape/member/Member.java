@@ -1,6 +1,17 @@
 package roomescape.member;
 
+import jakarta.persistence.*;
+import roomescape.reservation.Reservation;
+
+import java.util.List;
+
+import static jakarta.persistence.GenerationType.*;
+
+@Entity
 public class Member {
+
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private String name;
     private String email;
@@ -19,6 +30,10 @@ public class Member {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public Member() {
+
     }
 
     public Long getId() {
