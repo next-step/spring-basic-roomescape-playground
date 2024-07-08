@@ -1,4 +1,4 @@
-package roomescape.interceptor;
+package roomescape.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +14,7 @@ import java.util.Optional;
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
-    private LoginService loginService;
+    private final LoginService loginService;
 
     public AuthInterceptor(LoginService loginService) {
         this.loginService = loginService;

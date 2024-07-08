@@ -1,12 +1,9 @@
 package roomescape.reservation;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.Login.LoginMember;
-import roomescape.jwt.JwtController;
-import roomescape.jwt.JwtTokenMember;
-import roomescape.member.MemberResponse;
+import roomescape.jwt.JwtUtils;
 
 import java.net.URI;
 import java.util.List;
@@ -15,11 +12,11 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final JwtController jwtController;
+    private final JwtUtils jwtUtils;
 
-    public ReservationController(ReservationService reservationService,JwtController jwtController) {
+    public ReservationController(ReservationService reservationService, JwtUtils jwtUtils) {
         this.reservationService = reservationService;
-        this.jwtController = jwtController;
+        this.jwtUtils = jwtUtils;
     }
 
     @GetMapping("/reservations")
