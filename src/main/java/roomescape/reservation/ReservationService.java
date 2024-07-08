@@ -45,9 +45,9 @@ public class ReservationService {
         Reservation reservation = reservationRepository.save(new Reservation(
                 reservationRequest.getName(),
                 reservationRequest.getDate(),
-                member,
                 time,
-                theme
+                theme,
+                member
         ));
 
         return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());

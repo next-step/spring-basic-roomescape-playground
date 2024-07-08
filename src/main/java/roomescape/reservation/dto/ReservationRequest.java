@@ -10,6 +10,10 @@ public class ReservationRequest {
     private Long theme;
     private Long time;
 
+    public ReservationRequest() {
+
+    }
+
     public void setName(String name) {
         this.name = name;
     }
