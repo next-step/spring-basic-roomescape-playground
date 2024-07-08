@@ -19,8 +19,7 @@ public class Reservation {
     @ManyToOne
     private Member member;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme, Member member) {
-        this.id = id;
+    public Reservation(String name, String date, Time time, Theme theme, Member member) {
         this.name = name;
         this.date = date;
         this.time = time;
@@ -28,7 +27,7 @@ public class Reservation {
         this.member = member;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(String name, String date, Time time, Theme theme ) {
         this.name = name;
         this.date = date;
         this.time = time;
@@ -38,6 +37,7 @@ public class Reservation {
     public Reservation() {
 
     }
+
 
     public Long getId() {
         return id;
