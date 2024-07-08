@@ -1,7 +1,10 @@
-package roomescape.auth;
+package roomescape;
 
+import auth.AdminInterceptor;
+import auth.LoginMemberArgumentResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -9,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
+@Import(auth.AuthConfig.class)
 public class WebConfig implements WebMvcConfigurer {
 
     @Autowired

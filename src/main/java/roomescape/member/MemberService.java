@@ -4,14 +4,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.provider.TokenProvider;
+import auth.JwtUtils;
 
 @Service
 public class MemberService {
     private MemberRepository memberRepository;
+    private final JwtUtils jwtUtils;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
+        this.jwtUtils = jwtUtils;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -24,8 +26,7 @@ public class MemberService {
         return member;
     }
     public String createToken(Member member) {
-        String accessToken = TokenProvider.createToken(member);
-        return accessToken;
+        return jwtUtils.createToken(member);
     }
     public String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {

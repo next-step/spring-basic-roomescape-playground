@@ -1,15 +1,19 @@
-package roomescape.provider;
+package auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.security.auth.message.config.AuthConfigProvider;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
-import roomescape.member.MemberResponse;
+import org.springframework.beans.factory.annotation.Value;
+public class JwtUtils  {
+    private final String secretKey;
 
-@Component
-public class TokenProvider {
-    public static String createToken(Member member) {
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    public JwtUtils(String secretKey) {
+        this.secretKey = secretKey;
+    }
+    public String createToken(Member member) {
+
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
