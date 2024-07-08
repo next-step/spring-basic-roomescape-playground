@@ -47,4 +47,8 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream().map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue())).toList();
     }
+
+    public List<MyReservationResponse> getMyReservation(LoginMember member) {
+        return reservationRepository.findByMemberId(member.getId()).stream().map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약")).toList();
+    }
 }

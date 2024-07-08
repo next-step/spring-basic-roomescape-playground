@@ -25,6 +25,8 @@ public class Reservation {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    private String status;
+
     public Reservation(Long id, String name, String date, Time time, Theme theme, Member member) {
         this.id = id;
         this.name = name;

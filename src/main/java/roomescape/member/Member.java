@@ -15,6 +15,9 @@ public class Member {
     private String password;
     private String role;
 
+    public Member() {
+
+    }
     public Member(Long id, String name, String email, String role) {
         this.id = id;
         this.name = name;
