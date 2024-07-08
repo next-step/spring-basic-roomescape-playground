@@ -1,8 +1,7 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Jwt;
-import org.hibernate.id.AbstractUUIDGenerator;
 import org.springframework.stereotype.Service;
+import roomescape.Jwt.JwtUtils;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.member.MemberResponse;

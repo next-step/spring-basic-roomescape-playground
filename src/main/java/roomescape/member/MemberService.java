@@ -4,20 +4,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 //import roomescape.auth.AuthorizationExtractor;
-import roomescape.auth.JwtUtils;
+import roomescape.Jwt.JwtUtils;
 
 import java.util.Arrays;
 
 @Service
 public class MemberService {
     private MemberDao memberDao;
-//    private AuthorizationExtractor  authorizationExtractor;
     private JwtUtils jwtUtils;
-
-//    public MemberService(MemberDao memberDao, AuthorizationExtractor authorizationExtractor) {
-//        this.memberDao = memberDao;
-//        this.authorizationExtractor =  authorizationExtractor;
-//    }
 
     public MemberService(MemberDao memberDao, JwtUtils jwtUtils) {
         this.memberDao = memberDao;
