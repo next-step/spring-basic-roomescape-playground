@@ -5,6 +5,8 @@ import roomescape.member.model.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+import java.util.Optional;
+
 @Entity
 public class Reservation {
     @Id
@@ -40,6 +42,14 @@ public class Reservation {
 
     public Reservation() {
 
+    }
+
+    public Reservation(String admin, String date, Time time, Theme theme, Member member) {
+        name =admin;
+        this.date = date;
+        this.time =time;
+        this.theme=theme;
+        this.member=member;
     }
 
     public Long getId() {
