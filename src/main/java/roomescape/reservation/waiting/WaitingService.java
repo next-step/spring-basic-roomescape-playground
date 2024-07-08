@@ -1,5 +1,6 @@
 package roomescape.reservation.waiting;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import auth.LoginMember;
 import roomescape.theme.Theme;
@@ -10,16 +11,11 @@ import roomescape.time.TimeRepository;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class WaitingService {
     private final WaitingRepository waitingRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
-
-    public WaitingService(WaitingRepository waitingRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
-        this.waitingRepository = waitingRepository;
-        this.timeRepository = timeRepository;
-        this.themeRepository = themeRepository;
-    }
 
     public WaitingResponse createWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
         Time time = timeRepository.findById(waitingRequest.getTime())

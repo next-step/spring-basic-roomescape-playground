@@ -5,6 +5,7 @@ import auth.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.reservation.waiting.WaitingRepository;
+import roomescape.reservation.waiting.WaitingWithRank;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -62,11 +63,15 @@ public class ReservationService {
     public List<MyReservationsResponse> findMyReservations(LoginMember loginMember) {
         List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
 
-        Stream<MyReservationsResponse> str1 = reservations.stream()
+        Stream<MyReservationsResponse> str1 = reservations
+                .stream()
                 .map(it -> new MyReservationsResponse(it.getId(), it.getTheme().getName(),
                         it.getDate(), it.getTime().getValue(), "예약"));
 
-        Stream<MyReservationsResponse> str2 = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id()).stream()
+        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id());
+
+        Stream<MyReservationsResponse> str2 = waitings
+                .stream()
                 .map(it -> new MyReservationsResponse(it.waiting().getId(), it.waiting().getTheme().getName(),
                         it.waiting().getDate(), it.waiting().getTime(), (it.rank() + 1) + "번째 예약대기"));
 

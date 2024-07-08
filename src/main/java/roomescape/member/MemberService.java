@@ -1,5 +1,7 @@
 package roomescape.member;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import auth.JwtUtils;
@@ -9,6 +11,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtUtils jwtUtils;
 
+    @Autowired
     public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
         this.jwtUtils = jwtUtils;
