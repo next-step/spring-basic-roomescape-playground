@@ -1,7 +1,7 @@
 package roomescape.reservation.waiting;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.LoginMember;
+import auth.LoginMember;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;

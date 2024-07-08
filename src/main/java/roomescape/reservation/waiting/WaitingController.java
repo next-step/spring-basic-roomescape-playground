@@ -3,20 +3,16 @@ package roomescape.reservation.waiting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.auth.LoginMember;
+import auth.LoginMember;
 
 import java.net.URI;
 
 @RequestMapping("/waitings")
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 @RestController
 public class WaitingController {
 
     private final WaitingService waitingService;
-
-    public WaitingController(WaitingService waitingService) {
-        this.waitingService = waitingService;
-    }
 
     //예약 대기 생성해줘야함
     @PostMapping

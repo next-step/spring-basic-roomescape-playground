@@ -1,4 +1,4 @@
-package roomescape.token;
+package auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -9,7 +9,7 @@ import roomescape.member.Member;
 import roomescape.member.TokenResponse;
 
 @Component
-public class TokenController {
+public class JwtUtils {
 
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;

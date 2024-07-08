@@ -2,16 +2,16 @@ package roomescape.member;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.token.TokenController;
+import auth.JwtUtils;
 
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final TokenController tokenController;
+    private final JwtUtils jwtUtils;
 
-    public MemberService(MemberRepository memberRepository, TokenController tokenController) {
+    public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
-        this.tokenController = tokenController;
+        this.jwtUtils = jwtUtils;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -22,11 +22,11 @@ public class MemberService {
     //email 이랑 password받아서 토큰 생성 후 리턴
     public String login(@RequestBody LoginRequest loginRequest) {
         Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
-        return tokenController.createToken(member);
+        return jwtUtils.createToken(member);
     }
 
     public MemberCheckResponse memberChecking(String token) throws IllegalAccessException {
-        TokenResponse tokenResponse = tokenController.verifyToken(token);
+        TokenResponse tokenResponse = jwtUtils.verifyToken(token);
         Member member = memberRepository.findByName(tokenResponse.getName());
         if (member == null) {
             throw new IllegalAccessException("Invalid");
