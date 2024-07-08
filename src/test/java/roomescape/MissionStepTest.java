@@ -7,7 +7,9 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.api.JwtUtils;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.MemberService;
 import roomescape.reservation.dto.MyReservationResponse;
@@ -177,6 +179,12 @@ public class MissionStepTest {
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 
     private String createToken(String email, String password) {

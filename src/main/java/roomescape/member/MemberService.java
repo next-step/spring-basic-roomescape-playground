@@ -2,7 +2,7 @@ package roomescape.member;
 
 import org.springframework.stereotype.Service;
 import roomescape.api.JwtDecoder;
-import roomescape.api.JwtProvider;
+import roomescape.api.JwtUtils;
 import roomescape.exception.NotFoundException;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
@@ -10,11 +10,11 @@ import roomescape.member.dto.MemberResponse;
 @Service
 public class MemberService {
     private MemberRepository memberRepository;
-    private JwtProvider jwtProvider;
+    private JwtUtils jwtUtils;
 
-    public MemberService(MemberRepository memberRepository, JwtProvider jwtProvider) {
+    public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
-        this.jwtProvider = jwtProvider;
+        this.jwtUtils = jwtUtils;
     }
 
     public MemberResponse.Create createMember(MemberRequest.Create memberRequest) {
@@ -27,7 +27,7 @@ public class MemberService {
         if(member == null){
             throw new NotFoundException("유저를 찾을 수 없습니다.");
         }
-        return jwtProvider.createToken(member);
+        return jwtUtils.createToken(member);
     }
 
     public MemberResponse.Check checkMember(String token) {
