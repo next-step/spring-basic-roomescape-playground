@@ -1,12 +1,11 @@
-package auth;
+package roomescape;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import auth.LoginMemberArgumentResolver;
-import auth.AuthInterceptor;
+import roomescape.argumentResolver.LoginMemberArgumentResolver;
+import roomescape.interceptor.AuthInterceptor;
 
 import java.util.List;
 
