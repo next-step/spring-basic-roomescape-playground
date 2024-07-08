@@ -1,4 +1,4 @@
-package roomescape.theme;
+/*package roomescape.theme;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -39,3 +39,4 @@ public class ThemeDao {
         jdbcTemplate.update("UPDATE theme SET deleted = true WHERE id = ?", id);
     }
 }
+*/
