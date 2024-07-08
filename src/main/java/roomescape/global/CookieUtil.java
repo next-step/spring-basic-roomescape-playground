@@ -3,7 +3,7 @@ package roomescape.global;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import roomescape.constant.AuthConstant;
+import roomescape.global.constant.AuthConstant;
 
 public class CookieUtil {
 

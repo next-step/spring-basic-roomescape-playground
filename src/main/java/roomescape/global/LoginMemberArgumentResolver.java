@@ -7,18 +7,17 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.JwtTokenManager;
-import roomescape.constant.AuthConstant;
-import roomescape.global.CookieUtil;
-import roomescape.member.dto.LoginMember;
+import auth.JwtUtils;
+import roomescape.global.constant.AuthConstant;
+import roomescape.domain.member.dto.LoginMember;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtTokenManager jwtTokenManager;
+    private final JwtUtils jwtUtils;
 
-    public LoginMemberArgumentResolver(final JwtTokenManager jwtTokenManager) {
-        this.jwtTokenManager = jwtTokenManager;
+    public LoginMemberArgumentResolver(final JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -35,9 +34,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throws Exception {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final String token = CookieUtil.getTokenFromCookie(request, AuthConstant.TOKEN);
-        final String parsedName = jwtTokenManager.getValueFromJwtToken(token, AuthConstant.NAME);
-        final String parsedRole = jwtTokenManager.getValueFromJwtToken(token, AuthConstant.ROLE);
-        final Long parsedId = jwtTokenManager.getTokenPrincipal(token);
+        final String parsedName = jwtUtils.getValueFromJwtToken(token, AuthConstant.NAME);
+        final String parsedRole = jwtUtils.getValueFromJwtToken(token, AuthConstant.ROLE);
+        final Long parsedId = jwtUtils.getTokenPrincipal(token);
 
         return new LoginMember(parsedId, parsedName, parsedRole);
     }

@@ -4,16 +4,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.JwtTokenManager;
-import roomescape.constant.AuthConstant;
+import auth.JwtUtils;
+import roomescape.global.constant.AuthConstant;
 
 @Component
 public class AdminHandlerInterceptor implements HandlerInterceptor {
 
-    private final JwtTokenManager jwtTokenManager;
+    private final JwtUtils jwtUtils;
 
-    public AdminHandlerInterceptor(final JwtTokenManager jwtTokenManager) {
-        this.jwtTokenManager = jwtTokenManager;
+    public AdminHandlerInterceptor(final JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-        final String role = jwtTokenManager.getValueFromJwtToken(token, AuthConstant.ROLE);
+        final String role = jwtUtils.getValueFromJwtToken(token, AuthConstant.ROLE);
         if (!role.equalsIgnoreCase(AuthConstant.ADMIN.getValue())) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
