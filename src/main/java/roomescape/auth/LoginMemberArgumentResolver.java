@@ -9,7 +9,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import roomescape.jwt.JwtUtil;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 
@@ -17,9 +16,11 @@ import roomescape.member.MemberService;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
 	private final MemberService memberService;
+	private final JwtUtils jwtUtils;
 
-	public LoginMemberArgumentResolver(MemberService memberService) {
+	public LoginMemberArgumentResolver(MemberService memberService, JwtUtils jwtUtils) {
 		this.memberService = memberService;
+		this.jwtUtils = jwtUtils;
 	}
 
 	@Override
@@ -32,7 +33,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 		Cookie[] cookies = request.getCookies();
-		String token = JwtUtil.extractTokenFromCookie(cookies);
+		String token = jwtUtils.extractTokenFromCookie(cookies);
 		if (token == null) {
 			return null;
 		}

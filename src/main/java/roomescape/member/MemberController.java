@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import roomescape.jwt.JwtUtil;
+import roomescape.auth.JwtUtils;
 
 @RestController
 public class MemberController {
-	private MemberService memberService;
 
-	public MemberController(MemberService memberService) {
+	private MemberService memberService;
+	private final JwtUtils jwtUtils;
+
+	public MemberController(JwtUtils jwtUtils, MemberService memberService) {
+		this.jwtUtils = jwtUtils;
 		this.memberService = memberService;
 	}
 
@@ -39,7 +42,7 @@ public class MemberController {
 	@GetMapping("/login/check")
 	public MemberCheckResponse checkLogin(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
-		String token = JwtUtil.extractTokenFromCookie(cookies);
+		String token = jwtUtils.extractTokenFromCookie(cookies);
 		return memberService.checkMember(token);
 	}
 

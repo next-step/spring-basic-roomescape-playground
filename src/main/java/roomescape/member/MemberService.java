@@ -3,34 +3,33 @@ package roomescape.member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import roomescape.jwt.JwtProvider;
-import roomescape.jwt.JwtUtil;
+import roomescape.auth.JwtUtils;
 
 @Service
 public class MemberService {
 
 	private final MemberRepository memberRepository;
-	private final JwtProvider jwtProvider;
+	private final JwtUtils jwtUtils;
 
 	@Autowired
-	public MemberService(MemberRepository memberRepository, JwtProvider jwtProvider) {
+	public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
 		this.memberRepository = memberRepository;
-		this.jwtProvider = jwtProvider;
+		this.jwtUtils = jwtUtils;
 	}
 
 	public String login(MemberLoginRequest request) {
 		Member member = memberRepository.getByEmailAndPassword(request.email(), request.password());
-		return jwtProvider.createToken(member);
+		return jwtUtils.createToken(member);
 	}
 
 	public MemberCheckResponse checkMember(String token) {
-		Long memberId = JwtUtil.getIdFromToken(token);
+		Long memberId = jwtUtils.getIdFromToken(token);
 		Member member = memberRepository.getById(memberId);
 		return new MemberCheckResponse(member.getName());
 	}
 
 	public Member getMemberFromToken(String token) {
-		Long memberId = JwtUtil.getIdFromToken(token);
+		Long memberId = jwtUtils.getIdFromToken(token);
 		return memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid member"));
 	}
 
