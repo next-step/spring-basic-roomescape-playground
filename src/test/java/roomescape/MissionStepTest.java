@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import io.restassured.RestAssured;
@@ -21,9 +22,11 @@ import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.reservation.waiting.WaitingResponse;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(locations = "classpath:application.properties")
+
 public class MissionStepTest {
 
 	private String createToken(String email, String password) {

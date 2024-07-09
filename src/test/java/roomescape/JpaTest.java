@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
@@ -18,6 +19,9 @@ public class JpaTest {
 	@Autowired
 	private TimeRepository timeRepository;
 
+	@Value("${roomescape.auth.jwt.secret}")
+	private String secretKey;
+
 	@Test
 	void 사단계() {
 		Time time = new Time("10:00");
@@ -27,6 +31,11 @@ public class JpaTest {
 		Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
 		assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+	}
+
+	@Test
+	void 팔단계() {
+		assertThat(secretKey).isNotBlank();
 	}
 }
 
