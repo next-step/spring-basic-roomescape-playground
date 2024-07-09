@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
-import roomescape.JwtUtil;
+import roomescape.auth.JwtUtil;
 
 @Service
 public class MemberService {

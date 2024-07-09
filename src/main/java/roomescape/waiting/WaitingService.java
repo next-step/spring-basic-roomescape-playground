@@ -29,7 +29,7 @@ public class WaitingService {
     public List<WaitingWithRank> getWaitingsWithRankByMemberId(Long memberId) {
         return waitingRepository.findWaitingsWithRankByMemberId(memberId)
                 .stream()
-                .map(wr -> new WaitingWithRank(wr.getWaiting(), wr.getRank()))
+                .map(wr -> new WaitingWithRank(wr.getWaiting(), (long) (wr.getRank().intValue() + 1)))
                 .collect(Collectors.toList());
     }
 
