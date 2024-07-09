@@ -22,7 +22,7 @@ public class Reservation {
 
     private Long memberId;
 
-    public Reservation() {
+    public Reservation(Long id, String date, Long theme1Id, Long time1Id) {
     }
 
     public Reservation(String name, String date, Time time, Theme theme, Long memberId) {

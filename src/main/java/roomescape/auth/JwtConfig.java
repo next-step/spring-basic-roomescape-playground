@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JwtConfig {
 
-    @Value("${jwt.secret}")
+    @Value("${roomescape.auth.jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")

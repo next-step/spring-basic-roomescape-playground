@@ -52,4 +52,21 @@ public class MemberDao {
                 id
         );
     }
+
+    public boolean existsByEmail(String email) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM member WHERE email = ?", new Object[]{email}, Integer.class);
+        return count != null && count > 0;
+    }
+
+    public Member findByEmail(String email) {
+        return jdbcTemplate.queryForObject(
+                "SELECT * FROM member WHERE email = ?", new Object[]{email},
+                (rs, rowNum) -> new Member(
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("role")
+                ));
+    }
 }
