@@ -23,7 +23,8 @@ public class ReservationDao {
         return jdbcTemplate.query(
                 "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
                         "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
-                        "ti.id AS time_id, ti.time_value AS time_value " +
+                        "ti.id AS time_id, ti.time_value AS time_value, " +
+                        "r.member_id AS member_id " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
                         "JOIN time ti ON r.time_id = ti.id",
@@ -40,17 +41,20 @@ public class ReservationDao {
                                 rs.getLong("theme_id"),
                                 rs.getString("theme_name"),
                                 rs.getString("theme_description")
-                        )));
+                        ),
+                        rs.getLong("member_id")
+                ));
     }
 
     public Reservation save(ReservationRequest reservationRequest) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id, member_id) VALUES (?, ?, ?, ?, ?)", new String[]{"id"});
             ps.setString(1, reservationRequest.getDate());
             ps.setString(2, reservationRequest.getName());
             ps.setLong(3, reservationRequest.getTheme());
             ps.setLong(4, reservationRequest.getTime());
+            ps.setLong(5, reservationRequest.getMemberId());
             return ps;
         }, keyHolder);
 
@@ -67,7 +71,8 @@ public class ReservationDao {
                 reservationRequest.getName(),
                 reservationRequest.getDate(),
                 time,
-                theme
+                theme,
+                reservationRequest.getMemberId()
         );
     }
 
@@ -75,16 +80,17 @@ public class ReservationDao {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
-    public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
+    public List<Reservation> findByMemberId(Long memberId) {
         return jdbcTemplate.query(
                 "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
                         "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
-                        "ti.id AS time_id, ti.time_value AS time_value " +
+                        "ti.id AS time_id, ti.time_value AS time_value, " +
+                        "r.member_id AS member_id " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
-                        "JOIN time ti ON r.time_id = ti.id" +
-                        "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
+                        "JOIN time ti ON r.time_id = ti.id " +
+                        "WHERE r.member_id = ?",
+                new Object[]{memberId},
                 (rs, rowNum) -> new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
@@ -97,14 +103,17 @@ public class ReservationDao {
                                 rs.getLong("theme_id"),
                                 rs.getString("theme_name"),
                                 rs.getString("theme_description")
-                        )));
+                        ),
+                        rs.getLong("member_id")
+                ));
     }
 
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
         return jdbcTemplate.query(
                 "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
                         "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
-                        "ti.id AS time_id, ti.time_value AS time_value " +
+                        "ti.id AS time_id, ti.time_value AS time_value, " +
+                        "r.member_id AS member_id " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
                         "JOIN time ti ON r.time_id = ti.id " +
@@ -122,6 +131,8 @@ public class ReservationDao {
                                 rs.getLong("theme_id"),
                                 rs.getString("theme_name"),
                                 rs.getString("theme_description")
-                        )));
+                        ),
+                        rs.getLong("member_id")
+                ));
     }
 }

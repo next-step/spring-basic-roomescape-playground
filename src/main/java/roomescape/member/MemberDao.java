@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class MemberDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -40,16 +40,33 @@ public class MemberDao {
         );
     }
 
-    public Member findByName(String name) {
+    public Member findById(Long id) {
         return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE name = ?",
+                "SELECT id, name, email, role FROM member WHERE id = ?",
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("role")
                 ),
-                name
+                id
         );
+    }
+
+    public boolean existsByEmail(String email) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM member WHERE email = ?", new Object[]{email}, Integer.class);
+        return count != null && count > 0;
+    }
+
+    public Member findByEmail(String email) {
+        return jdbcTemplate.queryForObject(
+                "SELECT * FROM member WHERE email = ?", new Object[]{email},
+                (rs, rowNum) -> new Member(
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("role")
+                ));
     }
 }
