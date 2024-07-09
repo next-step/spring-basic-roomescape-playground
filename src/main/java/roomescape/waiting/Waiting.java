@@ -1,19 +1,15 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import jakarta.persistence.*;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
-import javax.annotation.processing.Generated;
-
 @Entity
-public class Reservation {
+public class Waiting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String date;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -27,37 +23,29 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    public Reservation(Long id, String name, String date, Member member, Time time, Theme theme) {
+    private String date;
+
+    public Waiting() {
+
+    }
+
+    public Waiting(Member member, Time time, Theme theme, String date) {
+        this.member = member;
+        this.time = time;
+        this.theme = theme;
+        this.date = date;
+    }
+
+    public Waiting(Long id, Member member, Time time, Theme theme, String date) {
         this.id = id;
-        this.name = name;
-        this.date = date;
         this.member = member;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Reservation(String name, String date, Time time, Theme theme, Member member) {
-        this.name = name;
         this.date = date;
-        this.member = member;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Reservation() {
-
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDate() {
-        return date;
     }
 
     public Member getMember() {
@@ -70,5 +58,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public String getDate() {
+        return date;
     }
 }
