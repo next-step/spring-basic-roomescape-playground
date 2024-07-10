@@ -8,10 +8,14 @@ public class MyReservationResponse {
     private String status;
 
     public MyReservationResponse(Long reservationId, String theme, String date, String time, String status) {
-
+        this.reservationId = reservationId;
+        this.theme = theme;
+        this.date = date;
+        this.time = time;
+        this.status = status;
     }
 
-    public MyReservationResponse(){
+    public MyReservationResponse() {
 
     }
 

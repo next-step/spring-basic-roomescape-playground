@@ -46,7 +46,8 @@ public class MemberService {
         String token = extractToken(request);
         Long memberId = extractId(token);
 
-        Member member = memberRepository.findById(memberId).get();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member Not Found"));
         return LoginMember.from(member);
     }
 

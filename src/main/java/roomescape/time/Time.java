@@ -31,7 +31,4 @@ public class Time {
         return value;
     }
 
-    public Time getTime() {
-        return new Time(id, value);
-    }
 }

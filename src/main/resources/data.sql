@@ -15,10 +15,3 @@ VALUES ('10:00'),
        ('18:00'),
        ('20:00');
 
-INSERT INTO reservation (member_id, name, date, time_id, theme_id)
-VALUES (1, '', '2024-03-01', 1, 1),
-       (1, '', '2024-03-01', 2, 2),
-       (1, '', '2024-03-01', 3, 3);
-
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('브라운', '2024-03-01', 1, 2);
