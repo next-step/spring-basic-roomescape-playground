@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
@@ -141,6 +142,8 @@ public class MissionStepTest {
 //        String brownToken = createToken("brown@email.com", "password");
         TokenRequest tokenRequest = new TokenRequest("brown@email.com", "password");
         String brownToken = authService.createToken(tokenRequest).getAccessToken();
+
+        System.out.println("어쩌라고 : " + brownToken);
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
