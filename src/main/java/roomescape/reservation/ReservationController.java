@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.Authentication;
 import roomescape.member.LoginMember;
+import roomescape.waiting.WaitingResponse;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -53,10 +54,8 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations-mine")
-    public ResponseEntity<List<MyReservationResponse>> reservations(@Authentication LoginMember loginMember) {
+    public List<MyReservationResponse> reservations(@Authentication LoginMember loginMember) {
         String name = loginMember.getName();
-        List<MyReservationResponse> response = reservationService.findReservationsByName(name);
-
-        return ResponseEntity.ok(response);
+        return reservationService.findMyReservationsByName(name);
     }
 }
