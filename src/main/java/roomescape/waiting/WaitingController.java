@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.auth.LoginSession;
+import roomescape.auth.AuthSession;
 import roomescape.member.LoginMember;
 
 @RestController
@@ -17,7 +17,7 @@ public class WaitingController {
     private WaitingService waitingService;
 
     @PostMapping("/waitings")
-    public ResponseEntity create(@RequestBody WaitingRequest request,@LoginSession LoginMember loginMember) {
+    public ResponseEntity create(@RequestBody WaitingRequest request,@AuthSession LoginMember loginMember) {
         WaitingResponse waiting = waitingService.save(request, loginMember.getId());
         return ResponseEntity.created(URI.create("/waitings/" + waiting.getId())).body(waiting);
     }

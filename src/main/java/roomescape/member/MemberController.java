@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import roomescape.auth.AuthService;
-import roomescape.token.TokenRequest;
-import roomescape.token.TokenResponse;
+import roomescape.auth.jwt.TokenRequest;
+import roomescape.auth.jwt.TokenResponse;
 
 @RestController
 public class MemberController {

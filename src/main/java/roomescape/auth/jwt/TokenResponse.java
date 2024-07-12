@@ -1,4 +1,4 @@
-package roomescape.token;
+package roomescape.auth.jwt;
 
 public class TokenResponse {
     private String accessToken;

@@ -1,9 +1,8 @@
-package roomescape.infrastructure;
+package roomescape.auth;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,8 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import roomescape.member.Member;
 
-@Component
-public class JwtTokenUtil {
+public class JwtUtils {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
