@@ -1,6 +1,7 @@
 package roomescape.theme;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ThemeRepository extends CrudRepository<Theme, Long> {
+public interface ThemeRepository extends JpaRepository<Theme, Long> {
+
 }

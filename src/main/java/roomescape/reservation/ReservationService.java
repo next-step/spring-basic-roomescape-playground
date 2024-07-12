@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.TimeRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -43,7 +42,12 @@ public class ReservationService {
         return StreamSupport.stream(reservationRepository.findAll().spliterator(), false)
                 .toList()
                 .stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(it -> new ReservationResponse(
+                        it.getId(),
+                        it.getName(),
+                        it.getTheme().getName(),
+                        it.getDate(),
+                        it.getTime().getValue()))
                 .toList();
     }
 

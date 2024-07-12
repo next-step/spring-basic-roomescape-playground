@@ -1,9 +1,8 @@
 package roomescape.waiting;
 
-public class WaitingResponse {
-
-    public Long getId() {
-        Long id = 1L;
-        return id;
-    }
+public record WaitingResponse(Long id,
+                              String name,
+                              String theme,
+                              String date,
+                              String time) {
 }
