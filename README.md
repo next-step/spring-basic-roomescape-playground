@@ -57,3 +57,14 @@
 ### 7단계 - @Configuration
 - JWT 관련 로직을 roomescape와 같은 계층의 auth 패키지의 클래스로 분리하세요. 
 - 불필요한 DB 접근을 최소화 하세요.
+
+### 8단계 - Profile과 Resource 
+- schema.sql 대신 데이터베이스를 초기화 해주기 위해 실행하는 클래스를 만드세요. 
+- 스프링이 실행될 때 동작해야 합니다.
+- token 생성에 필요한 비밀키 값을 외부 파일로 분리하세요.
+#### 세부 요구사항
+- Production용과 DataLoader와 Test용 TestDataLoader를 만드세요.
+  - DataLoader에서는 사용자 정보만 초기화
+  - TestDataLoader에서는 테스트에 필요한 사전 값 초기화
+- Environemt 분리
+  - token 생성에 필요한 비밀키값을 application.properties 파일로 이동하세요.
