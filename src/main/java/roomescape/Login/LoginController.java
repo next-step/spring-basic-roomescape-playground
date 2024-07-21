@@ -14,6 +14,10 @@ public class LoginController {
         this.loginService = loginService;
     }
 
+    @GetMapping("check_uptodata")
+    public String login(){
+        return "good";
+    }
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         String token = loginService.login(loginRequest); //토큰 받음
