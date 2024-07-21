@@ -15,7 +15,7 @@ public class DataLoader implements CommandLineRunner {
     public DataLoader(final MemberRepository memberRepository) {
         // ci 추가한 겸 푸시
         // 브랜치 추가한 겸 다시 해볼게
-        // 진짜 찐막
+        // cd
         this.memberRepository = memberRepository;
     }
 
