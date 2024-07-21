@@ -59,8 +59,8 @@ jobs:
           echo "${SSH_PRIVATE_KEY}" > private_key.pem
           chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@ec2-52-64-39-97.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          sudo pkill -f 'java -jar'
           cd spring-basic-roomescape-playground
-          sudo lsof -t -i:8080 | xargs sudo kill -9
           git pull origin gotobill-core
           nohup java -jar build/libs/spring-basic-roomescape-playground-0.0.1-SNAPSHOT.jar ../app.log 2>&1 &
           exit
