@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - gotobill-core
   pull_request:
     branches:
       - main
