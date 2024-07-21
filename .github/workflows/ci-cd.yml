@@ -66,4 +66,3 @@ jobs:
           disown
           exit
           EOF
-          exit 0
