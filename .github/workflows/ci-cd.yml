@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "${SSH_PRIVATE_KEY}" > private_key.pem
           chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@ec2-52-64-39-97.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          ssh -i private_key.pem ubuntu@ec2-52-64-39-97.ap-southeast-2.compute.amazonaws.com << 'EOF'
           sudo pkill -f 'java -jar' || true
           cd spring-basic-roomescape-playground
           git pull origin gotobill-core
