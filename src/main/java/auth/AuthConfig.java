@@ -10,5 +10,6 @@ public class AuthConfig {
     @Bean
     public JwtUtils jwtUtils(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
         return new JwtUtils(secretKey);
+        // ss
     }
 }
