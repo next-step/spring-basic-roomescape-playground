@@ -18,7 +18,7 @@ public class DataLoader implements CommandLineRunner {
         // 진짜 찐막
         this.memberRepository = memberRepository;
     }
-    
+
 
     @Override
     public void run(final String... args) throws Exception {
