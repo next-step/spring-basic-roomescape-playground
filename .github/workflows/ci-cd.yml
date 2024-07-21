@@ -56,13 +56,8 @@ jobs:
           EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          echo "${SSH_PRIVATE_KEY}" > private_key.pem
+          echo "${{SSH_PRIVATE_KEY}}" > private_key.pem
           chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@ec2-52-64-39-97.ap-southeast-2.compute.amazonaws.com << 'EOF'
-          sudo pkill -f 'java -jar' || true
-          cd spring-basic-roomescape-playground
-          git pull origin gotobill-core
-          nohup java -jar build/libs/spring-basic-roomescape-playground-0.0.1-SNAPSHOT.jar ../app.log 2>&1 &
-          disown
-          exit
-          EOF
+          scp -i private_key.pem -o StrictHostKeyChecking=no build/libs/spring-basic-roomescape-playground-0.0.1-SNAPSHOT.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/spring-basic-roomescape-playground.jar
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "pgrep java | xargs kill -9; nohup java -jar /home/${{ secrets.EC2_USERNAME }}/spring-basic-roomescape-playground.jar > app.log 2>&1 &"
+          rm -f private_key.pem
