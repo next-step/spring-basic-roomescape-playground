@@ -30,8 +30,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
 
-        System.out.println("token: " + token);
-
         if (token.isEmpty()) {
             return null;
         }
