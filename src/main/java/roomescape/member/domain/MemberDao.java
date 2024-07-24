@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.domain;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
