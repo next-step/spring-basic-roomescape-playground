@@ -71,6 +71,26 @@ public class MissionStepTest {
         assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
     }
 
+    @Test
+    @DisplayName("3단계: 권한 검사")
+    void step3_authorization() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(403);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);
