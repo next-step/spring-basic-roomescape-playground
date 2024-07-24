@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.domain;
 
 import roomescape.theme.Theme;
 import roomescape.time.Time;

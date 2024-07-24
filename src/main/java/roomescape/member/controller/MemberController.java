@@ -1,8 +1,9 @@
 package roomescape.member.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,15 +11,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.login.LoginMemberName;
 import roomescape.member.controller.dto.MemberRequest;
 import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.service.MemberService;
-import roomescape.member.domain.Member;
 
 import java.util.Date;
 
 @RestController
 public class MemberController {
+    private static final Logger log = LoggerFactory.getLogger(MemberController.class);
     private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
@@ -49,16 +51,15 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        Member member = memberService.getMember(cookies);
+    public ResponseEntity<MemberResponse> checkLogin(@LoginMemberName String memberName) {
+        MemberResponse memberResponse = memberService.getMemberByName(memberName);
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Connection", "keep-alive")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header("Keep-Alive", "timeout=60")
                 .header("Transfer-Encoding", "chunked")
                 .header("Date", new Date().toString())
-                .body(new MemberResponse(member.getId(), member.getName(), member.getEmail()));
+                .body(memberResponse);
     }
 
     @PostMapping("/logout")

@@ -5,9 +5,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class MemberDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -40,8 +42,8 @@ public class MemberDao {
         );
     }
 
-    public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
+    public Optional<Member> findByName(String name) {
+        return Optional.ofNullable(jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
@@ -50,6 +52,6 @@ public class MemberDao {
                         rs.getString("role")
                 ),
                 name
-        );
+        ));
     }
 }

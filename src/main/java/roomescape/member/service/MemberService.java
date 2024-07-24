@@ -46,29 +46,13 @@ public class MemberService {
                 .compact();
     }
 
-    public Member getMember(Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
-        if (token == null) {
+    public MemberResponse getMemberByName(String memberName) {
+        if (memberName == null) {
             throw new RuntimeException("로그인이 필요합니다.");
         }
 
-        String memberName = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("name", String.class);
-
-        return memberDao.findByName(memberName);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
+        return memberDao.findByName(memberName)
+                .map(this::memberToResponse)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
 }
