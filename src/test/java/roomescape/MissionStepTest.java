@@ -96,6 +96,4 @@ public class MissionStepTest {
 
         return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
     }
-
-
 }
