@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MissionStepTest {
 
     @Test
-    void 일단계() {
+    void loginTest() {
         Map<String, String> params = new HashMap<>();
         params.put("email", "admin@email.com");
         params.put("password", "password");
