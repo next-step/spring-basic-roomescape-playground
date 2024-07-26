@@ -53,8 +53,7 @@ public class ReservationController {
 
         LoginResponse loginResponse = authService.findUserByToken(token);
 
-        String name = reservationRequest.getOrDefault("name", loginResponse.getName());
-        LoginReservationResponse loginReservationResponse = new LoginReservationResponse(name);
+        LoginReservationResponse loginReservationResponse = new LoginReservationResponse(loginResponse.getEmail());
 
         return ResponseEntity.status(201).body(loginReservationResponse);
     }
@@ -64,4 +63,6 @@ public class ReservationController {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

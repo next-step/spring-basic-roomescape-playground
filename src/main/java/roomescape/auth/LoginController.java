@@ -1,6 +1,7 @@
 package roomescape.auth;
 
-
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,11 +11,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
-public class TokenLoginController {
+public class LoginController {
     private final AuthService authService;
 
-    public TokenLoginController(AuthService authService) {
+    public LoginController(AuthService authService) {
         this.authService = authService;
     }
 
@@ -35,7 +40,7 @@ public class TokenLoginController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");

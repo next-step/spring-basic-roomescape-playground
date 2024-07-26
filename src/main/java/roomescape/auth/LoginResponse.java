@@ -1,20 +1,30 @@
 package roomescape.auth;
 
 public class LoginResponse {
-    private String name;
+    private String email;
+    private String role;
 
     public LoginResponse() {
     }
 
-    public LoginResponse(String name) {
-        this.name = name;
+    public LoginResponse(String email, String role) {
+        this.email = email;
+        this.role = role;
     }
 
-    public String getName() {
-        return name;
+    public String getEmail() {
+        return email;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getRole() {
+        return role;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
