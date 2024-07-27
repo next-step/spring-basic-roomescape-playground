@@ -10,12 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
-    private final LoginHandlerInterceptor loginHandlerInterceptor;
+    private final RoleCheckHandlerInterceptor roleCheckHandlerInterceptor;
 
     public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver,
-                     LoginHandlerInterceptor loginHandlerInterceptor) {
+                     RoleCheckHandlerInterceptor roleCheckHandlerInterceptor) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
-        this.loginHandlerInterceptor = loginHandlerInterceptor;
+        this.roleCheckHandlerInterceptor = roleCheckHandlerInterceptor;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(loginHandlerInterceptor).addPathPatterns("/admin/**");
+        registry.addInterceptor(roleCheckHandlerInterceptor).addPathPatterns("/admin/**");
     }
 
 }

@@ -9,11 +9,11 @@ import roomescape.member.Member;
 import roomescape.member.MemberService;
 
 @Component
-public class LoginHandlerInterceptor implements HandlerInterceptor {
+public class RoleCheckHandlerInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
 
-    public LoginHandlerInterceptor(MemberService memberService) {
+    public RoleCheckHandlerInterceptor(MemberService memberService) {
         this.memberService = memberService;
     }
 
