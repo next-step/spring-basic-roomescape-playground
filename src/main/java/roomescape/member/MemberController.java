@@ -29,17 +29,16 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         MemberResponse member = memberService.login(memberRequest);
-        Cookie cookie = new Cookie("token", memberService.getToken(member));
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        String token = memberService.createToken(member);
+        memberService.createCookie(response, token);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        MemberResponse memberResponse = memberService.checkToken(cookies);
+        String token = memberService.extractTokenFromCookie(cookies);
+        MemberResponse memberResponse = memberService.findByToken(token);
         return ResponseEntity.ok(memberResponse);
     }
 

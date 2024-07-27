@@ -2,17 +2,20 @@ package roomescape.member;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.global.TokenProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class MemberService {
     private MemberDao memberDao;
+    private TokenProvider tokenProvider;
 
-    public MemberService(MemberDao memberDao) {
+    public MemberService(MemberDao memberDao, TokenProvider tokenProvider) {
         this.memberDao = memberDao;
+        this.tokenProvider = tokenProvider;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -25,19 +28,7 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public String getToken(final MemberResponse member) {
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-//                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
-        return accessToken;
-    }
-
-    public MemberResponse checkToken(final Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
+    public MemberResponse findByToken(String token) {
         Long memberId = Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
                 .build()
@@ -47,13 +38,24 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
+    public String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
             }
         }
-
         return "";
+    }
+
+    public String createToken(MemberResponse memberResponse){
+        String accessToken = tokenProvider.createToken(new Member(memberResponse.getId(), memberResponse.getName(), memberResponse.getEmail(), "USER"));
+        return accessToken;
+    }
+
+    public void createCookie(final HttpServletResponse response, final String token) {
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }
