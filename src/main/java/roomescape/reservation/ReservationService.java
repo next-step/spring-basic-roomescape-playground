@@ -1,21 +1,30 @@
 package roomescape.reservation;
 
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
+import roomescape.member.LoginMember;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
+    private final ReservationDao reservationDao;
 
     public ReservationService(ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember member) {
+        String memberName = reservationRequest.getName();
+        String date = reservationRequest.getDate();
+        Long themeId = reservationRequest.getTheme();
+        Long timeId = reservationRequest.getTime();
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        if (memberName == null) {
+            memberName = member.name();
+        }
+
+        Reservation reservation = reservationDao.save(new ReservationRequest(memberName, date, themeId, timeId));
+
+        return reservationToResponse(reservation);
     }
 
     public void deleteById(Long id) {
@@ -23,8 +32,20 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationDao.findAll()
+                .stream()
+                .map(this::reservationToResponse)
                 .toList();
     }
+
+    private ReservationResponse reservationToResponse(Reservation reservation) {
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTheme().getName(),
+                reservation.getTime().getValue()
+        );
+    }
+
 }
