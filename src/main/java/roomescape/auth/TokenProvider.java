@@ -8,6 +8,7 @@ import roomescape.member.Member;
 
 @Component
 public class TokenProvider {
+
     @Value("${roomescape.auth.jwt.token.secret}")
     private String secretKey;
 

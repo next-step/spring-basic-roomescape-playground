@@ -12,9 +12,9 @@ import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 
-// 쿠키에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 것을 분리함.
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+
     private final MemberService memberService;
 
     public LoginMemberArgumentResolver(MemberService memberService) {
@@ -31,6 +31,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory)
             throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+
         Cookie[] cookies = request.getCookies();
         Member member = memberService.getLoginMemberInfo(cookies);
 

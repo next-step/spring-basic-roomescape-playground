@@ -38,8 +38,17 @@ public class MissionStepTest {
     @DisplayName("로그인 시 토큰이 발급된다.")
     void createTokenTest() {
         String token = createToken("admin@email.com", "password");
-
         assertThat(token).isNotBlank();
+
+        ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+
+        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
 
     @Test
@@ -75,6 +84,26 @@ public class MissionStepTest {
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    @Test
+    @DisplayName("어드민 권한이 있는 사용자만 어드민 페이지에 접속할 수 있다.")
+    void adminPageIsOnlyAdminRoleTest() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 
 }
