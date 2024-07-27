@@ -20,12 +20,12 @@ public class MemberService {
 
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public MemberResponse login(final MemberRequest memberRequest) {
         Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail() , member.getRole());
     }
 
     public MemberResponse findByToken(String token) {
@@ -35,7 +35,7 @@ public class MemberService {
                 .parseClaimsJws(token)
                 .getBody().getSubject());
         Member member = memberDao.findById(memberId);
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {
