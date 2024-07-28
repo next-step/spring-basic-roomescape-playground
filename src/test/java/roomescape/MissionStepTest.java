@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MissionStepTest {
 
     @Test
+    @DisplayName("1단계: 로그인 후 토큰 발급")
     void 일단계() {
         Map<String, String> params = new HashMap<>();
         params.put("email", "admin@email.com");
@@ -28,7 +30,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .extract();
 
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
