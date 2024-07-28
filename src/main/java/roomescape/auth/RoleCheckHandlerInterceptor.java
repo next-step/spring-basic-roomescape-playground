@@ -18,8 +18,7 @@ public class RoleCheckHandlerInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Cookie[] cookies = request.getCookies();
         Member member = memberService.getLoginMemberInfo(cookies);
 

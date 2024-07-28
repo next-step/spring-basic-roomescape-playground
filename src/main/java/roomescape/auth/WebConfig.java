@@ -19,12 +19,12 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(loginMemberArgumentResolver);
     }
 
     @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(roleCheckHandlerInterceptor).addPathPatterns("/admin/**");
     }
 
