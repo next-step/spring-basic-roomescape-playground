@@ -19,7 +19,7 @@ public class MemberService {
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberDao.save(
                 new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public TokenResDto createToken(TokenReqDto tokenReqDto) {
@@ -55,8 +55,8 @@ public class MemberService {
 
         Member member = memberDao.findById(Long.parseLong(memberId));
         if (member == null) {
-            throw new IllegalArgumentException("Invalid token");
+            throw new IllegalArgumentException("찾을 수 없습니다.");
         }
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 }

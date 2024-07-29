@@ -45,6 +45,7 @@ public class MemberController {
     }
 
     /*
+    요구사항:
     Cookie에서 토큰 정보를 추출하여
     멤버를 찾아 멤버 정보를 응답합니다.
      */
