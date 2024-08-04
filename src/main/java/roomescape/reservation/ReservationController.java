@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import roomescape.auth.LoginResponse;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import roomescape.auth.UserResponse;
 
 @RestController
 public class ReservationController {
@@ -34,7 +36,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<LoginReservationResponse> makeReservation(@RequestBody Map<String, String> reservationRequest, HttpServletRequest request) {
+    public ResponseEntity<ReservationResponse> makeReservation(@RequestBody ReservationRequest reservationRequest, HttpServletRequest request) {
         String token = null;
 
         Cookie[] cookies = request.getCookies();
@@ -51,11 +53,17 @@ public class ReservationController {
             return ResponseEntity.status(401).build();
         }
 
-        LoginResponse loginResponse = authService.findUserByToken(token);
+        UserResponse userResponse = authService.checkUserByToken(token);
 
-        LoginReservationResponse loginReservationResponse = new LoginReservationResponse(loginResponse.getEmail());
+        ReservationResponse reservationResponse = new ReservationResponse(
+                1L,
+                reservationRequest.getName() != null ? reservationRequest.getName() : userResponse.getName(),
+                reservationRequest.getTheme(),
+                reservationRequest.getDate(),
+                reservationRequest.getTime()
+        );
 
-        return ResponseEntity.status(201).body(loginReservationResponse);
+        return ResponseEntity.status(201).body(reservationResponse);
     }
 
     @DeleteMapping("/reservations/{id}")

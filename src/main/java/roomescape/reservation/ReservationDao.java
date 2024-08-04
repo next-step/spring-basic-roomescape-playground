@@ -49,8 +49,8 @@ public class ReservationDao {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
             ps.setString(1, reservationRequest.getDate());
             ps.setString(2, reservationRequest.getName());
-            ps.setLong(3, reservationRequest.getTheme());
-            ps.setLong(4, reservationRequest.getTime());
+            ps.setString(3, reservationRequest.getTheme());
+            ps.setString(4, reservationRequest.getTime());
             return ps;
         }, keyHolder);
 
