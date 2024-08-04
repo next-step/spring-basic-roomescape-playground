@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -17,6 +18,7 @@ public class AuthService {
     private static final long EXPIRATION_TIME = 86400000;
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
+
         String role = "USER";
         if ("admin@email.com".equals(tokenRequest.getEmail())) {
             role = "ADMIN";
@@ -37,6 +39,7 @@ public class AuthService {
     }
 
     public LoginResponse findUserByToken(String token) {
+
         String role = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
                 .build()
@@ -51,5 +54,16 @@ public class AuthService {
                 .getSubject();
 
         return new LoginResponse(email, role);
+    }
+
+    public UserResponse checkUserByToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        if ("admin@email.com".equals(claims.getSubject())) {
+            return new UserResponse("어드민");
+        }
+        else if ("user".equals(claims.getSubject())) {
+            return new UserResponse("유저");
+        }
+        return null;
     }
 }

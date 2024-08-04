@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 public class LoginReservationResponse {
+
     private String name;
 
     public LoginReservationResponse() {
@@ -12,10 +13,6 @@ public class LoginReservationResponse {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }
 

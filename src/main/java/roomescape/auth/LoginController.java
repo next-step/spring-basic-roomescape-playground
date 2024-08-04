@@ -5,7 +5,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,24 +52,13 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
-        String token = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
+    public ResponseEntity<UserResponse> checkLogin(@CookieValue("token") String token) {
+        UserResponse user = authService.checkUserByToken(token);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        if (token == null) {
-            return ResponseEntity.status(401).build();
-        }
-
-        LoginResponse loginResponse = authService.findUserByToken(token);
-
-        return ResponseEntity.ok(loginResponse);
+        return ResponseEntity.ok(user);
     }
+
+
 }
