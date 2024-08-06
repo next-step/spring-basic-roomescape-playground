@@ -1,12 +1,8 @@
 package roomescape.auth;
 
-public class LoginReservationResponse {
-
-    private String name;
-
-    public LoginReservationResponse() {
-    }
-
+public record LoginReservationResponse(
+        String name
+) {
     public LoginReservationResponse(String name) {
         this.name = name;
     }

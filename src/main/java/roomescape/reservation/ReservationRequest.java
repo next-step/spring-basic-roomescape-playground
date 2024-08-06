@@ -1,11 +1,11 @@
 package roomescape.reservation;
 
-public class ReservationRequest {
-    private String name;
-    private String date;
-    private String theme;
-    private String time;
-
+public record ReservationRequest(
+        String name,
+        String date,
+        String theme,
+        String time
+) {
     public String getName() {
         return name;
     }

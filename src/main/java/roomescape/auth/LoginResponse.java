@@ -1,12 +1,9 @@
 package roomescape.auth;
 
-public class LoginResponse {
-    private String email;
-    private String role;
-
-    public LoginResponse() {
-    }
-
+public record LoginResponse(
+        String email,
+        String role
+) {
     public LoginResponse(String email, String role) {
         this.email = email;
         this.role = role;
