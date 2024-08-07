@@ -4,6 +4,8 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.auth.TokenProvider;
 import roomescape.auth.TokenRequest;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 @Service
 public class MemberService {
