@@ -2,25 +2,24 @@ package roomescape.member.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.dto.MemberRequest;
 import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
-import roomescape.member.domain.MemberDao;
+import roomescape.member.domain.MemberRepository;
 
 @Service
 public class MemberService {
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(requestToMember(memberRequest));
+        Member member = memberRepository.save(requestToMember(memberRequest));
         return memberToResponse(member);
     }
 
@@ -33,10 +32,8 @@ public class MemberService {
     }
 
     public String login(MemberRequest memberRequest) {
-        Member member = memberDao.findByEmailAndPassword(memberRequest.email(), memberRequest.password());
-        if (member == null) {
-            throw new RuntimeException("로그인 실패");
-        }
+        Member member = memberRepository.findByEmailAndPassword(memberRequest.email(), memberRequest.password())
+                .orElseThrow(() -> new RuntimeException("로그인 실패"));
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
@@ -51,7 +48,7 @@ public class MemberService {
             throw new RuntimeException("로그인이 필요합니다.");
         }
 
-        return memberDao.findByName(memberName)
+        return memberRepository.findByName(memberName)
                 .map(this::memberToResponse)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }

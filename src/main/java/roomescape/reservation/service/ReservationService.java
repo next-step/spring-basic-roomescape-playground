@@ -4,21 +4,29 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationDao;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.time.domain.Time;
+import roomescape.time.domain.TimeRepository;
 
 import java.util.List;
 
 @Service
 public class ReservationService {
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
+    private final ThemeRepository themeRepository;
+    private final TimeRepository timeRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.themeRepository = themeRepository;
+        this.timeRepository = timeRepository;
     }
 
     public ReservationResponse save(String memberName,
                                     ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(requestToReservation(memberName, reservationRequest));
+        Reservation reservation = reservationRepository.save(requestToReservation(memberName, reservationRequest));
         return reservationToResponse(reservation);
     }
 
@@ -26,17 +34,28 @@ public class ReservationService {
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
-    private ReservationRequest requestToReservation(String memberName, ReservationRequest reservationRequest) {
-        return new ReservationRequest(memberName, reservationRequest.date(), reservationRequest.theme(), reservationRequest.time());
+    private Reservation requestToReservation(String memberName, ReservationRequest reservationRequest) {
+        Theme themeProxy = findThemeProxyById(reservationRequest.theme());
+        Time timeProxy = findTimeProxyById(reservationRequest.time());
+        return new Reservation(memberName, reservationRequest.date(), timeProxy, themeProxy);
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll()
+                .stream()
                 .map(this::reservationToResponse)
                 .toList();
+    }
+
+    private Theme findThemeProxyById(Long id) {
+        return themeRepository.getReferenceById(id);
+    }
+
+    private Time findTimeProxyById(Long id) {
+        return timeRepository.getReferenceById(id);
     }
 }

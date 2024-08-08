@@ -4,20 +4,32 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.time.domain.Time;
+import roomescape.time.domain.TimeRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private TimeRepository timeRepository;
 
     @Test
     @DisplayName("1단계: 로그인")
@@ -89,6 +101,18 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("4단계: JPA 전환")
+    void step4_jdbcToJpa() {
+        Time time = new Time("10:00");
+        entityManager.persist(time);
+        entityManager.flush();
+
+        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
+
+        assertThat(persistTime.getValue()).isEqualTo(time.getValue());
     }
 
     private String createToken(String email, String password) {
