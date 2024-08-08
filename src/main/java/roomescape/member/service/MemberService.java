@@ -2,6 +2,7 @@ package roomescape.member.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.dto.MemberRequest;
 import roomescape.member.controller.dto.MemberResponse;
@@ -10,7 +11,8 @@ import roomescape.member.domain.MemberRepository;
 
 @Service
 public class MemberService {
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
 
     private final MemberRepository memberRepository;
 
@@ -39,7 +41,7 @@ public class MemberService {
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
