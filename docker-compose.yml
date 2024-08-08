@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app_blue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: roomescape-app-blue
+    environment:
+      - SERVER_PORT=8081
+    ports:
+      - "8081:8081"
+    restart: always
+
+  app_green:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: roomescape-app-green
+    environment:
+      - SERVER_PORT=8082
+    ports:
+      - "8082:8082"
+    restart: always
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - app_blue
+      - app_green
+    container_name: roomescape-nginx
+    restart: always
