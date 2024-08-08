@@ -1,6 +1,9 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.controller.dto.MyReservationResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
@@ -17,11 +20,26 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository, TimeRepository timeRepository, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
+        this.memberRepository = memberRepository;
+    }
+
+    public List<MyReservationResponse> findMyReservations(String memberName) {
+        List<Reservation> myReservations = reservationRepository.findMyReservationsByName(memberName);
+        return myReservations.stream()
+                .map(r -> new MyReservationResponse(
+                        r.getId(),
+                        r.getTheme().getName(),
+                        r.getDate(),
+                        r.getTime().getValue(),
+                        "예약"
+                ))
+                .toList();
     }
 
     public ReservationResponse save(String memberName,
@@ -35,9 +53,10 @@ public class ReservationService {
     }
 
     private Reservation requestToReservation(String memberName, ReservationRequest reservationRequest) {
+        Member member = findMemberByName(memberName);
         Theme themeProxy = findThemeProxyById(reservationRequest.theme());
         Time timeProxy = findTimeProxyById(reservationRequest.time());
-        return new Reservation(memberName, reservationRequest.date(), timeProxy, themeProxy);
+        return new Reservation(memberName, reservationRequest.date(), member, timeProxy, themeProxy);
     }
 
     public void deleteById(Long id) {
@@ -49,6 +68,11 @@ public class ReservationService {
                 .stream()
                 .map(this::reservationToResponse)
                 .toList();
+    }
+
+    private Member findMemberByName(String name) {
+        return memberRepository.findByName(name)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 멤버입니다."));
     }
 
     private Theme findThemeProxyById(Long id) {
