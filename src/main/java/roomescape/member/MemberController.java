@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import java.sql.Connection;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -25,7 +24,7 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<?> createMember(@RequestBody MemberRequest memberRequest) {
+    public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
     }

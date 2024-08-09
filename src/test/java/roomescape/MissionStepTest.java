@@ -21,7 +21,7 @@ public class MissionStepTest {
 
     @Test
     @DisplayName("1단계: 로그인 후 토큰 발급")
-    void 일단계() {
+    void afterLogin_token() {
         Map<String, String> params = new HashMap<>();
         params.put("email", "admin@email.com");
         params.put("password", "password");
@@ -58,7 +58,7 @@ public class MissionStepTest {
     @Test
     @DisplayName("2단계")
     void 이단계() {
-        String token = createToken("admin@email.com", "password"); // 이제 메소드가 정의되어 있어 오류가 발생하지 않습니다.
+        String token = createToken("admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
