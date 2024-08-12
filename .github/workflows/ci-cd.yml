@@ -76,7 +76,6 @@ jobs:
             build.sh \
             app.jar \
             Dockerfile \
-            -r nginx \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/
           
           ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "chmod +x build.sh && ./build.sh"
