@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: gotobill/app_blue:latest
     container_name: roomescape-app-blue
     environment:
       - SERVER_PORT=8081
@@ -14,6 +15,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: gotobill/app_green:latest
     container_name: roomescape-app-green
     environment:
       - SERVER_PORT=8082
@@ -24,6 +26,7 @@ services:
   nginx:
     build:
       context: ./nginx
+    image: gotobill/nginx:latest
     ports:
       - "80:80"
     depends_on:
