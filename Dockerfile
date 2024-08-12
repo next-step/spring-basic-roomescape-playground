@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # 호스트의 JAR 파일을 컨테이너로 복사합니다
-COPY build/libs/spring-basic-roomescape-playground-0.0.1-SNAPSHOT.jar app.jar
+COPY app.jar app.jar
 
 # 애플리케이션이 사용할 포트를 노출합니다
 EXPOSE 8080
