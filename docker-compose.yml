@@ -26,6 +26,7 @@ services:
   nginx:
     build:
       context: ./nginx
+      dockerfile: Dockerfile
     image: gotobill/nginx:latest
     ports:
       - "80:80"
