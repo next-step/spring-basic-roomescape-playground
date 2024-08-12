@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.auth;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
