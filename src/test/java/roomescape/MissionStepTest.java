@@ -5,13 +5,14 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
@@ -132,7 +133,7 @@ public class MissionStepTest {
     @Test
     @Transactional
     @DisplayName("4단계: JPA 전환")
-    void 사단계() {
+    void toJpa() {
         Time time = new Time("10:00");
         entityManager.persist(time);
         entityManager.flush();
@@ -140,6 +141,21 @@ public class MissionStepTest {
         Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
         assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+    }
+
+    @Test
+    @DisplayName("5단계: 예약 목록 조회")
+    void findMyReservations() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 
 
