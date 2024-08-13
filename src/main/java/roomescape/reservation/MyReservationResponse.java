@@ -14,4 +14,12 @@ public record MyReservationResponse(
         this.time = time;
         this.status = status;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

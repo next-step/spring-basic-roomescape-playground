@@ -58,12 +58,13 @@ public class AuthService {
 
     public UserResponse checkUserByToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-        if ("admin@email.com".equals(claims.getSubject())) {
-            return new UserResponse("어드민");
+        String email = claims.getSubject();
+        if ("admin@email.com".equals(email)) {
+            return new UserResponse("어드민", 1L);
+        } else if ("brown@email.com".equals(email)) {
+            return new UserResponse("brown",2L);
+        } else {
+            return null;
         }
-        else if ("user".equals(claims.getSubject())) {
-            return new UserResponse("유저");
-        }
-        return null;
     }
 }
