@@ -4,13 +4,20 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
 import java.util.Map;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -115,4 +122,25 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private TimeRepository timeRepository;
+
+    @Test
+    @Transactional
+    @DisplayName("4단계: JPA 전환")
+    void 사단계() {
+        Time time = new Time("10:00");
+        entityManager.persist(time);
+        entityManager.flush();
+
+        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
+
+        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+    }
+
+
 }
