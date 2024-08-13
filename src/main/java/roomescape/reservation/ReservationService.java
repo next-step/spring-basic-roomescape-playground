@@ -3,32 +3,28 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import roomescape.member.Member;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
-        return new ReservationResponse(
-                reservation.getId(),
-                reservationRequest.getName(),
-                reservation.getTheme().getName(),
-                reservationRequest.getDate(),
-                reservationRequest.getTime()
-        );
+    public Reservation save(Reservation reservation) {
+        return reservationRepository.save(reservation);
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(
                         it.getId(),
                         it.getName(),
