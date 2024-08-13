@@ -35,6 +35,29 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> listMine(HttpServletRequest request) {
+        String token = null;
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (token == null) {
+            return List.of();
+        }
+
+        UserResponse userResponse = authService.checkUserByToken(token);
+
+        return reservationService.findMyReservations(userResponse.getName());
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> makeReservation(@RequestBody ReservationRequest reservationRequest, HttpServletRequest request) {
         String token = null;

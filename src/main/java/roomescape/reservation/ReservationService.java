@@ -34,4 +34,17 @@ public class ReservationService {
                 ))
                 .toList();
     }
+
+    public List<MyReservationResponse> findMyReservations(String memberName) {
+        List<Reservation> myReservations = reservationRepository.findMyReservationsByName(memberName);
+        return myReservations.stream()
+                .map(it -> new MyReservationResponse(
+                        it.getId(),
+                        it.getName(),
+                        it.getTheme().getName(),
+                        it.getDate(),
+                        it.getTime().getValue()
+                ))
+                .toList();
+    }
 }
