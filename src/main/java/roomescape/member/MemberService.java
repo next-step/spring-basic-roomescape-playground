@@ -4,25 +4,30 @@ import java.util.Arrays;
 
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import roomescape.jwt.JwtProvider;
 
 @Service
 public class MemberService {
-    private String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private MemberDao memberDao;
+    private JwtProvider jwtProvider;
 
-    public MemberService(MemberDao memberDao) {
+    public MemberService(MemberDao memberDao, JwtProvider jwtProvider) {
         this.memberDao = memberDao;
+        this.jwtProvider = jwtProvider;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberDao.save(
             new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
+    }
+
+    public MemberResponse findMemberByName(String name) {
+        Member member = memberDao.findByName(name);
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public void login(
@@ -32,16 +37,7 @@ public class MemberService {
         String email = memberLoginRequest.getEmail();
         String password = memberLoginRequest.getPassword();
 
-        Member member = memberDao.findByEmailAndPassword(email, password);
-        if (member == null)
-            throw new IllegalArgumentException("Invalid email or password");
-
-        String accessToken = Jwts.builder()
-            .setSubject(member.getId().toString())
-            .claim("name", member.getName())
-            .claim("role", member.getRole())
-            .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-            .compact();
+        String accessToken = jwtProvider.createToken(email, password);
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
@@ -53,11 +49,7 @@ public class MemberService {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
 
-        String name = (String)Jwts.parserBuilder()
-            .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-            .build()
-            .parseClaimsJws(token)
-            .getBody().get("name");
+        String name = jwtProvider.getNameFromToken(token);
 
         return new MemberLoginCheck(name);
     }
