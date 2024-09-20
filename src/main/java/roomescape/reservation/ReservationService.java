@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import roomescape.auth.JwtProvider;
-
 @Service
 public class ReservationService {
 

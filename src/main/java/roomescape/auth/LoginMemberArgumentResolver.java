@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.auth;
 
 import java.util.Arrays;
 
@@ -10,7 +10,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import jakarta.servlet.http.HttpServletRequest;
-import roomescape.auth.JwtProvider;
+import roomescape.member.LoginMember;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest,
         WebDataBinderFactory binderFactory
-    ) throws Exception {
+    ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = Arrays.stream(request.getCookies())
             .filter(cookie -> cookie.getName().equals("token"))
