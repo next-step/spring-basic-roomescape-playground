@@ -14,6 +14,14 @@ public class CookiesUtils {
         response.addCookie(cookie);
     }
 
+    public static void expireTokenToCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", "");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+
     public static String extractTokenFromCookie(Cookie[] cookies) {
         return Arrays.stream(cookies)
             .filter(cookie -> cookie.getName().equals("token"))
