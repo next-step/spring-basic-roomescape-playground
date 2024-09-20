@@ -15,6 +15,9 @@ public class ReservationResponse {
         this.time = time;
     }
 
+    public ReservationResponse() {
+    }
+
     public Long getId() {
         return id;
     }
