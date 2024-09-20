@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -28,16 +28,16 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(
-        @RequestBody MemberLoginRequest memberLoginRequest,
+        @RequestBody MemberRequest memberRequest,
         HttpServletResponse response
     ) {
-        memberService.login(memberLoginRequest, response);
+        memberService.login(memberRequest, response);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberLoginCheck> check(HttpServletRequest request) {
-        MemberLoginCheck member = memberService.loginCheck(request);
+    public ResponseEntity<MemberResponse> check(HttpServletRequest request) {
+        MemberResponse member = memberService.loginCheck(request);
         return ResponseEntity.ok(member);
     }
 

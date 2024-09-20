@@ -1,6 +1,6 @@
 package roomescape.global;
 
-import java.util.Arrays;
+import static roomescape.auth.CookiesUtils.extractTokenFromCookie;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -8,15 +8,15 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import roomescape.jwt.JwtProvider;
+import roomescape.auth.JwtProvider;
 import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
 
 @Component
 public class AuthorityInterceptor implements HandlerInterceptor {
 
-    private MemberService memberService;
-    private JwtProvider jwtProvider;
+    private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
     public AuthorityInterceptor(MemberService memberService, JwtProvider jwtProvider) {
         this.memberService = memberService;
@@ -36,13 +36,5 @@ public class AuthorityInterceptor implements HandlerInterceptor {
         }
 
         return true;
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals("token"))
-            .findFirst()
-            .map(Cookie::getValue)
-            .orElse("");
     }
 }

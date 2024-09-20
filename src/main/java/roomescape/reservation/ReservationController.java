@@ -36,11 +36,8 @@ public class ReservationController {
             || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (reservationRequest.getName() == null) {
-            reservationRequest = new ReservationRequest(
-                member.getName(), reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime()
-            );
-        }
+        if (reservationRequest.getName() == null)
+            reservationRequest.setName(member.getName());
 
         ReservationResponse reservation = reservationService.save(reservationRequest);
 

@@ -1,18 +1,20 @@
 package roomescape.member;
 
-import java.util.Arrays;
+import static roomescape.auth.CookiesUtils.extractTokenFromCookie;
+import static roomescape.auth.CookiesUtils.setTokenToCookie;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import roomescape.jwt.JwtProvider;
+import roomescape.auth.JwtProvider;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
-    private JwtProvider jwtProvider;
+
+    private final MemberDao memberDao;
+    private final JwtProvider jwtProvider;
 
     public MemberService(MemberDao memberDao, JwtProvider jwtProvider) {
         this.memberDao = memberDao;
@@ -31,34 +33,23 @@ public class MemberService {
     }
 
     public void login(
-        MemberLoginRequest memberLoginRequest,
+        MemberRequest memberRequest,
         HttpServletResponse response
     ) {
-        String email = memberLoginRequest.getEmail();
-        String password = memberLoginRequest.getPassword();
+        String email = memberRequest.getEmail();
+        String password = memberRequest.getPassword();
 
-        String accessToken = jwtProvider.createToken(email, password);
-
-        Cookie cookie = new Cookie("token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        String token = jwtProvider.createToken(email, password);
+        setTokenToCookie(response, token);
     }
 
-    public MemberLoginCheck loginCheck(HttpServletRequest request) {
+    public MemberResponse loginCheck(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
 
-        String name = jwtProvider.getNameFromToken(token);
+        Long id = jwtProvider.getIdFromToken(token);
+        Member member = memberDao.findById(id);
 
-        return new MemberLoginCheck(name);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals("token"))
-            .findFirst()
-            .map(Cookie::getValue)
-            .orElse("");
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 }

@@ -10,8 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private LoginMemberArgumentResolver loginMemberArgumentResolver;
-    private AuthorityInterceptor authorityInterceptor;
+    private final LoginMemberArgumentResolver loginMemberArgumentResolver;
+    private final AuthorityInterceptor authorityInterceptor;
 
     public WebMvcConfiguration(LoginMemberArgumentResolver loginMemberArgumentResolver,
         AuthorityInterceptor authorityInterceptor) {

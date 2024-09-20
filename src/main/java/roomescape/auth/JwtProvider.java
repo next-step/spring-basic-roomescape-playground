@@ -1,26 +1,28 @@
-package roomescape.jwt;
+package roomescape.auth;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.member.Member;
 
 @Component
 public class JwtProvider {
-    private String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    private MemberDao memberDao;
 
-    public JwtProvider(MemberDao memberDao) {
+    private final String secretKey;
+    private final MemberDao memberDao;
+
+    public JwtProvider(MemberDao memberDao, @Value("${JWT-Key}")String secretKey) {
         this.memberDao = memberDao;
+        this.secretKey = secretKey;
     }
 
     public String createToken(String email, String password) {
         Member member = memberDao.findByEmailAndPassword(email, password);
-        if (member == null) {
+        if (member == null)
             throw new IllegalArgumentException("Invalid email or password");
-        }
 
         return Jwts.builder()
             .setSubject(member.getId().toString())
@@ -36,5 +38,13 @@ public class JwtProvider {
             .build()
             .parseClaimsJws(token)
             .getBody().get("name");
+    }
+
+    public Long getIdFromToken(String token) {
+        return Long.valueOf(Jwts.parserBuilder()
+            .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+            .build()
+            .parseClaimsJws(token)
+            .getBody().getSubject());
     }
 }

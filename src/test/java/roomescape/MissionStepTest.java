@@ -14,7 +14,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import roomescape.jwt.JwtProvider;
+import roomescape.auth.JwtProvider;
 import roomescape.reservation.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

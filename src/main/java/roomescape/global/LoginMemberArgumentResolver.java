@@ -1,6 +1,6 @@
 package roomescape.global;
 
-import java.util.Arrays;
+import static roomescape.auth.CookiesUtils.extractTokenFromCookie;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -11,15 +11,15 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import roomescape.jwt.JwtProvider;
-import roomescape.member.LoginMember;
+import roomescape.auth.JwtProvider;
 import roomescape.member.MemberResponse;
+import roomescape.member.LoginMember;
 import roomescape.member.MemberService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private MemberService memberService;
-    private JwtProvider jwtProvider;
+    private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
     public LoginMemberArgumentResolver(MemberService memberService, JwtProvider jwtProvider) {
         this.memberService = memberService;
@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest nativeRequest = (HttpServletRequest)webRequest.getNativeRequest();
+        HttpServletRequest nativeRequest = webRequest.getNativeRequest(HttpServletRequest.class);
 
         String name = nativeRequest.getParameter("name");
         if (name == null) {
@@ -46,13 +46,5 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         MemberResponse member = memberService.findMemberByName(name);
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-            .filter(cookie -> cookie.getName().equals("token"))
-            .findFirst()
-            .map(Cookie::getValue)
-            .orElse("");
     }
 }
