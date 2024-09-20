@@ -42,6 +42,14 @@ public class MemberDao {
         );
     }
 
+    public Member getByEmailAndPassword(String email, String password) {
+        Member member = findByEmailAndPassword(email, password);
+        if (member == null) {
+            throw new RuntimeException();
+        }
+        return member;
+    }
+
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
             "SELECT id, name, email, role FROM member WHERE name = ?",
