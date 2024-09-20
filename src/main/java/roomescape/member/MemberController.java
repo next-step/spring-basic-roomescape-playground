@@ -43,13 +43,10 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberLoginCheckResponse> checkLogin(HttpServletRequest request) {
-        String token = Arrays.stream(request.getCookies())
-            .filter(cookie -> cookie.getName().equals("token"))
-            .findFirst()
-            .orElseThrow(RuntimeException::new)
-            .getValue();
-        MemberLoginCheckResponse response = memberService.getMemberNameByToken(token);
+    public ResponseEntity<MemberLoginCheckResponse> checkLogin(
+        LoginMember loginMember
+    ) {
+        MemberLoginCheckResponse response = new MemberLoginCheckResponse(loginMember.name());
         return ResponseEntity.ok().body(response);
     }
 
@@ -60,7 +57,6 @@ public class MemberController {
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
-        ResponseEntity.ok().build();
         return ResponseEntity.ok().build();
     }
 }

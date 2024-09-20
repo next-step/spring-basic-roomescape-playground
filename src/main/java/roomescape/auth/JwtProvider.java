@@ -9,8 +9,10 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import roomescape.member.LoginMember;
 import roomescape.member.Member;
 
 @Component
@@ -34,30 +36,25 @@ public class JwtProvider {
         return Jwts.builder()
             .setSubject(member.getId().toString())
             .claim("name", member.getName())
+            .claim("email", member.getEmail())
             .claim("role", member.getRole())
             .setExpiration(Date.from(Instant.now().plusMillis(validityInMilliseconds)))
             .signWith(getSecretKey())
             .compact();
     }
 
-    public Long getMemberId(String token) {
-        String memberId = Jwts.parserBuilder()
+    public LoginMember getLoginMember(String token) {
+        Claims claims = Jwts.parserBuilder()
             .setSigningKey(getSecretKey())
             .build()
             .parseClaimsJws(token)
-            .getBody()
-            .getSubject();
-        return Long.parseLong(memberId);
-    }
-
-    public String getMemberName(String token) {
-        return Jwts.parserBuilder()
-            .setSigningKey(getSecretKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody()
-            .get("name")
-            .toString();
+            .getBody();
+        return new LoginMember(
+            Long.parseLong(claims.getSubject()),
+            claims.get("name").toString(),
+            claims.get("email").toString(),
+            claims.get("role").toString()
+        );
     }
 
     private SecretKey getSecretKey() {

@@ -1,9 +1,11 @@
 package roomescape.reservation;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,12 +13,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.member.LoginMember;
+import roomescape.member.MemberService;
+
 @RestController
 public class ReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(
+        ReservationService reservationService
+    ) {
         this.reservationService = reservationService;
     }
 
@@ -26,15 +33,19 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest) {
-        if (reservationRequest.getName() == null
-            || reservationRequest.getDate() == null
+    public ResponseEntity create(
+        @RequestBody ReservationRequest reservationRequest,
+        LoginMember loginMember
+    ) {
+        if (reservationRequest.getDate() == null
             || reservationRequest.getTheme() == null
             || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
+        if (reservationRequest.getName() == null) {
+            reservationRequest.addName(loginMember.name());
+        }
         ReservationResponse reservation = reservationService.save(reservationRequest);
-
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
