@@ -41,9 +41,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             .findFirst()
             .orElseThrow(RuntimeException::new)
             .getValue();
-        if (token == null) {
-            return null;
-        }
         return jwtProvider.getLoginMember(token);
     }
 }

@@ -24,9 +24,6 @@ public class AuthInterceptor implements HandlerInterceptor {
         HttpServletResponse response,
         Object handler
     ) {
-        if (!request.getRequestURI().startsWith("/admin")) {
-            return true;
-        }
         if (request.getCookies() == null) {
             response.setStatus(401);
             return false;
@@ -37,7 +34,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             .orElseThrow(RuntimeException::new)
             .getValue();
         LoginMember loginMember = jwtProvider.getLoginMember(token);
-        System.out.println(loginMember);
         if (loginMember == null || !loginMember.role().equals("ADMIN")) {
             response.setStatus(401);
             return false;
