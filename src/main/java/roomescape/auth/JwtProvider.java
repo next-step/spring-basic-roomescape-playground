@@ -5,25 +5,18 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import roomescape.member.MemberDao;
 import roomescape.member.Member;
 
 @Component
 public class JwtProvider {
 
     private final String secretKey;
-    private final MemberDao memberDao;
 
-    public JwtProvider(MemberDao memberDao, @Value("${JWT-Key}")String secretKey) {
-        this.memberDao = memberDao;
+    public JwtProvider(@Value("${JWT-Key}") String secretKey) {
         this.secretKey = secretKey;
     }
 
-    public String createToken(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
-        if (member == null)
-            throw new IllegalArgumentException("Invalid email or password");
-
+    public String createToken(Member member) {
         return Jwts.builder()
             .setSubject(member.getId().toString())
             .claim("name", member.getName())

@@ -12,12 +12,13 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import roomescape.auth.JwtProvider;
-import roomescape.member.MemberResponse;
 import roomescape.member.LoginMember;
+import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 

@@ -15,6 +15,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import roomescape.auth.JwtProvider;
+import roomescape.member.Member;
 import roomescape.reservation.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -54,8 +55,14 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        String token = jwtProvider.createToken("admin@email.com",
-            "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+        Member admin = new Member(
+            1L,
+            "어드민",
+            "admin@email.com",
+            "ADMIN"
+        );
+
+        String token = jwtProvider.createToken(admin);  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -89,7 +96,13 @@ public class MissionStepTest {
 
     @Test
     void 삼단계() {
-        String brownToken = jwtProvider.createToken("brown@email.com", "password");
+        Member brown = new Member(
+            2L,
+            "브라운",
+            "brown@email.com",
+            "User"
+        );
+        String brownToken = jwtProvider.createToken(brown);
 
         RestAssured.given().log().all()
             .cookie("token", brownToken)
@@ -97,7 +110,13 @@ public class MissionStepTest {
             .then().log().all()
             .statusCode(401);
 
-        String adminToken = jwtProvider.createToken("admin@email.com", "password");
+        Member admin = new Member(
+            1L,
+            "어드민",
+            "admin@email.com",
+            "ADMIN"
+        );
+        String adminToken = jwtProvider.createToken(admin);
 
         RestAssured.given().log().all()
             .cookie("token", adminToken)

@@ -38,8 +38,11 @@ public class MemberService {
     ) {
         String email = memberRequest.getEmail();
         String password = memberRequest.getPassword();
+        Member member = memberDao.findByEmailAndPassword(email, password);
+        if (member == null)
+            throw new IllegalArgumentException("Invalid email or password");
 
-        String token = jwtProvider.createToken(email, password);
+        String token = jwtProvider.createToken(member);
         setTokenToCookie(response, token);
     }
 
