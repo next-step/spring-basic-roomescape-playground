@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.global.auth;
 
 import java.util.Arrays;
 

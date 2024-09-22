@@ -1,13 +1,15 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import roomescape.auth.JwtTokenProvider;
+import roomescape.global.auth.JwtTokenProvider;
 import roomescape.member.controller.dto.MemberLoginRequest;
 import roomescape.member.controller.dto.MemberRequest;
 import roomescape.member.controller.dto.MemberResponse;
 
 @Service
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberDao memberDao;
@@ -18,6 +20,7 @@ public class MemberService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberDao.save(
             new Member(memberRequest.getName(),
@@ -38,12 +41,10 @@ public class MemberService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public MemberResponse checkLogin(String token) {
+    public Member checkLogin(String token) {
         Long memberId = jwtTokenProvider.getMemberId(token);
 
-        Member member = memberDao.findById(memberId)
+        return memberDao.findById(memberId)
             .orElseThrow(IllegalArgumentException::new);
-
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 }

@@ -3,7 +3,8 @@ package roomescape.member.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import roomescape.auth.CookieUtils;
+import roomescape.global.auth.CookieUtils;
+import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.member.controller.dto.MemberLoginRequest;
 import roomescape.member.controller.dto.MemberRequest;
@@ -45,7 +46,7 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
+    public ResponseEntity<Member> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = CookieUtils.extractTokenFromCookie(cookies != null ? cookies : new Cookie[0]);
 
@@ -53,7 +54,7 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        MemberResponse response = memberService.checkLogin(token);
+        Member response = memberService.checkLogin(token);
 
         return ResponseEntity.ok(response);
     }

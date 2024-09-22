@@ -4,7 +4,12 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import roomescape.global.auth.JwtTokenProvider;
+import roomescape.member.Member;
+import roomescape.reservation.controller.dto.ReservationResponse;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -16,6 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     void 일단계() {
@@ -43,5 +51,47 @@ public class MissionStepTest {
             .extract();
 
         assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
+    }
+
+    @Test
+    void 이단계() {
+        String token = jwtTokenProvider.createToken(
+            new Member(
+                1L,
+                "어드민",
+                "admin@email.com",
+                "password",
+                "ADMIN"
+            )
+        );
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .body(params)
+            .cookie("token", token)
+            .contentType(ContentType.JSON)
+            .post("/reservations")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(201);
+        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+
+        params.put("name", "브라운");
+
+        ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
+            .body(params)
+            .cookie("token", token)
+            .contentType(ContentType.JSON)
+            .post("/reservations")
+            .then().log().all()
+            .extract();
+
+        assertThat(adminResponse.statusCode()).isEqualTo(201);
+        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 }

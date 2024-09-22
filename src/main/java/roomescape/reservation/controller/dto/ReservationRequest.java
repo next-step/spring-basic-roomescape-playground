@@ -1,10 +1,14 @@
-package roomescape.reservation;
+package roomescape.reservation.controller.dto;
 
 public class ReservationRequest {
     private String name;
     private String date;
     private Long theme;
     private Long time;
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getName() {
         return name;

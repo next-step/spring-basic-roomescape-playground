@@ -4,8 +4,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
+
 @Service
 public class ReservationService {
+
     private ReservationDao reservationDao;
 
     public ReservationService(ReservationDao reservationDao) {
