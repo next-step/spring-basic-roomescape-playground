@@ -36,16 +36,16 @@ public class JwtProvider {
             .compact();
     }
 
-    public Long getUserId(String token) {
+    public Long getMemberId(String token) {
         try {
-            String userId = Jwts.parserBuilder()
+            String memberId = Jwts.parserBuilder()
                 .setSigningKey(getSecretKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
 
-            return Long.valueOf(userId);
+            return Long.valueOf(memberId);
         } catch (JwtException e) {
             throw new AuthenticationException();
         }

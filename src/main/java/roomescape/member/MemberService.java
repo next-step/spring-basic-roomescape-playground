@@ -36,7 +36,7 @@ public class MemberService {
     }
 
     public Member getAuth(String token) {
-        Long userId = jwtProvider.getUserId(token);
-        return memberDao.findById(userId).orElseThrow(AuthenticationException::new);
+        Long memberId = jwtProvider.getMemberId(token);
+        return memberDao.findById(memberId).orElseThrow(AuthenticationException::new);
     }
 }
