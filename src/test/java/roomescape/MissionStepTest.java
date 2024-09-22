@@ -94,4 +94,39 @@ public class MissionStepTest {
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
+
+    @Test
+    void 삼단계() {
+        String brownToken = jwtTokenProvider.createToken(
+            new Member(
+                2L,
+                "브라운",
+                "brown@email.com",
+                "password",
+                "USER"
+            )
+        );
+
+        RestAssured.given().log().all()
+            .cookie("token", brownToken)
+            .get("/admin")
+            .then().log().all()
+            .statusCode(401);
+
+        String adminToken = jwtTokenProvider.createToken(
+            new Member(
+                1L,
+                "어드민",
+                "admin@email.com",
+                "password",
+                "ADMIN"
+            )
+        );
+
+        RestAssured.given().log().all()
+            .cookie("token", adminToken)
+            .get("/admin")
+            .then().log().all()
+            .statusCode(200);
+    }
 }
