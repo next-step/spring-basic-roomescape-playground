@@ -1,5 +1,7 @@
 package roomescape.global.auth;
 
+import java.util.Arrays;
+
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.Cookie;
@@ -16,12 +18,10 @@ public class CookieUtil {
     }
 
     public String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
+        return Arrays.stream(cookies)
+            .filter(cookie -> "token".equals(cookie.getName()))
+            .map(Cookie::getValue)
+            .findFirst()
+            .orElse("");
     }
 }
