@@ -1,6 +1,7 @@
-package roomescape.member;
+package roomescape.member.controller.dto;
 
 public class MemberResponse {
+
     private Long id;
     private String name;
     private String email;
