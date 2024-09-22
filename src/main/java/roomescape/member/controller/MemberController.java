@@ -9,6 +9,7 @@ import roomescape.member.controller.dto.MemberLoginRequest;
 import roomescape.member.controller.dto.MemberRequest;
 import roomescape.member.controller.dto.MemberResponse;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +47,11 @@ public class MemberController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token = CookieUtils.extractTokenFromCookie(cookies);
+        String token = CookieUtils.extractTokenFromCookie(cookies != null ? cookies : new Cookie[0]);
+
+        if (token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         MemberResponse response = memberService.checkLogin(token);
 
