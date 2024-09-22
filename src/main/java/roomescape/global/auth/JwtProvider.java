@@ -1,5 +1,6 @@
 package roomescape.global.auth;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 
@@ -51,7 +52,6 @@ public class JwtProvider {
     }
 
     private SecretKey getSecretKey() {
-        String encoded = Base64.getEncoder().encodeToString(secretKey.getBytes());
-        return Keys.hmacShaKeyFor(encoded.getBytes());
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 }
