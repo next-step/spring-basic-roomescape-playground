@@ -46,8 +46,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         if (!token.isEmpty()) {
             return memberService.getAuth(token);
-        } else{
-            return null;
         }
+        return null;
     }
 }
