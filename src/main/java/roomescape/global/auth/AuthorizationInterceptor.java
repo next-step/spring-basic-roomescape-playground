@@ -31,15 +31,15 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         String token = cookieUtil.extractTokenFromCookie(cookies);
 
-        if (!token.isEmpty()) {
-            Member member = memberService.getAuth(token);
+        if(token.isEmpty()) return false;
 
-            if (member == null || !member.getRole().equals("ADMIN")) {
-                response.setStatus(401);
-                return false;
-            } else return true;
-        } else{
+        Member member = memberService.getAuth(token);
+
+        if (member == null || !member.getRole().equals("ADMIN")) {
+            response.setStatus(401);
             return false;
         }
+
+        return true;
     }
 }
