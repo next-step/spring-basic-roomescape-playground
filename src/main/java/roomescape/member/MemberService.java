@@ -36,7 +36,7 @@ public class MemberService {
         Member member = memberDao.findByEmailAndPassword(
             request.email(),
             request.password()
-        );
+        ).orElseThrow(() -> new IllegalArgumentException("계정정보가 올바르지 않습니다."));
 
         return jwtTokenProvider.createToken(member);
     }

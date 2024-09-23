@@ -30,17 +30,22 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.queryForObject(
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        try {
+            Member member = jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
                 (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("role")
                 ),
                 email, password
-        );
+            );
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Member findByName(String name) {

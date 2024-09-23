@@ -7,8 +7,10 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import roomescape.global.auth.exception.AuthenticationException;
 import roomescape.member.Member;
 
 @Component
@@ -45,13 +47,17 @@ public class JwtTokenProvider {
     }
 
     public Long getMemberId(String token) {
-        return Long.valueOf(Jwts.parserBuilder()
-            .setSigningKey(getKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody()
-            .getSubject()
-        );
+        try {
+            return Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject()
+            );
+        } catch (JwtException e) {
+            throw new AuthenticationException();
+        }
     }
 
     private Key getKey() {
