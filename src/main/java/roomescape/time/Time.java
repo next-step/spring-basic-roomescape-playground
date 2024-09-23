@@ -1,6 +1,7 @@
 package roomescape.time;
 
 public class Time {
+
     private Long id;
     private String value;
 

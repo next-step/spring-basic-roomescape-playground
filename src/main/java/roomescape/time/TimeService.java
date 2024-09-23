@@ -1,13 +1,15 @@
 package roomescape.time;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationDao;
 
-import java.util.List;
-
 @Service
 public class TimeService {
+
     private TimeDao timeDao;
     private ReservationDao reservationDao;
 
@@ -21,13 +23,13 @@ public class TimeService {
         List<Time> times = timeDao.findAll();
 
         return times.stream()
-                .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getValue(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
-                ))
-                .toList();
+            .map(time -> new AvailableTime(
+                time.getId(),
+                time.getValue(),
+                reservations.stream()
+                    .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
+            ))
+            .toList();
     }
 
     public List<Time> findAll() {
