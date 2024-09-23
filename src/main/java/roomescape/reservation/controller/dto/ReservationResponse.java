@@ -1,6 +1,7 @@
-package roomescape.reservation;
+package roomescape.reservation.controller.dto;
 
 public class ReservationResponse {
+
     private Long id;
     private String name;
     private String theme;

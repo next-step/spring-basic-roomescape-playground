@@ -1,6 +1,7 @@
-package roomescape.member;
+package roomescape.member.controller.dto;
 
 public class MemberRequest {
+
     private String name;
     private String email;
     private String password;
