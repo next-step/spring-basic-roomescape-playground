@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
+import roomescape.member.MyReservationResponse;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -50,5 +52,14 @@ public class ReservationService {
                 it.getDate(),
                 it.getTime().getTimeValue()))
             .toList();
+    }
+
+    public List<MyReservationResponse> getMyReservations(LoginMember loginMember) {
+        Member member = memberRepository.getById(loginMember.getId());
+
+        return reservationRepository.findByMember(member).stream()
+            .map(r -> new MyReservationResponse(
+                r.getId(), r.getTheme().getName(), r.getDate(), r.getTime().getTimeValue(), r.getStatus()
+            )).toList();
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +18,9 @@ public class Reservation {
     private Long id;
 
     private String date;
+
+    @Column(columnDefinition = "varchar(10) default '예약'")
+    private String status;
 
     @ManyToOne
     private Member member;
@@ -63,5 +67,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

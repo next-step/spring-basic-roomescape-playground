@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.member.LoginMember;
+import roomescape.member.MyReservationResponse;
 
 @RestController
 public class ReservationController {
@@ -20,6 +21,11 @@ public class ReservationController {
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> getMyReservations(LoginMember loginMember) {
+        return ResponseEntity.ok(reservationService.getMyReservations(loginMember));
     }
 
     @GetMapping("/reservations")
