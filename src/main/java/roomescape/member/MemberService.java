@@ -12,17 +12,17 @@ import roomescape.member.controller.dto.MemberResponse;
 @Transactional(readOnly = true)
 public class MemberService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+        this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(
+        Member member = memberRepository.save(
             new Member(memberRequest.getName(),
                 memberRequest.getEmail(),
                 memberRequest.getPassword(),
@@ -33,7 +33,7 @@ public class MemberService {
     }
 
     public String login(MemberLoginRequest request) {
-        Member member = memberDao.findByEmailAndPassword(
+        Member member = memberRepository.findByEmailAndPassword(
             request.email(),
             request.password()
         ).orElseThrow(() -> new IllegalArgumentException("계정정보가 올바르지 않습니다."));
@@ -44,7 +44,7 @@ public class MemberService {
     public Member checkLogin(String token) {
         Long memberId = jwtTokenProvider.getMemberId(token);
 
-        return memberDao.findById(memberId)
+        return memberRepository.findById(memberId)
             .orElseThrow(IllegalArgumentException::new);
     }
 }
