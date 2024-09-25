@@ -13,22 +13,22 @@ import roomescape.auth.JwtProvider;
 @Service
 public class MemberService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
-    public MemberService(MemberDao memberDao, JwtProvider jwtProvider) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository, JwtProvider jwtProvider) {
+        this.memberRepository = memberRepository;
         this.jwtProvider = jwtProvider;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(
+        Member member = memberRepository.save(
             new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public MemberResponse findMemberByName(String name) {
-        Member member = memberDao.findByName(name);
+        Member member = memberRepository.getByName(name);
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
@@ -38,7 +38,7 @@ public class MemberService {
     ) {
         String email = memberRequest.getEmail();
         String password = memberRequest.getPassword();
-        Member member = memberDao.findByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password);
         if (member == null)
             throw new IllegalArgumentException("Invalid email or password");
 
@@ -51,7 +51,7 @@ public class MemberService {
         String token = extractTokenFromCookie(cookies);
 
         Long id = jwtProvider.getIdFromToken(token);
-        Member member = memberDao.findById(id);
+        Member member = memberRepository.getById(id);
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
