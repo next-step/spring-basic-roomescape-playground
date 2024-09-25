@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +12,10 @@ import java.net.URI;
 import java.util.List;
 
 import roomescape.global.auth.LoginMember;
-import roomescape.member.Member;
+import roomescape.member.domain.Member;
+import roomescape.reservation.service.ReservationService;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 
 @RestController
 public class ReservationController {
@@ -40,15 +43,7 @@ public class ReservationController {
         }
 
         if(reservationRequest.getName() == null) {
-            ReservationResponse reservation = reservationService.save(
-                new ReservationRequest(
-                    loginMember.getName(),
-                    reservationRequest.getDate(),
-                    reservationRequest.getTheme(),
-                    reservationRequest.getTime()
-                )
-            );
-            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+            reservationRequest.addName(loginMember.getName());
         }
 
         ReservationResponse reservation = reservationService.save(reservationRequest);

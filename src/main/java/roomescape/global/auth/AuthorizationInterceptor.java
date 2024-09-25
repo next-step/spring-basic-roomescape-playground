@@ -7,8 +7,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
+import roomescape.member.domain.Member;
+import roomescape.member.service.MemberService;
 
 @Component
 public class AuthorizationInterceptor implements HandlerInterceptor {

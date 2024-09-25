@@ -1,4 +1,4 @@
-package roomescape.time;
+package roomescape.time.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+
+import roomescape.time.domain.Time;
 
 @Repository
 public class TimeDao {

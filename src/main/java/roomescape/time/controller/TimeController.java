@@ -1,4 +1,4 @@
-package roomescape.time;
+package roomescape.time.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+
+import roomescape.time.service.TimeService;
+import roomescape.time.domain.Time;
+import roomescape.time.dto.AvailableTime;
 
 @RestController
 public class TimeController {

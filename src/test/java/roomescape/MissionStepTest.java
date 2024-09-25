@@ -4,14 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import roomescape.global.auth.JwtProvider;
-import roomescape.member.Member;
-import roomescape.member.MemberDao;
-import roomescape.member.MemberService;
-import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.dto.ReservationResponse;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 

@@ -1,11 +1,14 @@
-package roomescape.member;
+package roomescape.member.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import roomescape.global.auth.AuthResponse;
 import roomescape.global.auth.CookieUtil;
 import roomescape.global.auth.LoginRequest;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.service.MemberService;
+import roomescape.member.domain.Member;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
