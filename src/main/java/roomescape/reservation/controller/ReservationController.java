@@ -13,6 +13,7 @@ import java.util.List;
 
 import roomescape.global.auth.Auth;
 import roomescape.global.auth.LoginMember;
+import roomescape.reservation.controller.dto.MyReservationResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.ReservationService;
@@ -31,6 +32,18 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> getMyReservations(
+        @Auth LoginMember member
+    ) {
+        if (member == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<MyReservationResponse> responses = reservationService.getMyReservations(member);
+        return ResponseEntity.ok(responses);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(
         @RequestBody ReservationRequest reservationRequest,
@@ -39,15 +52,12 @@ public class ReservationController {
         if (reservationRequest.getDate() == null
             || reservationRequest.getTheme() == null
             || reservationRequest.getTime() == null
+            || member == null
         ) {
             return ResponseEntity.badRequest().build();
         }
 
-        if (reservationRequest.getName() == null) {
-            reservationRequest.setName(member.name());
-        }
-
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        ReservationResponse reservation = reservationService.save(reservationRequest, member);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }

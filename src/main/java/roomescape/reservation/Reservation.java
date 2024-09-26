@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -21,6 +22,10 @@ public class Reservation {
     private String date;
 
     @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne
     @JoinColumn(name = "time_id")
     private Time time;
 
@@ -28,31 +33,18 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
-        this.id = id;
+    protected Reservation() {}
+
+    public Reservation(String name, String date, Member member, Time time, Theme theme) {
         this.name = name;
         this.date = date;
+        this.member = member;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Reservation(String name, String date, Time time, Theme theme) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    protected Reservation() {
-
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getDate() {
@@ -65,5 +57,13 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }
