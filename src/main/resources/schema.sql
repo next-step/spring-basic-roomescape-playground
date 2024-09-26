@@ -28,13 +28,15 @@ CREATE TABLE member
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id  BIGINT,
     date     VARCHAR(255) NOT NULL,
     name     VARCHAR(255) NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (member_id) REFERENCES member (id)
 );
 
 INSERT INTO member (name, email, password, role)
@@ -54,7 +56,11 @@ VALUES ('10:00'),
        ('18:00'),
        ('20:00');
 
+
+INSERT INTO reservation (member_id, name, date, time_id, theme_id)
+VALUES (1, '', '2024-03-01', 1, 1),
+       (1, '', '2024-03-01', 2, 2),
+       (1, '', '2024-03-01', 3, 3);
+
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('어드민', '2024-03-01', 1, 1),
-       ('어드민', '2024-03-01', 2, 2),
-       ('어드민', '2024-03-01', 3, 3);
+VALUES ('브라운', '2024-03-01', 1, 2);

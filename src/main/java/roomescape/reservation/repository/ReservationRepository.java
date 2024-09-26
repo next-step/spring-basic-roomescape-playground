@@ -9,4 +9,6 @@ import roomescape.reservation.domain.Reservation;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
     List<Reservation> findByDateAndThemeId(String date, Long theme_id);
+
+    List<Reservation> findByMemberId(Long memberId);
 }

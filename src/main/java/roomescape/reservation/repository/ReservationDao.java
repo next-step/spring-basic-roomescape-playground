@@ -6,7 +6,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 

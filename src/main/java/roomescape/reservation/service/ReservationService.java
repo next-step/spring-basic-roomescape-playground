@@ -1,17 +1,15 @@
 package roomescape.reservation.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 import jakarta.persistence.EntityNotFoundException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.ReservationRequest;
-import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.repository.ReservationDao;
+import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.dto.response.MyReservationResponse;
+import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -41,6 +39,7 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.save(
             new Reservation(
+                reservationRequest.getMember(),
                 reservationRequest.getName(),
                 reservationRequest.getDate(),
                 time,
@@ -65,5 +64,11 @@ public class ReservationService {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
+    }
+
+    public List<MyReservationResponse> findReservationsByMember(Long memberId) {
+        return reservationRepository.findByMemberId(memberId).stream()
+            .map(MyReservationResponse::from)
+            .toList();
     }
 }

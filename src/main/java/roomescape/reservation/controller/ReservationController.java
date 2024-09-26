@@ -13,9 +13,10 @@ import java.util.List;
 
 import roomescape.global.auth.LoginMember;
 import roomescape.member.domain.Member;
+import roomescape.reservation.dto.response.MyReservationResponse;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservation.dto.ReservationRequest;
-import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.dto.response.ReservationResponse;
 
 @RestController
 public class ReservationController {
@@ -46,6 +47,8 @@ public class ReservationController {
             reservationRequest.addName(loginMember.getName());
         }
 
+        reservationRequest.addMember(loginMember);
+
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
@@ -55,5 +58,13 @@ public class ReservationController {
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> getMemberReservations(
+        @LoginMember Member loginMember
+    ) {
+        List<MyReservationResponse> response = reservationService.findReservationsByMember(loginMember.getId());
+        return ResponseEntity.ok().body(response);
     }
 }
