@@ -13,7 +13,9 @@ import java.util.List;
 
 import roomescape.global.auth.LoginMember;
 import roomescape.member.domain.Member;
+import roomescape.reservation.dto.request.WaitingRequest;
 import roomescape.reservation.dto.response.MyReservationResponse;
+import roomescape.reservation.dto.response.WaitingResponse;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
@@ -33,7 +35,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(
+    public ResponseEntity createReservation(
         @LoginMember Member loginMember,
         @RequestBody ReservationRequest reservationRequest
     ) {
@@ -49,14 +51,39 @@ public class ReservationController {
 
         reservationRequest.addMember(loginMember);
 
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        if(reservationService.checkReservationExist(reservationRequest)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ReservationResponse reservation = reservationService.saveReservation(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
+    @PostMapping("/waitings")
+    public ResponseEntity createWaiting(
+        @LoginMember Member member,
+        @RequestBody WaitingRequest waitingRequest
+    ) {
+        if(reservationService.checkWaitingExist(waitingRequest, member)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        WaitingResponse waiting = reservationService.saveWaiting(waitingRequest, member);
+
+        return ResponseEntity.created(URI.create("/waitings/" + waiting.id())).body(waiting);
+    }
+
+    @DeleteMapping("/waitings/{id}")
+    public ResponseEntity deleteWaiting(@PathVariable Long id) {
+        reservationService.deleteWaitingById(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        reservationService.deleteById(id);
+    public ResponseEntity deleteReservation(@PathVariable Long id) {
+        reservationService.deleteReservationById(id);
         return ResponseEntity.noContent().build();
     }
 
