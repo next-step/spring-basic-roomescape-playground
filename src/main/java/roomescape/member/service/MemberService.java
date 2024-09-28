@@ -20,13 +20,13 @@ public class MemberService {
     public MemberResponse createMember(MemberRequest request) {
         Member member = memberRepository.save(
             Member.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(request.getPassword())
+                .name(request.name())
+                .email(request.email())
+                .password(request.password())
                 .role("USER")
                 .build()
         );
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return MemberResponse.from(member);
     }
 
     public String memberLogin(MemberLoginRequest request) {

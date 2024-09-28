@@ -9,9 +9,9 @@ import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.repository.TimeRepository;
 import roomescape.time.model.AvailableTime;
 import roomescape.time.model.Time;
+import roomescape.time.repository.TimeRepository;
 
 @Service
 @RequiredArgsConstructor

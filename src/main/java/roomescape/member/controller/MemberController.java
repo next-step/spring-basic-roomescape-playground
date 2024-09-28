@@ -12,12 +12,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import roomescape.auth.Auth;
 import roomescape.auth.CookieUtils;
+import roomescape.member.dto.LoginMember;
 import roomescape.member.dto.MemberLoginCheckResponse;
 import roomescape.member.dto.MemberLoginRequest;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
-import roomescape.member.dto.LoginMember;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class MemberController {
     @PostMapping("/members")
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+        return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
     }
 
     @PostMapping("/login")

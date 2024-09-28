@@ -10,13 +10,14 @@ import roomescape.member.dto.LoginMember;
 import roomescape.member.model.Member;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.MyReservationResponse;
-import roomescape.waiting.dto.WaitingRequest;
-import roomescape.waiting.dto.WaitingResponse;
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.model.Time;
 import roomescape.time.repository.TimeRepository;
+import roomescape.waiting.dto.WaitingRequest;
+import roomescape.waiting.dto.WaitingResponse;
 import roomescape.waiting.model.Waiting;
+import roomescape.waiting.model.WaitingWithRank;
 import roomescape.waiting.repository.WaitingRepository;
 
 @Service
@@ -42,14 +43,8 @@ public class WaitingService {
                 .member(member)
                 .build()
         );
-        return new WaitingResponse(
-            waiting.getId(),
-            waiting.getName(),
-            waiting.getTheme().getName(),
-            waiting.getDate(),
-            waiting.getTime().getTime(),
-            waitingRepository.getWaitingWithRankById(waiting.getId()).getRank()
-        );
+        WaitingWithRank waitingWithRank = waitingRepository.getWaitingWithRankById(waiting.getId());
+        return WaitingResponse.from(waitingWithRank);
     }
 
     public void deleteById(Long id) {

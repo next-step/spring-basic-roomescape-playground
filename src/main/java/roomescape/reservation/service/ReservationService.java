@@ -36,20 +36,14 @@ public class ReservationService {
         reservationRepository.checkDuplication(theme, request.date(), time);
         Reservation reservation = reservationRepository.save(
             Reservation.builder()
-            .name(name)
-            .date(request.date())
-            .theme(theme)
-            .time(time)
-            .member(member)
-            .build()
+                .name(name)
+                .date(request.date())
+                .theme(theme)
+                .time(time)
+                .member(member)
+                .build()
         );
-        return new ReservationResponse(
-            reservation.getId(),
-            reservation.getName(),
-            reservation.getTheme().getName(),
-            reservation.getDate(),
-            reservation.getTime().getTime()
-        );
+        return ReservationResponse.from(reservation);
     }
 
     public void deleteById(Long id) {
