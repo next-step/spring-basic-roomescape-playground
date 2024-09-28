@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.service;
 
 import static roomescape.auth.CookiesUtils.extractTokenFromCookie;
 import static roomescape.auth.CookiesUtils.setTokenToCookie;
@@ -8,7 +8,12 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import roomescape.auth.JwtProvider;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.model.Member;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class MemberService {
@@ -21,6 +26,7 @@ public class MemberService {
         this.jwtProvider = jwtProvider;
     }
 
+    @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberRepository.save(
             new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
@@ -32,6 +38,7 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
+    @Transactional
     public void login(
         MemberRequest memberRequest,
         HttpServletResponse response
@@ -46,6 +53,7 @@ public class MemberService {
         setTokenToCookie(response, token);
     }
 
+    @Transactional
     public MemberResponse loginCheck(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);

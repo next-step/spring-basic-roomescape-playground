@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import roomescape.member.Member;
+import roomescape.member.model.Member;
 import roomescape.reservation.model.Reservation;
 import roomescape.theme.Theme;
 import roomescape.time.Time;

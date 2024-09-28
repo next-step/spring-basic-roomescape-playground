@@ -7,9 +7,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
-import roomescape.member.LoginMember;
-import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.member.model.LoginMember;
+import roomescape.member.model.Member;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;

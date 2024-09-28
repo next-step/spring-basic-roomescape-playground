@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import roomescape.member.Member;
+import roomescape.member.model.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 import roomescape.waiting.dto.WaitingWithRank;

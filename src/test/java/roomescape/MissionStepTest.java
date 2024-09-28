@@ -17,7 +17,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import roomescape.auth.JwtProvider;
-import roomescape.member.Member;
+import roomescape.member.model.Member;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.waiting.dto.WaitingResponse;

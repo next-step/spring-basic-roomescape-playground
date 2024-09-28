@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.controller;
 
 import static roomescape.auth.CookiesUtils.expireTokenToCookie;
 
@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.service.MemberService;
 
 @RestController
 public class MemberController {

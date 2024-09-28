@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

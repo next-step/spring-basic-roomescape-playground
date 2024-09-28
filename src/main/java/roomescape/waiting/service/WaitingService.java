@@ -3,9 +3,9 @@ package roomescape.waiting.service;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
-import roomescape.member.LoginMember;
-import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.member.model.LoginMember;
+import roomescape.member.model.Member;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;

@@ -12,9 +12,9 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import roomescape.auth.JwtProvider;
-import roomescape.member.LoginMember;
-import roomescape.member.MemberResponse;
-import roomescape.member.MemberService;
+import roomescape.member.model.LoginMember;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.service.MemberService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
