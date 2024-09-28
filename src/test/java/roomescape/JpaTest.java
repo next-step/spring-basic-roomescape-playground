@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import roomescape.time.Time;
-import roomescape.time.TimeRepository;
+import roomescape.time.model.Time;
+import roomescape.time.repository.TimeRepository;
 
 @DataJpaTest
 public class JpaTest {

@@ -38,6 +38,19 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
+CREATE TABLE waiting
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    date     VARCHAR(255) NOT NULL,
+    name     VARCHAR(255) NOT NULL,
+    time_id  BIGINT,
+    theme_id BIGINT,
+    member_id BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id)
+);
+
 INSERT INTO member (name, email, password, role)
 VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
        ('브라운', 'brown@email.com', 'password', 'USER');
