@@ -11,18 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import roomescape.member.LoginMember;
 
 @RestController
+@RequiredArgsConstructor
 public class ReservationController {
 
     private final ReservationService reservationService;
-
-    public ReservationController(
-        ReservationService reservationService
-    ) {
-        this.reservationService = reservationService;
-    }
 
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {

@@ -1,7 +1,5 @@
 package roomescape.auth;
 
-import java.util.Arrays;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -10,18 +8,15 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import roomescape.member.LoginMember;
 
 @Component
+@RequiredArgsConstructor
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtProvider jwtProvider;
-
-    public LoginMemberArgumentResolver(
-        JwtProvider jwtProvider
-    ) {
-        this.jwtProvider = jwtProvider;
-    }
+    private final CookieUtils cookieUtils;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -36,11 +31,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = Arrays.stream(request.getCookies())
-            .filter(cookie -> cookie.getName().equals("token"))
-            .findFirst()
-            .orElseThrow(RuntimeException::new)
-            .getValue();
+        String token = cookieUtils.getToken(request);
         return jwtProvider.getLoginMember(token);
     }
 }

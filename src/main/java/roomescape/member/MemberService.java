@@ -2,27 +2,30 @@ package roomescape.member;
 
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import roomescape.auth.JwtProvider;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
 
-    private MemberDao memberDao;
-    private JwtProvider jwtProvider;
+    private final MemberRepository memberRepository;
+    private final JwtProvider jwtProvider;
 
-    public MemberService(MemberDao memberDao, JwtProvider jwtProvider) {
-        this.memberDao = memberDao;
-        this.jwtProvider = jwtProvider;
-    }
-
-    public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(
-            new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+    public MemberResponse createMember(MemberRequest request) {
+        Member member = memberRepository.save(
+            new Member.MemberBuilder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .role("USER")
+                .build()
+        );
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public String memberLogin(MemberLoginRequest request) {
-        Member member = memberDao.getByEmailAndPassword(request.email(), request.password());
+        Member member = memberRepository.getByEmailAndPassword(request.email(), request.password());
         return jwtProvider.createToken(member);
     }
 }

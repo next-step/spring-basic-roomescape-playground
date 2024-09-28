@@ -4,28 +4,29 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
+import roomescape.reservation.ReservationRepository;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
 
 @Service
+@RequiredArgsConstructor
 public class TimeService {
 
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
-
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
-    }
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+        Theme theme = themeRepository.getById(themeId);
+        List<Reservation> reservations = reservationRepository.findByDateAndTheme(date, theme);
+        List<Time> times = timeRepository.findAll();
 
         return times.stream()
             .map(time -> new AvailableTime(
                 time.getId(),
-                time.getValue(),
+                time.getTime(),
                 reservations.stream()
                     .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
             ))
@@ -33,14 +34,14 @@ public class TimeService {
     }
 
     public List<Time> findAll() {
-        return timeDao.findAll();
+        return timeRepository.findAll();
     }
 
     public Time save(Time time) {
-        return timeDao.save(time);
+        return timeRepository.save(time);
     }
 
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        timeRepository.deleteById(id);
     }
 }

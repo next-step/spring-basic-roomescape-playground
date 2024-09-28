@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import roomescape.auth.CookieUtils;
 
 @RestController
+@RequiredArgsConstructor
 public class MemberController {
 
-    private MemberService memberService;
-
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
+    private final MemberService memberService;
+    private final CookieUtils cookieUtils;
 
     @PostMapping("/members")
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
@@ -31,28 +31,19 @@ public class MemberController {
         @RequestBody MemberLoginRequest request,
         HttpServletResponse response
     ) {
-        Cookie cookie = new Cookie("token", memberService.memberLogin(request));
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        cookieUtils.setToken(response, memberService.memberLogin(request));
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberLoginCheckResponse> checkLogin(
-        LoginMember loginMember
-    ) {
+    public ResponseEntity<MemberLoginCheckResponse> checkLogin(LoginMember loginMember) {
         MemberLoginCheckResponse response = new MemberLoginCheckResponse(loginMember.name());
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", "");
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        cookieUtils.setTokenNull(response);
         return ResponseEntity.ok().build();
     }
 }

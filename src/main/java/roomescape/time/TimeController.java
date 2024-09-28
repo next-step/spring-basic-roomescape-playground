@@ -12,14 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
 public class TimeController {
 
     private TimeService timeService;
-
-    public TimeController(TimeService timeService) {
-        this.timeService = timeService;
-    }
 
     @GetMapping("/times")
     public List<Time> list() {
@@ -28,7 +27,7 @@ public class TimeController {
 
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
+        if (time.getTime() == null || time.getTime().isEmpty()) {
             throw new RuntimeException();
         }
 
