@@ -8,6 +8,7 @@ import roomescape.global.auth.JwtTokenProvider;
 import roomescape.member.Member;
 import roomescape.reservation.controller.dto.MyReservationResponse;
 import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.controller.dto.WaitingResponse;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,5 +153,52 @@ public class MissionStepTest {
             .extract().jsonPath().getList(".", MyReservationResponse.class);
 
         assertThat(reservations).hasSize(3);
+    }
+
+    @Test
+    void 육단계() {
+        String brownToken = jwtTokenProvider.createToken(
+            new Member(
+                2L,
+                "브라운",
+                "brown@email.com",
+                "password",
+                "USER"
+            )
+        );
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 예약 대기 생성
+        WaitingResponse waiting = RestAssured.given().log().all()
+            .body(params)
+            .cookie("token", brownToken)
+            .contentType(ContentType.JSON)
+            .post("/waitings")
+            .then().log().all()
+            .statusCode(201)
+            .extract().as(WaitingResponse.class);
+
+        // 내 예약 대기 목록 조회
+        List<MyReservationResponse> myReservations = RestAssured.given().log().all()
+            .body(params)
+            .cookie("token", brownToken)
+            .contentType(ContentType.JSON)
+            .get("reservations-mine")
+            .then().log().all()
+            .statusCode(200)
+            .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        String status = myReservations.stream()
+            .filter(it -> it.id() == waiting.id())
+            .filter(it -> !it.status().equals("예약"))
+            .findFirst()
+            .map(it -> it.status())
+            .orElse(null);
+
+        assertThat(status).isEqualTo("1번째 예약대기");
     }
 }

@@ -1,22 +1,26 @@
 package roomescape.reservation.controller.dto;
 
 import roomescape.reservation.Reservation;
+import roomescape.reservation.WaitingWithRank;
 
 public record MyReservationResponse(
-    Long reservationId,
+    Long id,
     String theme,
     String date,
     String time,
     String status
 ) {
 
-    public static MyReservationResponse from(Reservation reservation) {
+    public static MyReservationResponse from(WaitingWithRank waitingWithRank) {
+        Reservation reservation = waitingWithRank.getReservation();
+        Long rank = waitingWithRank.getRank();
+
         return new MyReservationResponse(
             reservation.getId(),
             reservation.getTheme().getName(),
             reservation.getDate(),
             reservation.getTime().getValue(),
-            "예약"
+            rank == 0 ? "예약" : rank + "번째 예약대기"
         );
     }
 }

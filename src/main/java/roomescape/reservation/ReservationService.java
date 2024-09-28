@@ -1,6 +1,5 @@
 package roomescape.reservation;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +12,8 @@ import roomescape.member.MemberRepository;
 import roomescape.reservation.controller.dto.MyReservationResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.controller.dto.WaitingRequest;
+import roomescape.reservation.controller.dto.WaitingResponse;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -40,8 +41,9 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> getMyReservations(@Auth LoginMember member) {
-        List<Reservation> reservations = reservationRepository.findByMemberId(member.id());
-        return reservations.stream()
+        List<WaitingWithRank> waitingWithRanks = reservationRepository.findWaitingsWithRankByMemberId(member.id());
+        System.out.println(waitingWithRanks);
+        return waitingWithRanks.stream()
             .map(MyReservationResponse::from)
             .toList();
     }
@@ -52,10 +54,10 @@ public class ReservationService {
 
         if (reservationRequest.getName() != null) {
             member =  memberRepository.findByName(reservationRequest.getName())
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 회원이 없습니다"));
+                .orElseThrow(IllegalArgumentException::new);
         } else {
             member = memberRepository.findById(loginMember.id())
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 회원이 없습니다"));
+                .orElseThrow(IllegalArgumentException::new);
         }
 
         Time time = timeRepository.findById(reservationRequest.getTime())
@@ -75,6 +77,45 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
+    }
+
+    @Transactional
+    public WaitingResponse createWaiting(LoginMember loginMember, WaitingRequest request) {
+        Member member = memberRepository.findById(loginMember.id())
+            .orElseThrow(IllegalArgumentException::new);
+
+        Time time = timeRepository.findById(request.time())
+            .orElseThrow(IllegalArgumentException::new);
+
+        Theme theme = themeRepository.findById(request.theme())
+            .orElseThrow(IllegalArgumentException::new);
+
+        boolean exists = reservationRepository.existsByDateAndTimeAndThemeAndMember(
+            request.date(), time, theme, member
+        );
+
+        if (exists) {
+            throw new IllegalArgumentException("이미 해당 테마, 시간, 날짜에 예약이 존재합니다.");
+        }
+
+        Reservation reservation = new Reservation(
+            member.getName(),
+            request.date(),
+            member,
+            time,
+            theme
+        );
+
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        Long rank = reservationRepository.countByDateAndThemeIdAndTimeIdAndIdLessThan(
+            savedReservation.getDate(),
+            savedReservation.getTheme().getId(),
+            savedReservation.getTime().getId(),
+            savedReservation.getId()
+        );
+
+        return WaitingResponse.of(savedReservation, rank);
     }
 
     @Transactional

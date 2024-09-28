@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,8 @@ import roomescape.reservation.controller.dto.MyReservationResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.ReservationService;
+import roomescape.reservation.controller.dto.WaitingRequest;
+import roomescape.reservation.controller.dto.WaitingResponse;
 
 @RestController
 public class ReservationController {
@@ -60,6 +63,21 @@ public class ReservationController {
         ReservationResponse reservation = reservationService.save(reservationRequest, member);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    }
+
+    @PostMapping("/waitings")
+    public ResponseEntity<WaitingResponse> createWaiting(
+        @Auth LoginMember member,
+        @RequestBody WaitingRequest request
+    ) {
+        WaitingResponse response = reservationService.createWaiting(member, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping("/waitings/{id}")
+    public ResponseEntity<Void> deleteWaiting(@PathVariable Long id) {
+        reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/reservations/{id}")
