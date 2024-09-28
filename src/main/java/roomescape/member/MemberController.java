@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import roomescape.auth.Auth;
 import roomescape.auth.CookieUtils;
 
 @RestController
@@ -36,7 +37,7 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberLoginCheckResponse> checkLogin(LoginMember loginMember) {
+    public ResponseEntity<MemberLoginCheckResponse> checkLogin(@Auth LoginMember loginMember) {
         MemberLoginCheckResponse response = new MemberLoginCheckResponse(loginMember.name());
         return ResponseEntity.ok().body(response);
     }

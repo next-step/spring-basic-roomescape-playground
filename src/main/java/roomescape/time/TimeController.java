@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TimeController {
 
-    private TimeService timeService;
+    private final TimeService timeService;
 
     @GetMapping("/times")
     public List<Time> list() {

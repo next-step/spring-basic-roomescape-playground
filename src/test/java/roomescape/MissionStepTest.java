@@ -3,6 +3,7 @@ package roomescape;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -114,5 +116,19 @@ public class MissionStepTest {
             .get("/admin")
             .then().log().all()
             .statusCode(200);
+    }
+
+    @Test
+    void 오단계() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+            .cookie("token", adminToken)
+            .get("/reservations-mine")
+            .then().log().all()
+            .statusCode(200)
+            .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 }

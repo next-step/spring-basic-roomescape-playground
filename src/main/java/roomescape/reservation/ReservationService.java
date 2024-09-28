@@ -1,10 +1,14 @@
 package roomescape.reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import roomescape.member.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -17,20 +21,25 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationResponse save(ReservationRequest request) {
-        Theme theme = themeRepository.getById(request.getTheme());
-        Time time = timeRepository.getById(request.getTime());
-        Reservation reservation = Reservation.builder()
-            .name(request.getName())
-            .date(request.getDate())
+    public ReservationResponse save(ReservationRequest request, LoginMember loginMember) {
+        String name = Optional.ofNullable(request.name()).orElse(loginMember.name());
+        Theme theme = themeRepository.getById(request.theme());
+        Time time = timeRepository.getById(request.time());
+        Member member = memberRepository.getById(loginMember.id());
+        Reservation reservation = reservationRepository.save(
+            Reservation.builder()
+            .name(name)
+            .date(request.date())
             .theme(theme)
             .time(time)
-            .build();
-        reservation = reservationRepository.save(reservation);
+            .member(member)
+            .build()
+        );
         return new ReservationResponse(
             reservation.getId(),
-            request.getName(),
+            request.name(),
             reservation.getTheme().getName(),
             reservation.getDate(),
             reservation.getTime().getTime()
@@ -45,6 +54,13 @@ public class ReservationService {
         return reservationRepository.findAll().stream()
             .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(),
                 it.getTime().getTime()))
+            .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        Member member = memberRepository.getById(loginMember.id());
+        return reservationRepository.findAllByMember(member).stream()
+            .map(MyReservationResponse::from)
             .toList();
     }
 }

@@ -1,5 +1,7 @@
 package roomescape.reservation;
 
+import java.util.Optional;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -26,7 +29,7 @@ public class Reservation {
     private Long id;
 
     @Column(name = "name", nullable = false)
-    private String name;
+    private String name = "";
 
     @Column(name = "date", nullable = false)
     private String date;
@@ -39,11 +42,16 @@ public class Reservation {
     @JoinColumn(name = "theme_id", referencedColumnName = "id")
     private Theme theme;
 
+    @ManyToOne
+    @JoinColumn(name = "member_id", referencedColumnName = "id")
+    private Member member;
+
     @Builder
-    private Reservation(String name, String date, Time time, Theme theme) {
+    private Reservation(String name, String date, Time time, Theme theme, Member member) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 }

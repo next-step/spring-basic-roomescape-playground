@@ -16,7 +16,7 @@ public class CookieUtils {
             .filter(cookie -> cookie.getName().equals("token"))
             .findFirst()
             .map(Cookie::getValue)
-            .orElseThrow(RuntimeException::new);
+            .orElse(null);
     }
 
     public Cookie setToken(HttpServletResponse response, String token) {

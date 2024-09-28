@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import roomescape.auth.Auth;
 import roomescape.member.LoginMember;
 
 @RestController
@@ -28,17 +29,14 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(
         @RequestBody ReservationRequest reservationRequest,
-        LoginMember loginMember
+        @Auth LoginMember loginMember
     ) {
-        if (reservationRequest.getDate() == null
-            || reservationRequest.getTheme() == null
-            || reservationRequest.getTime() == null) {
+        if (reservationRequest.date() == null
+            || reservationRequest.theme() == null
+            || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (reservationRequest.getName() == null) {
-            reservationRequest.addName(loginMember.name());
-        }
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
@@ -46,5 +44,11 @@ public class ReservationController {
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> listMine(@Auth LoginMember loginMember) {
+        List<MyReservationResponse> reservations = reservationService.findMyReservations(loginMember);
+        return ResponseEntity.ok(reservations);
     }
 }
