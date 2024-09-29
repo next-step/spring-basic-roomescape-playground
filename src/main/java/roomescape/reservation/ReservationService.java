@@ -42,7 +42,6 @@ public class ReservationService {
 
     public List<MyReservationResponse> getMyReservations(@Auth LoginMember member) {
         List<WaitingWithRank> waitingWithRanks = reservationRepository.findWaitingsWithRankByMemberId(member.id());
-        System.out.println(waitingWithRanks);
         return waitingWithRanks.stream()
             .map(MyReservationResponse::from)
             .toList();

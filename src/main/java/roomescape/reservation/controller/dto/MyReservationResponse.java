@@ -12,8 +12,8 @@ public record MyReservationResponse(
 ) {
 
     public static MyReservationResponse from(WaitingWithRank waitingWithRank) {
-        Reservation reservation = waitingWithRank.getReservation();
-        Long rank = waitingWithRank.getRank();
+        Reservation reservation = waitingWithRank.reservation();
+        Long rank = waitingWithRank.rank();
 
         return new MyReservationResponse(
             reservation.getId(),
