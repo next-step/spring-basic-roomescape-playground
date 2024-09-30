@@ -55,15 +55,12 @@ public class ReservationService {
             member =  memberRepository.findByName(reservationRequest.getName())
                 .orElseThrow(IllegalArgumentException::new);
         } else {
-            member = memberRepository.findById(loginMember.id())
-                .orElseThrow(IllegalArgumentException::new);
+            member = memberRepository.getById(loginMember.id());
         }
 
-        Time time = timeRepository.findById(reservationRequest.getTime())
-            .orElseThrow(IllegalArgumentException::new);
+        Time time = timeRepository.getById(reservationRequest.getTime());
 
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
-            .orElseThrow(IllegalArgumentException::new);
+        Theme theme = themeRepository.getById(reservationRequest.getTheme());
 
         Reservation reservation = new Reservation(
             member.getName(),
@@ -80,14 +77,11 @@ public class ReservationService {
 
     @Transactional
     public WaitingResponse createWaiting(LoginMember loginMember, WaitingRequest request) {
-        Member member = memberRepository.findById(loginMember.id())
-            .orElseThrow(IllegalArgumentException::new);
+        Member member = memberRepository.getById(loginMember.id());
 
-        Time time = timeRepository.findById(request.time())
-            .orElseThrow(IllegalArgumentException::new);
+        Time time = timeRepository.getById(request.time());
 
-        Theme theme = themeRepository.findById(request.theme())
-            .orElseThrow(IllegalArgumentException::new);
+        Theme theme = themeRepository.getById(request.theme());
 
         boolean exists = reservationRepository.existsByDateAndTimeAndThemeAndMember(
             request.date(), time, theme, member

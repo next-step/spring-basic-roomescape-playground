@@ -23,9 +23,9 @@ public class MemberService {
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberRepository.save(
-            new Member(memberRequest.getName(),
-                memberRequest.getEmail(),
-                memberRequest.getPassword(),
+            new Member(memberRequest.name(),
+                memberRequest.email(),
+                memberRequest.password(),
                 "USER")
         );
 
@@ -44,7 +44,6 @@ public class MemberService {
     public Member checkLogin(String token) {
         Long memberId = jwtTokenProvider.getMemberId(token);
 
-        return memberRepository.findById(memberId)
-            .orElseThrow(IllegalArgumentException::new);
+        return memberRepository.getById(memberId);
     }
 }
