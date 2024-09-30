@@ -39,15 +39,17 @@ public class ReservationController {
         @LoginMember Member loginMember,
         @RequestBody ReservationRequest reservationRequest
     ) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        // if (reservationRequest.getDate() == null
+        //         || reservationRequest.getTheme() == null
+        //         || reservationRequest.getTime() == null) {
+        //     return ResponseEntity.badRequest().build();
+        // }
+        //
+        // if(reservationRequest.getName() == null) {
+        //     reservationRequest.addName(loginMember.getName());
+        // }
 
-        if(reservationRequest.getName() == null) {
-            reservationRequest.addName(loginMember.getName());
-        }
+        reservationRequest.validate(loginMember.getName());
 
         reservationRequest.addMember(loginMember);
 

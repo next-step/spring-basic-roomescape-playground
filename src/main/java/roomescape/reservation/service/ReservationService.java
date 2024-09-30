@@ -74,11 +74,9 @@ public class ReservationService {
 
     @Transactional
     public WaitingResponse saveWaiting(WaitingRequest waitingRequest, Member member) {
-        Time time = timeRepository.findById(waitingRequest.time())
-            .orElseThrow(EntityNotFoundException::new);
+        Time time = timeRepository.getById(waitingRequest.time());
 
-        Theme theme = themeRepository.findById(waitingRequest.theme())
-            .orElseThrow(EntityNotFoundException::new);
+        Theme theme = themeRepository.getById(waitingRequest.theme());
 
         Integer waitingNumber = waitingRepository.findWaitingRank(theme, waitingRequest.date(), time);
 

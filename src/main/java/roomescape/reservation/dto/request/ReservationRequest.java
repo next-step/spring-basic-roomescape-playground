@@ -1,5 +1,7 @@
 package roomescape.reservation.dto.request;
 
+import org.springframework.http.ResponseEntity;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import roomescape.member.domain.Member;
@@ -42,11 +44,17 @@ public class ReservationRequest {
         return member;
     }
 
-    public void addName(String name) {
-        this.name = name;
-    }
-
     public void addMember(Member member) {
         this.member = member;
+    }
+
+    public void validate(String name) {
+        if (this.date == null) throw new IllegalArgumentException();
+
+        if (this.theme == null) throw new IllegalArgumentException();
+
+        if (this.time == null) throw new IllegalArgumentException();
+
+        if (this.name == null) this.name = name;
     }
 }
