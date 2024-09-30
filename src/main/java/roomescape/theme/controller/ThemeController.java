@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.theme.model.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
 @RestController
+@RequestMapping("/themes")
 public class ThemeController {
 
     private ThemeRepository themeRepository;
@@ -23,18 +25,18 @@ public class ThemeController {
         this.themeRepository = themeRepository;
     }
 
-    @PostMapping("/themes")
+    @PostMapping()
     public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
         Theme newTheme = themeRepository.save(theme);
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
     }
 
-    @GetMapping("/themes")
+    @GetMapping()
     public ResponseEntity<List<Theme>> list() {
         return ResponseEntity.ok(themeRepository.findAll());
     }
 
-    @DeleteMapping("/themes/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeRepository.deleteById(id);
         return ResponseEntity.noContent().build();
