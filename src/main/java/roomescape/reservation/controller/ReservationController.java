@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.controller;
 
 import java.net.URI;
 import java.util.List;
@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import roomescape.member.LoginMember;
+import roomescape.member.model.LoginMember;
+import roomescape.reservation.dto.MyReservationResponse;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.service.ReservationService;
 
 @RestController
 public class ReservationController {
@@ -20,6 +24,12 @@ public class ReservationController {
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> getMyReservations(LoginMember loginMember) {
+        List<MyReservationResponse> myReservations = reservationService.getMyReservations(loginMember);
+        return ResponseEntity.ok(myReservations);
     }
 
     @GetMapping("/reservations")
@@ -41,7 +51,7 @@ public class ReservationController {
 
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")

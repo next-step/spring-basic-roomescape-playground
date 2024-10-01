@@ -9,8 +9,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import roomescape.auth.JwtProvider;
-import roomescape.member.MemberResponse;
-import roomescape.member.MemberService;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.service.MemberService;
 
 @Component
 public class AuthorityInterceptor implements HandlerInterceptor {
