@@ -1,5 +1,7 @@
 package roomescape.reservation.controller.dto;
 
+import roomescape.reservation.Reservation;
+
 public class ReservationResponse {
 
     private Long id;
@@ -34,5 +36,15 @@ public class ReservationResponse {
 
     public String getTime() {
         return time;
+    }
+
+    public static ReservationResponse from(Reservation reservation) {
+        return new ReservationResponse(
+            reservation.getId(),
+            reservation.getName(),
+            reservation.getTheme().getName(),
+            reservation.getDate(),
+            reservation.getTime().getValue()
+        );
     }
 }
