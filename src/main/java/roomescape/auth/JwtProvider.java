@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import roomescape.member.LoginMember;
-import roomescape.member.Member;
+import roomescape.member.dto.LoginMember;
+import roomescape.member.model.Member;
 
 @Component
 public class JwtProvider {

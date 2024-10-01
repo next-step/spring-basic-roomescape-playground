@@ -7,22 +7,16 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import lombok.RequiredArgsConstructor;
 import roomescape.auth.AuthInterceptor;
 import roomescape.auth.LoginMemberArgumentResolver;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfiguration implements WebMvcConfigurer {
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
     private final AuthInterceptor authInterceptor;
-
-    public WebConfiguration(
-        LoginMemberArgumentResolver loginMemberArgumentResolver,
-        AuthInterceptor authInterceptor
-    ) {
-        this.loginMemberArgumentResolver = loginMemberArgumentResolver;
-        this.authInterceptor = authInterceptor;
-    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -32,6 +26,6 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-            .addPathPatterns("/admin");
+            .addPathPatterns("/admin/**");
     }
 }
