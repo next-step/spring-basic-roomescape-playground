@@ -2,7 +2,6 @@ package roomescape.global.auth;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 
 import javax.crypto.SecretKey;
 
@@ -13,7 +12,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import roomescape.global.exception.AuthenticationException;
-import roomescape.member.Member;
+import roomescape.member.domain.Member;
 
 @Component
 public class JwtProvider {

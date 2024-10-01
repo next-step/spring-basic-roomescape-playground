@@ -1,6 +1,6 @@
 package roomescape.global.auth;
 
-import roomescape.member.Member;
+import roomescape.member.domain.Member;
 
 public record AuthResponse(
     String name
