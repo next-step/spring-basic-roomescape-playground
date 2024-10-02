@@ -10,6 +10,7 @@ import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
@@ -195,5 +196,11 @@ public class MissionStepTest {
             .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtProvider.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 }
