@@ -9,7 +9,7 @@ import roomescape.auth.JwtProvider;
 @Configuration
 public class AppConfig {
 
-    @Value("${JWT-Key}")
+    @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
     @Bean
