@@ -1,10 +1,10 @@
 package roomescape;
 
+import roomescape.global.auth.JwtUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import roomescape.global.auth.JwtTokenProvider;
 import roomescape.member.Member;
 import roomescape.reservation.controller.dto.MyReservationResponse;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -13,6 +13,7 @@ import roomescape.reservation.controller.dto.WaitingResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MissionStepTest {
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtUtils jwtTokenProvider;
 
     @Test
     void 일단계() {
@@ -200,5 +201,11 @@ public class MissionStepTest {
             .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 }

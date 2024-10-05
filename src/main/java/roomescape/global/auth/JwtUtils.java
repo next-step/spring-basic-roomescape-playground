@@ -4,26 +4,18 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import roomescape.global.auth.exception.AuthenticationException;
 import roomescape.member.Member;
 
-@Component
-public class JwtTokenProvider {
+public class JwtUtils {
 
     private final String secretKey;
-
     private final Long expirationTime;
 
-    public JwtTokenProvider(
-        @Value("${jwt.secret-key}") String secretKey,
-        @Value("${jwt.access-token.expiration-time}") Long expirationTime
-    ) {
+    public JwtUtils(String secretKey, Long expirationTime) {
         this.secretKey = secretKey;
         this.expirationTime = expirationTime;
     }
