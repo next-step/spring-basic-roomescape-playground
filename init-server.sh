@@ -1,6 +1,6 @@
 #!/bin/bash
-export PROJECT=next-step/spring-basic-roomescape-playground
-export BRANCH=soundbar91
+PROJECT=next-step/spring-basic-roomescape-playground
+BRANCH=soundbar91
 
 sudo apt-get install git
 

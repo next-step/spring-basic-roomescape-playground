@@ -1,5 +1,5 @@
 #!/bin/bash
-export PROJECT=spring-basic-roomescape-playground
+PROJECT=spring-basic-roomescape-playground
 
 cd ~/app/deploy/${PROJECT}
 
