@@ -26,6 +26,9 @@ import roomescape.reservation.dto.ReservationResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
+    @Value("${security.jwt.token.secret-key}")
+    private String secretKey;
+
     @Test
     void 일단계() {
         Map<String, String> params = new HashMap<>();
@@ -182,9 +185,6 @@ public class MissionStepTest {
         Component componentAnnotation = JwtProvider.class.getAnnotation(Component.class);
         assertThat(componentAnnotation).isNull();
     }
-
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
 
     @Test
     void 팔단계() {

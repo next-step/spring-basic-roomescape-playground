@@ -2,8 +2,10 @@ package roomescape;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootApplication
+@ActiveProfiles("production")
 public class RoomescapeApplication {
 
     public static void main(String[] args) {

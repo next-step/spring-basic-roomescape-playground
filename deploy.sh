@@ -41,3 +41,6 @@ JAR_NAME=$(ls -tr $REPOSITORY_DIR/*.jar | tail -n 1)
 
 echo "> JAR Name: $JAR_NAME"
 nohup java -jar $JAR_NAME 2>&1 &
+
+NEW_PID=$!
+echo $NEW_PID > $PID_FILE
