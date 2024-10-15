@@ -5,23 +5,17 @@ import java.security.Key;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import roomescape.global.exception.AuthenticationException;
 import roomescape.member.domain.Member;
 
-@Component
-public class JwtProvider {
+public class JwtUtils {
 
     private final String secretKey;
 
-    public JwtProvider(
-        @Value("${auth.jwt.secret}") String secretKey
-    ) {
+    public JwtUtils(String secretKey) {
         this.secretKey = secretKey;
     }
 
