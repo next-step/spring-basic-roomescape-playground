@@ -3,7 +3,7 @@ package roomescape.member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import roomescape.global.auth.JwtTokenProvider;
+import roomescape.global.auth.JwtUtils;
 import roomescape.member.controller.dto.MemberLoginRequest;
 import roomescape.member.controller.dto.MemberRequest;
 import roomescape.member.controller.dto.MemberResponse;
@@ -13,11 +13,11 @@ import roomescape.member.controller.dto.MemberResponse;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtils = jwtUtils;
     }
 
     @Transactional
@@ -38,11 +38,11 @@ public class MemberService {
             request.password()
         ).orElseThrow(() -> new IllegalArgumentException("계정정보가 올바르지 않습니다."));
 
-        return jwtTokenProvider.createToken(member);
+        return jwtUtils.createToken(member);
     }
 
     public Member checkLogin(String token) {
-        Long memberId = jwtTokenProvider.getMemberId(token);
+        Long memberId = jwtUtils.getMemberId(token);
 
         return memberRepository.getById(memberId);
     }
