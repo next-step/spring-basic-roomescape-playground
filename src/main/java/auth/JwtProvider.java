@@ -1,4 +1,4 @@
-package roomescape.auth;
+package auth;
 
 import java.time.Instant;
 import java.util.Base64;
@@ -6,28 +6,18 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import roomescape.member.dto.LoginMember;
 import roomescape.member.model.Member;
 
-@Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
     private final String secretKey;
     private final Long validityInMilliseconds;
-
-    public JwtProvider(
-        @Value("${security.jwt.token.secret-key}") String secretKey,
-        @Value("${security.jwt.token.expire-length}") Long validityInMilliseconds
-    ) {
-        this.secretKey = secretKey;
-        this.validityInMilliseconds = validityInMilliseconds;
-    }
 
     public String createToken(Member member) {
         if (member == null) {
