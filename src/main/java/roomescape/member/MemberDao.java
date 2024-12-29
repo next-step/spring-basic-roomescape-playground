@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -50,6 +51,19 @@ public class MemberDao {
                         rs.getString("role")
                 ),
                 name
+        );
+    }
+
+    public Member findByEmail(String email) {
+        return jdbcTemplate.queryForObject(
+                "SELECT id, name, email, role FROM member WHERE email = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                ),
+                email
         );
     }
 }
