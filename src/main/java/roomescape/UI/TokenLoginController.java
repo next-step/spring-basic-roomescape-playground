@@ -35,4 +35,25 @@ public class TokenLoginController {
         response.addCookie(cookie);
         return ResponseEntity.ok().body(tokenResponse);
     }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    String token = cookie.getValue();
+                    boolean isValid = authService.verifyToken(token);
+                    if (isValid) {
+                        String email = authService.getEmailFromToken(token);
+                        MemberResponse memberResponse = authService.findMemberByEmail(email);
+                        return ResponseEntity.ok(memberResponse);
+                    } else {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                    }
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }
