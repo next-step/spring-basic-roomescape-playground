@@ -41,7 +41,7 @@ public class TokenLoginController {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
+                if (cookie.getName().equals("token")) {
                     String token = cookie.getValue();
                     boolean isValid = authService.verifyToken(token);
                     if (isValid) {
