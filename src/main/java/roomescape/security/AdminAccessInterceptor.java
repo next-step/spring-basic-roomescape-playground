@@ -8,7 +8,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.application.AuthService;
 import roomescape.application.AuthorizationException;
 import roomescape.member.LoginMember;
-
 import java.util.Arrays;
 
 @Component

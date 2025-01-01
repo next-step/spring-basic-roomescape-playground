@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
