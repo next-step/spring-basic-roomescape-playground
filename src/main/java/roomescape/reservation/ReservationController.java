@@ -33,7 +33,6 @@ public class ReservationController {
                 || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
-        System.out.println("loginMember = " + loginMember.getName());
         ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);

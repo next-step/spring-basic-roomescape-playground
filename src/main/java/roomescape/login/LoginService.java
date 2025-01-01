@@ -25,7 +25,7 @@ public class LoginService {
         return cookie;
     }
 
-    public LoginCheckResponse loginCheck(Cookie[] cookies) {
+    public Member loginCheck(Cookie[] cookies) {
         String token = null;
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
@@ -39,7 +39,7 @@ public class LoginService {
             String email = String.valueOf(claims.get("email"));
             String password = String.valueOf(claims.get("password"));
             Member member = memberDao.findByEmailAndPassword(email, password);
-            return new LoginCheckResponse(member.getName());
+            return member;
         }
         return null;
     }

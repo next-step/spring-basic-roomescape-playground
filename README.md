@@ -28,12 +28,28 @@
 ## 🍀기능 구현
 
 ### 🔧 HandlerMethodArgumentResolver구현
-* [ ] Cookie를 통해 멤버 정보를 조회하는 로직 분리
-* [ ] 전처리를 통해 객체 주입
+* [x] Cookie를 통해 멤버 정보를 조회하는 로직 분리
+* [x] 전처리를 통해 객체 주입
 
 ### 🔧 Cookie를 이용하여 예약 생성 기능 변경
-* [ ] name값 유무에 따른 예약 생성
+* [x] name값 유무에 따른 예약 생성
 
 
 ## 🍀고려한 점
 🍖@PathVariable 등을 처리하는 친구가 HandlerMethodArgumentResolver 이 친구인 것을 알게 됨
+
+# ⭐️ 2단계
+
+## 🍀기능 구현
+
+### 🔧 Interceptor사용
+* [x] /admin에 대한 Interceptor 등록
+
+# 🥕1 ~ 3단계
+## Keep
+* 원래 있던 코드 컨벤션을 최대한 지키려고 노력함
+## Problem
+* 같은 역할을 하는 코드가 여러 부분에서 반복됨
+* 각 객체의 의존관계가 정확한지 확신되지 않음
+## Try
+* 각 객체의 역할을 제대로 이해하고 그림으로 직접 그려보는 것이 필요
