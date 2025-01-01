@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
 import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.member.MemberResponse;
@@ -18,12 +19,12 @@ public class AuthService {
         this.memberDao = memberDao;
     }
 
-    public MemberResponse findMemberByEmail(String email) {
+    public LoginMember findLoginMemberByEmail(String email) {
         Member member = memberDao.findByEmail(email);
         if (member == null) {
             throw new AuthorizationException("사용자를 찾을 수 없습니다.");
         }
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public String getEmailFromToken(String token) {
