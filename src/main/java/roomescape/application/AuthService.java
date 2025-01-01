@@ -7,7 +7,6 @@ import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
-import roomescape.member.MemberResponse;
 
 @Service
 public class AuthService {
