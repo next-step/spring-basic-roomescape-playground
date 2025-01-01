@@ -1,5 +1,6 @@
 package roomescape.login;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
@@ -18,7 +19,7 @@ public class LoginService {
 
     public Cookie login(String email, String password) {
         Member member = memberDao.findByEmailAndPassword(email, password);
-        Cookie cookie = new Cookie("token", jwtTokenProvider.createToken(member.getName()));
+        Cookie cookie = new Cookie("token", jwtTokenProvider.createToken(member.getEmail(), member.getPassword()));
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
@@ -33,10 +34,14 @@ public class LoginService {
         }
 
         if (token != null) {
-            String name = jwtTokenProvider.getPayload(token);
-            Member member = memberDao.findByName(name);
+            Claims claims = jwtTokenProvider.getPayload(token);
+            System.out.println("claims = " + claims);
+            String email = String.valueOf(claims.get("email"));
+            String password = String.valueOf(claims.get("password"));
+            Member member = memberDao.findByEmailAndPassword(email, password);
             return new LoginCheckResponse(member.getName());
         }
         return null;
     }
 }
+

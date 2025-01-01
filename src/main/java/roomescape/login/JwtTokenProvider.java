@@ -2,7 +2,7 @@ package roomescape.login;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,20 +16,19 @@ public class JwtTokenProvider {
     @Value("${jwt.expiretime}")
     private long validityInMilliseconds;
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    public String createToken(String email, String password) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
+                .claim("email", email)
+                .claim("password", password)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
-    public String getPayload(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    public Claims getPayload(String token) {
+        return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token).getBody();
     }
 }

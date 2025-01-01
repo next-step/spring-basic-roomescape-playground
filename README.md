@@ -22,3 +22,18 @@
 ## 🍀궁금한 점
 ❓ Jwt의 secret키를 모르는 경우 테스트 가능 여부 및 신뢰성 여부 -> JWT.io 사이트를 이용해야 하는 것인지
 ❓ 현재 학습 자료의 Dao, Dto, Controller, Service가 한 패키지 안에 구조되어 있는데 다른 의도가 존재하는 것인지
+
+# ⭐️ 2단계
+
+## 🍀기능 구현
+
+### 🔧 HandlerMethodArgumentResolver구현
+* [ ] Cookie를 통해 멤버 정보를 조회하는 로직 분리
+* [ ] 전처리를 통해 객체 주입
+
+### 🔧 Cookie를 이용하여 예약 생성 기능 변경
+* [ ] name값 유무에 따른 예약 생성
+
+
+## 🍀고려한 점
+🍖@PathVariable 등을 처리하는 친구가 HandlerMethodArgumentResolver 이 친구인 것을 알게 됨
