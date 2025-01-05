@@ -8,7 +8,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.application.AuthService;
 import roomescape.application.AuthorizationException;
 import roomescape.member.LoginMember;
+
 import java.util.Arrays;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Component
 public class AdminAccessInterceptor implements HandlerInterceptor {
@@ -26,14 +29,11 @@ public class AdminAccessInterceptor implements HandlerInterceptor {
         LoginMember member = authService.findLoginMemberByEmail(email);
 
         if (member == null) {
-            response.setStatus(401);
-            return false;
+            throw new AuthorizationException("사용자가 존재하지 않습니다..", UNAUTHORIZED);
         }
 
         if (!"ADMIN".equals(member.getRole())) {
-            response.setStatus(401);
-            response.getWriter().write("권한이 없습니다.");
-            return false;
+            throw new AuthorizationException("권한이 없습니다.", UNAUTHORIZED);
         }
 
         return true;
@@ -41,13 +41,13 @@ public class AdminAccessInterceptor implements HandlerInterceptor {
 
     private String extractTokenFromCookies(Cookie[] cookies) {
         if (cookies == null) {
-            throw new AuthorizationException("쿠키가 존재하지 않습니다.");
+            throw new AuthorizationException("쿠키가 존재하지 않습니다.", UNAUTHORIZED);
         }
 
         return Arrays.stream(cookies)
                 .filter(cookie -> "token".equals(cookie.getName()))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseThrow(() -> new AuthorizationException("토큰 쿠키가 없습니다."));
+                .orElseThrow(() -> new AuthorizationException("토큰 쿠키가 없습니다.", UNAUTHORIZED));
     }
 }

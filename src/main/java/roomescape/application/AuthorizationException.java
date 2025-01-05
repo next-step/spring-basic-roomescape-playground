@@ -3,12 +3,16 @@ package roomescape.application;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
+@ResponseStatus
 public class AuthorizationException extends RuntimeException {
-    public AuthorizationException() {
+    private final HttpStatus httpStatus;
+
+    public AuthorizationException(String message, HttpStatus httpStatus) {
+        super(message);
+        this.httpStatus = httpStatus;
     }
 
-    public AuthorizationException(String message) {
-        super(message);
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
     }
 }

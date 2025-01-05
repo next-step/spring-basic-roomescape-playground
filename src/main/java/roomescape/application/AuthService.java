@@ -8,6 +8,8 @@ import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
+import static org.springframework.http.HttpStatus.*;
+
 @Service
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
@@ -21,7 +23,7 @@ public class AuthService {
     public LoginMember findLoginMemberByEmail(String email) {
         Member member = memberDao.findByEmail(email);
         if (member == null) {
-            throw new AuthorizationException("사용자를 찾을 수 없습니다.");
+            throw new AuthorizationException("사용자를 찾을 수 없습니다.", NOT_FOUND);
         }
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
@@ -32,7 +34,7 @@ public class AuthService {
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
         if (checkInvalidLogin(tokenRequest.getEmail(), tokenRequest.getPassword())) {
-            throw new AuthorizationException();
+            throw new AuthorizationException("유효한 로그인 정보가 아닙니다.", BAD_REQUEST);
         }
         String accessToken = jwtTokenProvider.createToken(tokenRequest.getEmail());
         return new TokenResponse(accessToken);
@@ -40,8 +42,8 @@ public class AuthService {
 
     public boolean checkInvalidLogin(String email, String password) {
         Member member = memberDao.findByEmailAndPassword(email, password);
-        if(member == null){
-            throw new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다.");
+        if (member == null) {
+            throw new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다.", UNAUTHORIZED);
         }
         return false;
     }
