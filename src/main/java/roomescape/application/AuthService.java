@@ -6,20 +6,20 @@ import roomescape.dto.TokenResponse;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Service
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
+    public AuthService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
     }
 
     public LoginMember findLoginMemberByEmail(String email) {
-        Member member = memberDao.findByEmail(email);
+        Member member = memberRepository.findByEmail(email);
         if (member == null) {
             throw new AuthorizationException("사용자를 찾을 수 없습니다.");
         }
@@ -39,7 +39,7 @@ public class AuthService {
     }
 
     public boolean checkInvalidLogin(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password);
         if(member == null){
             throw new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다.");
         }
