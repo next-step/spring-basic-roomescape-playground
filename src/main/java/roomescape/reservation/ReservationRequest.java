@@ -1,11 +1,18 @@
 package roomescape.reservation;
 
+import roomescape.theme.Theme;
+import roomescape.time.Time;
+
 public class ReservationRequest {
     private Long memberId;
     private String name;
     private String date;
-    private Long theme;
-    private Long time;
+    private Theme theme;
+    private Time time;
+
+    public Long getMemberId(){
+        return memberId;
+    }
 
     public void setMemberId(Long memberId) {
         this.memberId = memberId;
@@ -23,11 +30,11 @@ public class ReservationRequest {
         return date;
     }
 
-    public Long getTheme() {
+    public Theme getTheme() {
         return theme;
     }
 
-    public Long getTime() {
+    public Time getTime() {
         return time;
     }
 }
