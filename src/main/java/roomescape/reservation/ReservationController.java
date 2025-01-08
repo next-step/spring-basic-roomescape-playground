@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 import java.net.URI;
 import java.util.List;
@@ -18,12 +18,14 @@ import java.util.List;
 @RestController
 public class ReservationController {
 
-    private final MemberDao memberDao;
+    private final ReservationRepository reservationRepository;
     private final ReservationService reservationService;
+    private final MemberRepository memberRepository;
 
-    public ReservationController(MemberDao memberDao, ReservationService reservationService) {
-        this.memberDao = memberDao;
+    public ReservationController(ReservationRepository reservationRepository, ReservationService reservationService, MemberRepository memberRepository) {
+        this.reservationRepository = reservationRepository;
         this.reservationService = reservationService;
+        this.memberRepository = memberRepository;
     }
 
     @GetMapping("/reservations")
@@ -47,7 +49,7 @@ public class ReservationController {
 
         Member member;
         try {
-            member = memberDao.findByName(reservationRequest.getName());
+            member = memberRepository.findByName(reservationRequest.getName());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 이름의 예약이 없습니다.: " + reservationRequest.getName());
         }

@@ -6,25 +6,34 @@ import java.util.List;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+        Reservation reservation = reservationRepository.save(new Reservation(
+                reservationRequest.getName(),
+                reservationRequest.getDate(),
+                reservationRequest.getTime(),
+                reservationRequest.getTheme()));
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getTheme(),
+                reservation.getDate(),
+                reservation.getTime());
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationRepository.findAll().stream()
+                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme(), it.getDate(), it.getTime()))
                 .toList();
     }
 }
