@@ -44,4 +44,5 @@ public class JwtProviderImpl implements JwtProvider{
                 .getBody().getSubject());
         return memberId;
     }
+
 }
