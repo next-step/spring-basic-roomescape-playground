@@ -2,11 +2,12 @@ package roomescape.jwt;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 
 import java.nio.charset.StandardCharsets;
 
-
+@Component
 public class JwtProviderImpl implements JwtProvider{
 
     private static final String SECRET_KEY="Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
