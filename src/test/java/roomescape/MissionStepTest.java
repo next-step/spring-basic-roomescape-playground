@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
-import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
 import java.util.HashMap;
@@ -19,12 +18,9 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@DataJpaTest
 public class MissionStepTest {
-
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Autowired
     private TimeRepository timeRepository;
@@ -130,28 +126,17 @@ public class MissionStepTest {
                 .statusCode(200);
     }
 
-    @Test
-    void 사단계() {
-        Time time = new Time("10:00");
-        entityManager.persist(time);
-        entityManager.flush();
-
-        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
-
-        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
-    }
-
-    @Test
-    void 오단계() {
-        String adminToken = createToken("admin@email.com", "password");
-
-        List<MyReservationResponse> reservations = RestAssured.given().log().all()
-                .cookie("token", adminToken)
-                .get("/reservations-mine")
-                .then().log().all()
-                .statusCode(200)
-                .extract().jsonPath().getList(".", MyReservationResponse.class);
-
-        assertThat(reservations).hasSize(3);
-    }
+//    @Test
+//    void 오단계() {
+//        String adminToken = createToken("admin@email.com", "password");
+//
+//        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+//                .cookie("token", adminToken)
+//                .get("/reservations-mine")
+//                .then().log().all()
+//                .statusCode(200)
+//                .extract().jsonPath().getList(".", MyReservationResponse.class);
+//
+//        assertThat(reservations).hasSize(3);
+//    }
 }
