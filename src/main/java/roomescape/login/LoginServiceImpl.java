@@ -7,7 +7,7 @@ import roomescape.member.MemberDao;
 import roomescape.member.MemberResponse;
 
 @Service
-public class LoginServiceImpl implements LoginService{
+public class LoginServiceImpl implements LoginService {
 
     private final MemberDao memberDao;
     private final JwtProvider jwtProvider;
