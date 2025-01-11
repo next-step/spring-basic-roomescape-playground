@@ -29,6 +29,11 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> myList(Member loginMember) {
+        return reservationService.findMyReservationsAll(loginMember);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, Member loginMember) {
 
@@ -52,7 +57,6 @@ public class ReservationController {
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
-
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
