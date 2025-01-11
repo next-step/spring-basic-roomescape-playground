@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.application.AuthService;
 import roomescape.application.AuthorizationException;
-import roomescape.member.LoginMember;
+import roomescape.member.Member;
+
 import java.util.Arrays;
 
 @Component
@@ -23,7 +24,7 @@ public class AdminAccessInterceptor implements HandlerInterceptor {
         String token = extractTokenFromCookies(request.getCookies());
 
         String email = authService.getEmailFromToken(token);
-        LoginMember member = authService.findLoginMemberByEmail(email);
+        Member member = authService.findLoginMemberByEmail(email);
 
         if (member == null) {
             response.setStatus(401);

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.AuthService;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
-import roomescape.member.LoginMember;
+import roomescape.member.Member;
 import roomescape.member.MemberResponse;
 
 @RestController
@@ -34,7 +34,7 @@ public class TokenLoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(LoginMember loginMember) {
+    public ResponseEntity<MemberResponse> checkLogin(Member loginMember) {
         MemberResponse memberResponse = new MemberResponse(
                 loginMember.getId(),
                 loginMember.getName(),

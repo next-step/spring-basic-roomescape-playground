@@ -1,6 +1,5 @@
 package roomescape.reservation;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 
@@ -18,12 +16,10 @@ import java.util.List;
 @RestController
 public class ReservationController {
 
-    private final ReservationRepository reservationRepository;
     private final ReservationService reservationService;
     private final MemberRepository memberRepository;
 
     public ReservationController(ReservationRepository reservationRepository, ReservationService reservationService, MemberRepository memberRepository) {
-        this.reservationRepository = reservationRepository;
         this.reservationService = reservationService;
         this.memberRepository = memberRepository;
     }
@@ -34,7 +30,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
+    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, Member loginMember) {
 
         if (reservationRequest.getName() == null) {
             reservationRequest.setName(loginMember.getName());
@@ -47,12 +43,8 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        Member member;
-        try {
-            member = memberRepository.findByName(reservationRequest.getName());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 이름의 예약이 없습니다.: " + reservationRequest.getName());
-        }
+        Member member = memberRepository.findByName(reservationRequest.getName())
+                        .orElseThrow(()-> new IllegalArgumentException("해당 이름을 가진 사용자를 찾을 수 없습니다."));
 
         reservationRequest.setMemberId(member.getId());
 

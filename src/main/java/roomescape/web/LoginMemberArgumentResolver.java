@@ -10,7 +10,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.application.AuthService;
 import roomescape.application.AuthorizationException;
-import roomescape.member.LoginMember;
+import roomescape.member.Member;
+
 
 import java.util.Arrays;
 
@@ -24,7 +25,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(LoginMember.class);
+        return parameter.getParameterType().equals(Member.class);
     }
 
     @Override
@@ -42,9 +43,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         String email = authService.getEmailFromToken(token);
 
-        LoginMember member = authService.findLoginMemberByEmail(email);
-
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        return authService.findLoginMemberByEmail(email);
     }
 
     private String extractTokenFromCookies(Cookie[] cookies) {

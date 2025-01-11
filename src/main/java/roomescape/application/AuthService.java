@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
 import roomescape.infrastructure.JwtTokenProvider;
-import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 
@@ -18,12 +17,9 @@ public class AuthService {
         this.memberRepository = memberRepository;
     }
 
-    public LoginMember findLoginMemberByEmail(String email) {
-        Member member = memberRepository.findByEmail(email);
-        if (member == null) {
-            throw new AuthorizationException("사용자를 찾을 수 없습니다.");
-        }
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+    public Member findLoginMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(()-> new AuthorizationException("사용자를 찾을 수 없습니다."));
     }
 
     public String getEmailFromToken(String token) {
@@ -39,10 +35,8 @@ public class AuthService {
     }
 
     public boolean checkInvalidLogin(String email, String password) {
-        Member member = memberRepository.findByEmailAndPassword(email, password);
-        if(member == null){
-            throw new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다.");
-        }
+        Member member = memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다."));
         return false;
     }
 

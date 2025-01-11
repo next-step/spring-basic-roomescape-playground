@@ -10,7 +10,7 @@ import roomescape.web.LoginMemberArgumentResolver;
 
 import java.util.List;
 
-@Configuration
+@Configuration // -> class level, @Bean -> method level
 public class WebConfig implements WebMvcConfigurer {
     private final AuthService authService;
 

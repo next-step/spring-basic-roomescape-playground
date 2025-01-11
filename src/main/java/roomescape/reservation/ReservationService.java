@@ -1,23 +1,45 @@
 package roomescape.reservation;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import java.util.List;
 
 @Service
 public class ReservationService {
-    private ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
+    }
+
+    public List<ReservationResponse> findAll() {
+        return reservationRepository.findAll().stream()
+                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme(), it.getDate(), it.getTime()))
+                .toList();
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
+        Time time = timeRepository.findById(Long.parseLong(reservationRequest.getTime()))
+                .orElseThrow(() -> new IllegalArgumentException("해당 시간이 존재하지 않습니다."));
+
+        Theme theme = themeRepository.findById(Long.parseLong(reservationRequest.getTheme()))
+                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+
         Reservation reservation = reservationRepository.save(new Reservation(
                 reservationRequest.getName(),
                 reservationRequest.getDate(),
-                reservationRequest.getTime(),
-                reservationRequest.getTheme()));
+                time,
+                theme,
+                null));
 
         return new ReservationResponse(
                 reservation.getId(),
@@ -29,11 +51,5 @@ public class ReservationService {
 
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
-    }
-
-    public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme(), it.getDate(), it.getTime()))
-                .toList();
     }
 }
