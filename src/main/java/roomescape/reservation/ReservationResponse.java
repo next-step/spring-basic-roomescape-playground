@@ -6,11 +6,11 @@ import roomescape.time.Time;
 public class ReservationResponse {
     private Long id;
     private String name;
-    private Theme theme;
+    private String theme;
     private String date;
-    private Time time;
+    private String time;
 
-    public ReservationResponse(Long id, String name, Theme theme, String date, Time time) {
+    public ReservationResponse(Long id, String name, String theme, String date, String time) {
         this.id = id;
         this.name = name;
         this.theme = theme;
@@ -26,7 +26,7 @@ public class ReservationResponse {
         return name;
     }
 
-    public Theme getTheme() {
+    public String getTheme() {
         return theme;
     }
 
@@ -34,7 +34,7 @@ public class ReservationResponse {
         return date;
     }
 
-    public Time getTime() {
+    public String getTime() {
         return time;
     }
 }
