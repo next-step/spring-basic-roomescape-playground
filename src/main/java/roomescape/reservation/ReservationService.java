@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -24,6 +25,12 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
+                .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservationsAll(Member loginMember) {
+        return reservationRepository.findByName(loginMember.getName()).stream()
+                .map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getTime(), "예약"))
                 .toList();
     }
 
