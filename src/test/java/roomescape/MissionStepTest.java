@@ -152,7 +152,6 @@ public class MissionStepTest {
         params.put("time", "1");
         params.put("theme", "1");
 
-        // 예약 대기 생성
         WaitingResponse waiting = RestAssured.given().log().all()
                 .body(params)
                 .cookie("token", brownToken)
@@ -162,7 +161,6 @@ public class MissionStepTest {
                 .statusCode(201)
                 .extract().as(WaitingResponse.class);
 
-        // 내 예약 목록 조회
         List<MyReservationResponse> myReservations = RestAssured.given().log().all()
                 .body(params)
                 .cookie("token", brownToken)
@@ -172,7 +170,6 @@ public class MissionStepTest {
                 .statusCode(200)
                 .extract().jsonPath().getList(".", MyReservationResponse.class);
 
-        // 예약 대기 상태 확인
         String status = myReservations.stream()
                 .filter(it -> it.getReservationId() == waiting.getId())
                 .filter(it -> !it.getStatus().equals("예약"))

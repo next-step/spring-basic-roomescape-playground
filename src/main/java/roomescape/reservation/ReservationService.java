@@ -1,19 +1,15 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-import org.w3c.dom.stylesheets.LinkStyle;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.waiting.WaitingRepository;
-import roomescape.waiting.WaitingResponse;
 import roomescape.waiting.WaitingWithRank;
 
-import java.lang.invoke.CallSite;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -60,7 +56,7 @@ public class ReservationService {
                 .toList();
 
         return Stream.concat(myReservationResponses.stream(),
-                myReservationResponsesFromWaiting.stream())
+                        myReservationResponsesFromWaiting.stream())
                 .toList();
     }
 

@@ -19,7 +19,7 @@ public class AuthService {
 
     public Member findLoginMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(()-> new AuthorizationException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new AuthorizationException("사용자를 찾을 수 없습니다."));
     }
 
     public String getEmailFromToken(String token) {

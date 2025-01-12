@@ -25,7 +25,7 @@ public class WaitingController {
     }
 
     @PostMapping("/waitings/{id}")
-    public ResponseEntity delete(@PathVariable Long id){
+    public ResponseEntity delete(@PathVariable Long id) {
         waitingService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

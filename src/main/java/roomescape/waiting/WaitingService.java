@@ -1,6 +1,5 @@
 package roomescape.waiting;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;

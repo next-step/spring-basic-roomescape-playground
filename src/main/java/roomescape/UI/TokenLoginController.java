@@ -22,7 +22,7 @@ public class TokenLoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> tokenLogin(@RequestBody TokenRequest tokenRequest, HttpServletResponse response){
+    public ResponseEntity<TokenResponse> tokenLogin(@RequestBody TokenRequest tokenRequest, HttpServletResponse response) {
         TokenResponse tokenResponse = authService.createToken(tokenRequest);
 
         Cookie cookie = new Cookie("token", tokenResponse.getAccessToken());

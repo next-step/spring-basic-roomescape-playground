@@ -7,7 +7,7 @@ public class ReservationRequest {
     private String theme;
     private String time;
 
-    public Long getMemberId(){
+    public Long getMemberId() {
         return memberId;
     }
 

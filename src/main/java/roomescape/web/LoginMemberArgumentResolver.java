@@ -12,7 +12,6 @@ import roomescape.application.AuthService;
 import roomescape.application.AuthorizationException;
 import roomescape.member.Member;
 
-
 import java.util.Arrays;
 
 @Component

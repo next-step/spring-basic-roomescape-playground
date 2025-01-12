@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "time")
 public class Time {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "time_value")
@@ -30,7 +31,7 @@ public class Time {
         return id;
     }
 
-    public String getTime(){
+    public String getTime() {
         return time;
     }
 }
