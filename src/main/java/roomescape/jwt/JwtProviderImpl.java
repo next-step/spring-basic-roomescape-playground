@@ -18,6 +18,7 @@ public class JwtProviderImpl implements JwtProvider{
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
+                .claim("email", member.getEmail())
                 .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
                 .compact();
@@ -36,14 +37,24 @@ public class JwtProviderImpl implements JwtProvider{
         }
     }
 
+//    @Override
+//    public Long extractSubject(String token) {
+//        Long memberId = Long.valueOf(Jwts.parserBuilder()
+//                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+//                .build()
+//                .parseClaimsJws(token)
+//                .getBody().getSubject());
+//        return memberId;
+//    }
+
     @Override
-    public Long extractSubject(String token) {
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+    public String extractEmail(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
                 .build()
                 .parseClaimsJws(token)
-                .getBody().getSubject());
-        return memberId;
+                .getBody()
+                .get("email", String.class);
     }
 
 }

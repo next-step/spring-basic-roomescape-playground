@@ -37,6 +37,21 @@ public class MissionStepTest {
         assertThat(token).isNotBlank();
     }
 
+    private String createToken(String email, String password) {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200) // 로그인 성공 응답 코드 확인
+                .extract();
+
+        return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+    }
 
     @Test
     void 이단계() {
@@ -71,5 +86,6 @@ public class MissionStepTest {
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
+
 
 }

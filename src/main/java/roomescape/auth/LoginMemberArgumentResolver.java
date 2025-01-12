@@ -21,7 +21,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         this.jwtProvider = jwtProvider;
     }
 
-
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType().equals(LoginMember.class);
@@ -34,9 +33,18 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookies(cookies);
 
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Token not found in cookies");
+        }
+
         if (jwtProvider.isValidToken(token)) {
-            Long memberId = jwtProvider.extractSubject(token);
-            Member member = memberDao.findByName(memberId.toString());
+            String email = jwtProvider.extractEmail(token); // 이메일 추출
+            Member member = memberDao.findByEmailAndPassword(email, null); // 비밀번호는 검증 단계에서 사용하지 않음
+
+            if (member == null) {
+                throw new IllegalArgumentException("Member not found for email: " + email);
+            }
+
             return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
         }
         throw new IllegalArgumentException("Invalid token");

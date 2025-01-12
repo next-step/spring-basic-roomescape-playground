@@ -30,8 +30,12 @@ public class LoginServiceImpl implements LoginService {
             throw new IllegalArgumentException("Invalid token");
         }
 
-        Long memberId = Long.valueOf(jwtProvider.extractSubject(token));
-        Member member = memberDao.findByName(memberId.toString());
+        String email = jwtProvider.extractEmail(token);
+        Member member = memberDao.findByEmailAndPassword(email, null); // 비밀번호는 로그인에서만 검증
+
+        if (member == null) {
+            throw new IllegalArgumentException("Member not found for email: " + email);
+        }
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
