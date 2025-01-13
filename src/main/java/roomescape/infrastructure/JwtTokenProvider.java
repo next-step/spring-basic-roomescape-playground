@@ -30,12 +30,15 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            return !claims.getBody().getExpiration().before(new Date());
+            if (claims.getBody().getExpiration().before(new Date())) {
+                throw new IllegalArgumentException("토큰이 만료되었습니다.");
+            }
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new IllegalArgumentException("유효하지 않은 토큰 입니다.", e);
         }
     }
+
 }

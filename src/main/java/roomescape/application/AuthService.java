@@ -38,11 +38,7 @@ public class AuthService {
                 .orElseThrow(() -> new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다."));
     }
 
-    public boolean verifyToken(String token) {
-        try {
-            return jwtTokenProvider.validateToken(token);
-        } catch (Exception e) {
-            return false;
-        }
+    public void verifyToken(String token) {
+        jwtTokenProvider.validateToken(token);
     }
 }

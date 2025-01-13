@@ -36,9 +36,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         String token = extractTokenFromCookies(request.getCookies());
 
-        if (!authService.verifyToken(token)) {
-            throw new AuthorizationException("유효하지 않은 토큰입니다.");
-        }
+        authService.verifyToken(token);
 
         String email = authService.getEmailFromToken(token);
 
