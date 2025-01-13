@@ -1,6 +1,9 @@
 package roomescape.reservation;
 
+import org.apache.logging.log4j.message.StringFormattedMessage;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import roomescape.application.DuplicateReservationException;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
@@ -80,6 +83,32 @@ public class ReservationService {
                 reservation.getTheme().getName(),
                 reservation.getDate(),
                 reservation.getTime().getTime());
+    }
+
+    public void checkReservationRequest(ReservationRequest reservationRequest) {
+        if (reservationRepository.existsByDateAndThemeIdAndTimeId(reservationRequest.getDate(),
+                Long.parseLong(reservationRequest.getTheme()),
+                Long.parseLong(reservationRequest.getTheme()))) {
+            throw new DuplicateReservationException("해당 예약은 이미 예약되어 있습니다.");
+        }
+    }
+
+    public void checkNameExistence(ReservationRequest reservationRequest, Member loginMember) {
+        if (reservationRequest.getName() == null) {
+            reservationRequest.setName(loginMember.getName());
+        }
+    }
+
+    public void validateReservationRequest(ReservationRequest reservationRequest) {
+        if (reservationRequest.getName() == null)
+            throw new IllegalArgumentException("해당 이름을 가진 사용자가 존재하지 않습니다.");
+        if (reservationRequest.getDate() == null)
+            throw new IllegalArgumentException("해당 날짜가 존재하지 않습니다.");
+        if (reservationRequest.getTheme() == null)
+            throw new IllegalArgumentException("해당 테마가 존재하지 않습니다.");
+        if (reservationRequest.getTime() == null) {
+            throw new IllegalArgumentException("해당 시간이 존재하지 않습니다.");
+        }
     }
 
     public void deleteById(Long id) {

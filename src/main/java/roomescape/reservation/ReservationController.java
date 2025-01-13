@@ -40,23 +40,11 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, Member loginMember) {
 
-        if (reservationRepository.existsByDateAndThemeIdAndTimeId(reservationRequest.getDate(),
-                Long.parseLong(reservationRequest.getTheme()),
-                Long.parseLong(reservationRequest.getTheme()))) {
-            throw new DuplicateReservationException("해당 예약은 이미 예약되어 있습니다.");
-        }
+        reservationService.checkReservationRequest(reservationRequest);
 
+        reservationService.checkNameExistence(reservationRequest, loginMember);
 
-        if (reservationRequest.getName() == null) {
-            reservationRequest.setName(loginMember.getName());
-        }
-
-        if (reservationRequest.getName() == null
-                || reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        reservationService.validateReservationRequest(reservationRequest);
 
         Member member = memberRepository.findByName(reservationRequest.getName())
                 .orElseThrow(() -> new IllegalArgumentException("해당 이름을 가진 사용자를 찾을 수 없습니다."));
