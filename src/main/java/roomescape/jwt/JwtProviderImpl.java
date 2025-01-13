@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 public class JwtProviderImpl implements JwtProvider{
 
     private static final String SECRET_KEY="Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    // private static final long EXPRIATION_TIME = 86400000; // 1일
+    private static final long EXPRIATION_TIME = 86400000; // 1일
 
     @Override
     public String generateToken(Member member) {
