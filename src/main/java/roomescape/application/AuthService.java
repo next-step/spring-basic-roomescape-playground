@@ -27,17 +27,15 @@ public class AuthService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        if (checkInvalidLogin(tokenRequest.getEmail(), tokenRequest.getPassword())) {
-            throw new AuthorizationException();
-        }
+        checkInvalidLogin(tokenRequest.getEmail(), tokenRequest.getPassword());
+
         String accessToken = jwtTokenProvider.createToken(tokenRequest.getEmail());
         return new TokenResponse(accessToken);
     }
 
-    public boolean checkInvalidLogin(String email, String password) {
+    public void checkInvalidLogin(String email, String password) {
         Member member = memberRepository.findByEmailAndPassword(email, password)
                 .orElseThrow(() -> new AuthorizationException("이메일 또는 비밀번호가 잘못되었습니다."));
-        return false;
     }
 
     public boolean verifyToken(String token) {
