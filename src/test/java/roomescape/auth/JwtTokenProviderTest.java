@@ -20,4 +20,11 @@ class JwtTokenProviderTest {
         assertThat(token).isNotBlank();
     }
 
+    @Test
+    void getSubject() {
+        String token = jwtTokenProvider.createToken(EMAIL);
+        String subject = jwtTokenProvider.getSubject(token);
+        assertThat(subject).isEqualTo(EMAIL);
+    }
+
 }
