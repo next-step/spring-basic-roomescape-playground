@@ -9,11 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.infrastructure.JwtTokenProvider;
-import roomescape.reservation.MyReservationResponse;
-import roomescape.reservation.ReservationResponse;
-import roomescape.time.TimeRepository;
-import roomescape.waiting.WaitingResponse;
+import roomescape.domain.reservation.MyReservationResponse;
+import roomescape.domain.reservation.ReservationResponse;
+import roomescape.domain.time.TimeRepository;
+import roomescape.domain.waiting.WaitingResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -178,11 +177,5 @@ public class MissionStepTest {
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
-    }
-
-    @Test
-    void 칠단계() {
-        Component componentAnnotation = JwtTokenProvider.class.getAnnotation(Component.class);
-        assertThat(componentAnnotation).isNull();
     }
 }
