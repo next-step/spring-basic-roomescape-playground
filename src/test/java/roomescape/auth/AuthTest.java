@@ -3,12 +3,13 @@ package roomescape.auth;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class AuthTest {
@@ -23,16 +24,17 @@ class AuthTest {
         params.put(USERNAME_FIELD, EMAIL);
         params.put(PASSWORD_FIELD, PASSWORD);
 
-        AuthInfo authInfo = RestAssured
-                .given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
                 .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value()).extract().as(AuthInfo.class);
+                .statusCode(200)
+                .extract();
 
-        assertThat(authInfo.email()).isEqualTo(EMAIL);
+        String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+
+        assertThat(token).isNotBlank();
     }
 
 }
