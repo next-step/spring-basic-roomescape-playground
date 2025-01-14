@@ -1,40 +1,47 @@
 package roomescape.reservation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import roomescape.auth.Authentication;
+import roomescape.member.Member;
+import roomescape.reservation.dto.MyReservationResponse;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 
 import java.net.URI;
 import java.util.List;
 
 @RestController
 public class ReservationController {
-
     private final ReservationService reservationService;
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservations")
+    @GetMapping
     public List<ReservationResponse> list() {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> myList(
+            @Authentication Member member) {
+        return reservationService.findMyReservationsByName(member.getName());
+    }
+
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest) {
-        if (reservationRequest.getName() == null
-                || reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
+    public ResponseEntity create(@Authentication Member member,
+                                 @RequestBody ReservationRequest reservationRequest) {
+        if (reservationRequest.getDate() == null || reservationRequest.getTheme() == null || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
-        ReservationResponse reservation = reservationService.save(reservationRequest);
 
+        if (reservationRequest.getName() == null) {
+            reservationRequest = new ReservationRequest(member.getName(), reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime()
+            );
+        }
+        ReservationResponse reservation = reservationService.save(reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
