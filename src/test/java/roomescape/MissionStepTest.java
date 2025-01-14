@@ -1,5 +1,6 @@
 package roomescape;
 
+import auth.JwtAuthManager;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -177,5 +178,11 @@ public class MissionStepTest {
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtAuthManager.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 }
