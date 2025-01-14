@@ -6,14 +6,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.MyReservationResponse;
-import roomescape.reservation.ReservationResponse;
-import roomescape.time.TimeRepository;
-import roomescape.waiting.WaitingResponse;
+import roomescape.domain.reservation.MyReservationResponse;
+import roomescape.domain.reservation.ReservationResponse;
+import roomescape.domain.time.TimeRepository;
+import roomescape.domain.waiting.WaitingResponse;
 
 import java.util.HashMap;
 import java.util.List;
