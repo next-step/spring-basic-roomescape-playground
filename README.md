@@ -63,3 +63,8 @@ ___
 + POST/waitings : 예약 대기 생성
 + DELETE/waitings/{id} : 예약 삭제 
 
+# 7단계
+___
+## @Configuration
++ JWT 관련 로직 auth 패키지(roomescape와 같은 계층)로 분리
+
