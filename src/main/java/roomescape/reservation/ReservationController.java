@@ -25,6 +25,11 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> myList(AuthClaims authClaims) {
+        return reservationService.findByMember(authClaims.name());
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, @AuthCustomAnnotation AuthClaims userClaims) {
         if (reservationRequest.date() == null
