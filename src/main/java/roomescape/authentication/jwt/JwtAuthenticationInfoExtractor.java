@@ -33,10 +33,11 @@ public class JwtAuthenticationInfoExtractor {
                     .parseClaimsJws(token)
                     .getBody();
 
+            Long id = Long.valueOf(claims.getSubject());
             String name = claims.get("name", String.class);
             String role = claims.get("role", String.class);
 
-            return new MemberAuthInfo(name, role);
+            return new MemberAuthInfo(id, name, role);
         } catch (JwtException e) {
             throw new JwtValidationException("유효하지 않은 JWT 토큰입니다.", e);
         }

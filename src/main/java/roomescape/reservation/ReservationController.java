@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,13 +14,10 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ReservationController {
 
     private final ReservationService reservationService;
-
-    public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
-    }
 
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
@@ -29,19 +27,23 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, MemberAuthInfo memberAuthInfo) {
         if ( memberAuthInfo == null
-                || reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
+                || reservationRequest.date() == null
+                || reservationRequest.theme() == null
+                || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        if (reservationRequest.getName() == null) {
-            reservationRequest.setName(memberAuthInfo.name());
-        }
+        ReservationResponse reservation = reservationService.save(reservationRequest, memberAuthInfo);
 
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
+    }
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> myReservationLists(MemberAuthInfo memberAuthInfo){
+
+        List<MyReservationResponse> myReservations = reservationService.findMyReservations(memberAuthInfo);
+
+        return myReservations;
     }
 
     @DeleteMapping("/reservations/{id}")
