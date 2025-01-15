@@ -52,7 +52,7 @@ public class JWTUtils {
                     .parseClaimsJws(token)
                     .getBody();
 
-            Long id = claims.get("id", Long.class);
+            Long id = Long.parseLong(claims.getSubject());
             String name = claims.get("name", String.class);
             String role = claims.get("role", String.class);
 

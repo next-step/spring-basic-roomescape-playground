@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionController {
     @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity<?> handleInvalidTokenException(InvalidLoginException e) {
+    public ResponseEntity<?> handleInvalidTokenException(InvalidTokenException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
     @ExceptionHandler(MissingTokenException.class)
-    public ResponseEntity<String> handleMissingTokenException(InvalidLoginException e) {
+    public ResponseEntity<String> handleMissingTokenException(MissingTokenException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
