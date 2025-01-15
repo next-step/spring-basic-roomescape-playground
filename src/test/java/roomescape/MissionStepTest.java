@@ -7,6 +7,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
@@ -184,5 +185,13 @@ public class MissionStepTest {
     void 칠단계() {
         Component componentAnnotation = JwtAuthManager.class.getAnnotation(Component.class);
         assertThat(componentAnnotation).isNull();
+    }
+
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
+
+    @Test
+    void 팔단계() {
+        assertThat(secretKey).isNotBlank();
     }
 }
