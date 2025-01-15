@@ -1,4 +1,4 @@
-package roomescape.auth;
+package auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -7,14 +7,13 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import roomescape.exception.InvalidTokenException;
 import roomescape.exception.MissingTokenException;
 import roomescape.member.Member;
 
 import java.util.Arrays;
 
-@Component
+// @Component
 public class JWTUtils {
 
     @Value("${roomescape.auth.jwt.secret}")
@@ -36,7 +35,7 @@ public class JWTUtils {
                 .filter(cookie -> "token".equals(cookie.getName()))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseThrow(() -> new IllegalArgumentException("토큰을 찾을 수 없습니다."));
+                .orElseThrow(() -> new MissingTokenException("토큰을 찾을 수 없습니다."));
 
         return new AuthToken(token);
     }

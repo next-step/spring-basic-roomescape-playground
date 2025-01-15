@@ -1,12 +1,11 @@
-package roomescape.auth;
+package auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-@Component
+// @Component
 @RequiredArgsConstructor
 public class AuthRoleInterceptor implements HandlerInterceptor {
 

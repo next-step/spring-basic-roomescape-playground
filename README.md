@@ -66,5 +66,5 @@ ___
 # 7단계
 ___
 ## @Configuration
-+ JWT 관련 로직 auth 패키지(roomescape와 같은 계층)로 분리
++ JWT 관련 로직 auth 패키지(roomescape 외부 패키지)로 분리
 

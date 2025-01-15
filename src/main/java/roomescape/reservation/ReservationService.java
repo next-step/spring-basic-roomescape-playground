@@ -1,8 +1,8 @@
 package roomescape.reservation;
 
+import auth.AuthClaims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.auth.AuthClaims;
 import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;

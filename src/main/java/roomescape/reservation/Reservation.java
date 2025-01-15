@@ -22,13 +22,13 @@ public class Reservation {
     private String date;
 
     @ManyToOne
-    @JoinColumn(name = "time_id", nullable = false)
+    @JoinColumn(name = "time_id")
     private Time time;
     @ManyToOne
-    @JoinColumn(name = "theme_id", nullable = false)
+    @JoinColumn(name = "theme_id")
     private Theme theme;
     @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     public Reservation(String name, String date, Time time, Theme theme, Member member) {

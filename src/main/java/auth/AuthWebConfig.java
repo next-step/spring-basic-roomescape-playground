@@ -1,4 +1,4 @@
-package roomescape.auth;
+package auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -12,16 +12,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthWebConfig implements WebMvcConfigurer {
 
-    private final AuthClaimsArgumentResolver loginMemberArgumentResolver;
-    private final AuthRoleInterceptor roleCheckInterceptor;
+    private final AuthClaimsArgumentResolver authClaimsArgumentResolver;
+    private final AuthRoleInterceptor authRoleInterceptor;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(loginMemberArgumentResolver);
+        resolvers.add(authClaimsArgumentResolver);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(roleCheckInterceptor).addPathPatterns("/admin/**");
+        registry.addInterceptor(authRoleInterceptor).addPathPatterns("/admin/**");
     }
 }
