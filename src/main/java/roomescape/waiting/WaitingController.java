@@ -16,6 +16,7 @@ import java.net.URI;
 public class WaitingController {
 
     private final WaitingService waitingService;
+
     @PostMapping("/waitings")
     public ResponseEntity create(@RequestBody WaitingRequest waitingRequest, AuthClaims authClaims) {
         if (waitingRequest.date() == null

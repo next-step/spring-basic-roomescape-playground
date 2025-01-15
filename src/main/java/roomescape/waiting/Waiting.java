@@ -38,7 +38,7 @@ public class Waiting {
         this.member = member;
     }
 
-    public Waiting() {
+    protected Waiting() {
 
     }
 }
