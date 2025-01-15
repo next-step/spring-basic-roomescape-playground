@@ -26,7 +26,7 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations-mine")
-    public List<MyReservationResponse> myList(AuthClaims authClaims) {
+    public List<MyReservationResponse> myList(@AuthCustomAnnotation AuthClaims authClaims) {
         return reservationService.findByMemberId(authClaims.id());
     }
 
