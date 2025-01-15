@@ -2,7 +2,6 @@ package roomescape.waiting;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
@@ -19,7 +18,6 @@ public class WaitingService {
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
 
-    @PostMapping("/waitings")
     public WaitingResponse save(WaitingRequest waitingRequest){
         Time time = timeRepository.findById(waitingRequest.time())
                 .orElseThrow(() -> new IllegalArgumentException("해당 시간이 존재하지 않습니다."));
