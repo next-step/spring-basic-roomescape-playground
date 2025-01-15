@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import roomescape.member.Member;
@@ -20,10 +21,13 @@ public class Waiting {
     private String date;
 
     @ManyToOne
+    @JoinColumn(name = "time_id", nullable = false)
     private Time time;
     @ManyToOne
+    @JoinColumn(name = "theme_id", nullable = false)
     private Theme theme;
     @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     public Waiting(String name, String date, Time time, Theme theme, Member member) {
