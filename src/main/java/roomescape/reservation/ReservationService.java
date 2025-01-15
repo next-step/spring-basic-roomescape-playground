@@ -2,6 +2,8 @@ package roomescape.reservation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.auth.AuthClaims;
+import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
@@ -24,23 +26,35 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final WaitingRepository waitingRepository;
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
+    public ReservationResponse save(ReservationRequest reservationRequest, AuthClaims authClaims) {
         Time time = timeRepository.findById(reservationRequest.time())
                 .orElseThrow(() -> new IllegalArgumentException("해당 시간이 존재하지 않습니다."));
         Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
-        Member member = memberRepository.findByName(reservationRequest.name())
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+        Member member = findMemberByRole(reservationRequest, authClaims);
 
-        reservationRepository.findByDateAndThemeIdAndTimeId(reservationRequest.date(), theme.getId(), time.getId())
-                .ifPresent(it -> {
-                    throw new IllegalArgumentException("이미 예약된 시간입니다.");
-                });
+        checkReservationExist(reservationRequest, theme, time);
 
         Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), time, theme, member);
         reservationRepository.save(reservation);
 
         return new ReservationResponse(reservation.getId(), reservationRequest.name(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getTime());
+    }
+
+    private Member findMemberByRole(ReservationRequest request, AuthClaims claims) {
+        if ("ADMIN".equals(claims.role()) && request.name() != null) { // 관리자일 경우 name 조회
+            return memberRepository.findByName(request.name())
+                    .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다."));
+        }
+        return memberRepository.findById(claims.id()) // 사용자일 경우 id 조회
+                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다."));
+    }
+
+    private void checkReservationExist(ReservationRequest request, Theme theme, Time time) {
+        reservationRepository.findByDateAndThemeIdAndTimeId(request.date(), theme.getId(), time.getId())
+                .ifPresent(it -> {
+                    throw new IllegalArgumentException("이미 예약된 시간입니다.");
+                });
     }
 
     public void deleteById(Long id) {
@@ -53,11 +67,11 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<MyReservationResponse> findByMember(String name) {
-        Member member = memberRepository.findByName(name)
+    public List<MyReservationResponse> findByMemberId(Long id) {
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
 
-        List<MyReservationResponse> reservations = reservationRepository.findByName(name).stream()
+        List<MyReservationResponse> reservations = reservationRepository.findById(id).stream()
                 .map(MyReservationResponse::fromReservation)
                 .toList();
 

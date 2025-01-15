@@ -27,27 +27,18 @@ public class ReservationController {
 
     @GetMapping("/reservations-mine")
     public List<MyReservationResponse> myList(AuthClaims authClaims) {
-        return reservationService.findByMember(authClaims.name());
+        return reservationService.findByMemberId(authClaims.id());
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, @AuthCustomAnnotation AuthClaims userClaims) {
+    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, @AuthCustomAnnotation AuthClaims authClaims) {
         if (reservationRequest.date() == null
                 || reservationRequest.theme() == null
                 || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        if (reservationRequest.name() == null) {
-            reservationRequest = new ReservationRequest(
-                    userClaims.name(),
-                    reservationRequest.date(),
-                    reservationRequest.theme(),
-                    reservationRequest.time()
-            );
-        }
-
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        ReservationResponse reservation = reservationService.save(reservationRequest, authClaims);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 

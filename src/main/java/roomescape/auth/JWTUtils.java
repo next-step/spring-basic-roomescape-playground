@@ -53,14 +53,15 @@ public class JWTUtils {
                     .parseClaimsJws(token)
                     .getBody();
 
+            Long id = claims.get("id", Long.class);
             String name = claims.get("name", String.class);
             String role = claims.get("role", String.class);
 
-            if (name == null || role == null) {
+            if (id == null || name == null || role == null) {
                 throw new InvalidTokenException("필수 클레임이 누락되었습니다.");
             }
 
-            return new AuthClaims(name, role);
+            return new AuthClaims(id, name, role);
 
         } catch (JwtException e) {
             throw new InvalidTokenException("유효하지 않은 토큰입니다.");
