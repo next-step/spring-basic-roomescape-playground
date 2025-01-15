@@ -68,3 +68,12 @@ ___
 ## @Configuration
 + JWT 관련 로직 auth 패키지(roomescape 외부 패키지)로 분리
 
+# 8단계
+___
+## Profile과 Resource
+### 1. schema.sql 대신 데이터베이스 초기화 클래스 만들기
+#### < DataLoader >
++ DataLoader : 사용자 정보 초기화 
++ TestDataLoader : 테스트에 필요한 사전 값 초기화
+
+### 2. secret key 값을 properties 파일로 이동
