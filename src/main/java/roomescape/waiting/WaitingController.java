@@ -1,6 +1,7 @@
 package roomescape.waiting;
 
 import auth.AuthClaims;
+import auth.AuthCustomAnnotation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,14 +19,23 @@ public class WaitingController {
     private final WaitingService waitingService;
 
     @PostMapping("/waitings")
-    public ResponseEntity create(@RequestBody WaitingRequest waitingRequest, AuthClaims authClaims) {
+    public ResponseEntity create(@RequestBody WaitingRequest waitingRequest, @AuthCustomAnnotation AuthClaims authClaims) {
         if (waitingRequest.date() == null
                 || waitingRequest.theme() == null
                 || waitingRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        WaitingResponse waiting = waitingService.save(waitingRequest, authClaims);
+        if (waitingRequest.name() == null) {
+            waitingRequest = new WaitingRequest(
+                    authClaims.name(),
+                    waitingRequest.date(),
+                    waitingRequest.theme(),
+                    waitingRequest.time()
+            );
+        }
+
+        WaitingResponse waiting = waitingService.save(waitingRequest);
         return ResponseEntity.created(URI.create("/waitings/" + waiting.id())).body(waiting);
     }
 

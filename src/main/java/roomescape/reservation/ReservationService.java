@@ -1,6 +1,5 @@
 package roomescape.reservation;
 
-import auth.AuthClaims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.MemberNotFoundException;
@@ -26,12 +25,13 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final WaitingRepository waitingRepository;
 
-    public ReservationResponse save(ReservationRequest reservationRequest, AuthClaims authClaims) {
+    public ReservationResponse save(ReservationRequest reservationRequest) {
         Time time = timeRepository.findById(reservationRequest.time())
                 .orElseThrow(() -> new IllegalArgumentException("해당 시간이 존재하지 않습니다."));
         Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
-        Member member = findMemberByRole(reservationRequest, authClaims);
+        Member member = memberRepository.findByName(reservationRequest.name())
+                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다."));
 
         checkReservationExist(reservationRequest, theme, time);
 
@@ -39,15 +39,6 @@ public class ReservationService {
         reservationRepository.save(reservation);
 
         return new ReservationResponse(reservation.getId(), reservationRequest.name(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getTime());
-    }
-
-    private Member findMemberByRole(ReservationRequest request, AuthClaims claims) {
-        if ("ADMIN".equals(claims.role()) && request.name() != null) { // 관리자일 경우 name 조회
-            return memberRepository.findByName(request.name())
-                    .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다."));
-        }
-        return memberRepository.findById(claims.id()) // 사용자일 경우 id 조회
-                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다."));
     }
 
     private void checkReservationExist(ReservationRequest request, Theme theme, Time time) {

@@ -38,7 +38,16 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        ReservationResponse reservation = reservationService.save(reservationRequest, authClaims);
+        if (reservationRequest.name() == null) {
+            reservationRequest = new ReservationRequest(
+                    authClaims.name(),
+                    reservationRequest.date(),
+                    reservationRequest.theme(),
+                    reservationRequest.time()
+            );
+        }
+
+        ReservationResponse reservation = reservationService.save(reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
