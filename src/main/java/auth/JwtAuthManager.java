@@ -2,7 +2,6 @@ package auth;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 import roomescape.exception.AuthorizationException;
@@ -18,11 +17,6 @@ public class JwtAuthManager {
     private long validityInMilliseconds;
 
     private final MemberRepository memberRepository;
-
-    @Bean
-    public JwtAuthManager jwtAuthManager() {
-        return this;
-    }
 
     public JwtAuthManager(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
@@ -96,6 +90,7 @@ public class JwtAuthManager {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             if (claims.getBody().getExpiration().before(new Date())) {
+
                 throw new IllegalArgumentException("토큰이 만료되었습니다.");
             }
         } catch (JwtException | IllegalArgumentException e) {
