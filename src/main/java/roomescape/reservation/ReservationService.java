@@ -58,11 +58,11 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
 
         List<MyReservationResponse> reservations = reservationRepository.findByName(name).stream()
-                .map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getTime(), "예약"))
+                .map(MyReservationResponse::fromReservation)
                 .toList();
 
         List<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(member.getId()).stream()
-                .map(w -> new MyReservationResponse(w.getWaiting().getId(), w.getWaiting().getTheme().getName(), w.getWaiting().getDate(), w.getWaiting().getTime().getTime(), w.getRank() + 1 + "번째 예약대기"))
+                .map(MyReservationResponse::fromWaitingWithRank)
                 .toList();
 
         return Stream.concat(reservations.stream(), waitings.stream())
