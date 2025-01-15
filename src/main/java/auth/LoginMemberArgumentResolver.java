@@ -1,9 +1,8 @@
-package roomescape.authentication;
+package auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -13,12 +12,11 @@ import roomescape.domain.member.Member;
 
 import java.util.Arrays;
 
-@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final AuthService authService;
+    private final JwtAuthManager jwtAuthManager;
 
-    public LoginMemberArgumentResolver(AuthService authService) {
-        this.authService = authService;
+    public LoginMemberArgumentResolver(JwtAuthManager jwtAuthManager) {
+        this.jwtAuthManager = jwtAuthManager;
     }
 
     @Override
@@ -34,12 +32,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         String token = extractTokenFromCookies(request.getCookies());
+        jwtAuthManager.validateToken(token);
 
-        authService.verifyToken(token);
+        Long id = jwtAuthManager.getId(token);
+        String name = jwtAuthManager.getName(token);
+        String email = jwtAuthManager.getEmail(token);
+        String role = jwtAuthManager.getRole(token);
 
-        String email = authService.getEmailFromToken(token);
-
-        return authService.findLoginMemberByEmail(email);
+        return new Member(id, name, email, role);
     }
 
     private String extractTokenFromCookies(Cookie[] cookies) {
