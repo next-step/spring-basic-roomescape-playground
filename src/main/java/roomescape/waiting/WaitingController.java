@@ -17,23 +17,14 @@ public class WaitingController {
 
     private final WaitingService waitingService;
     @PostMapping("/waitings")
-    public ResponseEntity create(@RequestBody WaitingRequest waitingRequest, AuthClaims userClaims) {
+    public ResponseEntity create(@RequestBody WaitingRequest waitingRequest, AuthClaims authClaims) {
         if (waitingRequest.date() == null
                 || waitingRequest.theme() == null
                 || waitingRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        if (waitingRequest.name() == null) {
-            waitingRequest = new WaitingRequest(
-                    userClaims.name(),
-                    waitingRequest.date(),
-                    waitingRequest.theme(),
-                    waitingRequest.time()
-            );
-        }
-
-        WaitingResponse waiting = waitingService.save(waitingRequest);
+        WaitingResponse waiting = waitingService.save(waitingRequest, authClaims);
         return ResponseEntity.created(URI.create("/waitings/" + waiting.id())).body(waiting);
     }
 
