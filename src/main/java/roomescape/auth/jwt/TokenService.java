@@ -52,4 +52,22 @@ public class TokenService {
             return false;
         }
     }
+
+    public MemberTokenDto getMemberClaims(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return new MemberTokenDto(
+                    Long.valueOf(claims.getSubject()),
+                    claims.get(NAME_CLAIM).toString(),
+                    claims.get(EMAIL_CLAIM).toString(),
+                    claims.get(ROLE_CLAIM).toString());
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 토큰입니다.");
+        }
+    }
 }
