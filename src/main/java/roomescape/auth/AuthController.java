@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 public class AuthController {
 
-    private static final String ACCESS_TOKEN_NAME = "accessToken";
+    private static final String ACCESS_TOKEN_NAME = "token";
 
     private final AuthService authService;
 
