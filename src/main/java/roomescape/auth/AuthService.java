@@ -27,4 +27,14 @@ public class AuthService {
         return tokenService.createToken(
                 new MemberTokenDto(member.getId(), member.getName(), member.getEmail(), member.getRole()));
     }
+
+    public MemberDetailResponse loginCheckWithToken(String token) {
+        //유효기간 확인을 위해 필요
+        if (!tokenService.checkValidToken(token)) {
+            throw new IllegalArgumentException("잘못된 토큰입니다.");
+        }
+
+        MemberTokenDto member = tokenService.getMemberClaims(token);
+        return new MemberDetailResponse(member.id(), member.name(), member.email(), member.role());
+    }
 }
