@@ -10,19 +10,19 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
 import roomescape.member.MemberResponse;
+import roomescape.member.MemberService;
 
 @RestController
 public class AuthController {
-	private MemberDao memberDao;
 	private TokenService tokenService;
 	private CookieService cookieService;
+	private MemberService memberService;
 
-	public AuthController(MemberDao memberDao, TokenService tokenService, CookieService cookieService) {
-		this.memberDao = memberDao;
+	public AuthController(TokenService tokenService, CookieService cookieService, MemberService memberService) {
 		this.tokenService = tokenService;
 		this.cookieService = cookieService;
+		this.memberService = memberService;
 	}
 
 	@PostMapping("/login")
@@ -30,7 +30,7 @@ public class AuthController {
 		String email = loginRequest.getEmail();
 		String password = loginRequest.getPassword();
 
-		Member member = memberDao.findByEmailAndPassword(email, password);
+		Member member = memberService.findMemberByEmailAndPassword(email, password);
 		String token = tokenService.createAccessToken(member);
 		response.addCookie(cookieService.createCookie(token));
 		return ResponseEntity.ok().build();
