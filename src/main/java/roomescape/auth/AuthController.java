@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -25,6 +27,11 @@ public class AuthController {
         addCookie(response, ACCESS_TOKEN_NAME, token);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity loginCheck(@CookieValue(ACCESS_TOKEN_NAME) String accessToken) {
+        return ResponseEntity.ok().body(authService.loginCheckWithToken(accessToken));
     }
 
     private void addCookie(HttpServletResponse response, String cookieName, String cookieValue) {
