@@ -19,10 +19,13 @@ public class TokenService {
     private static final String ROLE_CLAIM = "role";
 
     private final String secretKey;
+    private final long expiration;
     private Key key;
 
-    public TokenService(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+    public TokenService(@Value("${roomescape.auth.jwt.secret}") String secretKey,
+                        @Value("${roomescape.auth.jwt.expiration}") long expiration) {
         this.secretKey = secretKey;
+        this.expiration = expiration;
     }
 
     @PostConstruct
@@ -36,6 +39,7 @@ public class TokenService {
                 .claim(NAME_CLAIM, memberTokenDto.name())
                 .claim(EMAIL_CLAIM, memberTokenDto.email())
                 .claim(ROLE_CLAIM, memberTokenDto.role())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)
                 .compact();
     }
