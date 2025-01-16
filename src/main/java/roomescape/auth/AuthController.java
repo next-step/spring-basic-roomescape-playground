@@ -1,0 +1,36 @@
+package roomescape.auth;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@Controller
+public class AuthController {
+
+    private static final String ACCESS_TOKEN_NAME = "accessToken";
+
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        String token = authService.loginWithEmailAndPassword(loginRequest.email(), loginRequest.password());
+        addCookie(response, ACCESS_TOKEN_NAME, token);
+
+        return ResponseEntity.ok().build();
+    }
+
+    private void addCookie(HttpServletResponse response, String cookieName, String cookieValue) {
+        Cookie cookie = new Cookie(cookieName, cookieValue);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+}
