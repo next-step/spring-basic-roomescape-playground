@@ -22,16 +22,16 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest LoginRequest, HttpServletResponse response) {
-        String token = jwtAuthManager.createToken(LoginRequest.getEmail());
+    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        String token = jwtAuthManager.createToken(loginRequest.getEmail(), loginRequest.getPassword());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        LoginResponse loginResponse = new LoginResponse(token);
-        return ResponseEntity.ok().body(loginResponse);
+//        LoginResponse loginResponse = new LoginResponse(token);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")

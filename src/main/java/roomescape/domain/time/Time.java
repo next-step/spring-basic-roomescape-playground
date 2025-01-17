@@ -10,18 +10,18 @@ public class Time {
     private Long id;
 
     @Column(name = "time_value")
-    private String time;
+    private String value;
 
     @Column(name = "deleted")
     private Boolean deleted;
 
-    public Time(Long id, String time) {
+    public Time(Long id, String value) {
         this.id = id;
-        this.time = time;
+        this.value = value;
     }
 
-    public Time(String time) {
-        this.time = time;
+    public Time(String value) {
+        this.value = value;
     }
 
     public Time() {
@@ -31,7 +31,7 @@ public class Time {
         return id;
     }
 
-    public String getTime() {
-        return time;
+    public String getValue() {
+        return value;
     }
 }

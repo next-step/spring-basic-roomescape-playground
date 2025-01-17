@@ -21,15 +21,15 @@ public class ThemeController {
         this.themeRepository = themeRepository;
     }
 
+    @GetMapping("/themes")
+    public ResponseEntity<List<Theme>> list() {
+        return ResponseEntity.ok(themeRepository.findAll());
+    }
+
     @PostMapping("/themes")
     public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
         Theme newTheme = themeRepository.save(theme);
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
-    }
-
-    @GetMapping("/themes")
-    public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeRepository.findAll());
     }
 
     @DeleteMapping("/themes/{id}")

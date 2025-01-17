@@ -22,18 +22,15 @@ public class JwtAuthManager {
         this.memberRepository = memberRepository;
     }
 
-    public String createToken(String email) {
-        Member member = memberRepository.findByEmail(email)
+    public String createToken(String email, String password) {
+        Member member = memberRepository.findByEmailAndPassword(email, password)
                 .orElseThrow(() -> new AuthorizationException("유효한 이메일이 아닙니다."));
 
-        String role = member.getRole();
-        String name = member.getName();
         Long memberId = member.getId();
+        String role = member.getRole();
 
-        Claims claims = Jwts.claims().setSubject(email);
+        Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
         claims.put("role", role);
-        claims.put("name", name);
-        claims.put("memberId", memberId);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -47,48 +44,27 @@ public class JwtAuthManager {
     }
 
     public Long getId(String token) {
-        Object memberId = Jwts.parser()
+        JwtParser parser = Jwts.parserBuilder()
                 .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .get("memberId");
+                .build();
 
-        if (memberId instanceof Double) {
-            return ((Double) memberId).longValue();
-        } else if (memberId instanceof Long) {
-            return (Long) memberId;
-        } else {
-            throw new IllegalArgumentException("유효한 memberId 형식이 아닙니다.");
-        }
-    }
-
-    public String getName(String token) {
-        return (String) Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .get("name");
-    }
-
-    public String getEmail(String token) {
-        return (String) Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .get("email");
+        Claims claims = parser.parseClaimsJws(token).getBody();
+        return Long.parseLong(claims.getSubject());
     }
 
     public String getRole(String token) {
-        return (String) Jwts.parser()
+        JwtParser parser = Jwts.parserBuilder()
                 .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .get("role");
+                .build();
+
+        Claims claims = parser.parseClaimsJws(token).getBody();
+        return claims.get("role", String.class);
     }
 
     public void validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+
             if (claims.getBody().getExpiration().before(new Date())) {
 
                 throw new IllegalArgumentException("토큰이 만료되었습니다.");
@@ -97,4 +73,22 @@ public class JwtAuthManager {
             throw new IllegalArgumentException("유효하지 않은 토큰입니다.", e);
         }
     }
+
+//    public String getName(String token) {
+//        JwtParser parser = Jwts.parserBuilder()
+//                .setSigningKey(secretKey)
+//                .build();
+//
+//        Claims claims = parser.parseClaimsJws(token).getBody();
+//        return claims.get("name", String.class);
+//    }
+//
+//    public String getEmail(String token) {
+//        JwtParser parser = Jwts.parserBuilder()
+//                .setSigningKey(secretKey)
+//                .build();
+//
+//        Claims claims = parser.parseClaimsJws(token).getBody();
+//        return claims.get("email", String.class);
+//    }
 }

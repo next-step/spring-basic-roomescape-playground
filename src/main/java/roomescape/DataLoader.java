@@ -8,7 +8,7 @@ import roomescape.domain.member.MemberRepository;
 
 @Profile("default") // 배포 환경 -> "prod", 로컬 환경 -> "default"
 @Component
-public abstract class DataLoader implements CommandLineRunner {
+public class DataLoader implements CommandLineRunner {
     private final MemberRepository memberRepository;
 
     public DataLoader(MemberRepository memberRepository) {

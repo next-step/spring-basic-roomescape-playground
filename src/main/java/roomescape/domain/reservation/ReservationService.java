@@ -29,7 +29,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
+                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
 
@@ -40,7 +40,7 @@ public class ReservationService {
                         it.getId(),
                         it.getTheme().getName(),
                         it.getDate(),
-                        it.getTime().getTime(),
+                        it.getTime().getValue(),
                         "예약"))
                 .toList();
 
@@ -51,7 +51,7 @@ public class ReservationService {
                         it.getWaiting().getId(),
                         it.getWaiting().getTheme().getName(),
                         it.getWaiting().getDate(),
-                        it.getWaiting().getTime().getTime(),
+                        it.getWaiting().getTime().getValue(),
                         it.getRank() + 1 + "번째 예약대기"
                 )))
                 .toList();
@@ -80,7 +80,7 @@ public class ReservationService {
                 reservation.getName(),
                 reservation.getTheme().getName(),
                 reservation.getDate(),
-                reservation.getTime().getTime());
+                reservation.getTime().getValue());
     }
 
     public void checkReservationRequest(ReservationRequest reservationRequest) {

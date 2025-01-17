@@ -1,4 +1,4 @@
-package roomescape.domain.time;
+package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.time.AvailableTime;
+import roomescape.domain.time.Time;
+import roomescape.domain.time.TimeService;
 
 import java.net.URI;
 import java.util.List;
@@ -27,7 +30,7 @@ public class TimeController {
 
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getTime() == null || time.getTime().isEmpty()) {
+        if (time.getValue() == null || time.getValue().isEmpty()) {
             throw new RuntimeException();
         }
 

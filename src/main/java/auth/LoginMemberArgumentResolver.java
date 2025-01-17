@@ -7,6 +7,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.domain.member.MemberRepository;
 import roomescape.exception.AuthorizationException;
 import roomescape.domain.member.Member;
 
@@ -14,9 +15,11 @@ import java.util.Arrays;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final JwtAuthManager jwtAuthManager;
+    private final MemberRepository memberRepository;
 
-    public LoginMemberArgumentResolver(JwtAuthManager jwtAuthManager) {
+    public LoginMemberArgumentResolver(JwtAuthManager jwtAuthManager, MemberRepository memberRepository) {
         this.jwtAuthManager = jwtAuthManager;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -35,11 +38,19 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         jwtAuthManager.validateToken(token);
 
         Long id = jwtAuthManager.getId(token);
-        String name = jwtAuthManager.getName(token);
-        String email = jwtAuthManager.getEmail(token);
+
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new AuthorizationException("Member not found"));
+
+        String name = member.getName();
+
+        String email = member.getEmail();
+
+        String password = member.getPassword();
+
         String role = jwtAuthManager.getRole(token);
 
-        return new Member(id, name, email, role);
+        return new Member(id, name, email, password, role);
     }
 
     private String extractTokenFromCookies(Cookie[] cookies) {

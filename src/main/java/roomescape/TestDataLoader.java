@@ -15,7 +15,7 @@ import roomescape.domain.reservation.ReservationRepository;
 
 @Profile("test")
 @Component
-public abstract class TestDataLoader implements CommandLineRunner {
+public class TestDataLoader implements CommandLineRunner {
     private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
