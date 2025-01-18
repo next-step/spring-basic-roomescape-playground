@@ -13,46 +13,43 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class AuthTest {
-    private static final String USERNAME_FIELD = "email";
-    private static final String PASSWORD_FIELD = "password";
-    private static final String VALID_EMAIL = "admin@email.com";
-    private static final String VALID_PASSWORD = "password";
-    private static final String INVALID_EMAIL = "email@email.com";
-    private static final String INVALID_PASSWORD = "1234";
-
     @Test
     void 로그인_성공() {
-        Map<String, String> params = new HashMap<>();
-        params.put(USERNAME_FIELD, VALID_EMAIL);
-        params.put(PASSWORD_FIELD, VALID_PASSWORD);
+        //given
+        Map<String, String> validCredentials = new HashMap<>();
+        validCredentials.put("email", "admin@email.com");
+        validCredentials.put("password", "password");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().log().all()
-                .extract();
+        //when
+        ExtractableResponse<Response> response = sendLoginRequest(validCredentials);
 
+        //then
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
-
         assertThat(response.statusCode()).isEqualTo(200);
         assertThat(token).isNotBlank();
     }
 
     @Test
     void 이메일과_비밀번호가_일치하지_않는_경우_예외가_발생한다() {
-        Map<String, String> params = new HashMap<>();
-        params.put(USERNAME_FIELD, INVALID_EMAIL);
-        params.put(PASSWORD_FIELD, INVALID_PASSWORD);
+        //given
+        Map<String, String> invalidCredentials = new HashMap<>();
+        invalidCredentials.put("email", "email@email.com");
+        invalidCredentials.put("password", "1234");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        //when
+        ExtractableResponse<Response> response = sendLoginRequest(invalidCredentials);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(401);
+        assertThat(response.body().asString()).isEqualTo("Invalid email or password");
+    }
+
+    private ExtractableResponse<Response> sendLoginRequest(Map<String, String> params) {
+        return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/login")
                 .then().log().all()
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(401);
-        assertThat(response.body().asString()).isEqualTo("Invalid email or password");
     }
 }
