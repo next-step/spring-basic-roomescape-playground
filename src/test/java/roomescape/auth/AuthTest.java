@@ -15,26 +15,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 class AuthTest {
     private static final String USERNAME_FIELD = "email";
     private static final String PASSWORD_FIELD = "password";
-    private static final String EMAIL = "email@email.com";
-    private static final String PASSWORD = "1234";
+    private static final String INVALID_EMAIL = "email@email.com";
+    private static final String INVALID_PASSWORD = "1234";
 
     @Test
-    void login() {
+    void 이메일과_비밀번호가_일치하지_않는_경우_예외가_발생한다() {
         Map<String, String> params = new HashMap<>();
-        params.put(USERNAME_FIELD, EMAIL);
-        params.put(PASSWORD_FIELD, PASSWORD);
+        params.put(USERNAME_FIELD, INVALID_EMAIL);
+        params.put(PASSWORD_FIELD, INVALID_PASSWORD);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(200)
                 .extract();
 
-        String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
-
-        assertThat(token).isNotBlank();
+        assertThat(response.statusCode()).isEqualTo(401);
+        assertThat(response.body().asString()).isEqualTo("Invalid email or password");
     }
-
 }
