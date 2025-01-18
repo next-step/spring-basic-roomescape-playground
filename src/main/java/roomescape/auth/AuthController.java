@@ -42,6 +42,9 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity check(HttpServletRequest request) {
         String token = CookieUtils.findCookie(request.getCookies(), "token");
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Empty cookie");
+        }
         Map<String, Object> claims = jwtTokenProvider.getClaims(token);
         return ResponseEntity.ok().body(claims);
     }
