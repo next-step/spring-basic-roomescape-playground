@@ -3,7 +3,6 @@ package roomescape.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -29,7 +28,7 @@ public class AuthController {
     public ResponseEntity login(@RequestBody AuthInfo authInfo, HttpServletResponse response) {
         try {
             Member member = memberDao.findByEmailAndPassword(authInfo.email(), authInfo.password());
-            String token = jwtTokenProvider.createToken(member.getEmail());
+            String token = jwtTokenProvider.createToken(member);
 
             Cookie tokenCookie = CookieUtils.createTokenCookie(token);
             response.addCookie(tokenCookie);
@@ -43,10 +42,7 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity check(HttpServletRequest request) {
         String token = CookieUtils.findCookie(request.getCookies(), "token");
-        String subject = jwtTokenProvider.getSubject(token);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("subject", subject);
-        return ResponseEntity.ok().body(response);
+        Map<String, Object> claims = jwtTokenProvider.getClaims(token);
+        return ResponseEntity.ok().body(claims);
     }
 }

@@ -31,7 +31,6 @@ public class MissionStepTest {
                 .extract();
 
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
-
         assertThat(token).isNotBlank();
 
         ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
@@ -42,7 +41,6 @@ public class MissionStepTest {
                 .statusCode(200)
                 .extract();
 
-        assertThat(checkResponse.body().jsonPath().getString("subject")).isEqualTo("admin@email.com");
-
+        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
 }
