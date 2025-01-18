@@ -31,11 +31,8 @@ public class AuthController {
             Member member = memberDao.findByEmailAndPassword(authInfo.email(), authInfo.password());
             String token = jwtTokenProvider.createToken(member.getEmail());
 
-            Cookie cookie = new Cookie("token", token);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-
+            Cookie tokenCookie = CookieUtils.createTokenCookie(token);
+            response.addCookie(tokenCookie);
             return ResponseEntity.ok().build();
 
         } catch (EmptyResultDataAccessException e) {
