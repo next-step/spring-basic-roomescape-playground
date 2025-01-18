@@ -42,14 +42,9 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity check(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String subject = null;
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                String token = cookie.getValue();
-                subject = jwtTokenProvider.getSubject(token);
-            }
-        }
+        String token = CookieUtils.findCookie(request.getCookies(), "token");
+        String subject = jwtTokenProvider.getSubject(token);
+
         Map<String, String> response = new HashMap<>();
         response.put("subject", subject);
         return ResponseEntity.ok().body(response);
