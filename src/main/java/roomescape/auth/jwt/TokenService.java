@@ -26,11 +26,7 @@ public class TokenService {
                         @Value("${roomescape.auth.jwt.expiration}") long expiration) {
         this.secretKey = secretKey;
         this.expiration = expiration;
-    }
-
-    @PostConstruct
-    public void init() {
-        key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     public String createToken(MemberTokenDto memberTokenDto) {
