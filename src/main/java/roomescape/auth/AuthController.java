@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,7 +46,12 @@ public class AuthController {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Empty cookie");
         }
-        Map<String, Object> claims = jwtTokenProvider.getClaims(token);
-        return ResponseEntity.ok().body(claims);
+
+        try {
+            Map<String, Object> claims = jwtTokenProvider.getClaims(token);
+            return ResponseEntity.ok().body(claims);
+        } catch (JwtException | IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
     }
 }
