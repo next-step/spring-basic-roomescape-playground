@@ -1,12 +1,12 @@
-package roomescape.member;
+package roomescape.login;
 
-public class MemberRequest {
-    private String name;
+public class LoginRequestDto {
     private String email;
     private String password;
 
-    public String getName() {
-        return name;
+    public LoginRequestDto(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public String getEmail() {
