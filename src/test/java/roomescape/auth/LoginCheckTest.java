@@ -22,8 +22,7 @@ public class LoginCheckTest {
                 .extract();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(401);
-        assertThat(response.body().asString()).isEqualTo("Empty cookie");
+        assertThat(response.statusCode()).isEqualTo(400);
     }
 
     @Test

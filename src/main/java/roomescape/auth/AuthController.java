@@ -2,12 +2,12 @@ package roomescape.auth;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,12 +41,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity check(HttpServletRequest request) {
-        String token = CookieUtils.findCookie(request.getCookies(), "token");
-        if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Empty cookie");
-        }
-
+    public ResponseEntity check(@CookieValue(name = "token") String token) {
         try {
             Map<String, Object> claims = jwtTokenProvider.getClaims(token);
             return ResponseEntity.ok().body(claims);
