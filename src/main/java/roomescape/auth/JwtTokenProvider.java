@@ -6,7 +6,6 @@ import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import java.util.Map;
 import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 
@@ -16,10 +15,9 @@ public class JwtTokenProvider {
     private SecretKey secretKey;
     private long validityInMilliseconds;
 
-    public JwtTokenProvider(@Value("${security.jwt.token.secret-key}") String secretKey,
-                            @Value("${security.jwt.token.expire-length}") long validityInMilliseconds) {
-        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
-        this.validityInMilliseconds = validityInMilliseconds;
+    public JwtTokenProvider(JwtProperties jwtProperties) {
+        this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
+        this.validityInMilliseconds = jwtProperties.getValidityInMilliseconds();
     }
 
     public String createToken(Member member) {
