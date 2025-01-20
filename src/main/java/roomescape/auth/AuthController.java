@@ -25,7 +25,7 @@ public class AuthController {
     public ResponseEntity login(@RequestBody AuthInfo authInfo, HttpServletResponse response) {
         try {
             String token = authService.createToken(authInfo.email(), authInfo.password());
-            Cookie tokenCookie = CookieUtils.createTokenCookie(token);
+            Cookie tokenCookie = createTokenCookie(token);
             response.addCookie(tokenCookie);
             return ResponseEntity.ok().build();
 
@@ -42,5 +42,12 @@ public class AuthController {
         } catch (JwtException | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
+    }
+
+    private Cookie createTokenCookie(String token) {
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
     }
 }
