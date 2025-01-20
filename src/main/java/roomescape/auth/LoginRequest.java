@@ -1,6 +1,6 @@
 package roomescape.auth;
 
-public record AuthInfo(
+public record LoginRequest(
         String email,
         String password
 ) {

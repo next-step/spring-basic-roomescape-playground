@@ -12,8 +12,8 @@ import roomescape.member.Member;
 @Component
 public class JwtTokenProvider {
 
-    private SecretKey secretKey;
-    private long validityInMilliseconds;
+    private final SecretKey secretKey;
+    private final long validityInMilliseconds;
 
     public JwtTokenProvider(JwtProperties jwtProperties) {
         this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());

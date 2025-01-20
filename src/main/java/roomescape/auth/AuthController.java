@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthController {
+    private static final String TOKEN_COOKIE = "token";
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -22,9 +23,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody AuthInfo authInfo, HttpServletResponse response) {
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
-            String token = authService.createToken(authInfo.email(), authInfo.password());
+            String token = authService.createToken(loginRequest.email(), loginRequest.password());
             Cookie tokenCookie = createTokenCookie(token);
             response.addCookie(tokenCookie);
             return ResponseEntity.ok().build();
@@ -35,7 +36,7 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity check(@CookieValue(name = "token") String token) {
+    public ResponseEntity check(@CookieValue(name = TOKEN_COOKIE) String token) {
         try {
             Map<String, Object> claims = authService.extractClaims(token);
             return ResponseEntity.ok().body(claims);
@@ -45,7 +46,7 @@ public class AuthController {
     }
 
     private Cookie createTokenCookie(String token) {
-        Cookie cookie = new Cookie("token", token);
+        Cookie cookie = new Cookie(TOKEN_COOKIE, token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
