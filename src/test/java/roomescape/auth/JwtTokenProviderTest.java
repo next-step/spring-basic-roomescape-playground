@@ -15,7 +15,7 @@ class JwtTokenProviderTest {
     private static final String ROLE = "USER";
 
     @Autowired
-    private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     void 토큰_생성() {
