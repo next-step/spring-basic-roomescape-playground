@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class LoginCheckTest {
 
     @Test
-    void 인증토큰_쿠키가_비어있는_경우_예외가_발생한다() {
+    void 인증_토큰_쿠키가_비어있는_경우_인증_정보_조회에_실패한다() {
         //when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

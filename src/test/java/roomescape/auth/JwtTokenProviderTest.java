@@ -21,7 +21,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void 토큰_생성() {
+    void 토큰_생성_성공() {
         //when
         String token = jwtTokenProvider.createToken(member);
 
@@ -30,7 +30,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void 토큰_정보() {
+    void 토큰_정보_조회_성공() {
         //given
         String token = jwtTokenProvider.createToken(member);
 
@@ -44,7 +44,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void 토큰이_만료된_경우_예외가_발생한다() {
+    void 토큰이_만료된_경우_토큰_정보_조회에_실패한다() {
         //given
         JwtTokenProvider otherProvider = new JwtTokenProvider(new JwtProperties(originSecretKey, 0));
         String expireToken = otherProvider.createToken(member);
@@ -55,7 +55,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void 토큰의_서명이_다른_경우_예외가_발생한다() {
+    void 토큰의_서명이_다른_경우_토큰_정보_조회에_실패한다() {
         //given
         JwtTokenProvider otherProvider = new JwtTokenProvider(
                 new JwtProperties(originSecretKey + " ", originValidity));

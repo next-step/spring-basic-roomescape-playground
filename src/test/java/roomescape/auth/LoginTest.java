@@ -30,7 +30,7 @@ class LoginTest {
     }
 
     @Test
-    void 이메일과_비밀번호가_일치하지_않는_경우_예외가_발생한다() {
+    void 이메일과_비밀번호가_일치하지_않는_경우_로그인에_실패한다() {
         //given
         Map<String, String> invalidCredentials = new HashMap<>();
         invalidCredentials.put("email", "email@email.com");
