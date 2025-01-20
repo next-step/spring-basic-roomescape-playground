@@ -3,24 +3,24 @@ package roomescape.auth;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.member.Member;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class JwtTokenProviderTest {
-    private static final String EMAIL = "email@email.com";
-    private static final String NAME = "John Doe";
-    private static final String ROLE = "USER";
+    private JwtProperties jwtProperties;
+    private Member member;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    @BeforeEach
+    void setUp() {
+        jwtProperties = new JwtProperties("ThisIsATestKeyForJsonWebTokenProvider", 6000);
+        member = new Member(1L, "test", "test@email.com", "ADMIN");
+    }
 
     @Test
     void 토큰_생성() {
         //given
-        Member member = new Member(1L, NAME, EMAIL, ROLE);
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(jwtProperties);
 
         //when
         String token = jwtTokenProvider.createToken(member);
@@ -32,15 +32,15 @@ class JwtTokenProviderTest {
     @Test
     void 토큰_정보() {
         //given
-        Member member = new Member(1L, NAME, EMAIL, ROLE);
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(jwtProperties);
         String token = jwtTokenProvider.createToken(member);
 
         //when
         Map<String, Object> claims = jwtTokenProvider.getClaims(token);
 
         //then
-        assertThat(claims.get("sub")).isEqualTo(EMAIL);
-        assertThat(claims.get("name")).isEqualTo(NAME);
-        assertThat(claims.get("role")).isEqualTo(ROLE);
+        assertThat(claims.get("sub")).isEqualTo(member.getEmail());
+        assertThat(claims.get("name")).isEqualTo(member.getName());
+        assertThat(claims.get("role")).isEqualTo(member.getRole());
     }
 }
