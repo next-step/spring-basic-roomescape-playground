@@ -12,25 +12,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.Member;
-import roomescape.member.MemberDao;
 
 @RestController
 public class AuthController {
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberDao memberDao;
+    private final AuthService authService;
 
-    public AuthController(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.memberDao = memberDao;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody AuthInfo authInfo, HttpServletResponse response) {
         try {
-            Member member = memberDao.findByEmailAndPassword(authInfo.email(), authInfo.password());
-            String token = jwtTokenProvider.createToken(member);
-
+            String token = authService.createToken(authInfo.email(), authInfo.password());
             Cookie tokenCookie = CookieUtils.createTokenCookie(token);
             response.addCookie(tokenCookie);
             return ResponseEntity.ok().build();
@@ -43,7 +37,7 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity check(@CookieValue(name = "token") String token) {
         try {
-            Map<String, Object> claims = jwtTokenProvider.getClaims(token);
+            Map<String, Object> claims = authService.extractClaims(token);
             return ResponseEntity.ok().body(claims);
         } catch (JwtException | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
