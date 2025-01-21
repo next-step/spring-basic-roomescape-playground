@@ -10,28 +10,19 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import roomescape.auth.util.CookieUtil;
-import roomescape.member.Member;
-import roomescape.member.MemberResponse;
-import roomescape.member.MemberService;
 
 @RestController
 public class AuthController {
-	private TokenService tokenService;
-	private MemberService memberService;
+	private AuthService authService;
 
-	public AuthController(TokenService tokenService, MemberService memberService) {
-		this.tokenService = tokenService;
-		this.memberService = memberService;
+	public AuthController(AuthService authService) {
+		this.authService = authService;
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-		String email = loginRequest.email();
-		String password = loginRequest.password();
-
-		Member member = memberService.findMemberByEmailAndPassword(email, password);
-		String token = tokenService.createAccessToken(member);
-		response.addCookie(CookieUtil.createCookie(token));
+		TokenResponse tokenResponse = authService.login(loginRequest);
+		response.addCookie(CookieUtil.createCookie(tokenResponse.token()));
 		return ResponseEntity.ok().build();
 	}
 
@@ -39,10 +30,6 @@ public class AuthController {
 	public ResponseEntity<?> checkLogin(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
 		String token = CookieUtil.extractTokenFromCookie(cookies);
-		if (token != null) {
-			MemberResponse memberResponse = tokenService.extractMemberResponseFromToken(token);
-			return ResponseEntity.ok().body(memberResponse);
-		}
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.ok().body(authService.checkLoginStatus(token));
 	}
 }
