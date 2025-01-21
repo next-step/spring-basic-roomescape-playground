@@ -23,6 +23,9 @@ public class AuthService {
 		String password = loginRequest.password();
 
 		Member member = memberService.findMemberByEmailAndPassword(email, password);
+		if (member == null) {
+			throw new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.");
+		}
 		return tokenService.createAccessToken(new MemberTokenDto(member.getId(), member.getName(), member.getEmail()));
 	}
 
