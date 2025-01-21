@@ -27,8 +27,8 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-		String email = loginRequest.getEmail();
-		String password = loginRequest.getPassword();
+		String email = loginRequest.email();
+		String password = loginRequest.password();
 
 		Member member = memberService.findMemberByEmailAndPassword(email, password);
 		String token = tokenService.createAccessToken(member);
