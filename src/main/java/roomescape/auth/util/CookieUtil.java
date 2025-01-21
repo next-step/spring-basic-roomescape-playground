@@ -1,10 +1,9 @@
 package roomescape.auth.util;
 
-import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.Cookie;
 
-@Service
+
 public class CookieUtil {
 
 	public static Cookie createCookie(String token) {
