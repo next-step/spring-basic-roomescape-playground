@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.jwt;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import roomescape.auth.jwt.MemberTokenDto;
-import roomescape.auth.jwt.TokenService;
+import roomescape.auth.TokenResponse;
 
 @SpringBootTest
 @TestPropertySource(properties = {
