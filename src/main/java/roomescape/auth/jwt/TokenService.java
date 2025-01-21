@@ -30,14 +30,14 @@ public class TokenService {
 			.compact());
 	}
 
-	public MemberResponse extractMemberResponseFromToken(String token) {
+	public MemberTokenDto extractMemberResponseFromToken(String token) {
 		Claims claims = Jwts.parserBuilder()
 			.setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
 			.build()
 			.parseClaimsJws(token)
 			.getBody();
 
-		return new MemberResponse(Long.valueOf(claims.getSubject()), String.valueOf(claims.get("name")),
+		return new MemberTokenDto(Long.valueOf(claims.getSubject()), String.valueOf(claims.get("name")),
 			String.valueOf(claims.get("role")));
 	}
 

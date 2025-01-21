@@ -26,7 +26,7 @@ public class AuthService {
 		return tokenService.createAccessToken(new MemberTokenDto(member.getId(), member.getName(), member.getEmail()));
 	}
 
-	public MemberResponse checkLoginStatus(String token) {
+	public MemberTokenDto checkLoginStatus(String token) {
 		return tokenService.extractMemberResponseFromToken(token);
 	}
 }
