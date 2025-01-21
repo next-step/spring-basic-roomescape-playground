@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.jwt.MemberTokenDto;
 import roomescape.auth.jwt.TokenService;
 import roomescape.member.Member;
-import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
 
 @Service
@@ -26,7 +25,7 @@ public class AuthService {
 		if (member == null) {
 			throw new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.");
 		}
-		return tokenService.createAccessToken(new MemberTokenDto(member.getId(), member.getName(), member.getEmail()));
+		return tokenService.createAccessToken(new MemberTokenDto(member.getId(), member.getName(), member.getRole()));
 	}
 
 	public MemberTokenDto checkLoginStatus(String token) {
