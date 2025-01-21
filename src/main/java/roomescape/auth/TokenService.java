@@ -13,20 +13,20 @@ import roomescape.member.MemberResponse;
 public class TokenService {
 	
 	@Value("${roomescape.auth.jwt.secret}")
-	private String secrectKey;
+	private String secretKey;
 
 	public String createAccessToken(Member member) {
 		return Jwts.builder()
 			.setSubject(member.getId().toString())
 			.claim("name", member.getName())
 			.claim("role", member.getRole())
-			.signWith(Keys.hmacShaKeyFor(secrectKey.getBytes()))
+			.signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
 			.compact();
 	}
 
 	public MemberResponse extractMemberResponseFromToken(String token) {
 		Claims claims = Jwts.parserBuilder()
-			.setSigningKey(Keys.hmacShaKeyFor(secrectKey.getBytes()))
+			.setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
 			.build()
 			.parseClaimsJws(token)
 			.getBody();
