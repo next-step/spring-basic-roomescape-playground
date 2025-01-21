@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -10,7 +11,9 @@ import roomescape.member.MemberResponse;
 
 @Service
 public class TokenService {
-	private final String secrectKey = "EwordIsMyBestTeacherEwordIsMyBestTeacherEwordIsMyBestTeacherEwordIsMyBestTeacherEwordIsMyBestTeacher";
+	
+	@Value("${roomescape.auth.jwt.secret}")
+	private String secrectKey;
 
 	public String createAccessToken(Member member) {
 		return Jwts.builder()
