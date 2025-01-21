@@ -3,11 +3,9 @@ package roomescape.auth;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,10 +34,9 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity check(@CookieValue(name = TOKEN_COOKIE) String token) {
+    public ResponseEntity check(LoginMember loginMember) {
         try {
-            Map<String, Object> claims = authService.extractClaims(token);
-            return ResponseEntity.ok().body(claims);
+            return ResponseEntity.ok().body(loginMember);
         } catch (JwtException | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
