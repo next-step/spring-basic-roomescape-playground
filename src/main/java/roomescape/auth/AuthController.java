@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import roomescape.auth.util.CookieUtil;
 import roomescape.member.Member;
 import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
@@ -16,12 +17,10 @@ import roomescape.member.MemberService;
 @RestController
 public class AuthController {
 	private TokenService tokenService;
-	private CookieService cookieService;
 	private MemberService memberService;
 
-	public AuthController(TokenService tokenService, CookieService cookieService, MemberService memberService) {
+	public AuthController(TokenService tokenService, MemberService memberService) {
 		this.tokenService = tokenService;
-		this.cookieService = cookieService;
 		this.memberService = memberService;
 	}
 
@@ -32,14 +31,14 @@ public class AuthController {
 
 		Member member = memberService.findMemberByEmailAndPassword(email, password);
 		String token = tokenService.createAccessToken(member);
-		response.addCookie(cookieService.createCookie(token));
+		response.addCookie(CookieUtil.createCookie(token));
 		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/login/check")
 	public ResponseEntity<?> checkLogin(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
-		String token = cookieService.extractTokenFromCookie(cookies);
+		String token = CookieUtil.extractTokenFromCookie(cookies);
 		if (token != null) {
 			MemberResponse memberResponse = tokenService.extractMemberResponseFromToken(token);
 			return ResponseEntity.ok().body(memberResponse);
