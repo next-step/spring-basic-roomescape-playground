@@ -26,7 +26,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 		String email = loginRequest.email();
 		String password = loginRequest.password();
 
@@ -37,7 +37,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/login/check")
-	public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
+	public ResponseEntity<?> checkLogin(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
 		String token = cookieService.extractTokenFromCookie(cookies);
 		if (token != null) {
