@@ -29,13 +29,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Cookie tokenCookie = getCookie((HttpServletRequest) webRequest.getNativeRequest(), "token");
-
         Map<String, Object> claims = jwtTokenProvider.getClaims(tokenCookie.getValue());
-        String email = (String) claims.get("sub");
-        String name = (String) claims.get("name");
-        String role = (String) claims.get("role");
-
-        return new LoginMember(email, name, role);
+        return LoginMember.fromClaims(claims);
     }
 
     public Cookie getCookie(HttpServletRequest request, String name) {
