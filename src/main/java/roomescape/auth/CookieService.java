@@ -20,6 +20,6 @@ public class CookieService {
 				return cookie.getValue();
 			}
 		}
-		return "";
+		return null;
 	}
 }

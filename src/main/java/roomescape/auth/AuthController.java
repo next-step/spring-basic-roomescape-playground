@@ -40,7 +40,10 @@ public class AuthController {
 	public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
 		String token = cookieService.extractTokenFromCookie(cookies);
-		MemberResponse memberResponse = tokenService.extractMemberResponseFromToken(token);
-		return ResponseEntity.ok().body(memberResponse);
+		if (token != null) {
+			MemberResponse memberResponse = tokenService.extractMemberResponseFromToken(token);
+			return ResponseEntity.ok().body(memberResponse);
+		}
+		return ResponseEntity.notFound().build();
 	}
 }
