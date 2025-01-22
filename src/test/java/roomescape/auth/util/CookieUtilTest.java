@@ -1,15 +1,8 @@
 package roomescape.auth.util;
 
-
-
-
-
-
-
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 import org.junit.jupiter.api.Test;
-
 import jakarta.servlet.http.Cookie;
 
 class CookieUtilTest {
