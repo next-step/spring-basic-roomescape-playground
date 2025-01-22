@@ -73,22 +73,4 @@ public class JwtAuthManager {
             throw new IllegalArgumentException("유효하지 않은 토큰입니다.", e);
         }
     }
-
-//    public String getName(String token) {
-//        JwtParser parser = Jwts.parserBuilder()
-//                .setSigningKey(secretKey)
-//                .build();
-//
-//        Claims claims = parser.parseClaimsJws(token).getBody();
-//        return claims.get("name", String.class);
-//    }
-//
-//    public String getEmail(String token) {
-//        JwtParser parser = Jwts.parserBuilder()
-//                .setSigningKey(secretKey)
-//                .build();
-//
-//        Claims claims = parser.parseClaimsJws(token).getBody();
-//        return claims.get("email", String.class);
-//    }
 }

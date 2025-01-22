@@ -30,7 +30,6 @@ public class LoginController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
-//        LoginResponse loginResponse = new LoginResponse(token);
         return ResponseEntity.ok().build();
     }
 
