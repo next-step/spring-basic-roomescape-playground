@@ -31,7 +31,8 @@ public class AuthController {
 	@GetMapping("/login/check")
 	public ResponseEntity<?> checkLogin(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
-		String token = cookieProvider.extractTokenFromCookie(cookies);
+		String token = cookieProvider.extractTokenFromCookie(cookies)
+			.orElseThrow(() -> new IllegalArgumentException("쿠키에 정보가 존재하지 않습니다."));
 		return ResponseEntity.ok().body(authService.checkLoginStatus(token));
 	}
 }

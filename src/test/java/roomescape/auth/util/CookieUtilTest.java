@@ -27,7 +27,8 @@ class CookieUtilTest {
 	void 쿠키로부터_토큰을_가져올_수_있다() {
 		Cookie[] cookies = new Cookie[] {cookieProvider.createCookie(token)};
 
-		String tokenFromCookie = cookieProvider.extractTokenFromCookie(cookies);
+		String tokenFromCookie = cookieProvider.extractTokenFromCookie(cookies)
+				.orElse(null);
 		assertThat(tokenFromCookie).isEqualTo(token);
 	}
 }
