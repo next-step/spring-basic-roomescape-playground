@@ -19,11 +19,10 @@ class TokenServiceTest {
 
 	@Autowired
 	private TokenService tokenService;
+	private final MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "test", "USER");
 
 	@Test
 	void 토큰을_생성할_수_있다() {
-		MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "test", "USER");
-
 		TokenResponse tokenResponse = tokenService.createAccessToken(memberTokenDto);
 		MemberTokenDto parseTokenInfo = tokenService.extractMemberResponseFromToken(tokenResponse.token());
 
@@ -35,7 +34,6 @@ class TokenServiceTest {
 
 	@Test
 	void 정상적인_토큰을_검증할_수_있다() {
-		MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "test", "USER");
 		TokenResponse tokenResponse = tokenService.createAccessToken(memberTokenDto);
 
 		boolean isValid = tokenService.validToken(tokenResponse.token());
@@ -44,7 +42,6 @@ class TokenServiceTest {
 
 	@Test
 	void 만료된_토큰을_검증할_수_있다() throws InterruptedException {
-		MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "test", "USER");
 		TokenResponse tokenResponse = tokenService.createAccessToken(memberTokenDto);
 
 		Thread.sleep(1500);
@@ -54,7 +51,6 @@ class TokenServiceTest {
 
 	@Test
 	void 조작된_토큰을_검증할_수_있다() {
-		MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "test", "USER");
 		TokenResponse tokenResponse = tokenService.createAccessToken(memberTokenDto);
 
 		String invalidToken = tokenResponse.token().concat("123");
@@ -71,7 +67,6 @@ class TokenServiceTest {
 
 	@Test
 	void 토큰에서_사용자_정보를_가져올_수_있다() {
-		MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "test", "USER");
 		TokenResponse tokenResponse = tokenService.createAccessToken(memberTokenDto);
 
 		MemberTokenDto parseTokenInfo = tokenService.extractMemberResponseFromToken(tokenResponse.token());
