@@ -3,23 +3,24 @@ package roomescape.auth.jwt;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 import roomescape.auth.TokenResponse;
 
 @SpringBootTest
-@TestPropertySource(properties = {
-	"roomescape.auth.jwt.secret.key=thisistestkeythisistestkeythisistestkeythisistestkeythisistestkey",
-	"roomescape.auth.jwt.secret.expiration=1000"
-})
 class TokenServiceTest {
 
-	@Autowired
 	private TokenService tokenService;
-	private final MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "test", "USER");
+	private MemberTokenDto memberTokenDto;
+
+	@BeforeEach
+	void init() {
+		tokenService = new TokenService("thisistestkeythisistestkeythisistestkeythisistestkeythisistestkey", 1000L);
+		memberTokenDto = new MemberTokenDto(1L, "test", "USER");
+	}
 
 	@Test
 	void 토큰을_생성할_수_있다() {

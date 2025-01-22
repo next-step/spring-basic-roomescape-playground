@@ -6,22 +6,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import roomescape.auth.jwt.MemberTokenDto;
+import roomescape.auth.jwt.TokenService;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.member.MemberService;
 
 @SpringBootTest
-@TestPropertySource(properties = {
-	"roomescape.auth.jwt.secret.key=thisistestkeythisistestkeythisistestkeythisistestkeythisistestkey",
-	"roomescape.auth.jwt.secret.expiration=1000"
-})
 @Transactional
 class AuthServiceTest {
 
-	@Autowired
 	private AuthService authService;
 
 	@Autowired
@@ -34,6 +30,8 @@ class AuthServiceTest {
 
 	@BeforeEach
 	void setUp() {
+		TokenService tokenService = new TokenService("thisistestkeythisistestkeythisistestkeythisistestkeythisistestkey", 1000L);
+		authService = new AuthService(tokenService, new MemberService(memberDao));
 		Member member = new Member(name, email, password, role);
 		memberDao.save(member);
 	}
