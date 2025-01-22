@@ -7,9 +7,10 @@ import jakarta.servlet.http.Cookie;
 
 @Component
 public class CookieProvider {
+	private final String TOKEN = "token";
 
 	public Cookie createCookie(String token) {
-		Cookie cookie = new Cookie("token", token);
+		Cookie cookie = new Cookie(TOKEN, token);
 		cookie.setHttpOnly(true);
 		cookie.setPath("/");
 		return cookie;
@@ -17,7 +18,7 @@ public class CookieProvider {
 
 	public String extractTokenFromCookie(Cookie[] cookies) {
 		for (Cookie cookie : cookies) {
-			if (cookie.getName().equals("token")) {
+			if (cookie.getName().equals(TOKEN)) {
 				return cookie.getValue();
 			}
 		}
