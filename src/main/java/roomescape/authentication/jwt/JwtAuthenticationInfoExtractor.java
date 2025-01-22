@@ -7,16 +7,15 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import roomescape.authentication.AuthenticationExtractor;
 import roomescape.authentication.AuthenticationResponse;
 import roomescape.authentication.MemberAuthInfo;
 import roomescape.exception.JwtValidationException;
 
 import java.util.Arrays;
 
-@Component
 @RequiredArgsConstructor
-public class JwtAuthenticationInfoExtractor {
+public class JwtAuthenticationInfoExtractor implements AuthenticationExtractor {
 
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
@@ -33,10 +32,11 @@ public class JwtAuthenticationInfoExtractor {
                     .parseClaimsJws(token)
                     .getBody();
 
+            Long id = Long.valueOf(claims.getSubject());
             String name = claims.get("name", String.class);
             String role = claims.get("role", String.class);
 
-            return new MemberAuthInfo(name, role);
+            return new MemberAuthInfo(id, name, role);
         } catch (JwtException e) {
             throw new JwtValidationException("유효하지 않은 JWT 토큰입니다.", e);
         }

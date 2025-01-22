@@ -25,11 +25,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = ((ServletWebRequest) webRequest).getRequest();
 
-        AuthenticationResponse authenticationResponse = authenticationService.extractToken(request.getCookies());
-        if (authenticationResponse.accessToken() == null) {
+        MemberAuthInfo memberAuthInfo = authenticationService.getMemberAuthInfoFromCookies(request.getCookies());
+
+        if (memberAuthInfo == null){
             return null;
         }
 
-        return authenticationService.extractMemberInfo(authenticationResponse.accessToken());
+        return memberAuthInfo;
     }
 }

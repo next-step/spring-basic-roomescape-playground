@@ -1,10 +1,9 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
-public record ReservationRequest(
+public record WaitingRequest(
         String name,
         String date,
         Long theme,
         Long time
 ) {
 }
-

@@ -5,13 +5,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import roomescape.authentication.AuthenticationProvider;
 import roomescape.authentication.AuthenticationResponse;
 import roomescape.exception.JwtProviderException;
 import roomescape.member.Member;
 
-@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 

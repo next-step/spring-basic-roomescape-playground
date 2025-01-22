@@ -1,38 +1,37 @@
 package roomescape.login;
 
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.authentication.MemberAuthInfo;
 import roomescape.authentication.AuthenticationResponse;
 import roomescape.authentication.AuthenticationService;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
 import roomescape.exception.MemberNotFoundException;
+import roomescape.member.MemberRepository;
+
 
 @Service
 @RequiredArgsConstructor
 public class LoginService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final AuthenticationService authenticationService;
+
     public AuthenticationResponse login(LoginRequest loginRequest) {
 
-        try {
-            Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
+            Member member = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
+                    .orElseThrow(() -> new MemberNotFoundException("입력한 이메일 혹은 비밀번호로 가입한 회원을 찾을 수 없습니다."));
+
             return authenticationService.createToken(member);
-        } catch (EmptyResultDataAccessException e) {
-            throw new MemberNotFoundException("이메일 혹은 비밀번호가 맞지 않습니다.", e);
-        }
     }
 
-    public LoginCheckResponse checkLogin(MemberAuthInfo memberAuthInfo) {
+    public LoginCheckResponse checkLogin(Cookie[] cookies) {
+        MemberAuthInfo memberAuthInfo = authenticationService.getMemberAuthInfoFromCookies(cookies);
 
-        try {
-            Member member = memberDao.findByName(memberAuthInfo.name());
-            return new LoginCheckResponse(member.getName());
-        } catch (EmptyResultDataAccessException e) {
-            throw new MemberNotFoundException("로그인이 되지 않은 상태입니다.", e);
-        }
+        Member member= memberRepository.findByName(memberAuthInfo.name())
+                .orElseThrow(() -> new MemberNotFoundException("로그인 된 회원이 아닙니다."));
+
+        return new LoginCheckResponse(member.getName());
     }
 }
