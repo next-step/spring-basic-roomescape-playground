@@ -1,4 +1,5 @@
 package roomescape.auth.jwt;
+
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -14,12 +15,14 @@ import roomescape.auth.TokenResponse;
 
 @Service
 public class TokenService {
+	private final String secretKey;
+	private final Long expiration;
 
-	@Value("${roomescape.auth.jwt.secret.key}")
-	private String secretKey;
-
-	@Value("${roomescape.auth.jwt.secret.expiration}")
-	private Long expiration;
+	public TokenService(@Value("${roomescape.auth.jwt.secret.key}") String secretKey,
+		@Value("${roomescape.auth.jwt.secret.expiration}") Long expiration) {
+		this.secretKey = secretKey;
+		this.expiration = expiration;
+	}
 
 	public TokenResponse createAccessToken(MemberTokenDto memberTokenDto) {
 		Date now = new Date();
