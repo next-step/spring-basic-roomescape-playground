@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.jsonwebtoken.Claims;
 
 public record LoginMember(
@@ -12,5 +13,10 @@ public record LoginMember(
                 claims.getSubject(),
                 claims.get("name", String.class),
                 claims.get("role", String.class));
+    }
+
+    @JsonIgnore
+    public boolean isAdmin() {
+        return this.role.equals("ADMIN");
     }
 }

@@ -22,7 +22,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         String token = authorizationExtractor.extract(request);
         LoginMember loginMember = authService.createAuthentication(token);
 
-        if (!loginMember.role().equals("ADMIN")) {
+        if (!loginMember.isAdmin()) {
             response.setStatus(401);
             return false;
         }
