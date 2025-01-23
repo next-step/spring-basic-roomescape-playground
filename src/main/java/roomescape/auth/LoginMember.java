@@ -5,7 +5,7 @@ import java.util.Map;
 public record LoginMember(
         String email,
         String name,
-        String password
+        String role
 ) {
     public static LoginMember fromClaims(Map<String, Object> claims) {
         String email = (String) claims.get("sub");
