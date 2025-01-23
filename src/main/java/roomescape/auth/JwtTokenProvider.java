@@ -14,15 +14,17 @@ public class JwtTokenProvider {
 
     private final SecretKey secretKey;
     private final long validityInMilliseconds;
+    private final TimeProvider timeProvider;
 
-    public JwtTokenProvider(JwtProperties jwtProperties) {
+    public JwtTokenProvider(JwtProperties jwtProperties, TimeProvider timeProvider) {
         this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
         this.validityInMilliseconds = jwtProperties.getValidityInMilliseconds();
+        this.timeProvider = timeProvider;
     }
 
     public String createToken(Member member) {
         Claims claims = Jwts.claims().setSubject(member.getEmail());
-        Date now = new Date();
+        Date now = timeProvider.now();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
