@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class LoginTest {
     @Test
-    void 로그인_성공() {
+    void 로그인에_성공한_경우_토큰을_쿠키에_저장한다() {
         //given
         Map<String, String> validCredentials = new HashMap<>();
         validCredentials.put("email", "admin@email.com");
