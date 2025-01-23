@@ -1,7 +1,6 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Map;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -11,12 +10,11 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
     private final AuthorizationExtractor authorizationExtractor;
 
-    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider,
-                                       AuthorizationExtractor authorizationExtractor) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public LoginMemberArgumentResolver(AuthService authService, AuthorizationExtractor authorizationExtractor) {
+        this.authService = authService;
         this.authorizationExtractor = authorizationExtractor;
     }
 
@@ -29,7 +27,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         String token = authorizationExtractor.extract((HttpServletRequest) webRequest.getNativeRequest());
-        Map<String, Object> claims = jwtTokenProvider.getClaims(token);
-        return LoginMember.fromClaims(claims);
+        return authService.createAuthentication(token);
     }
 }

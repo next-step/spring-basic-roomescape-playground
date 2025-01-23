@@ -20,7 +20,8 @@ public class AuthService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public Map<String, Object> extractClaims(String token) {
-        return jwtTokenProvider.getClaims(token);
+    public LoginMember createAuthentication(String token) {
+        Map<String, Object> claims = jwtTokenProvider.getClaims(token);
+        return LoginMember.fromClaims(claims);
     }
 }
