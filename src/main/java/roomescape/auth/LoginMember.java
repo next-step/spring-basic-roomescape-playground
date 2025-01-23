@@ -1,16 +1,16 @@
 package roomescape.auth;
 
-import java.util.Map;
+import io.jsonwebtoken.Claims;
 
 public record LoginMember(
         String email,
         String name,
         String role
 ) {
-    public static LoginMember fromClaims(Map<String, Object> claims) {
-        String email = (String) claims.get("sub");
-        String name = (String) claims.get("name");
-        String role = (String) claims.get("role");
-        return new LoginMember(email, name, role);
+    public static LoginMember from(Claims claims) {
+        return new LoginMember(
+                claims.getSubject(),
+                claims.get("name", String.class),
+                claims.get("role", String.class));
     }
 }

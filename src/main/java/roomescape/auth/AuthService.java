@@ -1,6 +1,6 @@
 package roomescape.auth;
 
-import java.util.Map;
+import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
@@ -21,7 +21,7 @@ public class AuthService {
     }
 
     public LoginMember createAuthentication(String token) {
-        Map<String, Object> claims = jwtTokenProvider.getClaims(token);
-        return LoginMember.fromClaims(claims);
+        Claims claims = jwtTokenProvider.getClaims(token);
+        return LoginMember.from(claims);
     }
 }

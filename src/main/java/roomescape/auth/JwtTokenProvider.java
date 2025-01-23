@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
-import java.util.Map;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
@@ -37,7 +36,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Map<String, Object> getClaims(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
