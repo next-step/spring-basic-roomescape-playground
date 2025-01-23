@@ -30,7 +30,7 @@ public class ReservationController {
         if (reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
                 || reservationRequest.getTime() == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Invalid reservation request");
         }
 
         if (reservationRequest.getName() == null) {

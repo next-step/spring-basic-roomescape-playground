@@ -25,13 +25,8 @@ class CreateReservations {
         reservationRequest.put("theme", "1");
 
         //when
-        ReservationResponse reservationResponse = RestAssured.given().log().all()
-                .body(reservationRequest)
-                .cookie("token", token)
-                .contentType(ContentType.JSON)
-                .post("/reservations")
-                .then().log().all()
-                .extract().as(ReservationResponse.class);
+        ReservationResponse reservationResponse = sendCreateReservationsRequest(reservationRequest, token).as(
+                ReservationResponse.class);
 
         //then
         assertThat(reservationResponse.getName()).isEqualTo("어드민");
@@ -49,13 +44,8 @@ class CreateReservations {
         reservationRequest.put("theme", "1");
 
         //when
-        ReservationResponse reservationResponse = RestAssured.given().log().all()
-                .body(reservationRequest)
-                .cookie("token", token)
-                .contentType(ContentType.JSON)
-                .post("/reservations")
-                .then().log().all()
-                .extract().as(ReservationResponse.class);
+        ReservationResponse reservationResponse = sendCreateReservationsRequest(reservationRequest, token).as(
+                ReservationResponse.class);
 
         //then
         assertThat(reservationResponse.getName()).isEqualTo("브라운");
@@ -80,6 +70,74 @@ class CreateReservations {
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void 유효하지_않은_예약_날짜인_경우_예약에_실패한다() {
+        //given
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> reservationRequest = new HashMap<>();
+        reservationRequest.put("date", null);
+        reservationRequest.put("name", "브라운");
+        reservationRequest.put("time", "1");
+        reservationRequest.put("theme", "1");
+
+        //when
+        ExtractableResponse<Response> response = sendCreateReservationsRequest(reservationRequest, token);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.body().asString()).isEqualTo("Invalid reservation request");
+    }
+
+    @Test
+    void 유효하지_않은_예약_시간인_경우_예약에_실패한다() {
+        //given
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> reservationRequest = new HashMap<>();
+        reservationRequest.put("date", "2024-03-01");
+        reservationRequest.put("name", "브라운");
+        reservationRequest.put("time", null);
+        reservationRequest.put("theme", "1");
+
+        //when
+        ExtractableResponse<Response> response = sendCreateReservationsRequest(reservationRequest, token);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.body().asString()).isEqualTo("Invalid reservation request");
+    }
+
+    @Test
+    void 유효하지_않은_예약_테마인_경우_예약에_실패한다() {
+        //given
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> reservationRequest = new HashMap<>();
+        reservationRequest.put("date", "2024-03-01");
+        reservationRequest.put("name", "브라운");
+        reservationRequest.put("time", "1");
+        reservationRequest.put("theme", null);
+
+        //when
+        ExtractableResponse<Response> response = sendCreateReservationsRequest(reservationRequest, token);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.body().asString()).isEqualTo("Invalid reservation request");
+    }
+
+    private ExtractableResponse<Response> sendCreateReservationsRequest(Map<String, String> reservationRequest,
+                                                                        String token) {
+        return RestAssured.given().log().all()
+                .body(reservationRequest)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
     }
 
     private String createToken(String email, String password) {
