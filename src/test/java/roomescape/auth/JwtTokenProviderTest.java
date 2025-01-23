@@ -12,13 +12,9 @@ import roomescape.member.Member;
 class JwtTokenProviderTest {
     private final String originSecretKey = "ThisIsATestKeyForJsonWebTokenProvider";
     private final long originValidity = 6000;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final Member member;
-
-    public JwtTokenProviderTest() {
-        this.jwtTokenProvider = new JwtTokenProvider(new JwtProperties(originSecretKey, originValidity));
-        this.member = new Member(1L, "test", "test@email.com", "ADMIN");
-    }
+    private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(
+            new JwtProperties(originSecretKey, originValidity));
+    private final Member member = new Member(1L, "test", "test@email.com", "ADMIN");
 
     @Test
     void 토큰_생성_성공() {
