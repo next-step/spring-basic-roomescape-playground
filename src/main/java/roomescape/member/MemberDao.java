@@ -1,9 +1,11 @@
 package roomescape.member;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.EntityNotFoundException;
 
 @Repository
 public class MemberDao {
@@ -28,16 +30,37 @@ public class MemberDao {
     }
 
     public Member findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                email, password
-        );
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
+                    (rs, rowNum) -> new Member(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("role")
+                    ),
+                    email, password
+            );
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("해당 member를 찾을 수 없습니다.");
+        }
+    }
+
+    public Member findById(long id) {
+        try  {
+            return jdbcTemplate.queryForObject(
+                    "SELECT id, name, email, role FROM member where id = ?",
+                    (rs, rowNum) -> new Member(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("role")
+                    ),
+                    id
+            );
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("해당 member를 찾을 수 없습니다.");
+        }
     }
 
     public Member findByName(String name) {
