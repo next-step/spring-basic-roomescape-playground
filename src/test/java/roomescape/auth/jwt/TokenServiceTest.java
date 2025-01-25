@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TokenServiceTest {
 
@@ -63,7 +63,6 @@ class TokenServiceTest {
         String token = zeroExpirationTokenService.createToken(memberTokenDto);
 
         //when
-        Thread.sleep(1000);
         boolean isValid = zeroExpirationTokenService.checkValidToken(token);
 
         //then
