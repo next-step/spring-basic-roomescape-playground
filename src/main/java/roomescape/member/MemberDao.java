@@ -40,6 +40,14 @@ public class MemberDao {
         );
     }
 
+    public String findPasswordByEmail(String email) {
+        return jdbcTemplate.queryForObject(
+                "SELECT password FROM member WHERE email = ?",
+                String.class,
+                email
+        );
+    }
+
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
