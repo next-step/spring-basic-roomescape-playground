@@ -27,7 +27,7 @@ public class TokenService {
 
     public String createToken(MemberTokenDto memberTokenDto) {
         return Jwts.builder()
-                .setSubject(memberTokenDto.id().toString())
+                .setSubject(String.valueOf(memberTokenDto.id()))
                 .claim(NAME_CLAIM, memberTokenDto.name())
                 .claim(EMAIL_CLAIM, memberTokenDto.email())
                 .claim(ROLE_CLAIM, memberTokenDto.role())

@@ -1,7 +1,7 @@
 package roomescape.auth.jwt;
 
 public record MemberTokenDto(
-        Long id,
+        long id,
         String name,
         String email,
         String role
