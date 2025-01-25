@@ -5,11 +5,10 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
+import org.springframework.stereotype.Service;
+
 import java.security.Key;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TokenService {
@@ -18,15 +17,12 @@ public class TokenService {
     private static final String EMAIL_CLAIM = "email";
     private static final String ROLE_CLAIM = "role";
 
-    private final String secretKey;
-    private final long expiration;
+    private final JwtConfig jwtConfig;
     private Key key;
 
-    public TokenService(@Value("${roomescape.auth.jwt.secret}") String secretKey,
-                        @Value("${roomescape.auth.jwt.expiration}") long expiration) {
-        this.secretKey = secretKey;
-        this.expiration = expiration;
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+    public TokenService(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
+        this.key = Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes());
     }
 
     public String createToken(MemberTokenDto memberTokenDto) {
@@ -35,7 +31,7 @@ public class TokenService {
                 .claim(NAME_CLAIM, memberTokenDto.name())
                 .claim(EMAIL_CLAIM, memberTokenDto.email())
                 .claim(ROLE_CLAIM, memberTokenDto.role())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getExpiration()))
                 .signWith(key)
                 .compact();
     }
