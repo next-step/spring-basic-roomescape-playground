@@ -26,8 +26,7 @@ public class AuthService {
 
         Member member = null;
         try {
-            checkPasswordByEmail(email, password);
-            member = memberDao.findByEmailAndPassword(email, password);
+            validatePasswordByEmail(email, password);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException(INVALID_EMAIL_EXCEPTION_MESSAGE, e);
         }
@@ -46,7 +45,7 @@ public class AuthService {
         return new MemberDetailResponse(member.id(), member.name(), member.email(), member.role());
     }
 
-    private void checkPasswordByEmail(String email, String password) {
+    private void validatePasswordByEmail(String email, String password) {
         String findPassword = memberDao.findPasswordByEmail(email);
         if (!findPassword.equals(password)) {
             throw new IllegalArgumentException(WRONG_PASSWORD_EXCEPTION_MESSAGE);
