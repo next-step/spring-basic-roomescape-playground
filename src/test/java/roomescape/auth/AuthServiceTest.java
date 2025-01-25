@@ -38,11 +38,19 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("유효하지 않은 이메일과 비밀번호")
-    void loginWithEmailAndPassword_Failure_InvalidCredentials() {
+    @DisplayName("유효하지 않은 이메일")
+    void loginWithEmailAndPassword_Failure_InvalidEmail() {
         assertThatThrownBy(() -> authService.loginWithEmailAndPassword("invalid_email", "invalid_password"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("잘못된 이메일 또는 비밀번호입니다.");
+                .hasMessage(AuthService.INVALID_EMAIL_EXCEPTION_MESSAGE);
+    }
+
+    @Test
+    @DisplayName("이메일은 맞으나 잘못된 비밀번호")
+    void loginWithEmailAndPassword_Failure_WrongPassword() {
+        assertThatThrownBy(() -> authService.loginWithEmailAndPassword(member.getEmail(), "invalid_password"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(AuthService.WRONG_PASSWORD_EXCEPTION_MESSAGE);
     }
 
     @Test
