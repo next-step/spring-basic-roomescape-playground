@@ -10,8 +10,12 @@ import roomescape.member.MemberDao;
 @Service
 public class AuthService {
 
+    public static final String WRONG_PASSWORD_EXCEPTION_MESSAGE = "잘못된 비밀번호입니다.";
+    public static final String INVALID_EMAIL_EXCEPTION_MESSAGE = "없는 이메일 입니다.";
+    public static final String INVALID_TOKEN_EXCEPTION_MESSAGE = "잘못된 토큰입니다.";
     private final MemberDao memberDao;
     private final TokenService tokenService;
+
 
     public AuthService(MemberDao memberDao, TokenService tokenService) {
         this.memberDao = memberDao;
@@ -22,9 +26,10 @@ public class AuthService {
 
         Member member = null;
         try {
+            checkPasswordByEmail(email, password);
             member = memberDao.findByEmailAndPassword(email, password);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("잘못된 이메일 또는 비밀번호입니다.", e);
+            throw new IllegalArgumentException(INVALID_EMAIL_EXCEPTION_MESSAGE, e);
         }
 
         return tokenService.createToken(
@@ -34,10 +39,17 @@ public class AuthService {
     public MemberDetailResponse loginCheckWithToken(String token) {
         //유효기간 확인을 위해 필요
         if (!tokenService.checkValidToken(token)) {
-            throw new IllegalArgumentException("잘못된 토큰입니다.");
+            throw new IllegalArgumentException(INVALID_TOKEN_EXCEPTION_MESSAGE);
         }
 
         MemberTokenDto member = tokenService.getMemberClaims(token);
         return new MemberDetailResponse(member.id(), member.name(), member.email(), member.role());
+    }
+
+    private void checkPasswordByEmail(String email, String password) {
+        String findPassword = memberDao.findPasswordByEmail(email);
+        if (!findPassword.equals(password)) {
+            throw new IllegalArgumentException(WRONG_PASSWORD_EXCEPTION_MESSAGE);
+        }
     }
 }
