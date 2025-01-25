@@ -2,7 +2,6 @@ package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -40,8 +39,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         return new LoginMember(member.id(), member.name(), member.email(), member.role());
     }
 
-    @Nullable
-    private static String extractToken(HttpServletRequest request) {
+    private String extractToken(HttpServletRequest request) {
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName().equals(TOKEN_NAME))
                 .map(Cookie::getValue)
