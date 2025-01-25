@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.auth.jwt.MemberTokenDto;
 import roomescape.auth.jwt.TokenService;
@@ -18,10 +19,12 @@ public class AuthService {
     }
 
     public String loginWithEmailAndPassword(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
 
-        if(member == null) {
-            throw new IllegalArgumentException("잘못된 이메일 또는 비밀번호입니다.");
+        Member member = null;
+        try {
+            member = memberDao.findByEmailAndPassword(email, password);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("잘못된 이메일 또는 비밀번호입니다.", e);
         }
 
         return tokenService.createToken(
