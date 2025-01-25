@@ -48,7 +48,11 @@ class TokenServiceTest {
     @Test
     @DisplayName("만료된 토큰 전달시 검증")
     void checkValidToken_Failure_ExpiredToken() throws InterruptedException {
-        TokenService zeroExpirationTokenService = new TokenService("ThisIsSecretKeyForTokenServiceTest", 0);
+        JwtConfig jwtConfig = new JwtConfig();
+        jwtConfig.setExpiration(0L);
+        jwtConfig.setSecret("ThisIsSecretKeyForTokenServiceTest");
+
+        TokenService zeroExpirationTokenService = new TokenService(jwtConfig);
         String token = zeroExpirationTokenService.createToken(memberTokenDto);
 
         boolean isValid = zeroExpirationTokenService.checkValidToken(token);
