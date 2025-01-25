@@ -3,35 +3,30 @@ package roomescape.auth.jwt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest
 class TokenServiceTest {
 
+    @Autowired
     private TokenService tokenService;
-
-    private String secretKey;
-    private long expiration;
+    private MemberTokenDto memberTokenDto;
 
     @BeforeEach
     void setUp() {
-        secretKey = "ThisIsSecretKeyForTokenServiceTest";
-        expiration = 180000L;
-        tokenService = new TokenService(secretKey, expiration);
+        memberTokenDto = new MemberTokenDto(1L, "testName", "test@email.com", "user");
     }
 
     @Test
     @DisplayName("토큰 생성 성공")
     void createToken_Success() {
-        //given
-        MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "testName", "email@test.com", "USER");
-
-        //when
         String actualToken = tokenService.createToken(memberTokenDto);
         MemberTokenDto actualClaims = tokenService.getMemberClaims(actualToken);
 
-        //then
         assertThat(actualToken).isNotEmpty();
         assertThat(actualClaims.id()).isEqualTo(memberTokenDto.id());
         assertThat(actualClaims.name()).isEqualTo(memberTokenDto.name());
@@ -43,29 +38,21 @@ class TokenServiceTest {
     @Test
     @DisplayName("토큰 검증 성공")
     void checkValidToken_Success() {
-        //given
-        MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "testName", "email@test.com", "USER");
         String token = tokenService.createToken(memberTokenDto);
 
-        //when
         boolean isValid = tokenService.checkValidToken(token);
 
-        //then
         assertThat(isValid).isTrue();
     }
 
     @Test
     @DisplayName("만료된 토큰 전달시 검증")
     void checkValidToken_Failure_ExpiredToken() throws InterruptedException {
-        //given
-        TokenService zeroExpirationTokenService = new TokenService(secretKey, 0);
-        MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "testName", "email@test.com", "USER");
+        TokenService zeroExpirationTokenService = new TokenService("ThisIsSecretKeyForTokenServiceTest", 0);
         String token = zeroExpirationTokenService.createToken(memberTokenDto);
 
-        //when
         boolean isValid = zeroExpirationTokenService.checkValidToken(token);
 
-        //then
         assertThat(isValid).isFalse();
     }
 
@@ -73,14 +60,10 @@ class TokenServiceTest {
     @Test
     @DisplayName("토큰 해석 성공")
     void getMemberClaims_Success() {
-        //given
-        MemberTokenDto memberTokenDto = new MemberTokenDto(1L, "testName", "email@test.com", "USER");
         String token = tokenService.createToken(memberTokenDto);
 
-        //when
         MemberTokenDto actualClaims = tokenService.getMemberClaims(token);
 
-        //then
         assertThat(actualClaims).isNotNull();
         assertThat(actualClaims.id()).isEqualTo(memberTokenDto.id());
         assertThat(actualClaims.name()).isEqualTo(memberTokenDto.name());
@@ -91,10 +74,8 @@ class TokenServiceTest {
     @Test
     @DisplayName("잘못된 토큰 전달시 해석 실패")
     void getMemberClaims_Failure_InvalidToken() {
-        //given
         String token = "InvalidToken";
 
-        //when
         assertThatThrownBy(() -> tokenService.getMemberClaims(token))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("잘못된 토큰입니다.");
