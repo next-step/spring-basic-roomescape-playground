@@ -11,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import java.util.Arrays;
 
+//2단계
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     public static final String TOKEN_NAME = "token";

@@ -21,6 +21,7 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    //2단계
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationReq, LoginMember member) {
         if (reservationReq.getDate() == null

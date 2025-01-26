@@ -19,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
         this.authService = authService;
     }
 
+    //2단계
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginMemberArgumentResolver(authService));

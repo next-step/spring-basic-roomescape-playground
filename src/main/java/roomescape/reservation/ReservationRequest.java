@@ -6,6 +6,7 @@ public class ReservationRequest {
     private Long theme;
     private Long time;
 
+    //2단계
     public ReservationRequest(String name, String date, Long theme, Long time) {
         this.name = name;
         this.date = date;
