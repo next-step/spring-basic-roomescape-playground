@@ -27,6 +27,7 @@ public class AuthService {
         Member member = null;
         try {
             validatePasswordByEmail(email, password);
+            member = memberDao.findByEmailAndPassword(email, password);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException(INVALID_EMAIL_EXCEPTION_MESSAGE, e);
         }
