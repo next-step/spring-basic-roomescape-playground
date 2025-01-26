@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-// @Component
+
 @RequiredArgsConstructor
 public class AuthRoleInterceptor implements HandlerInterceptor {
 

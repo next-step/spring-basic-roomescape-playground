@@ -13,7 +13,7 @@ import roomescape.member.Member;
 
 import java.util.Arrays;
 
-// @Component
+
 public class JWTUtils {
 
     @Value("${roomescape.auth.jwt.secret}")
