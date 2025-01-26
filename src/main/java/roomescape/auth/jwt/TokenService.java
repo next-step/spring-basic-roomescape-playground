@@ -18,7 +18,7 @@ public class TokenService {
     private static final String ROLE_CLAIM = "role";
 
     private final JwtConfig jwtConfig;
-    private Key key;
+    private final Key key;
 
     public TokenService(JwtConfig jwtConfig) {
         this.jwtConfig = jwtConfig;
