@@ -1,14 +1,17 @@
-package auth;
+package roomescape.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jwt.JWTUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@Component
 @RequiredArgsConstructor
 public class AuthClaimsArgumentResolver implements HandlerMethodArgumentResolver {
 

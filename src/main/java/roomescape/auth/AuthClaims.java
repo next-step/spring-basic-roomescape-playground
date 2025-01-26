@@ -1,4 +1,4 @@
-package auth;
+package roomescape.auth;
 
 public record AuthClaims(
         Long id,

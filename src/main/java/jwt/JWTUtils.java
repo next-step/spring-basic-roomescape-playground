@@ -1,4 +1,4 @@
-package auth;
+package jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -7,6 +7,8 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import roomescape.auth.AuthClaims;
+import roomescape.auth.AuthToken;
 import roomescape.exception.InvalidTokenException;
 import roomescape.exception.MissingTokenException;
 import roomescape.member.Member;

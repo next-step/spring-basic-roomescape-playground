@@ -1,10 +1,10 @@
 package roomescape.member;
 
-import auth.AuthClaims;
-import auth.AuthToken;
-import auth.JWTUtils;
+import jwt.JWTUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.auth.AuthClaims;
+import roomescape.auth.AuthToken;
 
 @Service
 @RequiredArgsConstructor
