@@ -12,20 +12,23 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import roomescape.auth.TokenResponse;
+import roomescape.auth.util.TimeProvider;
 
 @Service
 public class TokenService {
 	private final String secretKey;
 	private final Long expiration;
+	private final TimeProvider timeProvider;
 
 	public TokenService(@Value("${roomescape.auth.jwt.secret.key}") String secretKey,
-		@Value("${roomescape.auth.jwt.secret.expiration}") Long expiration) {
+		@Value("${roomescape.auth.jwt.secret.expiration}") Long expiration, TimeProvider timeProvider) {
 		this.secretKey = secretKey;
 		this.expiration = expiration;
+		this.timeProvider = timeProvider;
 	}
 
 	public TokenResponse createAccessToken(MemberTokenDto memberTokenDto) {
-		Date now = new Date();
+		Date now = timeProvider.now();
 		return new TokenResponse(Jwts.builder()
 			.setSubject(memberTokenDto.id().toString())
 			.claim("name", memberTokenDto.name())
