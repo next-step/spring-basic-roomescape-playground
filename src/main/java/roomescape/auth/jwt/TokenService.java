@@ -2,6 +2,8 @@ package roomescape.auth.jwt;
 
 import java.util.Date;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +18,13 @@ import roomescape.auth.util.TimeProvider;
 
 @Service
 public class TokenService {
-	private final String secretKey;
+	private final SecretKey secretKey;
 	private final Long expiration;
 	private final TimeProvider timeProvider;
 
 	public TokenService(@Value("${roomescape.auth.jwt.secret.key}") String secretKey,
 		@Value("${roomescape.auth.jwt.secret.expiration}") Long expiration, TimeProvider timeProvider) {
-		this.secretKey = secretKey;
+		this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
 		this.expiration = expiration;
 		this.timeProvider = timeProvider;
 	}
@@ -34,7 +36,7 @@ public class TokenService {
 			.claim("name", memberTokenDto.name())
 			.claim("role", memberTokenDto.role())
 			.setExpiration(createExpiration(now, expiration))
-			.signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+			.signWith(secretKey)
 			.compact());
 	}
 
@@ -66,7 +68,7 @@ public class TokenService {
 
 	private Claims getClaimsFromToken(String token) {
 		return Jwts.parserBuilder()
-			.setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+			.setSigningKey(secretKey)
 			.build()
 			.parseClaimsJws(token)
 			.getBody();
