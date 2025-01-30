@@ -7,11 +7,13 @@ import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import roomescape.auth.TestTimeProvider;
 import roomescape.auth.TokenResponse;
 
 @SpringBootTest
+@TestPropertySource(properties = "spring.datasource.url=jdbc:h2:mem:testdb")
 class TokenServiceTest {
 
 	private TokenService tokenService;

@@ -8,17 +8,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import roomescape.auth.jwt.MemberTokenDto;
 import roomescape.auth.jwt.TokenService;
-import roomescape.auth.util.DefaultTimeProvider;
 import roomescape.auth.util.TimeProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.member.MemberService;
 
 @SpringBootTest
+@TestPropertySource(properties = "spring.datasource.url=jdbc:h2:mem:testdb")
 @Transactional
 class AuthServiceTest {
 
