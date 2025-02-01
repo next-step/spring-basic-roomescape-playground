@@ -1,5 +1,6 @@
 package roomescape.interceptor;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -7,6 +8,7 @@ import roomescape.auth.AuthService;
 import roomescape.auth.MemberDetailResponse;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class AdminInterceptor implements HandlerInterceptor {
 
@@ -18,7 +20,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = extractToken(request);
+        String token = extractToken(request).orElse(null);
 
         if (token == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -34,13 +36,10 @@ public class AdminInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private String extractToken(HttpServletRequest request) {
-        String token = Arrays.stream(request.getCookies())
+    private Optional<String> extractToken(HttpServletRequest request) {
+        return Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName().equals("token"))
-                .map(cookie -> cookie.getValue())
-                .findFirst()
-                .orElse(null);
-
-        return token;
+                .map(Cookie::getValue)
+                .findFirst();
     }
 }
