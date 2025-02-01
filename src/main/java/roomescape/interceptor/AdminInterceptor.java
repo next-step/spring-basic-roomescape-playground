@@ -26,7 +26,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         MemberDetailResponse member = authService.loginCheckWithToken(token);
-        if (!member.role().equals("ADMIN")) {
+        if (!member.isAdmin()) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
