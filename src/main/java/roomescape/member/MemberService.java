@@ -18,4 +18,8 @@ public class MemberService {
     public Member findMemberByEmailAndPassword(String email, String password) {
         return memberDao.findByEmailAndPassword(email, password);
     }
+
+    public Member findMemberByName(String name) {
+        return memberDao.findByName(name);
+    }
 }
