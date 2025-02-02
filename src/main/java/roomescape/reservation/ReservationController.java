@@ -35,12 +35,8 @@ public class ReservationController {
 			return ResponseEntity.badRequest().build();
 		}
 
-		if (reservationRequest.getName() == null) {
-			reservationRequest.setName(loginMember.name());
-		}
-		ReservationResponse reservation = reservationService.save(reservationRequest);
-
-		return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+		ReservationResponse reservationResponse = reservationService.save(reservationRequest, loginMember);
+		return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.getId())).body(reservationResponse);
 	}
 
 	@DeleteMapping("/reservations/{id}")
