@@ -4,9 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import roomescape.auth.AuthService;
-import roomescape.auth.LoginRequest;
-import roomescape.reservation.ReservationResponse;
+import roomescape.auth.service.AuthService;
+import roomescape.auth.dto.request.LoginRequest;
+import roomescape.reservation.dto.response.ReservationResponse;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +76,25 @@ public class MissionStepTest {
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+            .cookie("token", brownToken)
+            .get("/admin")
+            .then().log().all()
+            .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+            .cookie("token", adminToken)
+            .get("/admin")
+            .then().log().all()
+            .statusCode(200);
     }
     
     private String createToken(String email, String password) {
