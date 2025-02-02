@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.servlet.http.Cookie;
 
-class CookieUtilTest {
+class CookieProviderTest {
 	private String token;
 	private CookieProvider cookieProvider;
 
