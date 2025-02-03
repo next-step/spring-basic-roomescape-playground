@@ -11,13 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.reservation.MyReservationResponse;
-import roomescape.domain.reservation.ReservationResponse;
 import roomescape.domain.time.TimeRepository;
-import roomescape.domain.waiting.WaitingResponse;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
