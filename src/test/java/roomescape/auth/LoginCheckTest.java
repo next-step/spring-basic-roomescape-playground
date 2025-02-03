@@ -28,7 +28,7 @@ public class LoginCheckTest {
 
         assertThat(loginMember.name()).isEqualTo("어드민");
         assertThat(loginMember.email()).isEqualTo("admin@email.com");
-        assertThat(loginMember.role()).isEqualTo("ADMIN");
+        assertThat(loginMember.role()).isEqualTo(Role.ADMIN);
     }
 
     @Test
