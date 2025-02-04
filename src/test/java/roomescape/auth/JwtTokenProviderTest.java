@@ -5,6 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import java.util.Date;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import roomescape.member.Member;
@@ -12,12 +13,22 @@ import roomescape.member.Member;
 class JwtTokenProviderTest {
     private final String originSecretKey = "ThisIsATestKeyForJsonWebTokenProvider";
     private final long originValidity = 6000;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final Member member;
+    private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(
+            new JwtProperties(originSecretKey, originValidity),
+            new SystemTimeProvider());
+    private final Member member = new Member(1L, "test", "test@email.com", "ADMIN");
 
-    public JwtTokenProviderTest() {
-        this.jwtTokenProvider = new JwtTokenProvider(new JwtProperties(originSecretKey, originValidity));
-        this.member = new Member(1L, "test", "test@email.com", "ADMIN");
+    static class MockTimeProvider implements TimeProvider {
+        private final Date mockDate;
+
+        public MockTimeProvider(Date mockDate) {
+            this.mockDate = mockDate;
+        }
+
+        @Override
+        public Date now() {
+            return mockDate;
+        }
     }
 
     @Test
@@ -46,7 +57,9 @@ class JwtTokenProviderTest {
     @Test
     void 토큰이_만료된_경우_토큰_정보_조회에_실패한다() {
         //given
-        JwtTokenProvider otherProvider = new JwtTokenProvider(new JwtProperties(originSecretKey, 0));
+        JwtTokenProvider otherProvider = new JwtTokenProvider(
+                new JwtProperties(originSecretKey, originValidity),
+                new MockTimeProvider(new Date(new Date().getTime() - originValidity)));
         String expireToken = otherProvider.createToken(member);
 
         //when, then
@@ -58,7 +71,8 @@ class JwtTokenProviderTest {
     void 토큰의_서명이_다른_경우_토큰_정보_조회에_실패한다() {
         //given
         JwtTokenProvider otherProvider = new JwtTokenProvider(
-                new JwtProperties(originSecretKey + " ", originValidity));
+                new JwtProperties(originSecretKey + " ", originValidity),
+                new SystemTimeProvider());
         String alteredSignatureToken = otherProvider.createToken(member);
 
         //when, then
