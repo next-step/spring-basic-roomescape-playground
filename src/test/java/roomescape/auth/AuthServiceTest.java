@@ -60,6 +60,7 @@ class AuthServiceTest {
 
         MemberDetailResponse response = authService.loginCheckWithToken(token);
 
+        //2단계 피드백
         assertThat(response).isNotNull();
         assertThat(response.id()).isNotNull();
         assertThat(response.name()).isEqualTo(member.getName());

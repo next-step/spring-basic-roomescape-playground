@@ -6,4 +6,8 @@ public record MemberDetailResponse(
         String email,
         String role
 ) {
+
+    public boolean isAdmin() {
+        return role.equals("ADMIN");
+    }
 }
