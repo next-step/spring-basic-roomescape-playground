@@ -23,8 +23,8 @@ public class AuthService {
     public LoginMember createAuthentication(String token) {
         Claims claims = jwtTokenProvider.getClaims(token);
         return new LoginMember(
-                claims.getSubject(),
-                claims.get("name", String.class),
-                Role.valueOf(claims.get("role", String.class)));
+                JwtTokenProvider.extract(claims, "sub"),
+                JwtTokenProvider.extract(claims, "name"),
+                Role.valueOf(JwtTokenProvider.extract(claims, "role")));
     }
 }

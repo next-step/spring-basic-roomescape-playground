@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
+import java.util.Optional;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
@@ -42,5 +43,10 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public static String extract(Claims claims, String key) {
+        return Optional.ofNullable(claims.get(key, String.class))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid claims"));
     }
 }
