@@ -27,16 +27,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
-            return ResponseEntity.badRequest().body("Invalid reservation request");
-        }
-
-        if (reservationRequest.getName() == null) {
-            reservationRequest = new ReservationRequest(loginMember.name(), reservationRequest.getDate(),
-                    reservationRequest.getTheme(), reservationRequest.getTime());
-        }
+        reservationRequest.checkName(loginMember.name());
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);

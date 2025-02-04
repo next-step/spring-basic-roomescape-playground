@@ -88,7 +88,6 @@ class CreateReservations {
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
-        assertThat(response.body().asString()).isEqualTo("Invalid reservation request");
     }
 
     @Test
@@ -107,7 +106,6 @@ class CreateReservations {
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
-        assertThat(response.body().asString()).isEqualTo("Invalid reservation request");
     }
 
     @Test
@@ -126,7 +124,6 @@ class CreateReservations {
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
-        assertThat(response.body().asString()).isEqualTo("Invalid reservation request");
     }
 
     private ExtractableResponse<Response> sendCreateReservationsRequest(Map<String, String> reservationRequest,
