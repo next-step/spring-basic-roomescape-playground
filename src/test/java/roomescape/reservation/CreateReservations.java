@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class CreateReservations {
-
+    
     @Test
     void 로그인_상태에서_예약자명이_존재하지않는_경우_로그인_정보명으로_예약된다() {
         //given
