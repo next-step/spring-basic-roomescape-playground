@@ -3,20 +3,21 @@ package roomescape.auth;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Service
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberDao memberDao;
+    private MemberRepository memberRepository;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
+    public AuthService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
     }
 
     public String createToken(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
         return jwtTokenProvider.createToken(member);
     }
 
