@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 public class Time {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "time_value", nullable = false)
     private String value;
