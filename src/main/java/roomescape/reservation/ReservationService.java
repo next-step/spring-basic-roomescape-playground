@@ -3,28 +3,26 @@ package roomescape.reservation;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.theme.Theme;
-import roomescape.theme.ThemeRepository;
+import roomescape.theme.ThemeService;
 import roomescape.time.Time;
-import roomescape.time.TimeRepository;
+import roomescape.time.TimeService;
 
 @Service
 public class ReservationService {
-    private ReservationRepository reservationRepository;
-    private TimeRepository timeRepository;
-    private ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
+    private final TimeService timeService;
+    private final ThemeService themeService;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
-                              ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeService timeService,
+                              ThemeService themeService) {
         this.reservationRepository = reservationRepository;
-        this.timeRepository = timeRepository;
-        this.themeRepository = themeRepository;
+        this.timeService = timeService;
+        this.themeService = themeService;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Time time = timeRepository.findById(reservationRequest.getTime())
-                .orElseThrow(() -> new IllegalArgumentException("Theme not found: " + reservationRequest.getTime()));
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
-                .orElseThrow(() -> new IllegalArgumentException("Theme not found: " + reservationRequest.getTheme()));
+        Time time = timeService.findByIdOrThrow(reservationRequest.getTime());
+        Theme theme = themeService.findByIdOrThrow(reservationRequest.getTime());
         Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time,
                 theme);
 
