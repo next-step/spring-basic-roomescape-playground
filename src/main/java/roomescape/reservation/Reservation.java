@@ -5,6 +5,7 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
+@Table(name = "reservation")
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
