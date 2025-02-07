@@ -11,8 +11,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findAll();
 
-    Reservation save(ReservationRequest reservationRequest);
-
     void deleteById(Long id);
 
     @Query("SELECT r FROM Reservation r WHERE r.date = :date AND r.theme.id = :themeId")
