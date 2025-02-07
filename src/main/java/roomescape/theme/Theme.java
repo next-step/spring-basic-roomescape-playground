@@ -1,15 +1,7 @@
 package roomescape.theme;
 
 import jakarta.persistence.*;
-
-//CREATE TABLE theme
-//        (
-//                id          BIGINT       NOT NULL AUTO_INCREMENT,
-//                name        VARCHAR(255) NOT NULL,
-//description VARCHAR(255) NOT NULL,
-//deleted     BOOLEAN      NOT NULL DEFAULT FALSE,
-//PRIMARY KEY (id)
-//);
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "theme")
@@ -24,6 +16,9 @@ public class Theme {
 
     @Column(nullable = false)
     private String description;
+
+    @ColumnDefault(value = "false")
+    private boolean deleted = false;
 
     public Theme() {
     }
