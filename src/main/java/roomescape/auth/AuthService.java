@@ -48,6 +48,9 @@ public class AuthService {
 
     private void validatePasswordByEmail(String email, String password) {
         String findPassword = memberRepository.findPasswordByEmail(email);
+        if (findPassword == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
         if (!findPassword.equals(password)) {
             throw new IllegalArgumentException(WRONG_PASSWORD_EXCEPTION_MESSAGE);
         }
