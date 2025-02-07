@@ -12,7 +12,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.AuthService;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +23,7 @@ class AdminInterceptorTest {
     @Autowired
     private AuthService authService;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     private AdminInterceptor adminInterceptor;
     private MockHttpServletRequest request;
@@ -34,7 +34,7 @@ class AdminInterceptorTest {
         adminInterceptor = new AdminInterceptor(authService);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
-        memberDao.save(new Member("testName", "test@email.com", "testPassword", "USER"));
+        memberRepository.save(new Member("testName", "test@email.com", "testPassword", "USER"));
     }
 
     @Test

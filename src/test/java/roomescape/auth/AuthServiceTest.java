@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class AuthServiceTest {
 
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository MemberRepository;
     @Autowired
     private AuthService authService;
 
@@ -26,7 +26,7 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         member = new Member("testName", "test@email.com", "testPassword", "user");
-        memberDao.save(member);
+        MemberRepository.save(member);
     }
 
     @Test
