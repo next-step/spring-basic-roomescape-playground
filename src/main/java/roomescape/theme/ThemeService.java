@@ -11,11 +11,6 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme findByIdOrThrow(Long themeId) {
-        return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("Theme not found: " + themeId));
-    }
-
     public List<Theme> findAll() {
         return themeRepository.findAll();
     }

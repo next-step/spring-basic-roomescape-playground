@@ -33,11 +33,6 @@ public class TimeService {
         return timeRepository.findAll();
     }
 
-    public Time findByIdOrThrow(Long id) {
-        return timeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("time not found: " + id));
-    }
-
     public Time save(Time time) {
         return timeRepository.save(time);
     }
