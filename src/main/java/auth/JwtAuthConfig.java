@@ -1,6 +1,5 @@
-package roomescape.config;
+package auth;
 
-import auth.JwtAuthManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
