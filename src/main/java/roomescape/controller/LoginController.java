@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.login.LoginCheckResponse;
 import roomescape.domain.login.LoginRequest;
-import roomescape.domain.login.LoginResponse;
 import roomescape.domain.member.Member;
 
 @RestController
@@ -23,7 +22,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        String token = jwtAuthManager.createToken(loginRequest.getEmail(), loginRequest.getPassword());
+        String token = jwtAuthManager.createToken(loginRequest.email(), loginRequest.password());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);

@@ -6,7 +6,6 @@ public class WaitingRequest {
     private String theme;
     private String date;
     private String time;
-    private Long waitingNumber;
 
     public WaitingRequest(String name, String theme, String date, String time) {
         this.name = name;
@@ -37,9 +36,5 @@ public class WaitingRequest {
 
     public String getTime() {
         return time;
-    }
-
-    public Long getWaitingNumber() {
-        return waitingNumber;
     }
 }
