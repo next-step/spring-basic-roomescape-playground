@@ -35,8 +35,4 @@ public class Time {
     public String getValue() {
         return value;
     }
-
-    public String getTime() {
-        return value;
-    }
 }
