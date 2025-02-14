@@ -26,11 +26,12 @@ public class WaitingService {
     }
 
     public WaitingResponse save(WaitingRequest waitingRequest, Member loginMember) {
+
         validateRequest(waitingRequest, loginMember);
 
         Theme theme = validateTheme(waitingRequest.getTheme());
         Time time = validateTime(waitingRequest.getTime());
-        Member member = validateMember(loginMember.getName());
+        Member member = validateMember(loginMember);
 
         Waiting waiting = new Waiting(
                 waitingRequest.getName(),
@@ -77,8 +78,8 @@ public class WaitingService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 시간이 존재하지 않습니다."));
     }
 
-    private Member validateMember(String name) {
-        return memberRepository.findByName(name)
+    private Member validateMember(Member loginMember) {
+        return memberRepository.findById(loginMember.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 이름을 가진 사용자를 찾을 수 없습니다."));
     }
 

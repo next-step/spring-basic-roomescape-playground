@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.login.LoginCheckResponse;
 import roomescape.domain.login.LoginRequest;
 import roomescape.domain.member.Member;
+import roomescape.service.LoginService;
 
 @RestController
 public class LoginController {
     private final JwtAuthManager jwtAuthManager;
+    private final LoginService loginService;
 
-    public LoginController(JwtAuthManager jwtAuthManager) {
+    public LoginController(JwtAuthManager jwtAuthManager, LoginService loginService) {
         this.jwtAuthManager = jwtAuthManager;
+        this.loginService = loginService;
     }
 
     @PostMapping("/login")
@@ -35,7 +38,8 @@ public class LoginController {
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(Member loginMember) {
 
-        LoginCheckResponse loginCheckResponse = new LoginCheckResponse(loginMember.getName());
+        LoginCheckResponse loginCheckResponse = new LoginCheckResponse(loginService.findMemberName(loginMember.getId()));
+
         return ResponseEntity.ok().body(loginCheckResponse);
     }
 

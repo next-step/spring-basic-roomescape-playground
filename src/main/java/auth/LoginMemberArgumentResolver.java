@@ -39,18 +39,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         Long id = jwtAuthManager.getId(token);
 
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new AuthorizationException("Member not found"));
-
-        String name = member.getName();
-
-        String email = member.getEmail();
-
-        String password = member.getPassword();
-
-        String role = jwtAuthManager.getRole(token);
-
-        return new Member(id, name, email, password, role);
+        return new Member(id, null, null, null, null);
     }
 
     private String extractTokenFromCookies(Cookie[] cookies) {

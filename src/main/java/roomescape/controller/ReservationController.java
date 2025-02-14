@@ -40,20 +40,13 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, Member loginMember) {
 
-        reservationService.checkReservationRequest(reservationRequest);
-
-        reservationService.checkNameExistence(reservationRequest, loginMember);
-
         reservationService.validateReservationRequest(reservationRequest);
 
-        Member member = memberRepository.findByName(reservationRequest.getName())
-                .orElseThrow(() -> new IllegalArgumentException("해당 이름을 가진 사용자를 찾을 수 없습니다."));
+        reservationService.checkReservationRequest(reservationRequest);
 
-        reservationRequest.setMemberId(member.getId());
+        ReservationResponse reservationResponse = reservationService.save(reservationRequest, loginMember);
 
-        ReservationResponse reservation = reservationService.save(reservationRequest);
-
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id())).body(reservationResponse);
     }
 
     @DeleteMapping("/reservations/{id}")
