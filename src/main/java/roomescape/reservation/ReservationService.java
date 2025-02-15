@@ -24,6 +24,17 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
+    public List<MyReservationResponse> readAllByMember(String email) {
+        return findAllByMember(email).stream()
+                .map(MyReservationResponse::from)
+                .toList();
+    }
+
+    public List<Reservation> findAllByMember(String email) {
+        Member member = memberRepository.findByEmailOrThrow(email);
+        return reservationRepository.findByMember(member);
+    }
+
     public ReservationResponse save(ReservationRequest reservationRequest, String email) {
         Member member = memberRepository.findByEmailOrThrow(email);
         Time time = timeRepository.findByIdOrThrow(reservationRequest.getTime());

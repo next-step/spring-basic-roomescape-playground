@@ -25,6 +25,12 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> readAllWithMember(LoginMember loginMember) {
+        List<MyReservationResponse> response = reservationService.readAllByMember(loginMember.email());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
         reservationRequest.checkName(loginMember.name());
