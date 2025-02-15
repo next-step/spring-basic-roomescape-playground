@@ -6,10 +6,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
+@SpringBootTest
 class AuthServiceTest {
     private final String originSecretKey = "ThisIsATestKeyForJsonWebTokenProvider";
     private final long originValidity = 6000;
@@ -18,8 +20,10 @@ class AuthServiceTest {
             new SystemTimeProvider());
 
     private final Member member = new Member(1L, "test", "test@email.com", "ADMIN");
-    private final MemberDao memberDao = new MemberDao(new JdbcTemplate());
-    private final AuthService authService = new AuthService(jwtTokenProvider, memberDao);
+
+    @Autowired
+    private MemberRepository memberRepository;
+    private final AuthService authService = new AuthService(jwtTokenProvider, memberRepository);
 
     @Test
     void 토큰의_키가_존재하지_않는_경우_토큰_정보_조회에_실패한다() {
