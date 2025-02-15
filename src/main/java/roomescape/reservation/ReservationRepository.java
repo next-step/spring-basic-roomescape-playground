@@ -9,6 +9,7 @@ public interface ReservationRepository extends CrudRepository<Reservation, Long>
     @Query("SELECT r FROM Reservation r JOIN FETCH r.theme JOIN FETCH r.time")
     List<Reservation> findAll();
 
+    @Query("SELECT r FROM Reservation r JOIN FETCH r.theme JOIN FETCH r.time WHERE r.member = :member")
     List<Reservation> findByMember(Member member);
 
     List<Reservation> findByDateAndThemeId(String date, Long themeId);
