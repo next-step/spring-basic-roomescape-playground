@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import java.util.List;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
@@ -8,6 +9,7 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
 @Service
 public class ReservationService {
@@ -15,24 +17,25 @@ public class ReservationService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
-                              ThemeRepository themeRepository, MemberRepository memberRepository) {
+                              ThemeRepository themeRepository, MemberRepository memberRepository,
+                              WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public List<MyReservationResponse> readAllByMember(String email) {
-        return findAllByMember(email).stream()
-                .map(MyReservationResponse::from)
-                .toList();
-    }
-
-    public List<Reservation> findAllByMember(String email) {
         Member member = memberRepository.findByEmailOrThrow(email);
-        return reservationRepository.findByMember(member);
+        List<MyReservationResponse> reservations = reservationRepository.findByMember(member).stream()
+                .map(MyReservationResponse::from).toList();
+        List<MyReservationResponse> waitings = waitingRepository.findAllWithRankByMemberId(member.getId()).stream()
+                .map(MyReservationResponse::from).toList();
+        return List.copyOf(Stream.concat(reservations.stream(), waitings.stream()).toList());
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, String email) {
