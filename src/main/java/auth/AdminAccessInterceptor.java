@@ -6,23 +6,24 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthorizationException;
+import roomescape.service.AuthService;
 
 import java.util.Arrays;
 
 @Component
 public class AdminAccessInterceptor implements HandlerInterceptor {
-    private final JwtAuthManager jwtAuthManager;
+    private final AuthService authService;
 
-    public AdminAccessInterceptor(JwtAuthManager jwtAuthManager) {
-        this.jwtAuthManager = jwtAuthManager;
+    public AdminAccessInterceptor(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = extractTokenFromCookies(request.getCookies());
-        jwtAuthManager.validateToken(token);
+        authService.validateToken(token);
 
-        String role = jwtAuthManager.getRole(token);
+        String role = authService.extractRole(token);
 
         if (!"ADMIN".equals(role)) {
             response.setStatus(401);
