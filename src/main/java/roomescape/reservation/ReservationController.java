@@ -36,7 +36,7 @@ public class ReservationController {
         reservationRequest.checkName(loginMember.name());
         ReservationResponse reservation = reservationService.save(reservationRequest, loginMember.email());
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
