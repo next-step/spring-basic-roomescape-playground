@@ -1,9 +1,24 @@
 package roomescape.theme;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
+
+@Entity
+@Table(name = "theme")
 public class Theme {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "theme_id")
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String description;
+
+    @ColumnDefault(value = "false")
+    private boolean deleted = false;
 
     public Theme() {
     }

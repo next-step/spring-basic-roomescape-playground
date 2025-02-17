@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.jwt.MemberTokenDto;
 import roomescape.auth.jwt.TokenService;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Service
 public class AuthService {
@@ -13,12 +13,12 @@ public class AuthService {
     public static final String WRONG_PASSWORD_EXCEPTION_MESSAGE = "잘못된 비밀번호입니다.";
     public static final String INVALID_EMAIL_EXCEPTION_MESSAGE = "없는 이메일 입니다.";
     public static final String INVALID_TOKEN_EXCEPTION_MESSAGE = "잘못된 토큰입니다.";
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final TokenService tokenService;
 
 
-    public AuthService(MemberDao memberDao, TokenService tokenService) {
-        this.memberDao = memberDao;
+    public AuthService(MemberRepository memberRepository, TokenService tokenService) {
+        this.memberRepository = memberRepository;
         this.tokenService = tokenService;
     }
 
@@ -27,7 +27,7 @@ public class AuthService {
         Member member = null;
         try {
             validatePasswordByEmail(email, password);
-            member = memberDao.findByEmailAndPassword(email, password);
+            member = memberRepository.findByEmailAndPassword(email, password);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException(INVALID_EMAIL_EXCEPTION_MESSAGE, e);
         }
@@ -47,7 +47,10 @@ public class AuthService {
     }
 
     private void validatePasswordByEmail(String email, String password) {
-        String findPassword = memberDao.findPasswordByEmail(email);
+        String findPassword = memberRepository.findPasswordByEmail(email);
+        if (findPassword == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
         if (!findPassword.equals(password)) {
             throw new IllegalArgumentException(WRONG_PASSWORD_EXCEPTION_MESSAGE);
         }
