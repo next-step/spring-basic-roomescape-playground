@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,24 +41,27 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    void 해당_날짜_시간_테마에_대한_본인의_예약이_존재하지_않는_경우_거짓을_반환한다() {
+    void 해당_날짜_시간_테마에_대한_예약이_존재하지_않는_경우_조회_결과가_비어있다() {
         // when
-        boolean exists = reservationRepository.existsByDateAndTimeAndThemeAndMember(date, time, theme, member);
+        Optional<Reservation> savedReservation = reservationRepository.findWithMemberByDateAndTimeAndTheme(date, time,
+                theme);
 
         // then
-        assertThat(exists).isFalse();
+        assertThat(savedReservation).isEmpty();
     }
 
     @Test
-    void 해당_날짜_시간_테마에_대한_본인의_예약이_존재하는_경우_참을_반환한다() {
+    void 해당_날짜_시간_테마에_대한_예약이_존재_하는_경우_사용자와_함께_조회된다() {
         // given
         Reservation reservation = new Reservation(member.getName(), date, time, theme, member);
         reservationRepository.save(reservation);
 
         // when
-        boolean exists = reservationRepository.existsByDateAndTimeAndThemeAndMember(date, time, theme, member);
+        Optional<Reservation> savedReservation = reservationRepository.findWithMemberByDateAndTimeAndTheme(date, time,
+                theme);
 
         // then
-        assertThat(exists).isTrue();
+        assertThat(savedReservation).isNotEmpty();
+        assertThat(savedReservation.get().getMember()).isEqualTo(member);
     }
 }
