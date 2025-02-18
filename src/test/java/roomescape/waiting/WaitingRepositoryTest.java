@@ -46,8 +46,9 @@ class WaitingRepositoryTest {
     @Test
     void 순위를_포함한_예약_대기_조회_성공() {
         // given
-        Waiting adminWaiting = new Waiting("어드민", "2024-03-01", time, theme, admin);
-        Waiting brownWaiting = new Waiting("브라운", "2024-03-01", time, theme, brown);
+        String date = "2024-03-01";
+        Waiting adminWaiting = new Waiting(admin.getName(), date, time, theme, admin);
+        Waiting brownWaiting = new Waiting(brown.getName(), date, time, theme, brown);
         waitingRepository.save(adminWaiting);
         waitingRepository.save(brownWaiting);
 
@@ -60,5 +61,28 @@ class WaitingRepositoryTest {
         assertThat(adminWaitings.get(0).rank).isEqualTo(0);
         assertThat(brownWaitings.size()).isEqualTo(1);
         assertThat(brownWaitings.get(0).rank).isEqualTo(1);
+    }
+
+    @Test
+    void 해당_날짜_시간_테마_사용자에_대한_예약_대기가_존재하지_않는_경우_거짓을_반환한다() {
+        // when
+        boolean exists = waitingRepository.existsByDateAndTimeAndThemeAndMember("2024-03-01", time, theme, admin);
+
+        // then
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    void 해당_날짜_시간_테마_사용자에_대한_예약_대기가_존재하는_경우_참을_반환한다() {
+        // given
+        String date = "2024-03-01";
+        Waiting waiting = new Waiting(admin.getName(), date, time, theme, admin);
+        waitingRepository.save(waiting);
+
+        // when
+        boolean exists = waitingRepository.existsByDateAndTimeAndThemeAndMember(date, time, theme, admin);
+
+        // then
+        assertThat(exists).isTrue();
     }
 }
