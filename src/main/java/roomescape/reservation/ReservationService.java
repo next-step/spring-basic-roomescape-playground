@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
@@ -40,10 +41,13 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest, String email) {
         Member member = memberRepository.findByEmailOrThrow(email);
-        Time time = timeRepository.findByIdOrThrow(reservationRequest.getTime());
-        Theme theme = themeRepository.findByIdOrThrow(reservationRequest.getTheme());
-        Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time,
-                theme, member);
+        Time time = timeRepository.findByIdOrThrow(reservationRequest.time());
+        Theme theme = themeRepository.findByIdOrThrow(reservationRequest.theme());
+
+        Reservation reservation = new Reservation(
+                Optional.ofNullable(reservationRequest.name()).orElse(member.getName()), reservationRequest.date(),
+                time, theme, member);
+
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
