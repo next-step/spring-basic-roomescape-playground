@@ -17,42 +17,70 @@ import org.springframework.test.annotation.DirtiesContext;
 class WaitingControllerTest {
 
     @Test
-    void 예약_대기_생성_성공() {
+    void 예약이_존재하며_본인의_예약_및_예약_대기가_존재하지_않는_경우_예약_대기_생성에_성공한다() {
         // given
-        String token = createToken("admin@email.com", "password");
-        Map<String, String> request = createPostWaitingRequest();
+        String brownToken = createToken("brown@email.com", "password");
+        Map<String, String> waitingRequest = createPostWaitingRequest("브라운", "2024-03-01", "1", "1");
 
         // when
-        WaitingResponse response = sendPostWaitingRequest(token, request).as(WaitingResponse.class);
+        ExtractableResponse<Response> response = sendPostWaitingRequest(brownToken, waitingRequest);
+        WaitingResponse waitingResponse = response.as(WaitingResponse.class);
 
         // then
-        assertThat(response.name()).isEqualTo("어드민");
-        assertThat(response.date()).isEqualTo("2024-03-01");
-        assertThat(response.time()).isEqualTo("10:00");
-        assertThat(response.theme()).isEqualTo("테마1");
+        assertThat(response.statusCode()).isEqualTo(201);
+        assertThat(waitingResponse.name()).isEqualTo("브라운");
+        assertThat(waitingResponse.date()).isEqualTo("2024-03-01");
+        assertThat(waitingResponse.time()).isEqualTo("10:00");
+        assertThat(waitingResponse.theme()).isEqualTo("테마1");
     }
 
     @Test
-    void 같은_예약_대기가_존재하는_경우_예약_대기_생성에_실패한다() {
+    void 본인의_예약이_존재하는_경우_예약_대기_생성에_실패한다() {
         // given
-        String token = createToken("admin@email.com", "password");
-        Map<String, String> request = createPostWaitingRequest();
-        ExtractableResponse<Response> response = sendPostWaitingRequest(token, request);
+        String adminToken = createToken("admin@email.com", "password");
+        Map<String, String> waitingRequest = createPostWaitingRequest("어드민", "2024-03-01", "1", "1");
 
         // when
-        ExtractableResponse<Response> duplicateResponse = sendPostWaitingRequest(token, request);
+        ExtractableResponse<Response> response = sendPostWaitingRequest(adminToken, waitingRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void 본인의_예약_대기가_존재하는_경우_예약_대기_생성에_실패한다() {
+        // given
+        String brownToken = createToken("brown@email.com", "password");
+        Map<String, String> waitingRequest = createPostWaitingRequest("어드민", "2024-03-01", "1", "1");
+        sendPostWaitingRequest(brownToken, waitingRequest);
+
+        // when
+        ExtractableResponse<Response> duplicateResponse = sendPostWaitingRequest(brownToken, waitingRequest);
 
         // then
         assertThat(duplicateResponse.statusCode()).isEqualTo(400);
     }
 
-    private Map<String, String> createPostWaitingRequest() {
-        Map<String, String> param = new HashMap<>();
-        param.put("name", "어드민");
-        param.put("date", "2024-03-01");
-        param.put("timeId", "1");
-        param.put("themeId", "1");
-        return param;
+    @Test
+    void 예약이_존재하지_않는_경우_예약_대기_생성에_실패한다() {
+        // given
+        String brownToken = createToken("brown@email.com", "password");
+        Map<String, String> waitingRequest = createPostWaitingRequest("브라운", "2024-03-02", "1", "1");
+
+        // when
+        ExtractableResponse<Response> response = sendPostWaitingRequest(brownToken, waitingRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    private Map<String, String> createPostWaitingRequest(String name, String date, String timeId, String themeId) {
+        Map<String, String> request = new HashMap<>();
+        request.put("name", name);
+        request.put("date", date);
+        request.put("timeId", timeId);
+        request.put("themeId", themeId);
+        return request;
     }
 
     private ExtractableResponse<Response> sendPostWaitingRequest(String token, Map<String, String> param) {
