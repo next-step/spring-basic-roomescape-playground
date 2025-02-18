@@ -24,11 +24,26 @@ public class WaitingService {
     }
 
     public WaitingResponse create(WaitingRequest waitingRequest, String memberEmail) {
+        // 예약 할 수 있으면서 대기하는 경우 에외
         Member member = memberRepository.findByEmailOrThrow(memberEmail);
         Time time = timeRepository.findByIdOrThrow(waitingRequest.timeId());
         Theme theme = themeRepository.findByIdOrThrow(waitingRequest.themeId());
+
+        validateDuplicateWaiting(waitingRequest.date(), time, theme, member);
+
         Waiting waiting = new Waiting(waitingRequest.name(), waitingRequest.date(), time, theme, member);
         Waiting savedWaiting = waitingRepository.save(waiting);
         return WaitingResponse.from(savedWaiting);
+    }
+
+    public void validateDuplicateWaiting(String date, Time time, Theme theme, Member member) {
+        if (existsByDateAndTimeAndThemeAndMember(date, time, theme, member)) {
+            throw new IllegalArgumentException(
+                    String.format("Waiting already exist %s, %s, %s", date, time.getValue(), theme.getName()));
+        }
+    }
+
+    public boolean existsByDateAndTimeAndThemeAndMember(String date, Time time, Theme theme, Member member) {
+        return waitingRepository.existsByDateAndTimeAndThemeAndMember(date, time, theme, member);
     }
 }

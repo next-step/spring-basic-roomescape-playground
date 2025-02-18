@@ -41,6 +41,34 @@ class WaitingControllerTest {
         assertThat(waitingResponse.theme()).isEqualTo("테마1");
     }
 
+    @Test
+    void 같은_예약_대기가_존재하는_경우_예약_대기_생성에_실패한다() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> param = new HashMap<>();
+        param.put("name", "어드민");
+        param.put("date", "2024-03-01");
+        param.put("timeId", "1");
+        param.put("themeId", "1");
+
+        WaitingResponse waitingResponse = RestAssured.given().log().all()
+                .cookie("token", token)
+                .body(param)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        RestAssured.given().log().all()
+                .cookie("token", token)
+                .body(param)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);
