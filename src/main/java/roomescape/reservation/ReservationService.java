@@ -37,32 +37,37 @@ public class ReservationService {
         return List.copyOf(Stream.concat(reservations.stream(), waitings.stream()).toList());
     }
 
-    private List<MyReservationResponse> getMemberReservation(Member member) {
+    public List<MyReservationResponse> getMemberReservation(Member member) {
+        return reservationRepository.findByMember(member).stream()
+                .map(MyReservationResponse::from)
+                .toList();
+    }
+
+    public List<MyReservationResponse> getMemberWaiting(Member member) {
         return waitingRepository.findAllWithRankByMemberId(member.getId()).stream()
                 .map(MyReservationResponse::from)
                 .toList();
     }
 
-    private List<MyReservationResponse> getMemberWaiting(Member member) {
-        return waitingRepository.findAllWithRankByMemberId(member.getId()).stream()
-                .map(MyReservationResponse::from)
-                .toList();
-    }
-
-    public ReservationResponse save(ReservationRequest reservationRequest, String email) {
+    public ReservationResponse create(ReservationRequest reservationRequest, String email) {
         Member member = memberRepository.findByEmailOrThrow(email);
         Time time = timeRepository.findByIdOrThrow(reservationRequest.time());
         Theme theme = themeRepository.findByIdOrThrow(reservationRequest.theme());
+        String name = getNonNullName(reservationRequest.name(), member.getName());
 
-        Reservation reservation = new Reservation(
-                Optional.ofNullable(reservationRequest.name()).orElse(member.getName()), reservationRequest.date(),
-                time, theme, member);
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-
-        return ReservationResponse.from(savedReservation);
+        Reservation reservation = save(name, reservationRequest.date(), time, theme, member);
+        return ReservationResponse.from(reservation);
     }
-    
+
+    public Reservation save(String name, String date, Time time, Theme theme, Member member) {
+        Reservation reservation = new Reservation(name, date, time, theme, member);
+        return reservationRepository.save(reservation);
+    }
+
+    private String getNonNullName(String value, String other) {
+        return Optional.ofNullable(value).orElse(other);
+    }
+
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
     }
