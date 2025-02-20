@@ -32,11 +32,21 @@ public class ReservationService {
 
     public List<MyReservationResponse> readAllByMember(String email) {
         Member member = memberRepository.findByEmailOrThrow(email);
-        List<MyReservationResponse> reservations = reservationRepository.findByMember(member).stream()
-                .map(MyReservationResponse::from).toList();
-        List<MyReservationResponse> waitings = waitingRepository.findAllWithRankByMemberId(member.getId()).stream()
-                .map(MyReservationResponse::from).toList();
+        List<MyReservationResponse> reservations = getMemberReservation(member);
+        List<MyReservationResponse> waitings = getMemberWaiting(member);
         return List.copyOf(Stream.concat(reservations.stream(), waitings.stream()).toList());
+    }
+
+    private List<MyReservationResponse> getMemberReservation(Member member) {
+        return waitingRepository.findAllWithRankByMemberId(member.getId()).stream()
+                .map(MyReservationResponse::from)
+                .toList();
+    }
+
+    private List<MyReservationResponse> getMemberWaiting(Member member) {
+        return waitingRepository.findAllWithRankByMemberId(member.getId()).stream()
+                .map(MyReservationResponse::from)
+                .toList();
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, String email) {
@@ -52,7 +62,7 @@ public class ReservationService {
 
         return ReservationResponse.from(savedReservation);
     }
-
+    
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
     }
