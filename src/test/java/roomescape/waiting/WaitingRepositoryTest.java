@@ -58,9 +58,9 @@ class WaitingRepositoryTest {
 
         // then
         assertThat(adminWaitings.size()).isEqualTo(1);
-        assertThat(adminWaitings.get(0).rank).isEqualTo(0);
+        assertThat(adminWaitings.get(0).rank()).isEqualTo(1);
         assertThat(brownWaitings.size()).isEqualTo(1);
-        assertThat(brownWaitings.get(0).rank).isEqualTo(1);
+        assertThat(brownWaitings.get(0).rank()).isEqualTo(2);
     }
 
     @Test

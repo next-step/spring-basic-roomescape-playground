@@ -17,7 +17,7 @@ public interface WaitingRepository extends CrudRepository<Waiting, Long> {
             "     WHERE w2.theme = w.theme " +
             "       AND w2.date = w.date " +
             "       AND w2.time = w.time " +
-            "       AND w2.id < w.id)) " +
+            "       AND w2.id <= w.id)) " +
             "FROM Waiting w " +
             "WHERE w.member.id = :memberId")
     List<WaitingWithRank> findAllWithRankByMemberId(Long memberId);

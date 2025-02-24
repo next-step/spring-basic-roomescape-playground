@@ -20,13 +20,13 @@ public record MyReservationResponse(
     }
 
     public static MyReservationResponse from(WaitingWithRank waitingWithRank) {
-        Waiting waiting = waitingWithRank.getWaiting();
+        Waiting waiting = waitingWithRank.waiting();
         return new MyReservationResponse(
                 waiting.getId(),
                 waiting.getTheme().getName(),
                 waiting.getDate(),
                 waiting.getTime().getValue(),
-                waitingWithRank.getRank() + 1 + "번째 예약대기"
+                waitingWithRank.rank() + "번째 예약대기"
         );
     }
 }
