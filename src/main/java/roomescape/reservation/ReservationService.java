@@ -34,7 +34,7 @@ public class ReservationService {
         Member member = memberRepository.findByEmailOrThrow(email);
         List<MyReservationResponse> reservations = getMemberReservation(member);
         List<MyReservationResponse> waitings = getMemberWaiting(member);
-        return List.copyOf(Stream.concat(reservations.stream(), waitings.stream()).toList());
+        return Stream.concat(reservations.stream(), waitings.stream()).toList();
     }
 
     public List<MyReservationResponse> getMemberReservation(Member member) {
