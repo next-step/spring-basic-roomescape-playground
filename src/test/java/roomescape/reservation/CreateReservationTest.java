@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class CreateReservations {
-    
+class CreateReservationTest {
+
     @Test
     void 로그인_상태에서_예약자명이_존재하지않는_경우_로그인_정보명으로_예약된다() {
         //given
@@ -26,7 +26,7 @@ class CreateReservations {
                 ReservationResponse.class);
 
         //then
-        assertThat(reservationResponse.getName()).isEqualTo("어드민");
+        assertThat(reservationResponse.name()).isEqualTo("어드민");
     }
 
     @Test
@@ -40,7 +40,7 @@ class CreateReservations {
                 ReservationResponse.class);
 
         //then
-        assertThat(reservationResponse.getName()).isEqualTo("브라운");
+        assertThat(reservationResponse.name()).isEqualTo("브라운");
     }
 
     @Test

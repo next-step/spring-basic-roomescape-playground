@@ -25,12 +25,16 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> readAllByMember(LoginMember loginMember) {
+        List<MyReservationResponse> response = reservationService.readAllByMember(loginMember.email());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
-        reservationRequest.checkName(loginMember.name());
-        ReservationResponse reservation = reservationService.save(reservationRequest);
-
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        ReservationResponse reservation = reservationService.create(reservationRequest, loginMember.email());
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
