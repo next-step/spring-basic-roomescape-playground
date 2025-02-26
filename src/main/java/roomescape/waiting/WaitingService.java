@@ -41,14 +41,14 @@ public class WaitingService {
         return WaitingResponse.from(savedWaiting);
     }
 
-    public void validateDuplicateWaiting(String date, Time time, Theme theme, Member member) {
+    private void validateDuplicateWaiting(String date, Time time, Theme theme, Member member) {
         if (hasExistingWaiting(date, time, theme, member)) {
             throw new IllegalArgumentException(
                     String.format("Waiting already exist %s, %s, %s", date, time.getValue(), theme.getName()));
         }
     }
 
-    public void validateReservationExistsAndNotOwnedByMember(String date, Time time, Theme theme, Member member) {
+    private void validateReservationExistsAndNotOwnedByMember(String date, Time time, Theme theme, Member member) {
         Reservation reservation = reservationRepository.findWithMemberByDateAndTimeAndTheme(date, time, theme)
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("Reservation is available %s, %s, %s", date, time.getValue(), theme.getName())));
