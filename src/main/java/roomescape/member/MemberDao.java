@@ -16,7 +16,8 @@ public class MemberDao {
     public Member save(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", new String[]{"id"});
+            var ps = connection.prepareStatement("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)",
+                    new String[]{"id"});
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
@@ -50,6 +51,18 @@ public class MemberDao {
                         rs.getString("role")
                 ),
                 name
+        );
+    }
+
+    public Member findById(final Long memberId) {
+        return jdbcTemplate.queryForObject("SELECT id, name, email, role FROM member WHERE id = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                ),
+                memberId
         );
     }
 }

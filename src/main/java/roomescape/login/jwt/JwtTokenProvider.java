@@ -21,4 +21,24 @@ public class JwtTokenProvider {
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
                 .compact();
     }
+
+    public boolean isValidToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Long getMemberId(String token) {
+        return Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().getSubject());
+    }
 }
