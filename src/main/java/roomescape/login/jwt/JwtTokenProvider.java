@@ -9,7 +9,7 @@ import roomescape.member.Member;
 
 @Component
 public class JwtTokenProvider {
-    @Value("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=")
+    @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
     public String createToken(Member member) {
