@@ -1,10 +1,15 @@
 package roomescape.member;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import java.net.URI;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MemberController {
     private MemberService memberService;
+    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -37,6 +43,12 @@ public class MemberController {
                 .path("/")
                 .httpOnly(true)
                 .build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<CheckResponse> getAuthenticatedInfo(@CookieValue(name = "token") String token) {
+        CheckResponse checkResponse = memberService.findByToken(token);
+        return ResponseEntity.ok().body(checkResponse);
     }
 
 }
