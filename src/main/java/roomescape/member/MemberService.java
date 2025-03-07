@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.BadRequestException;
 import roomescape.common.exception.ExceptionMessage;
@@ -23,8 +24,8 @@ public class MemberService {
 
     public LoginResponse login(final LoginRequest request) {
         validateLoginValues(request);
-        Member member = getMemberWithLogin(request);
-        String accessToken = jwtTokenProvider.createToken(member);
+        final Member member = getMemberWithLogin(request);
+        final String accessToken = jwtTokenProvider.createToken(member);
         return new LoginResponse(accessToken);
     }
 
@@ -39,6 +40,18 @@ public class MemberService {
 
     private Member getMemberWithLogin(final LoginRequest request) {
         return memberDao.findByEmailAndPassword(request.email(), request.password())
-                .orElseThrow();
+                .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
+    }
+
+    public LoginCheckResponse loginCheck(final Cookie cookie) {
+        final String accessToken = cookie.getValue();
+        final long memberId = jwtTokenProvider.parseAccessToken(accessToken);
+        final Member member = getMemberById(memberId);
+        return new LoginCheckResponse(member.getName());
+    }
+
+    private Member getMemberById(final long memberId) {
+        return memberDao.findById(memberId)
+                .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 }

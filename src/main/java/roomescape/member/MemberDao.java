@@ -70,4 +70,21 @@ public class MemberDao {
                 name
         );
     }
+
+    public Optional<Member> findById(final long memberId) {
+        try {
+            final String selectById = """
+                    SELECT id,
+                           name,
+                           email,
+                           role
+                    FROM member
+                    WHERE id = ?
+                    """;
+            final Member member = jdbcTemplate.queryForObject(selectById, MEMBER_ROW_MAPPER, memberId);
+            return Optional.ofNullable(member);
+        } catch (final EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
+    }
 }
