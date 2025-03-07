@@ -15,7 +15,6 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    // Auth Logic
     public MemberResponse findByEmailAndPassword(LoginRequest request) {
         Member member = memberDao.findByEmailAndPassword(request.email(), request.password());
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());

@@ -1,8 +1,12 @@
 package roomescape.member;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
+import java.sql.Date;
+import java.time.LocalDate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +32,20 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
         MemberResponse memberResponse = memberService.findByEmailAndPassword(request);
         // 쿠키 "token" 값으로 토큰이 포함되도록 하세요.
-        // 토큰에 어떤 값을 담을 것인지 결정해야함. -> MemberResponse 값을 담아도 괜찮아보인다.
-        ResponseCookie cookie = ResponseCookie.from("token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI")
+        // 토큰 생성
+        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+        String accessToken = Jwts.builder()
+                .setSubject(memberResponse.getId().toString())
+                .claim("name", memberResponse.getName())
+                .claim("email", memberResponse.getEmail())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
+
+        ResponseCookie cookie = ResponseCookie.from("token", accessToken)
                 .path("/")
                 .httpOnly(true)
                 .build();
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
     }
