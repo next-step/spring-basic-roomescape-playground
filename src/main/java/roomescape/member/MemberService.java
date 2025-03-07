@@ -14,4 +14,10 @@ public class MemberService {
         Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
+
+    // Auth Logic
+    public MemberResponse findByEmailAndPassword(LoginRequest request) {
+        Member member = memberDao.findByEmailAndPassword(request.email(), request.password());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
 }
