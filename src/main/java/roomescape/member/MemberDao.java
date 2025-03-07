@@ -28,6 +28,7 @@ public class MemberDao {
     }
 
     public Member findByEmailAndPassword(String email, String password) {
+        // TODO query 메소드로 변경 또는 예외 핸들링 해주어야 한다.
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
                 (rs, rowNum) -> new Member(

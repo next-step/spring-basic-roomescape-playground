@@ -27,19 +27,14 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
         MemberResponse memberResponse = memberService.findByEmailAndPassword(request);
+        // 쿠키 "token" 값으로 토큰이 포함되도록 하세요.
+        // 토큰에 어떤 값을 담을 것인지 결정해야함. -> MemberResponse 값을 담아도 괜찮아보인다.
         ResponseCookie cookie = ResponseCookie.from("token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI")
                 .path("/")
                 .httpOnly(true)
                 .build();
-        System.out.println(">>>>cookie = " + cookie);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
-        //응답에 Cookie에
-        // "token"값으로 토큰이 포함되도록 하세요.
-        //HTTP/1.1 200 OK
-        //Content-Type: application/json
-        //Keep-Alive: timeout=60
-        //Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIi...; Path=/; HttpOnly
     }
 
     @PostMapping("/logout")
