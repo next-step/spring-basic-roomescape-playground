@@ -28,8 +28,7 @@ public class MemberDao {
     }
 
     public Member findByEmailAndPassword(String email, String password) {
-        // TODO query 메소드로 변경 또는 예외 핸들링 해주어야 한다.
-        return jdbcTemplate.queryForObject(
+        return jdbcTemplate.query(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
@@ -38,7 +37,7 @@ public class MemberDao {
                         rs.getString("role")
                 ),
                 email, password
-        );
+        ).stream().findFirst().orElse(null);
     }
 
     public Member findByName(String name) {
