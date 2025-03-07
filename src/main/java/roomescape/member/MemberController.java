@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.sql.Date;
 import java.time.LocalDate;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class MemberController {
+    public static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private MemberService memberService;
 
     public MemberController(MemberService memberService) {
@@ -31,23 +33,29 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
         MemberResponse memberResponse = memberService.findByEmailAndPassword(request);
-        // 쿠키 "token" 값으로 토큰이 포함되도록 하세요.
-        // 토큰 생성
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-        String accessToken = Jwts.builder()
-                .setSubject(memberResponse.getId().toString())
-                .claim("name", memberResponse.getName())
-                .claim("email", memberResponse.getEmail())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
 
-        ResponseCookie cookie = ResponseCookie.from("token", accessToken)
+        String accessToken = createToken(memberResponse);
+
+        ResponseCookie cookie = createCookie(accessToken);
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+    }
+
+    @NotNull
+    private static ResponseCookie createCookie(String accessToken) {
+        return ResponseCookie.from("token", accessToken)
                 .path("/")
                 .httpOnly(true)
                 .build();
+    }
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+    private static String createToken(MemberResponse memberResponse) {
+        return Jwts.builder()
+                .setSubject(memberResponse.getId().toString())
+                .claim("name", memberResponse.getName())
+                .claim("email", memberResponse.getEmail())
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .compact();
     }
 
     @PostMapping("/logout")
