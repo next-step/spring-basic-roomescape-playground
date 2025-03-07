@@ -1,12 +1,26 @@
 package roomescape.member;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class MemberDao {
+
+    private static final RowMapper<Member> MEMBER_ROW_MAPPER = ((rs, rowNum) -> {
+        return new Member(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("role")
+        );
+    });
+
     private JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
@@ -27,17 +41,21 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                email, password
-        );
+    public Optional<Member> findByEmailAndPassword(final String email, final String password) {
+        try {
+            final String selectByEmailAndPassword = """
+                    SELECT id,
+                           name,
+                           email,
+                           role
+                    FROM member
+                    WHERE email = ? AND password = ?
+                    """;
+            final Member member = jdbcTemplate.queryForObject(selectByEmailAndPassword, MEMBER_ROW_MAPPER, email, password);
+            return Optional.ofNullable(member);
+        } catch (final EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
     }
 
     public Member findByName(String name) {
