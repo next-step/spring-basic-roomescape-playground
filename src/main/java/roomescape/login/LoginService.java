@@ -34,16 +34,16 @@ public class LoginService {
     }
 
     public Map<String, String> getUserInfoFromToken(String token) {
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
+        var claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody().getSubject());
+                .getBody();
 
-        Member member = memberDao.findByName(memberId.toString());
+        String memberName = claims.get("name", String.class);
 
         Map<String, String> userInfo = new HashMap<>();
-        userInfo.put("name", member.getName());
+        userInfo.put("name", memberName);
         return userInfo;
     }
 }
