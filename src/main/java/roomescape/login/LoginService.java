@@ -40,9 +40,10 @@ public class LoginService {
                 .getBody();
 
         String memberName = claims.get("name", String.class);
+        Member member = memberDao.findByName(memberName);
 
         Map<String, String> userInfo = new HashMap<>();
-        userInfo.put("name", memberName);
+        userInfo.put("name", member.getName());
         return userInfo;
     }
 }
