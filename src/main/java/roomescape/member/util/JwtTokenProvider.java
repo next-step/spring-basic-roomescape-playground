@@ -26,16 +26,20 @@ public class JwtTokenProvider {
     }
 
     private String createToken(Member member, long expirationTime) {
-        long currentDateTime = new Date().getTime();
-        Date expiresIn = new Date(currentDateTime + expirationTime);
+        Date expirationDate = calculateExpirationDateFromNow(expirationTime);
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .setExpiration(expiresIn)
+                .setExpiration(expirationDate)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
+    }
+
+    private Date calculateExpirationDateFromNow(long expirationTime) {
+        long currentDateTime = new Date().getTime();
+        return new Date(currentDateTime + expirationTime);
     }
 
     public long parseToken(String token) {
