@@ -42,13 +42,13 @@ public class MemberService {
     }
 
     private void validateEmailNotBlank(String email) {
-        if (email.isBlank()) {
+        if (email == null || email.isBlank()) {
             throw new BadRequestException(ExceptionMessage.INVALID_EMAIL.getMessage());
         }
     }
 
     private void validatePasswordNotBlank(String password) {
-        if (password.isBlank()) {
+        if (password == null || password.isBlank()) {
             throw new BadRequestException(ExceptionMessage.INVALID_PASSWORD.getMessage());
         }
     }
@@ -59,10 +59,19 @@ public class MemberService {
     }
 
     public LoginCheckResponse loginCheck(Cookie cookie) {
+        validateCookie(cookie);
         String accessToken = cookie.getValue();
         long memberId = jwtTokenProvider.parseToken(accessToken);
         Member member = getMemberById(memberId);
         return new LoginCheckResponse(member);
+    }
+
+    private void validateCookie(Cookie cookie) {
+        if (cookie == null
+                || cookie.getValue() == null
+                || cookie.getValue().isBlank()) {
+            throw new BadRequestException(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
+        }
     }
 
     private Member getMemberById(long memberId) {
