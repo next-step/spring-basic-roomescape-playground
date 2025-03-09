@@ -17,7 +17,6 @@ public class LoginService {
 
     private final MemberDao memberDao;
 
-    @Autowired
     public LoginService(MemberDao memberDao) {
         this.memberDao = memberDao;
     }
