@@ -20,7 +20,7 @@ import java.net.URI;
 @RestController
 public class MemberController {
 
-    private static final String COOKIE_NAME = "token";
+    public static final String COOKIE_NAME = "token";
     private static final String COOKIE_PATH = "/";
     private static final int COOKIE_VALID_TIME = 3600;
 

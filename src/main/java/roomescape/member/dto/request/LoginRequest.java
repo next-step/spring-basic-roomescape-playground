@@ -1,7 +1,7 @@
 package roomescape.member.dto.request;
 
 public record LoginRequest(
-        String password,
-        String email
+        String email,
+        String password
 ) {
 }
