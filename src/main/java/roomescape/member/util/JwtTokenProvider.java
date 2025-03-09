@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.common.exception.BadRequestException;
 import roomescape.common.exception.ExceptionMessage;
-import roomescape.member.Member;
+import roomescape.member.domain.Member;
 
 @Component
 public class JwtTokenProvider {
