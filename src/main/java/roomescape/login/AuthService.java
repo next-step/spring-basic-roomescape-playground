@@ -10,19 +10,19 @@ import roomescape.member.MemberDao;
 import roomescape.member.MemberResponse;
 
 @Service
-public class LoginService {
+public class AuthService {
     private final MemberDao memberDao;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
         this.memberDao = memberDao;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public LoginResponse login(LoginRequest loginRequest) {
-        Member foundMember = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
+    public AuthResponse login(AuthRequest authRequest) {
+        Member foundMember = memberDao.findByEmailAndPassword(authRequest.email(), authRequest.password());
         String accessToken = jwtTokenProvider.createToken(foundMember);
-        return new LoginResponse(accessToken);
+        return new AuthResponse(accessToken);
     }
 
     public MemberResponse checkLogin(HttpServletRequest request) {

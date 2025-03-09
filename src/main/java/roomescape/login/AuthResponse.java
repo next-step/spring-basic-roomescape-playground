@@ -1,5 +1,5 @@
 package roomescape.login;
 
-public record LoginResponse(
+public record AuthResponse(
         String token
 ) {}
