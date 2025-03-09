@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -37,7 +38,24 @@ public class MemberDao {
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
+        return new Member(Objects.requireNonNull(keyHolder.getKey()).longValue(), member.getName(), member.getEmail(), "USER");
+    }
+
+    public Optional<Member> findById(long memberId) {
+        try {
+            String selectById = """
+                    SELECT id,
+                           name,
+                           email,
+                           role
+                    FROM member
+                    WHERE id = ?
+                    """;
+            Member member = jdbcTemplate.queryForObject(selectById, MEMBER_ROW_MAPPER, memberId);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
@@ -57,33 +75,16 @@ public class MemberDao {
         }
     }
 
-    public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE name = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                name
-        );
-    }
-
-    public Optional<Member> findById(long memberId) {
-        try {
-            String selectById = """
-                    SELECT id,
-                           name,
-                           email,
-                           role
-                    FROM member
-                    WHERE id = ?
-                    """;
-            Member member = jdbcTemplate.queryForObject(selectById, MEMBER_ROW_MAPPER, memberId);
-            return Optional.ofNullable(member);
-        } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
-            return Optional.empty();
-        }
-    }
+//        public Member findByName(String name) {
+//            return jdbcTemplate.queryForObject(
+//                    "SELECT id, name, email, role FROM member WHERE name = ?",
+//                    (rs, rowNum) -> new Member(
+//                            rs.getLong("id"),
+//                            rs.getString("name"),
+//                            rs.getString("email"),
+//                            rs.getString("role")
+//                    ),
+//                    name
+//            );
+//        }
 }
