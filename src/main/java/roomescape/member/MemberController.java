@@ -1,10 +1,6 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import java.net.URI;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -33,11 +29,11 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
         String accessToken = memberService.authenticateAndGetToken(request);
 
-        ResponseCookie cookie = createCookie(accessToken); // 생성된 토큰을 쿠키에 담기
+        ResponseCookie cookie = createCookie(accessToken);
+
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
     }
 
-    @NotNull
     private ResponseCookie createCookie(String accessToken) {
         return ResponseCookie.from("token", accessToken)
                 .path("/")
