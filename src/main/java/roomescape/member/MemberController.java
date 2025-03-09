@@ -1,5 +1,8 @@
 package roomescape.member;
 
+
+import static javax.crypto.Cipher.SECRET_KEY;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -16,6 +19,7 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private MemberService memberService;
+    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -29,8 +33,47 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
-        Member member = memberService.login(memberRequest.getEmail(), memberRequest.getPassword(), response);
-        return ResponseEntity.ok("Login successful for user" + member.getName());
+        Member member = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
+
+        String accessToken = Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .compact();
+
+        Cookie cookie = new Cookie("token", accessToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60); // 1시간 동안 유효
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok("Login successful for user " + member.getName());
+
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<MemberResponse> checkLoginStatus(HttpServletRequest request) {
+        String token = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+
+        String email = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+
+        Member member = memberService.findByEmail(email);
+        MemberResponse memberResponse = new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return ResponseEntity.ok(memberResponse);
     }
 
     @PostMapping("/logout")
@@ -42,4 +85,6 @@ public class MemberController {
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
+
+
 }

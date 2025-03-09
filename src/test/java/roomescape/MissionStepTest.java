@@ -28,7 +28,7 @@ public class MissionStepTest {
         RestAssured.port = port;
     }
 
-    
+
     @Test
     void 일단계() {
         Map<String, String> params = new HashMap<>();
