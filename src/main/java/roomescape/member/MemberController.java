@@ -20,37 +20,38 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    public MemberController(final MemberService memberService) {
+    public MemberController( MemberService memberService) {
         this.memberService = memberService;
     }
 
     @PostMapping("/members")
-    public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
+    public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+        return ResponseEntity.created(URI.create("/members/" + member.getId()))
+                .body(member);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(final @RequestBody LoginRequest request, HttpServletResponse response) {
-        LoginResponse loginResponse = memberService.login(request);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        LoginResponse login = memberService.login(request);
 
-        final Cookie cookie = new Cookie(COOKIE_NAME, loginResponse.accessToken());
+        Cookie cookie = new Cookie(COOKIE_NAME, login.accessToken());
         cookie.setHttpOnly(true);
         cookie.setPath(COOKIE_PATH);
         cookie.setMaxAge(COOKIE_VALID_TIME);
         response.addCookie(cookie);
 
-        return ResponseEntity.ok(loginResponse);
+        return ResponseEntity.ok(login);
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(final @CookieValue(value = COOKIE_NAME) Cookie cookie) {
-        LoginCheckResponse response = memberService.loginCheck(cookie);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(value = COOKIE_NAME) Cookie cookie) {
+        LoginCheckResponse loginCheck = memberService.loginCheck(cookie);
+        return ResponseEntity.ok(loginCheck);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
 
         Cookie cookie = new Cookie(COOKIE_NAME, "");
         cookie.setHttpOnly(true);

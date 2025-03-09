@@ -12,7 +12,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberDao memberDao;
 
-    public MemberService(final JwtTokenProvider jwtTokenProvider, final MemberDao memberDao) {
+    public MemberService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.memberDao = memberDao;
     }
@@ -22,14 +22,14 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public LoginResponse login(final LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         validateLoginValues(request);
-        final Member member = getMemberWithLogin(request);
-        final String accessToken = jwtTokenProvider.createToken(member);
+        Member member = getMemberWithLogin(request);
+        String accessToken = jwtTokenProvider.createToken(member);
         return new LoginResponse(accessToken);
     }
 
-    private void validateLoginValues(final LoginRequest request) {
+    private void validateLoginValues(LoginRequest request) {
         if (request.email().isBlank()) {
             throw new BadRequestException(ExceptionMessage.INVALID_EMAIL.getMessage());
         }
@@ -38,19 +38,19 @@ public class MemberService {
         }
     }
 
-    private Member getMemberWithLogin(final LoginRequest request) {
+    private Member getMemberWithLogin(LoginRequest request) {
         return memberDao.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
-    public LoginCheckResponse loginCheck(final Cookie cookie) {
-        final String accessToken = cookie.getValue();
-        final long memberId = jwtTokenProvider.parseAccessToken(accessToken);
-        final Member member = getMemberById(memberId);
+    public LoginCheckResponse loginCheck(Cookie cookie) {
+        String accessToken = cookie.getValue();
+        long memberId = jwtTokenProvider.parseToken(accessToken);
+        Member member = getMemberById(memberId);
         return new LoginCheckResponse(member.getName());
     }
 
-    private Member getMemberById(final long memberId) {
+    private Member getMemberById(long memberId) {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
     }

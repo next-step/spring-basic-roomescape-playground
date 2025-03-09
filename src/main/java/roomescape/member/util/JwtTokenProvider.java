@@ -26,9 +26,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public long parseAccessToken(final String accessToken) {
+    public long parseToken(String token) {
         try {
-            final Claims claims = parseClaims(accessToken);
+            Claims claims = parseClaims(token);
             return Long.parseLong(claims.getSubject());
         } catch (ExpiredJwtException exception) {
             throw new BadRequestException(ExceptionMessage.EXPIRED_TOKEN.getMessage());
@@ -37,11 +37,11 @@ public class JwtTokenProvider {
         }
     }
 
-    private Claims parseClaims(final String accessToken) {
+    private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
-                .parseClaimsJws(accessToken)
+                .parseClaimsJws(token)
                 .getBody();
     }
 }
