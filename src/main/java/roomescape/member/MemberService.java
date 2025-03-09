@@ -30,10 +30,18 @@ public class MemberService {
     }
 
     private void validateLoginValues(LoginRequest request) {
-        if (request.email().isBlank()) {
+        validateEmailNotBlank(request.email());
+        validatePasswordNotBlank(request.password());
+    }
+
+    private void validateEmailNotBlank(String email) {
+        if (email.isBlank()) {
             throw new BadRequestException(ExceptionMessage.INVALID_EMAIL.getMessage());
         }
-        if (request.password().isBlank()) {
+    }
+
+    private void validatePasswordNotBlank(String password) {
+        if (password.isBlank()) {
             throw new BadRequestException(ExceptionMessage.INVALID_PASSWORD.getMessage());
         }
     }
@@ -47,7 +55,7 @@ public class MemberService {
         String accessToken = cookie.getValue();
         long memberId = jwtTokenProvider.parseToken(accessToken);
         Member member = getMemberById(memberId);
-        return new LoginCheckResponse(member.getName());
+        return new LoginCheckResponse(member);
     }
 
     private Member getMemberById(long memberId) {
