@@ -15,7 +15,7 @@ public class LoginService {
 
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E";
 
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
 
     @Autowired
     public LoginService(MemberDao memberDao) {

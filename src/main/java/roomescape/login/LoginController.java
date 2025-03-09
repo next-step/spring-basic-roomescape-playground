@@ -11,7 +11,7 @@ import java.util.Map;
 @RestController
 public class LoginController {
 
-    private LoginService loginService;
+    private final LoginService loginService;
 
     @Autowired
     public LoginController(LoginService loginService) {
