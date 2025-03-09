@@ -4,7 +4,7 @@ public class RoomScapeException extends RuntimeException {
 
     private final int statusCode;
 
-    public RoomScapeException(final int statusCode, final String errorMessage) {
+    public RoomScapeException(int statusCode, String errorMessage) {
         super(errorMessage);
         this.statusCode = statusCode;
     }

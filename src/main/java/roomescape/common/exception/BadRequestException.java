@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class BadRequestException extends RoomScapeException {
 
-    public BadRequestException(final String errorMessage) {
+    public BadRequestException(String errorMessage) {
         super(HttpStatus.BAD_REQUEST.value(), errorMessage);
     }
 }
