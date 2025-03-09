@@ -11,17 +11,29 @@ import roomescape.common.exception.BadRequestException;
 import roomescape.common.exception.ExceptionMessage;
 import roomescape.member.domain.Member;
 
+import java.util.Date;
+
 @Component
 public class JwtTokenProvider {
+
+    private static final long ACCESS_TOKEN_EXP = 60L * 60L * 1000L; // 1시간
 
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
-    public String createToken(Member member) {
+    public String createAccessToken(Member member) {
+        return createToken(member, ACCESS_TOKEN_EXP);
+    }
+
+    private String createToken(Member member, long expirationTime) {
+        long currentDateTime = new Date().getTime();
+        Date expiresIn = new Date(currentDateTime + expirationTime);
+
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
+                .setExpiration(expiresIn)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }

@@ -32,7 +32,7 @@ public class MemberService {
     public LoginResponse login(LoginRequest request) {
         validateLoginValues(request);
         Member member = getMemberWithLogin(request);
-        String accessToken = jwtTokenProvider.createToken(member);
+        String accessToken = jwtTokenProvider.createAccessToken(member);
         return new LoginResponse(accessToken);
     }
 

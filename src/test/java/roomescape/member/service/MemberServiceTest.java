@@ -77,7 +77,7 @@ class MemberServiceTest {
         // given
         Member member = new Member("멤버", "member@email.com", "password", "USER");
         Member savedMember = memberDao.save(member);
-        String accessToken = jwtTokenProvider.createToken(savedMember);
+        String accessToken = jwtTokenProvider.createAccessToken(savedMember);
         Cookie cookie = new Cookie(COOKIE_NAME, accessToken);
         // when
         LoginCheckResponse loginCheckResponse = memberService.loginCheck(cookie);
