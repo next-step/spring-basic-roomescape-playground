@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class MemberDao {
-    private JdbcTemplate jdbcTemplate;
+
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -41,10 +42,10 @@ public class MemberDao {
         );
     }
 
-    public Member findByEmail(String email){
+    public Member findByEmail(String email) {
         return jdbcTemplate.queryForObject(
                 "SELECT id,name,email, role FROM member WHERE email = ?",
-                (rs,rowNum) -> new Member(
+                (rs, rowNum) -> new Member(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
@@ -67,6 +68,5 @@ public class MemberDao {
                 name
         );
     }
-
 
 }
