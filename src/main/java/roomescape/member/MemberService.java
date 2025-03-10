@@ -29,7 +29,7 @@ public class MemberService {
                 new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), ROLE_VALUE));
     }
 
-    public String authenticateAndGetToken(LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest) {
         MemberResponse memberResponse = findByEmailAndPassword(loginRequest.email(), loginRequest.password());
         return jwtProvider.createToken(memberResponse);
     }
