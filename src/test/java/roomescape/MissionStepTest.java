@@ -1,17 +1,16 @@
 package roomescape;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -32,7 +31,17 @@ public class MissionStepTest {
                 .extract();
 
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
-
         assertThat(token).isNotBlank();
+
+        ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+
+        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
+
 }
