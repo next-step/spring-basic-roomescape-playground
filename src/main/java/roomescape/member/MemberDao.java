@@ -38,7 +38,7 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
         return jdbcTemplate.query(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
                 (rs, rowNum) -> new Member(
@@ -48,7 +48,7 @@ public class MemberDao {
                         rs.getString("role")
                 ),
                 email, password
-        ).stream().findFirst().orElse(null);
+        ).stream().findFirst();
     }
 
     public Member findByName(String name) {

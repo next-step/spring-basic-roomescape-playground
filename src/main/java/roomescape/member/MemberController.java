@@ -12,15 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class MemberController {
-    private MemberService memberService;
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+    public static final String COOKIE_NAME = "token";
+
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
 
     @PostMapping("/members")
-    public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
+    public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
@@ -35,15 +37,15 @@ public class MemberController {
     }
 
     private ResponseCookie createCookie(String accessToken) {
-        return ResponseCookie.from("token", accessToken)
+        return ResponseCookie.from(COOKIE_NAME, accessToken)
                 .path("/")
                 .httpOnly(true)
                 .build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<CheckResponse> getAuthenticatedInfo(@CookieValue(name = "token") String token) {
-        CheckResponse checkResponse = memberService.findByToken(token);
+    public ResponseEntity<AuthUserNameResponse> getAuthenticatedInfo(@CookieValue(name = COOKIE_NAME) String token) {
+        AuthUserNameResponse checkResponse = memberService.findByToken(token);
         return ResponseEntity.ok().body(checkResponse);
     }
 
