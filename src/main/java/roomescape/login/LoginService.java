@@ -2,7 +2,7 @@ package roomescape.login;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
@@ -13,12 +13,12 @@ import java.util.Map;
 @Service
 public class LoginService {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E";
-
     private final MemberDao memberDao;
+    private final String secretKey;
 
-    public LoginService(MemberDao memberDao) {
+    public LoginService(MemberDao memberDao, @Value("${roomescape.auth.jwt.secret}") String secreteKey) {
         this.memberDao = memberDao;
+        this.secretKey = secreteKey;
     }
 
     public String login(String email, String password) {
@@ -28,13 +28,13 @@ public class LoginService {
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
     public Map<String, String> getUserInfoFromToken(String token) {
         var claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
