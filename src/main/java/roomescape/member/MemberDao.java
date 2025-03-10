@@ -55,7 +55,6 @@ public class MemberDao {
         );
     }
 
-
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",

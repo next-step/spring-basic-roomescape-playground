@@ -57,11 +57,11 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLoginStatus(HttpServletRequest request) {
         String token = null;
         Cookie[] cookies = request.getCookies();
+
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("token".equals(cookie.getName())) {
@@ -80,6 +80,5 @@ public class MemberController {
         MemberResponse memberResponse = new MemberResponse(member.getId(), member.getName(), member.getEmail());
         return ResponseEntity.ok(memberResponse);
     }
-
 
 }
