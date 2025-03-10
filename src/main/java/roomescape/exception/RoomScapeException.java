@@ -1,4 +1,4 @@
-package roomescape.common.exception;
+package roomescape.exception;
 
 public class RoomScapeException extends RuntimeException {
 

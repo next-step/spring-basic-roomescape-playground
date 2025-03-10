@@ -1,4 +1,4 @@
-package roomescape.common.exception;
+package roomescape.exception;
 
 public enum ExceptionMessage {
 

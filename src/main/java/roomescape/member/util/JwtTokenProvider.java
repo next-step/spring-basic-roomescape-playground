@@ -7,8 +7,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.common.exception.BadRequestException;
-import roomescape.common.exception.ExceptionMessage;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ExceptionMessage;
 import roomescape.member.domain.Member;
 
 import java.util.Date;

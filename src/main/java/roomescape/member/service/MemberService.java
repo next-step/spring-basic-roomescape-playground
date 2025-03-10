@@ -2,8 +2,8 @@ package roomescape.member.service;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.common.exception.BadRequestException;
-import roomescape.common.exception.ExceptionMessage;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ExceptionMessage;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.request.LoginRequest;
