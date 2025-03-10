@@ -1,40 +1,42 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
 
-    private final String secretKey;
+    public static final String ROLE_VALUE = "USER";
 
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
+    private final JwtProvider jwtProvider;
 
-    public MemberService(
-            @Value("${roomescape.auth.jwt.secret}")
-            String secretKey,
-            MemberDao memberDao) {
-        this.secretKey = secretKey;
+    public MemberService(MemberDao memberDao, JwtProvider jwtProvider) {
         this.memberDao = memberDao;
+        this.jwtProvider = jwtProvider;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(
-                new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = registerMember(memberRequest);
+        return toMemberResponse(member);
+    }
+
+    private MemberResponse toMemberResponse(Member member) {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
+
+    private Member registerMember(MemberRequest memberRequest) {
+        return memberDao.save(
+                new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), ROLE_VALUE));
     }
 
     public String authenticateAndGetToken(LoginRequest loginRequest) {
         MemberResponse memberResponse = findByEmailAndPassword(loginRequest.email(), loginRequest.password());
-        return createToken(memberResponse);
+        return jwtProvider.createToken(memberResponse);
     }
 
     private MemberResponse findByEmailAndPassword(String email, String password) {
         Member member = getMemberByEmailAndPassword(email, password);
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return toMemberResponse(member);
     }
 
     private Member getMemberByEmailAndPassword(String email, String password) {
@@ -42,30 +44,12 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
     }
 
-    private String createToken(MemberResponse memberResponse) {
-        return Jwts.builder()
-                .setSubject(memberResponse.getId().toString())
-                .claim("name", memberResponse.getName())
-                .claim("email", memberResponse.getEmail())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
-    }
-
     public AuthUserNameResponse findByToken(String token) {
-        Long memberId = parseMemberIdFromToken(token);
+        Long memberId = jwtProvider.parseMemberIdFrom(token);
 
         Member member = getMemberById(memberId);
 
         return new AuthUserNameResponse(member.getName());
-    }
-
-    private Long parseMemberIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey.getBytes())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return Long.valueOf(claims.getSubject());
     }
 
     private Member getMemberById(Long memberId) {
