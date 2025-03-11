@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     public static final String COOKIE_NAME = "token";
+    public static final String EMPTY_VALUE = "";
+    public static final String ROOT_URI = "/";
 
     private final MemberService memberService;
 
@@ -31,16 +33,16 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        String accessToken = memberService.login(request);
+        LoginResponse loginResponse = memberService.login(request);
 
-        ResponseCookie cookie = createCookie(accessToken);
+        ResponseCookie cookie = createCookie(loginResponse);
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
     }
 
-    private ResponseCookie createCookie(String accessToken) {
-        return ResponseCookie.from(COOKIE_NAME, accessToken)
-                .path("/")
+    private ResponseCookie createCookie(LoginResponse accessToken) {
+        return ResponseCookie.from(COOKIE_NAME, accessToken.token())
+                .path(ROOT_URI)
                 .httpOnly(true)
                 .build();
     }
@@ -53,9 +55,9 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", "");
+        Cookie cookie = new Cookie(COOKIE_NAME, EMPTY_VALUE);
         cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        cookie.setPath(ROOT_URI);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
