@@ -1,10 +1,7 @@
-package roomescape.login;
+package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import org.springframework.stereotype.Service;
-import roomescape.login.jwt.JwtTokenProvider;
+import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.member.MemberResponse;

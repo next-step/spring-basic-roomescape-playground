@@ -1,4 +1,4 @@
-package roomescape.login;
+package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,13 +21,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
-        AuthResponse authResponse = authService.login(authRequest);
-
-        Cookie cookie = new Cookie("token", authResponse.token());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
+        String token = authService.login(authRequest).token();
+        addCookie(response, token);
         return ResponseEntity.ok().build();
     }
 
@@ -41,8 +36,14 @@ public class AuthController {
         }
 
         MemberResponse memberResponse = authService.checkLogin(token);
-
         return ResponseEntity.ok(memberResponse);
+    }
+
+    private void addCookie(HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
