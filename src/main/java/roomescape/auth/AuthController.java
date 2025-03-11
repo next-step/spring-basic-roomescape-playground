@@ -33,5 +33,4 @@ public class AuthController {
 
         return ResponseEntity.ok(foundMember);
     }
-
 }

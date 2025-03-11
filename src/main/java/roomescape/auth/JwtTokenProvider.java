@@ -45,5 +45,4 @@ public class JwtTokenProvider {
         String idString = claims.get("id", String.class);
         return Long.valueOf(idString);
     }
-
 }

@@ -53,7 +53,4 @@ public class MemberController {
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
-
-
-
 }

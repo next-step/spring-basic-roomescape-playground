@@ -24,7 +24,4 @@ public class MemberService {
     public Member findById(long id){
         return memberDao.findById(id);
     }
-
-
-
 }
