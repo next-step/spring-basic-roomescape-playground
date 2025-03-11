@@ -15,13 +15,14 @@ public class JwtTokenProvider {
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
-    @Value("${security.jwt.token.expire-length}")
+    @Value("${roomescape.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(String payload) {
+    public String createToken(long id) {
 
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
-        Claims claims = Jwts.claims().setSubject(payload);
+        Claims claims = Jwts.claims();
+        claims.put("id", id);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -33,13 +34,15 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(String token) {
-        return Jwts.parserBuilder()
+    public Long getIdFromToken(String token) {
+
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey.getBytes())
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+
+        return claims.get("id", Long.class);
     }
 
 }

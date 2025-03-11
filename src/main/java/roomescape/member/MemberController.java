@@ -35,7 +35,7 @@ public class MemberController {
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
 
         Member member = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
-        String token = jwtTokenProvider.createToken(member.getEmail());
+        String token = jwtTokenProvider.createToken(member.getId());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
@@ -74,8 +74,8 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        String email = jwtTokenProvider.getPayload(token);
-        Member member = memberService.findByEmail(email);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
+        Member member = memberService.findById(userId);
 
         MemberResponse memberResponse = new MemberResponse(member.getId(), member.getName(), member.getEmail());
         return ResponseEntity.ok(memberResponse);

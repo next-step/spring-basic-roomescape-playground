@@ -54,15 +54,15 @@ public class MemberDaoTest {
     }
 
     @Test
-    @DisplayName("이메일로_회원_조회_테스트")
-    void findByEmail_success() {
+    @DisplayName("아이디로_회원_조회_테스트")
+    void findById_success() {
 
         //given
         Member member = new Member("Member", "test@email.com", "password", "USER");
         Member savedMember = memberDao.save(member);
 
         //when
-        Member foundMember = memberDao.findByEmail("test@email.com");
+        Member foundMember = memberDao.findById(savedMember.getId());
 
         //then
         assertThat(foundMember)
@@ -81,7 +81,6 @@ public class MemberDaoTest {
         assertThat(foundMember)
         .usingRecursiveComparison()
                 .isEqualTo(savedMember);
-
     }
 
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
 
     public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
@@ -17,14 +17,11 @@ public class MemberService {
     }
 
     public Member login(String email, String password){
-        Member member = memberDao.findByEmailAndPassword(email,password);
-        return member;
+        return memberDao.findByEmailAndPassword(email,password);
     }
 
-    public Member findByEmail(String email){
-        return memberDao.findByEmail(email);
+    public Member findById(long id){
+        return memberDao.findById(id);
     }
-
-
 
 }
