@@ -34,11 +34,6 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            throw new IllegalArgumentException("로그인을 해주세요.");
-        }
-
         String token = extractTokenFromCookie(cookies);
 
         if (token.isEmpty()) {
@@ -55,6 +50,6 @@ public class AuthController {
                 .filter(cookie -> cookie.getName().equals("token"))
                 .map(Cookie::getValue)
                 .findFirst()
-                .orElse("");
+                .orElseThrow(() -> new IllegalArgumentException("로그인을 해주세요."));
     }
 }
