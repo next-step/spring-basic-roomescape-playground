@@ -3,13 +3,17 @@ package roomescape.member;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import roomescape.auth.CookieName;
 import roomescape.auth.JwtTokenProvider;
+import roomescape.member.dto.request.LoginRequest;
+import roomescape.member.dto.request.MemberRequest;
 
 @RestController
 public class MemberController {
@@ -29,16 +33,15 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest LoginRequest, HttpServletResponse response) {
 
-        Member member = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
+        Member member = memberService.login(LoginRequest.getEmail(), LoginRequest.getPassword());
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         String token = jwtTokenProvider.createToken(member.getId());
-
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
+        addCookie(response, token);
 
         return ResponseEntity.ok("Login successful : " + member.getName());
 
@@ -46,11 +49,19 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", "");
+        Cookie cookie = new Cookie(CookieName.LOGIN_USER.getValue(), "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    private void addCookie(HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie(CookieName.LOGIN_USER.getValue(), token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(3600);
+        response.addCookie(cookie);
     }
 }
