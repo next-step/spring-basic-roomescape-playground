@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberService {
 
-    public static final String ROLE_VALUE = "USER";
+    public static final String DEFAULT_ROLE = "USER";
 
     private final MemberDao memberDao;
     private final JwtProvider jwtProvider;
@@ -20,21 +20,17 @@ public class MemberService {
         return toMemberResponse(member);
     }
 
-    private MemberResponse toMemberResponse(Member member) {
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
-    }
-
     private Member registerMember(MemberRequest memberRequest) {
         return memberDao.save(
-                new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), ROLE_VALUE));
+                new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), DEFAULT_ROLE));
     }
 
-    public String login(LoginRequest loginRequest) {
-        MemberResponse memberResponse = findByEmailAndPassword(loginRequest.email(), loginRequest.password());
-        return jwtProvider.createToken(memberResponse);
+    public LoginResponse login(LoginRequest loginRequest) {
+        MemberResponse memberResponse = authenticate(loginRequest.email(), loginRequest.password());
+        return new LoginResponse(jwtProvider.generateToken(memberResponse));
     }
 
-    private MemberResponse findByEmailAndPassword(String email, String password) {
+    private MemberResponse authenticate(String email, String password) {
         Member member = getMemberByEmailAndPassword(email, password);
         return toMemberResponse(member);
     }
@@ -54,6 +50,10 @@ public class MemberService {
 
     private Member getMemberById(Long memberId) {
         return memberDao.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Member not found"));
+    }
+
+    private MemberResponse toMemberResponse(Member member) {
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
 }
