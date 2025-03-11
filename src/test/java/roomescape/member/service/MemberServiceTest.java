@@ -2,16 +2,17 @@ package roomescape.member.service;
 
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.DataBaseCleaner;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.dto.request.LoginRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
 import roomescape.member.dto.response.LoginResponse;
@@ -23,8 +24,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static roomescape.member.controller.MemberController.COOKIE_NAME;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@ActiveProfiles("test")
-@Transactional
+@ExtendWith(DataBaseCleaner.class)
 class MemberServiceTest {
 
     @Autowired
@@ -39,7 +39,7 @@ class MemberServiceTest {
     @Test
     void 로그인을_할_수_있다() {
         // given
-        Member member = new Member("멤버", "member@email.com", "password", "USER");
+        Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         memberDao.save(member);
         LoginRequest loginRequest = new LoginRequest(member.getEmail(), member.getPassword());
         // when
@@ -52,7 +52,7 @@ class MemberServiceTest {
     @NullAndEmptySource
     void 이메일이_비어있으면_예외가_발생한다(String email) {
         // given
-        Member member = new Member("멤버", "member@email.com", "password", "USER");
+        Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         memberDao.save(member);
         // when & then
         assertThatThrownBy(() -> memberService.login(new LoginRequest(email, member.getPassword())))
@@ -64,7 +64,7 @@ class MemberServiceTest {
     @NullAndEmptySource
     void 비밀번호가_비어있으면_예외가_발생한다(String password) {
         // given
-        Member member = new Member("멤버", "member@email.com", "password", "USER");
+        Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         memberDao.save(member);
         // when & then
         assertThatThrownBy(() -> memberService.login(new LoginRequest(member.getEmail(), password)))
@@ -75,7 +75,7 @@ class MemberServiceTest {
     @Test
     void 인증_정보를_조회할_수_있다() {
         // given
-        Member member = new Member("멤버", "member@email.com", "password", "USER");
+        Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         Member savedMember = memberDao.save(member);
         String accessToken = jwtTokenProvider.createAccessToken(savedMember);
         Cookie cookie = new Cookie(COOKIE_NAME, accessToken);
@@ -88,7 +88,7 @@ class MemberServiceTest {
     @Test
     void 인증_정보_조회_시_토큰이_유효하지_않은_경우_예외가_발생한다() {
         // given
-        Member member = new Member("멤버", "member@email.com", "password", "USER");
+        Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         memberDao.save(member);
         String invalidAccessToken = "invalid.token";
         Cookie cookie = new Cookie(COOKIE_NAME, invalidAccessToken);
@@ -101,7 +101,7 @@ class MemberServiceTest {
     @Test
     void 인증_정보_조회_시_쿠키가_존재하지_않는_경우_예외가_발생한다() {
         // given
-        Member member = new Member("멤버", "member@email.com", "password", "USER");
+        Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         memberDao.save(member);
         Cookie cookie = null;
         // when & then
@@ -114,7 +114,7 @@ class MemberServiceTest {
     @NullAndEmptySource
     void 인증_정보_조회_시_쿠키_값이_존재하지_않는_경우_예외가_발생한다(String accessToken) {
         // given
-        Member member = new Member("멤버", "member@email.com", "password", "USER");
+        Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         memberDao.save(member);
         Cookie cookie = new Cookie(COOKIE_NAME, accessToken);
         // when & then

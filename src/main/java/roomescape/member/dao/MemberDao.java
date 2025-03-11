@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public class MemberDao {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("email"),
-                    rs.getString("role")
+                    Role.valueOf(rs.getString("role"))
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -35,11 +36,11 @@ public class MemberDao {
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
-            ps.setString(4, member.getRole());
+            ps.setString(4, member.getRole().name());
             return ps;
         }, keyHolder);
 
-        return new Member(Objects.requireNonNull(keyHolder.getKey()).longValue(), member.getName(), member.getEmail(), "USER");
+        return new Member(Objects.requireNonNull(keyHolder.getKey()).longValue(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public Optional<Member> findById(long memberId) {

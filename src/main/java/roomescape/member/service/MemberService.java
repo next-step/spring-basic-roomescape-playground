@@ -6,6 +6,7 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.dto.request.LoginRequest;
 import roomescape.member.dto.request.MemberRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
@@ -25,7 +26,7 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 

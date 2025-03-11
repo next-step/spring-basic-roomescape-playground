@@ -1,15 +1,17 @@
 package roomescape.member.util;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import roomescape.DataBaseCleaner;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@ActiveProfiles("test")
+@ExtendWith(DataBaseCleaner.class)
 class JwtTokenProviderTest {
 
     @Autowired
@@ -18,7 +20,7 @@ class JwtTokenProviderTest {
     @Test
     void 액세스_토큰을_파싱할_수_있다() {
         // given
-        Member member = new Member(1L, "멤버", "member@email.com", "USER");
+        Member member = new Member(1L, "멤버", "member@email.com", Role.USER);
         String accessToken = jwtTokenProvider.createAccessToken(member);
         // when
         long resultOfParseToken = jwtTokenProvider.parseToken(accessToken);
