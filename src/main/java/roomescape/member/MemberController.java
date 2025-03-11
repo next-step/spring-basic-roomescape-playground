@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.AuthService;
 import roomescape.member.dto.AuthUserNameResponse;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.LoginResponse;
@@ -25,9 +26,11 @@ public class MemberController {
     public static final String ROOT_URI = "/";
 
     private final MemberService memberService;
+    private final AuthService authService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, AuthService authService) {
         this.memberService = memberService;
+        this.authService = authService;
     }
 
     @PostMapping("/members")
@@ -38,7 +41,7 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        LoginResponse loginResponse = memberService.login(request);
+        LoginResponse loginResponse = authService.login(request);
 
         ResponseCookie cookie = createCookie(loginResponse);
 
@@ -54,7 +57,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<AuthUserNameResponse> getAuthenticatedInfo(@CookieValue(name = COOKIE_NAME) String token) {
-        AuthUserNameResponse checkResponse = memberService.findByToken(token);
+        AuthUserNameResponse checkResponse = authService.findByToken(token);
         return ResponseEntity.ok().body(checkResponse);
     }
 

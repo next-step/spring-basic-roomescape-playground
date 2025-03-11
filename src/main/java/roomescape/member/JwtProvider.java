@@ -12,6 +12,7 @@ public class JwtProvider {
 
     public static final String HEADER_TYPE = "typ";
     public static final String TOKEN_TYPE = "JWT";
+
     private final String secretKey;
 
     public JwtProvider(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
