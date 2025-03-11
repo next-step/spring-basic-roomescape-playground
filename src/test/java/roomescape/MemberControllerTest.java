@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.member.MemberController;
+import roomescape.member.controller.MemberController;
 import roomescape.member.dto.request.MemberRequest;
-import roomescape.member.MemberResponse;
+import roomescape.member.dto.response.MemberResponse;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)

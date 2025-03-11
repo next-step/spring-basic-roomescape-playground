@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
+import roomescape.member.domain.Member;
+import roomescape.member.service.MemberService;
 
 @RestController
 public class AuthController {
