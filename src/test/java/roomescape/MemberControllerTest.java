@@ -1,44 +1,35 @@
 package roomescape;
 
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Map;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import roomescape.auth.JwtTokenProvider;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import roomescape.member.MemberController;
+import roomescape.member.MemberRequest;
+import roomescape.member.MemberResponse;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-public class MemberControllerTest {
+public class MemberServiceTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
-    private MemberService memberService;
-
-    @MockBean
-    private JwtTokenProvider jwtTokenProvider;
+    private MemberController memberController;
 
     @Test
-    @DisplayName("로그인 성공 테스트")
-    void login_success() throws Exception {
+    void createMemberTest() {
+        // given
+        MemberRequest memberRequest = new MemberRequest("Doyo","member@example.com", "password");
 
+        // when
+        ResponseEntity<MemberResponse> response = memberController.createMember(memberRequest);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getId()).isNotNull();
+        assertThat(response.getBody().getName()).isEqualTo("Doyo");
+        assertThat(response.getBody().getEmail()).isEqualTo("member@example.com");
     }
 }
