@@ -19,7 +19,7 @@ public class AuthService {
 
     public String getTokenFromCookies(Cookie[] cookies) {
         return Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
+                .filter(cookie -> CookieName.LOGIN_USER.getValue().equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElse(null);
