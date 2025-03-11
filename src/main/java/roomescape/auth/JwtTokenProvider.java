@@ -15,7 +15,7 @@ public class JwtTokenProvider {
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
-    @Value("36000")
+    @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
     public String createToken(String payload) {
