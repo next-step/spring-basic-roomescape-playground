@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.dao.MemberDao;
 
 
 @JdbcTest
@@ -20,7 +20,7 @@ public class MemberDaoTest {
 
     @Test
     @DisplayName("멤버_생성_조회_테스트")
-    void saveMemberTest() {
+    void saveMember_Test() {
         // Given
         Member member = new Member("Brown", "Brown@example.com", "password", "USER");
 
@@ -31,14 +31,13 @@ public class MemberDaoTest {
         assertThat(savedMember).isNotNull();
         assertThat(savedMember.getName()).isEqualTo("Brown");
         assertThat(savedMember.getEmail()).isEqualTo("Brown@example.com");
-        //assertThat(savedMember.getPassword()).isEqualTo("password");
         assertThat(savedMember.getRole()).isEqualTo("USER");
         assertThat(savedMember.getId()).isGreaterThan(0);
     }
 
     @Test
     @DisplayName("이메일과_비밀번호로_회원_조회_테스트")
-    void findByEmailAndPassword_success() {
+    void findByEmailAndPassword_Test() {
 
         //given
         Member member = new Member("Member", "test@email.com", "password", "USER");
@@ -55,7 +54,7 @@ public class MemberDaoTest {
 
     @Test
     @DisplayName("아이디로_회원_조회_테스트")
-    void findById_success() {
+    void findById_Test() {
 
         //given
         Member member = new Member("Member", "test@email.com", "password", "USER");
@@ -64,7 +63,8 @@ public class MemberDaoTest {
         //when
         Member foundMember = memberDao.findById(savedMember.getId());
 
-        //then
+        // then
+        assertThat(foundMember).isNotNull();
         assertThat(foundMember)
                 .usingRecursiveComparison()
                 .isEqualTo(savedMember);
@@ -72,7 +72,7 @@ public class MemberDaoTest {
 
     @Test
     @DisplayName("이름으로_회원_조회_테스트")
-    void findByName_success() {
+    void findByName_Test() {
 
         Member member = new Member("Popo", "test@email.com", "password", "USER");
         Member savedMember = memberDao.save(member);
