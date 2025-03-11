@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class LoginService {
 
@@ -32,7 +29,7 @@ public class LoginService {
                 .compact();
     }
 
-    public Map<String, String> getUserInfoFromToken(String token) {
+    public LoginCheckResponse getUserInfoFromToken(String token) {
         var claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
@@ -41,9 +38,6 @@ public class LoginService {
 
         String memberName = claims.get("name", String.class);
         Member member = memberDao.findByName(memberName);
-
-        Map<String, String> userInfo = new HashMap<>();
-        userInfo.put("name", member.getName());
-        return userInfo;
+        return new LoginCheckResponse(member.getName());
     }
 }
