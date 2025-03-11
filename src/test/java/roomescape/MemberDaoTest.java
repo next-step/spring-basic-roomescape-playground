@@ -19,7 +19,25 @@ public class MemberDaoTest {
     private MemberDao memberDao;
 
     @Test
-    @DisplayName("이메일과 비밀번호로 회원 조회 테스트")
+    @DisplayName("멤버_생성_조회_테스트")
+    void saveMemberTest() {
+        // Given
+        Member member = new Member("Brown", "Brown@example.com", "password", "USER");
+
+        // When
+        Member savedMember = memberDao.save(member);
+
+        // Then
+        assertThat(savedMember).isNotNull();
+        assertThat(savedMember.getName()).isEqualTo("Brown");
+        assertThat(savedMember.getEmail()).isEqualTo("Brown@example.com");
+        //assertThat(savedMember.getPassword()).isEqualTo("password");
+        assertThat(savedMember.getRole()).isEqualTo("USER");
+        assertThat(savedMember.getId()).isGreaterThan(0);
+    }
+
+    @Test
+    @DisplayName("이메일과_비밀번호로_회원_조회_테스트")
     void findByEmailAndPassword_success() {
 
         //given
@@ -36,7 +54,7 @@ public class MemberDaoTest {
     }
 
     @Test
-    @DisplayName("이메일로 회원 조회 테스트")
+    @DisplayName("이메일로_회원_조회_테스트")
     void findByEmail_success() {
 
         //given
@@ -53,7 +71,7 @@ public class MemberDaoTest {
     }
 
     @Test
-    @DisplayName("이름으로 회원 조회 테스트")
+    @DisplayName("이름으로_회원_조회_테스트")
     void findByName_success() {
 
         Member member = new Member("Popo", "test@email.com", "password", "USER");
