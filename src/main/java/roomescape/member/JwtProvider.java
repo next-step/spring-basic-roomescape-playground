@@ -15,7 +15,7 @@ public class JwtProvider {
         this.secretKey = secretKey;
     }
 
-    public String createToken(MemberResponse memberResponse) {
+    public String generateToken(MemberResponse memberResponse) {
         return Jwts.builder()
                 .setSubject(memberResponse.getId().toString())
                 .claim("name", memberResponse.getName())
