@@ -91,4 +91,22 @@ public class MissionStepTest {
         return login.token();
     }
 
+    @Test
+    void 삼단계() {
+        String brownToken = generateToke("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = generateToke("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
