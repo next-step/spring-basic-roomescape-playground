@@ -22,7 +22,7 @@ public class JwtTokenProvider {
 
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
         Claims claims = Jwts.claims();
-        claims.put("id", id);
+        claims.put("id", String.valueOf(id));
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -42,7 +42,8 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.get("id", Long.class);
+        String idString = claims.get("id", String.class);
+        return Long.valueOf(idString);
     }
 
 }
