@@ -1,14 +1,13 @@
 package roomescape.reservation;
 
+import java.sql.PreparedStatement;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
-
-import java.sql.PreparedStatement;
-import java.util.List;
 
 @Repository
 public class ReservationDao {
@@ -46,7 +45,8 @@ public class ReservationDao {
     public Reservation save(ReservationRequest reservationRequest) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
+            String sql = "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservationRequest.getDate());
             ps.setString(2, reservationRequest.getName());
             ps.setLong(3, reservationRequest.getTheme());
@@ -66,6 +66,35 @@ public class ReservationDao {
                 keyHolder.getKey().longValue(),
                 reservationRequest.getName(),
                 reservationRequest.getDate(),
+                time,
+                theme
+        );
+    }
+
+    public Reservation save(String date, String name, Long themeId, Long timeId) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            String sql = "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, date);
+            ps.setString(2, name);
+            ps.setLong(3, themeId);
+            ps.setLong(4, timeId);
+            return ps;
+        }, keyHolder);
+
+        Time time = jdbcTemplate.queryForObject("SELECT * FROM time WHERE id = ?",
+                (rs, rowNum) -> new Time(rs.getLong("id"), rs.getString("time_value")),
+                timeId);
+
+        Theme theme = jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
+                (rs, rowNum) -> new Theme(rs.getLong("id"), rs.getString("name"), rs.getString("description")),
+                themeId);
+
+        return new Reservation(
+                keyHolder.getKey().longValue(),
+                name,
+                date,
                 time,
                 theme
         );
