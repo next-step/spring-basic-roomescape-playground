@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.dto.AuthUserNameResponse;
+import roomescape.member.dto.LoginRequest;
+import roomescape.member.dto.LoginResponse;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 @RestController
 public class MemberController {
@@ -28,7 +33,7 @@ public class MemberController {
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+        return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
     }
 
     @PostMapping("/login")

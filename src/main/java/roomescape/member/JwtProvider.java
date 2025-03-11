@@ -1,12 +1,11 @@
 package roomescape.member;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.impl.DefaultJwsHeader;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.member.dto.MemberResponse;
 
 @Component
 public class JwtProvider {
@@ -23,7 +22,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .setHeaderParam(HEADER_TYPE, TOKEN_TYPE)
-                .setSubject(memberResponse.getId().toString())
+                .setSubject(memberResponse.id().toString())
                 .compact();
     }
 
