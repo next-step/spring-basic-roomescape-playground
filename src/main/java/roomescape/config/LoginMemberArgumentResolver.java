@@ -2,16 +2,27 @@ package roomescape.config;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Objects;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.auth.AuthService;
 import roomescape.member.LoginMember;
+import roomescape.member.Member;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+
+    public static final String COOKIE_NAME = "token";
+    private final AuthService authService;
+
+    public LoginMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -21,16 +32,20 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        // 요청에서 쿠키 가지고 온다.
-        // 쿠키에서 이름이 token 인 값을 가지고 온다.
-        // 쿠키가 있으면 jwtProvider 로 파싱한다.
-        // 파싱한 객체로 memberRepository 에서 조회해온다.
-        // 반환하려는 LoginMember 타입의 객체를 초기화해서 반환한다.
+
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        Cookie[] cookies = request.getCookies();
+        Cookie[] cookies = Objects.requireNonNull(request).getCookies();
+        Cookie token = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(COOKIE_NAME))
+                .findAny()
+                .orElse(null);
 
+        if (token == null) {
+            return null;
+        }
 
-        return null;
+        Member member = authService.findMemberByToken(token.getValue());
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
 }
