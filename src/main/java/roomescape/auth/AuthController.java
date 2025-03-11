@@ -13,6 +13,7 @@ import roomescape.member.MemberResponse;
 
 @RestController
 public class AuthController {
+    public static final String TOKEN_NAME = "token";
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -40,7 +41,7 @@ public class AuthController {
     }
 
     private void addCookie(HttpServletResponse response, String token) {
-        Cookie cookie = new Cookie("token", token);
+        Cookie cookie = new Cookie(TOKEN_NAME, token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -48,7 +49,7 @@ public class AuthController {
 
     private String extractTokenFromCookie(Cookie[] cookies) {
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
+                .filter(cookie -> cookie.getName().equals(TOKEN_NAME))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("로그인을 해주세요."));
