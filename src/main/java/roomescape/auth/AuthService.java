@@ -43,6 +43,11 @@ public class AuthService {
         return new AuthUserNameResponse(member.getName());
     }
 
+    public Member findMemberByToken(String token) {
+        Long memberId = jwtProvider.parseMemberIdFrom(token);
+        return getMemberById(memberId);
+    }
+
     private Member getMemberById(Long memberId) {
         return memberDao.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Member not found"));
     }
