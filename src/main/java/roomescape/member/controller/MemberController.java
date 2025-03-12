@@ -47,7 +47,6 @@ public class MemberController {
         addCookie(response, token);
 
         return ResponseEntity.ok("Login successful : " + member.getName());
-
     }
 
     @PostMapping("/logout")

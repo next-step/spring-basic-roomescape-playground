@@ -60,7 +60,7 @@ public class JwtTokenProviderTest {
     @DisplayName("토큰에서_유저_아이디를_가져온다")
     void getIdFromTokenTest() {
         // given
-        long userId = 123L;
+        long userId = 456L;
         String token = jwtTokenProvider.createToken(userId);
 
         // when
