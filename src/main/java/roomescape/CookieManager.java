@@ -18,7 +18,7 @@ public class CookieManager {
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(COOKIE_NAME))
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("토큰이 존재하지 않습니다."));
+                .orElseThrow(() -> new RuntimeException("쿠키가 존재하지 않습니다."));
     }
 
     public void setCookie(String value, int maxAge, HttpServletResponse response) {
