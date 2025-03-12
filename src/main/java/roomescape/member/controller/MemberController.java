@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.dto.request.MemberRequest;
-import roomescape.member.dto.response.MemberResponse;
-import roomescape.member.service.MemberService;
 import roomescape.member.dto.request.LoginRequest;
+import roomescape.member.dto.request.MemberRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
 import roomescape.member.dto.response.LoginResponse;
+import roomescape.member.dto.response.MemberResponse;
+import roomescape.member.service.MemberService;
 
 import java.net.URI;
 
@@ -26,7 +26,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    public MemberController( MemberService memberService) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
 
@@ -64,6 +64,7 @@ public class MemberController {
         cookie.setPath(COOKIE_PATH);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 }
