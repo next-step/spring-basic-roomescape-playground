@@ -33,7 +33,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new MissingRequestCookieException(TOKEN_NAME, parameter);
         }
 
-        return authService.checkLogin(token);
+        MemberDetailResponse member = authService.checkLogin(token);
+
+        return new LoginMember(member.id(), member.name(), member.email(), member.role());
     }
 
     private String extractToken(HttpServletRequest request) {
