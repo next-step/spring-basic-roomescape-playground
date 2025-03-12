@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
+    public static final String ADMIN_PATTERN = "/admin/**";
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
     private final RoleInterceptor roleInterceptor;
 
@@ -26,6 +27,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(roleInterceptor)
-                .addPathPatterns("/admin/**");
+                .addPathPatterns(ADMIN_PATTERN);
     }
 }
