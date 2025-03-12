@@ -18,17 +18,37 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+        Member foundMember = getMemberByName(reservationRequest);
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(),
-                reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        Reservation reservation = saveReservation(reservationRequest, foundMember);
+
+        return toReservationResponse(reservation);
+    }
+
+    private Member getMemberByName(ReservationRequest reservationRequest) {
+        return memberDao.findByName(reservationRequest.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        Member foundMember = memberDao.findById(loginMember.getId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        Reservation reservation = reservationDao.save(reservationRequest.getDate(), foundMember.getName(),
+        Member foundMember = getMemberById(loginMember);
+
+        Reservation reservation = saveReservation(reservationRequest, foundMember);
+
+        return toReservationResponse(reservation);
+    }
+
+    private Member getMemberById(LoginMember loginMember) {
+        return memberDao.findById(loginMember.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+    }
+
+    private Reservation saveReservation(ReservationRequest reservationRequest, Member member) {
+        return reservationDao.save(reservationRequest.getDate(), member.getName(),
                 reservationRequest.getTheme(), reservationRequest.getTime());
+    }
+
+    private ReservationResponse toReservationResponse(Reservation reservation) {
         return new ReservationResponse(reservation.getId(), reservation.getName(),
                 reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
@@ -39,8 +59,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(),
-                        it.getTime().getValue()))
+                .map(this::toReservationResponse)
                 .toList();
     }
 }
