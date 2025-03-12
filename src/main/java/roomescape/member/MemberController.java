@@ -1,14 +1,15 @@
 package roomescape.member;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.CookieManager;
 import roomescape.auth.AuthService;
 import roomescape.member.dto.AuthUserNameResponse;
 import roomescape.member.dto.LoginRequest;
@@ -19,16 +20,14 @@ import roomescape.member.dto.MemberResponse;
 @RestController
 public class MemberController {
 
-    public static final String COOKIE_NAME = "token";
-    public static final String EMPTY_VALUE = "";
-    public static final String ROOT_URI = "/";
-
     private final MemberService memberService;
     private final AuthService authService;
+    private final CookieManager cookieHandler;
 
-    public MemberController(MemberService memberService, AuthService authService) {
+    public MemberController(MemberService memberService, AuthService authService, CookieManager cookieHandler) {
         this.memberService = memberService;
         this.authService = authService;
+        this.cookieHandler = cookieHandler;
     }
 
     @PostMapping("/members")
@@ -41,31 +40,22 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         LoginResponse loginResponse = authService.login(request);
 
-        createCookie(loginResponse.token(), response);
+        cookieHandler.setCookie(loginResponse.token(), 100, response);
         return ResponseEntity.ok().build();
     }
 
-    private void createCookie(String accessToken, HttpServletResponse response) {
-        Cookie cookie = new Cookie(COOKIE_NAME, accessToken);
-        cookie.setPath(ROOT_URI);
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
-    }
-
     @GetMapping("/login/check")
-    public ResponseEntity<AuthUserNameResponse> getAuthenticatedInfo(@CookieValue(name = COOKIE_NAME) String token) {
-        AuthUserNameResponse checkResponse = authService.findByToken(token);
+    public ResponseEntity<AuthUserNameResponse> getAuthenticatedInfo(HttpServletRequest request) {
+        Cookie cookie = cookieHandler.getCookie(request);
+
+        AuthUserNameResponse checkResponse = authService.findByToken(cookie.getValue());
         return ResponseEntity.ok().body(checkResponse);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        deleteCookie(response);
+        cookieHandler.setCookie(null, 0, response);
         return ResponseEntity.ok().build();
-    }
-
-    private void deleteCookie(HttpServletResponse response) {
-        createCookie(null, response);
     }
 
 }

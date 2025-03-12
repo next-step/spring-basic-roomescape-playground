@@ -3,11 +3,9 @@ package roomescape.config;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.Objects;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.CookieExtractor;
+import roomescape.CookieManager;
 import roomescape.auth.AuthService;
 import roomescape.member.Member;
 
@@ -15,9 +13,9 @@ import roomescape.member.Member;
 public class RoleInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
-    private final CookieExtractor cookieExtractor;
+    private final CookieManager cookieExtractor;
 
-    public RoleInterceptor(AuthService authService, CookieExtractor cookieExtractor) {
+    public RoleInterceptor(AuthService authService, CookieManager cookieExtractor) {
         this.authService = authService;
         this.cookieExtractor = cookieExtractor;
     }
@@ -26,7 +24,7 @@ public class RoleInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        Cookie cookie = cookieExtractor.extractToken(request);
+        Cookie cookie = cookieExtractor.getCookie(request);
 
         Member member = authService.findMemberByToken(cookie.getValue());
 
