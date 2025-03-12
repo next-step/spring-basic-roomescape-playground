@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
+    static final String CLAIM_USER_ID = "id";
+
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
@@ -22,7 +24,7 @@ public class JwtTokenProvider {
 
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
         Claims claims = Jwts.claims();
-        claims.put("id", String.valueOf(id));
+        claims.put(CLAIM_USER_ID, String.valueOf(id));
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -35,14 +37,17 @@ public class JwtTokenProvider {
     }
 
     public Long getIdFromToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey.getBytes())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey.getBytes())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        String idString = claims.get("id", String.class);
-        return Long.valueOf(idString);
+            String idString = claims.get(CLAIM_USER_ID, String.class);
+            return Long.valueOf(idString);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid token provided", e);
+        }
     }
 }

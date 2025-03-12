@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import roomescape.auth.CookieName;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.response.MemberResponse;
@@ -23,6 +22,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final String USER_TOKEN = "loginUser";
 
     public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
@@ -36,11 +36,11 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest LoginRequest, HttpServletResponse response) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
-        Member member = memberService.login(LoginRequest.getEmail(), LoginRequest.getPassword());
+        Member member = memberService.login(loginRequest.getEmail(), loginRequest.getPassword());
         if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
 
         String token = jwtTokenProvider.createToken(member.getId());
@@ -52,7 +52,7 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(CookieName.LOGIN_USER.getValue(), "");
+        Cookie cookie = new Cookie(USER_TOKEN, "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
@@ -61,7 +61,7 @@ public class MemberController {
     }
 
     private void addCookie(HttpServletResponse response, String token) {
-        Cookie cookie = new Cookie(CookieName.LOGIN_USER.getValue(), token);
+        Cookie cookie = new Cookie(USER_TOKEN, token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(3600);
