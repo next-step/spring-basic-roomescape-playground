@@ -1,4 +1,8 @@
 package roomescape.auth;
 
-public class MemberDetailResponse {
-}
+public record MemberDetailResponse(
+        Long id,
+        String name,
+        String email,
+        String role
+) {}
