@@ -82,5 +82,4 @@ public class MemberDaoTest {
         .usingRecursiveComparison()
                 .isEqualTo(savedMember);
     }
-
 }
