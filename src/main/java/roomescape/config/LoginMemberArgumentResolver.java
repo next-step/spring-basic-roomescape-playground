@@ -2,14 +2,13 @@ package roomescape.config;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Objects;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.CookieExtractor;
 import roomescape.auth.AuthService;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
@@ -17,11 +16,12 @@ import roomescape.member.Member;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    public static final String COOKIE_NAME = "token";
     private final AuthService authService;
+    private final CookieExtractor cookieExtractor;
 
-    public LoginMemberArgumentResolver(AuthService authService) {
+    public LoginMemberArgumentResolver(AuthService authService, CookieExtractor cookieExtractor) {
         this.authService = authService;
+        this.cookieExtractor = cookieExtractor;
     }
 
     @Override
@@ -34,17 +34,13 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        Cookie[] cookies = Objects.requireNonNull(request).getCookies();
-        Cookie token = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(COOKIE_NAME))
-                .findAny()
-                .orElse(null);
+        Cookie cookie = cookieExtractor.extractToken(request);
 
-        if (token == null) {
+        if (cookie == null) {
             return null;
         }
 
-        Member member = authService.findMemberByToken(token.getValue());
+        Member member = authService.findMemberByToken(cookie.getValue());
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
