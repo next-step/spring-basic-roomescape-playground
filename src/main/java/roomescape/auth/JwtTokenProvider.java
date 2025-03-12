@@ -1,4 +1,4 @@
-package roomescape.member.util;
+package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

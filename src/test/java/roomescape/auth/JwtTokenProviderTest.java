@@ -1,4 +1,4 @@
-package roomescape.member.util;
+package roomescape.auth;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
