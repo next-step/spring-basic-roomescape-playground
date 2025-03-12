@@ -1,6 +1,6 @@
 package roomescape;
 
-import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,10 +8,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
-public class DataBaseCleaner implements BeforeEachCallback {
+public class DataBaseCleaner implements AfterEachCallback {
 
     @Override
-    public void beforeEach(ExtensionContext extensionContext) throws Exception {
+    public void afterEach(ExtensionContext extensionContext) throws Exception {
         ApplicationContext context = SpringExtension.getApplicationContext(extensionContext);
         cleanup(context);
     }
