@@ -40,7 +40,7 @@ public class MemberController {
 
         Member member = memberService.login(loginRequest.getEmail(), loginRequest.getPassword());
         if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         String token = jwtTokenProvider.createToken(member.getId());
