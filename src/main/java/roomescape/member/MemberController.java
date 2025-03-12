@@ -22,12 +22,12 @@ public class MemberController {
 
     private final MemberService memberService;
     private final AuthService authService;
-    private final CookieManager cookieHandler;
+    private final CookieManager cookieManager;
 
     public MemberController(MemberService memberService, AuthService authService, CookieManager cookieHandler) {
         this.memberService = memberService;
         this.authService = authService;
-        this.cookieHandler = cookieHandler;
+        this.cookieManager = cookieHandler;
     }
 
     @PostMapping("/members")
@@ -40,13 +40,13 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         LoginResponse loginResponse = authService.login(request);
 
-        cookieHandler.setCookie(loginResponse.token(), 100, response);
+        cookieManager.setCookie(loginResponse.token(), 100, response);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<AuthUserNameResponse> getAuthenticatedInfo(HttpServletRequest request) {
-        Cookie cookie = cookieHandler.getCookie(request);
+        Cookie cookie = cookieManager.getCookie(request);
 
         AuthUserNameResponse checkResponse = authService.findByToken(cookie.getValue());
         return ResponseEntity.ok().body(checkResponse);
@@ -54,7 +54,8 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        cookieHandler.setCookie(null, 0, response);
+        // TODO 뭘 null, 0 ???
+        cookieManager.setCookie(null, 0, response);
         return ResponseEntity.ok().build();
     }
 

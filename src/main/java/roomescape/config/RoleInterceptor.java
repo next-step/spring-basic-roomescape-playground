@@ -13,18 +13,18 @@ import roomescape.member.Member;
 public class RoleInterceptor implements HandlerInterceptor {
 
     private final AuthService authService;
-    private final CookieManager cookieExtractor;
+    private final CookieManager cookieManager;
 
     public RoleInterceptor(AuthService authService, CookieManager cookieExtractor) {
         this.authService = authService;
-        this.cookieExtractor = cookieExtractor;
+        this.cookieManager = cookieExtractor;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        Cookie cookie = cookieExtractor.getCookie(request);
+        Cookie cookie = cookieManager.getCookie(request);
 
         Member member = authService.findMemberByToken(cookie.getValue());
 
