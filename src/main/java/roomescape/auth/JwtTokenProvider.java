@@ -16,7 +16,7 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private static final long ACCESS_TOKEN_EXP = 60L * 60L * 1000L; // 1시간
+    public static final long ACCESS_TOKEN_EXP = 60L * 60L * 1000L; // 1시간
 
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
