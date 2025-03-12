@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
@@ -19,6 +18,9 @@ import roomescape.member.dto.MemberResponse;
 
 @RestController
 public class MemberController {
+
+    public static final int ONE_HOUR = 3600;
+    public static final int ZERO = 0;
 
     private final MemberService memberService;
     private final AuthService authService;
@@ -40,22 +42,21 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         LoginResponse loginResponse = authService.login(request);
 
-        cookieManager.setCookie(loginResponse.token(), 100, response);
+        cookieManager.addTokenToCookie(loginResponse.token(), ONE_HOUR, response);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<AuthUserNameResponse> getAuthenticatedInfo(HttpServletRequest request) {
-        Cookie cookie = cookieManager.getCookie(request);
+        String token = cookieManager.getTokenFrom(request);
 
-        AuthUserNameResponse checkResponse = authService.findByToken(cookie.getValue());
+        AuthUserNameResponse checkResponse = authService.findByToken(token);
         return ResponseEntity.ok().body(checkResponse);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        // TODO 뭘 null, 0 ???
-        cookieManager.setCookie(null, 0, response);
+        cookieManager.addTokenToCookie(null, ZERO, response);
         return ResponseEntity.ok().build();
     }
 

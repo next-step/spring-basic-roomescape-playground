@@ -1,6 +1,5 @@
 package roomescape.config;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -11,6 +10,8 @@ import roomescape.member.Member;
 
 @Component
 public class RoleInterceptor implements HandlerInterceptor {
+
+    public static final String ADMIN = "ADMIN";
 
     private final AuthService authService;
     private final CookieManager cookieManager;
@@ -24,9 +25,9 @@ public class RoleInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        Cookie cookie = cookieManager.getCookie(request);
+        String token = cookieManager.getTokenFrom(request);
 
-        Member member = authService.findMemberByToken(cookie.getValue());
+        Member member = authService.findMemberByToken(token);
 
         if (isAdmin(member)) {
             return true;
@@ -36,7 +37,7 @@ public class RoleInterceptor implements HandlerInterceptor {
     }
 
     private boolean isAdmin(Member member) {
-        return member.getRole().equals("ADMIN");
+        return member.getRole().equals(ADMIN);
     }
 
 }
