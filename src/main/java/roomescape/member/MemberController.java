@@ -41,16 +41,15 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         LoginResponse loginResponse = authService.login(request);
 
-        Cookie cookie = createCookie(loginResponse);
-        response.addCookie(cookie);
+        createCookie(loginResponse.token(), response);
         return ResponseEntity.ok().build();
     }
 
-    private Cookie createCookie(LoginResponse accessToken) {
-        Cookie cookie = new Cookie(COOKIE_NAME, accessToken.token());
+    private void createCookie(String accessToken, HttpServletResponse response) {
+        Cookie cookie = new Cookie(COOKIE_NAME, accessToken);
         cookie.setPath(ROOT_URI);
         cookie.setHttpOnly(true);
-        return cookie;
+        response.addCookie(cookie);
     }
 
     @GetMapping("/login/check")
@@ -61,11 +60,12 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(COOKIE_NAME, EMPTY_VALUE);
-        cookie.setHttpOnly(true);
-        cookie.setPath(ROOT_URI);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        deleteCookie(response);
         return ResponseEntity.ok().build();
     }
+
+    private void deleteCookie(HttpServletResponse response) {
+        createCookie(null, response);
+    }
+
 }
