@@ -22,10 +22,10 @@ public class AuthService {
         return new AuthResponse(accessToken);
     }
 
-    public MemberResponse checkLogin(String token) {
+    public MemberDetailResponse checkLogin(String token) {
         Long memberId = jwtTokenProvider.getMemberId(token);
         Member member = memberDao.findById(memberId);
 
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberDetailResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 }
