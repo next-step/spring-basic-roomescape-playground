@@ -27,10 +27,12 @@ class MemberDaoTest {
         // when
         Optional<Member> foundMember = memberDao.findById(savedMember.getId());
         // then
-        assertThat(foundMember).isPresent()
-                .get()
-                .extracting("name", "email", "role")
-                .containsExactlyInAnyOrder("멤버", "member@email.com",  Role.USER);
+        assertThat(foundMember)
+                .hasValueSatisfying(memberResult -> assertAll(
+                        () -> assertThat(memberResult.getName()).isEqualTo(savedMember.getName()),
+                        () -> assertThat(memberResult.getEmail()).isEqualTo(savedMember.getEmail()),
+                        () -> assertThat(memberResult.getRole()).isEqualTo(savedMember.getRole())
+                ));
     }
 
     @Test
@@ -45,14 +47,16 @@ class MemberDaoTest {
     void 이메일_및_비밀번호를_통해_멤버를_조회한다() {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        memberDao.save(member);
+        Member savedMember = memberDao.save(member);
         // when
         Optional<Member> foundMember = memberDao.findByEmailAndPassword(member.getEmail(), member.getPassword());
         // then
-        assertThat(foundMember).isPresent()
-                .get()
-                .extracting("name", "email", "role")
-                .containsExactlyInAnyOrder("멤버", "member@email.com",  Role.USER);
+        assertThat(foundMember)
+                .hasValueSatisfying(memberResult -> assertAll(
+                        () -> assertThat(memberResult.getName()).isEqualTo(savedMember.getName()),
+                        () -> assertThat(memberResult.getEmail()).isEqualTo(savedMember.getEmail()),
+                        () -> assertThat(memberResult.getRole()).isEqualTo(savedMember.getRole())
+                ));
     }
 
     @Test
