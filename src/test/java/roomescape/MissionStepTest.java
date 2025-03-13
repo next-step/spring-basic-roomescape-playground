@@ -11,8 +11,8 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
-import roomescape.auth.AuthRequest;
-import roomescape.auth.AuthResponse;
+import roomescape.auth.dto.AuthRequest;
+import roomescape.auth.dto.AuthResponse;
 import roomescape.auth.AuthService;
 import roomescape.reservation.ReservationResponse;
 

@@ -1,6 +1,6 @@
-package roomescape.auth;
+package roomescape.auth.domain;
 
-public record MemberDetailResponse(
+public record LoginMember(
         Long id,
         String name,
         String email,

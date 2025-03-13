@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.MemberResponse;
+import roomescape.auth.dto.AuthRequest;
+import roomescape.auth.dto.MemberDetailResponse;
 
 @RestController
 public class AuthController {

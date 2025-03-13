@@ -1,10 +1,12 @@
 package roomescape.auth;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.AuthRequest;
+import roomescape.auth.dto.AuthResponse;
+import roomescape.auth.dto.MemberDetailResponse;
 import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
-import roomescape.member.MemberResponse;
 
 @Service
 public class AuthService {

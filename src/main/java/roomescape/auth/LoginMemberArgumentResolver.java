@@ -9,6 +9,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.auth.domain.LoginMember;
+import roomescape.auth.dto.MemberDetailResponse;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     public static final String TOKEN_NAME = "token";
