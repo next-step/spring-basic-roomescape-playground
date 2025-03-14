@@ -55,9 +55,13 @@ public class AuthService {
     public LoginCheckResponse loginCheck(Cookie cookie) {
         validateCookie(cookie);
         String accessToken = cookie.getValue();
-        long memberId = jwtTokenProvider.parseToken(accessToken);
-        Member member = getMemberById(memberId);
+        Member member = getLoginMember(accessToken);
         return new LoginCheckResponse(member);
+    }
+
+    public Member getLoginMember(String accessToken) {
+        long memberId = jwtTokenProvider.parseToken(accessToken);
+        return getMemberById(memberId);
     }
 
     private void validateCookie(Cookie cookie) {
@@ -71,10 +75,5 @@ public class AuthService {
     private Member getMemberById(long memberId) {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
-    }
-
-    public Member getLoginMember(String accessToken) {
-        long memberId = jwtTokenProvider.parseToken(accessToken);
-        return getMemberById(memberId);
     }
 }
