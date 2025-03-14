@@ -2,6 +2,7 @@ package roomescape.auth.service;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
+import roomescape.auth.controller.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.member.dao.MemberDao;
@@ -70,5 +71,10 @@ public class AuthService {
     private Member getMemberById(long memberId) {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
+    }
+
+    public Member getLoginMember(String accessToken) {
+        long memberId = jwtTokenProvider.parseToken(accessToken);
+        return getMemberById(memberId);
     }
 }
