@@ -24,6 +24,7 @@ public class LoginService {
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
+                .claim("id", member.getId())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
                 .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes()))

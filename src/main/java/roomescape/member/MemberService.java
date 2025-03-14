@@ -28,7 +28,11 @@ public class MemberService {
                 .parseClaimsJws(token)
                 .getBody();
 
-        Long id = claims.get("id", Long.class);
+        Double idDouble = claims.get("id", Double.class);
+        Long id = null;
+        if (idDouble != null) {
+            id = idDouble.longValue();
+        }
         return memberDao.findById(id);
     }
 }
