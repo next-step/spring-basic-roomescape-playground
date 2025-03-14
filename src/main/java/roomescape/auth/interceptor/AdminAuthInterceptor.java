@@ -1,0 +1,33 @@
+package roomescape.auth.interceptor;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.CookieManager;
+import roomescape.auth.service.AuthService;
+import roomescape.exception.ExceptionMessage;
+import roomescape.exception.UnAuthorizedException;
+
+import static roomescape.auth.controller.AuthController.COOKIE_NAME;
+
+@Component
+public class AdminAuthInterceptor implements HandlerInterceptor {
+
+    private final AuthService authService;
+
+    public AdminAuthInterceptor(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        CookieManager cookieManager = new CookieManager(request.getCookies());
+        String accessToken = cookieManager.getValue(COOKIE_NAME);
+
+        if (authService.isNotAdmin(accessToken)) {
+            throw new UnAuthorizedException(ExceptionMessage.UNAUTHORIZED_MEMBER.getMessage());
+        }
+        return true;
+    }
+}
