@@ -9,7 +9,7 @@ import roomescape.auth.service.AuthService;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
 
-import static roomescape.auth.controller.AuthController.COOKIE_NAME;
+import static roomescape.auth.controller.AuthController.AUTH_TOKEN_COOKIE;
 
 @Component
 public class AdminAuthInterceptor implements HandlerInterceptor {
@@ -23,7 +23,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         CookieManager cookieManager = new CookieManager(request.getCookies());
-        String accessToken = cookieManager.getValue(COOKIE_NAME);
+        String accessToken = cookieManager.getValue(AUTH_TOKEN_COOKIE);
 
         if (authService.isNotAdmin(accessToken)) {
             throw new UnAuthorizedException(ExceptionMessage.UNAUTHORIZED_MEMBER.getMessage());

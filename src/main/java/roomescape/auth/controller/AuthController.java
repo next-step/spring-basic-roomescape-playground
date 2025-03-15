@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.CookieManager;
 import roomescape.auth.service.AuthService;
 import roomescape.member.dto.request.LoginRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
@@ -16,9 +17,7 @@ import roomescape.member.dto.response.LoginResponse;
 @RestController
 public class AuthController {
 
-    public static final String COOKIE_NAME = "token";
-    private static final String COOKIE_PATH = "/";
-    private static final int COOKIE_VALID_TIME = 3600;
+    public static final String AUTH_TOKEN_COOKIE = "token";
 
     private final AuthService authService;
 
@@ -30,29 +29,23 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         LoginResponse login = authService.login(request);
 
-        Cookie cookie = new Cookie(COOKIE_NAME, login.accessToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath(COOKIE_PATH);
-        cookie.setMaxAge(COOKIE_VALID_TIME);
+        Cookie cookie = CookieManager.createCookie(AUTH_TOKEN_COOKIE, login.accessToken());
         response.addCookie(cookie);
 
         return ResponseEntity.ok(login);
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(value = COOKIE_NAME) Cookie cookie) {
+    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(value = AUTH_TOKEN_COOKIE) Cookie cookie) {
         LoginCheckResponse loginCheck = authService.loginCheck(cookie);
         return ResponseEntity.ok(loginCheck);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-
-        Cookie cookie = new Cookie(COOKIE_NAME, "");
-        cookie.setHttpOnly(true);
-        cookie.setPath(COOKIE_PATH);
-        cookie.setMaxAge(0);
+        Cookie cookie = CookieManager.createCookie(AUTH_TOKEN_COOKIE, "");
         response.addCookie(cookie);
+
         return ResponseEntity.noContent()
                 .build();
     }

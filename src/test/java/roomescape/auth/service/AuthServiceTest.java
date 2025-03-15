@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.DataBaseCleaner;
+import roomescape.auth.JwtTokenProvider;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.member.dao.MemberDao;
@@ -16,11 +17,10 @@ import roomescape.member.domain.Role;
 import roomescape.member.dto.request.LoginRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
 import roomescape.member.dto.response.LoginResponse;
-import roomescape.auth.JwtTokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.auth.controller.AuthController.COOKIE_NAME;
+import static roomescape.auth.controller.AuthController.AUTH_TOKEN_COOKIE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ExtendWith(DataBaseCleaner.class)
@@ -77,7 +77,7 @@ class AuthServiceTest {
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         Member savedMember = memberDao.save(member);
         String accessToken = jwtTokenProvider.createAccessToken(savedMember);
-        Cookie cookie = new Cookie(COOKIE_NAME, accessToken);
+        Cookie cookie = new Cookie(AUTH_TOKEN_COOKIE, accessToken);
         // when
         LoginCheckResponse loginCheckResponse = authService.loginCheck(cookie);
         // then
@@ -90,7 +90,7 @@ class AuthServiceTest {
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         memberDao.save(member);
         String invalidAccessToken = "invalid.token";
-        Cookie cookie = new Cookie(COOKIE_NAME, invalidAccessToken);
+        Cookie cookie = new Cookie(AUTH_TOKEN_COOKIE, invalidAccessToken);
         // when & then
         assertThatThrownBy(() -> authService.loginCheck(cookie))
                 .isInstanceOf(BadRequestException.class)
@@ -115,11 +115,11 @@ class AuthServiceTest {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         memberDao.save(member);
-        Cookie cookie = new Cookie(COOKIE_NAME, accessToken);
+        Cookie cookie = new Cookie(AUTH_TOKEN_COOKIE, accessToken);
         // when & then
         assertThatThrownBy(() -> authService.loginCheck(cookie))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
+                .hasMessage(ExceptionMessage.INVALID_COOKIE_VALUE.getMessage());
     }
 }
 

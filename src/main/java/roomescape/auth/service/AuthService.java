@@ -2,6 +2,7 @@ package roomescape.auth.service;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
+import roomescape.auth.CookieManager;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
@@ -52,8 +53,8 @@ public class AuthService {
     }
 
     public LoginCheckResponse loginCheck(Cookie cookie) {
-        validateCookie(cookie);
-        String accessToken = cookie.getValue();
+        CookieManager cookieManager = new CookieManager(cookie);
+        String accessToken = cookieManager.getValue(cookie.getName());
         Member member = getLoginMember(accessToken);
         return new LoginCheckResponse(member);
     }
@@ -61,14 +62,6 @@ public class AuthService {
     public Member getLoginMember(String accessToken) {
         long memberId = jwtTokenProvider.parseToken(accessToken);
         return getMemberById(memberId);
-    }
-
-    private void validateCookie(Cookie cookie) {
-        if (cookie == null
-                || cookie.getValue() == null
-                || cookie.getValue().isBlank()) {
-            throw new BadRequestException(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
-        }
     }
 
     private Member getMemberById(long memberId) {
