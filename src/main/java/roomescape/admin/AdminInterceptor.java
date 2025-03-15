@@ -1,20 +1,16 @@
 package roomescape.admin;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import java.nio.charset.StandardCharsets;
+import roomescape.util.JwtUtil;
 
 public class AdminInterceptor implements HandlerInterceptor {
-    private final String secretKey;
+    private final JwtUtil jwtUtil;
 
-    public AdminInterceptor(String secretKey) {
-        this.secretKey = secretKey;
+    public AdminInterceptor(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -45,11 +41,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     public String getUserRoleFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = jwtUtil.parseClaims(token);
         return claims.get("role", String.class);
     }
 }
