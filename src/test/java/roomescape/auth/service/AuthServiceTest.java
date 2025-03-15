@@ -11,6 +11,7 @@ import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.controller.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
+import roomescape.exception.UnAuthorizedException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
@@ -106,7 +107,7 @@ class AuthServiceTest {
         String invalidToken = "invalid.token";
         //then
         assertThatThrownBy(() -> authService.getLoginMember(invalidToken))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(UnAuthorizedException.class)
                 .hasMessage(ExceptionMessage.INVALID_TOKEN.getMessage());
     }
 }

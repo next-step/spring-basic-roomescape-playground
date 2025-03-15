@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
+import roomescape.exception.UnAuthorizedException;
 import roomescape.member.domain.Member;
 
 import java.util.Date;
@@ -47,9 +48,9 @@ public class JwtTokenProvider {
             Claims claims = parseClaims(token);
             return Long.parseLong(claims.getSubject());
         } catch (ExpiredJwtException exception) {
-            throw new BadRequestException(ExceptionMessage.EXPIRED_TOKEN.getMessage());
+            throw new UnAuthorizedException(ExceptionMessage.EXPIRED_TOKEN.getMessage());
         } catch (JwtException exception) {
-            throw new BadRequestException(ExceptionMessage.INVALID_TOKEN.getMessage());
+            throw new UnAuthorizedException(ExceptionMessage.INVALID_TOKEN.getMessage());
         }
     }
 
