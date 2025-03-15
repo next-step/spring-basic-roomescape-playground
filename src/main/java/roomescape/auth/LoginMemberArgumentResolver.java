@@ -14,6 +14,7 @@ import roomescape.auth.dto.MemberDetailResponse;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     public static final String TOKEN_NAME = "token";
+
     private final AuthService authService;
 
     public LoginMemberArgumentResolver(AuthService authService) {

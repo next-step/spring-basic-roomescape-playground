@@ -15,6 +15,7 @@ import roomescape.auth.dto.MemberDetailResponse;
 @RestController
 public class AuthController {
     public static final String TOKEN_NAME = "token";
+
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
