@@ -24,7 +24,7 @@ public class ReservationService {
         return new ReservationResponse(reservation);
     }
 
-    private ReservationRequest updateRequestIfNameIsInvalid(ReservationRequest reservationRequest, final LoginMember loginMember) {
+    private ReservationRequest updateRequestIfNameIsInvalid(ReservationRequest reservationRequest, LoginMember loginMember) {
         if (reservationRequest.isInvalidName()) {
             reservationRequest = createReservationRequestWithName(reservationRequest, loginMember);
         }
