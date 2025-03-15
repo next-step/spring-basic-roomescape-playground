@@ -9,10 +9,10 @@ import roomescape.auth.domain.LoginMember;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.dto.MemberDetailResponse;
 
-public class LoginInterceptor implements HandlerInterceptor {
+public class AdminAuthInterceptor implements HandlerInterceptor {
     private final AuthService authService;
 
-    public LoginInterceptor(AuthService authService) {
+    public AdminAuthInterceptor(AuthService authService) {
         this.authService = authService;
     }
 
