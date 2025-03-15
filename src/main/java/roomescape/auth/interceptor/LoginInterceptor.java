@@ -1,11 +1,13 @@
 package roomescape.auth.interceptor;
 
+import static roomescape.auth.util.AuthUtil.extractToken;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.AuthService;
+import roomescape.auth.service.AuthService;
 import roomescape.auth.dto.MemberDetailResponse;
 
 public class LoginInterceptor implements HandlerInterceptor {
@@ -31,13 +33,5 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         return true;
-    }
-
-    private String extractToken(HttpServletRequest request) {
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals("token"))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
     }
 }

@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.AuthRequest;

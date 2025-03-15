@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import roomescape.auth.dto.AuthRequest;
 import roomescape.auth.dto.AuthResponse;
-import roomescape.auth.AuthService;
+import roomescape.auth.service.AuthService;
 import roomescape.reservation.ReservationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,20 +1,18 @@
-package roomescape.auth;
+package roomescape.auth.resolver;
 
-import jakarta.servlet.http.Cookie;
+import static roomescape.auth.util.AuthUtil.extractToken;
+
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import org.springframework.core.MethodParameter;
-import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.domain.LoginMember;
 import roomescape.auth.dto.MemberDetailResponse;
+import roomescape.auth.service.AuthService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    public static final String TOKEN_NAME = "token";
-
     private final AuthService authService;
 
     public LoginMemberArgumentResolver(AuthService authService) {
@@ -33,13 +31,5 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         MemberDetailResponse member = authService.checkLogin(token);
 
         return new LoginMember(member.id(), member.name(), member.email(), member.role());
-    }
-
-    private String extractToken(HttpServletRequest request) throws MissingRequestCookieException {
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals("token"))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new MissingRequestCookieException(TOKEN_NAME, null));
     }
 }

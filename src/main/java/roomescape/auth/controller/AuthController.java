@@ -1,14 +1,17 @@
-package roomescape.auth;
+package roomescape.auth.controller;
+
+import static roomescape.auth.util.AuthUtil.extractToken;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.service.AuthService;
 import roomescape.auth.dto.AuthRequest;
 import roomescape.auth.dto.MemberDetailResponse;
 
@@ -31,8 +34,7 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberDetailResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
+        String token = extractToken(request);
 
         if (token.isEmpty()) {
             throw new IllegalArgumentException("로그인을 해주세요.");
@@ -47,13 +49,5 @@ public class AuthController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(TOKEN_NAME))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("로그인을 해주세요."));
     }
 }
