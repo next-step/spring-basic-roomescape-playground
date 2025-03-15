@@ -23,27 +23,9 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        validateLoginValues(request);
         Member member = getMemberWithLogin(request);
         String accessToken = jwtTokenProvider.createAccessToken(member);
         return new LoginResponse(accessToken);
-    }
-
-    private void validateLoginValues(LoginRequest request) {
-        validateEmailNotBlank(request.email());
-        validatePasswordNotBlank(request.password());
-    }
-
-    private void validateEmailNotBlank(String email) {
-        if (email == null || email.isBlank()) {
-            throw new BadRequestException(ExceptionMessage.INVALID_EMAIL.getMessage());
-        }
-    }
-
-    private void validatePasswordNotBlank(String password) {
-        if (password == null || password.isBlank()) {
-            throw new BadRequestException(ExceptionMessage.INVALID_PASSWORD.getMessage());
-        }
     }
 
     private Member getMemberWithLogin(LoginRequest request) {
