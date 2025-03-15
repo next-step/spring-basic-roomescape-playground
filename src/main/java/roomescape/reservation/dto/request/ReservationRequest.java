@@ -1,6 +1,5 @@
 package roomescape.reservation.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 
@@ -10,21 +9,17 @@ public class ReservationRequest {
 
     private final String name;
     private final LocalDate date;
+    private final Long theme;
+    private final Long time;
 
-    @JsonProperty("themeId")
-    private final Long themeId;
-
-    @JsonProperty("timeId")
-    private final Long timeId;
-
-    public ReservationRequest(String name, LocalDate date, Long themeId, Long timeId) {
+    public ReservationRequest(String name, LocalDate date, Long theme, Long time) {
         validateDate(date);
-        validateTheme(themeId);
-        validateTime(timeId);
+        validateTheme(theme);
+        validateTime(time);
         this.name = name;
         this.date = date;
-        this.themeId = themeId;
-        this.timeId = timeId;
+        this.theme = theme;
+        this.time = time;
     }
 
     private void validateDate(final LocalDate date) {
@@ -46,7 +41,7 @@ public class ReservationRequest {
     }
 
     public ReservationRequest createWith(String name) {
-        return new ReservationRequest(name, this.date, this.themeId, this.timeId);
+        return new ReservationRequest(name, this.date, this.theme, this.time);
     }
 
     public boolean isInvalidName() {
@@ -61,11 +56,11 @@ public class ReservationRequest {
         return date;
     }
 
-    public Long getThemeId() {
-        return themeId;
+    public Long getTheme() {
+        return theme;
     }
 
-    public Long getTimeId() {
-        return timeId;
+    public Long getTime() {
+        return time;
     }
 }
