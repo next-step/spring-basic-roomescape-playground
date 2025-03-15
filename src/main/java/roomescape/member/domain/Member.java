@@ -1,6 +1,7 @@
 package roomescape.member.domain;
 
 public class Member {
+
     private Long id;
     private String name;
     private String email;
@@ -21,11 +22,7 @@ public class Member {
         this.role = role;
     }
 
-    public boolean isNotAdmin() {
-        return !isAdmin();
-    }
-
-    private boolean isAdmin() {
+    public boolean isAdmin() {
         return this.role == Role.ADMIN;
     }
 

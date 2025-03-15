@@ -1,9 +1,8 @@
 package roomescape.auth.service;
 
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.auth.CookieManager;
 import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.controller.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.member.dao.MemberDao;
@@ -52,11 +51,8 @@ public class AuthService {
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
-    public LoginCheckResponse loginCheck(Cookie cookie) {
-        CookieManager cookieManager = new CookieManager(cookie);
-        String accessToken = cookieManager.getValue(cookie.getName());
-        Member member = getLoginMember(accessToken);
-        return new LoginCheckResponse(member);
+    public LoginCheckResponse loginCheck(LoginMember loginMember) {
+        return new LoginCheckResponse(loginMember.name());
     }
 
     public Member getLoginMember(String accessToken) {
@@ -67,10 +63,5 @@ public class AuthService {
     private Member getMemberById(long memberId) {
         return memberDao.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
-    }
-
-    public boolean isNotAdmin(String accessToken) {
-        Member member = getLoginMember(accessToken);
-        return member.isNotAdmin();
     }
 }

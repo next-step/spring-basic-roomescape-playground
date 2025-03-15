@@ -15,19 +15,16 @@ public class CookieManager {
     private final Map<String, Cookie> cookieStore = new HashMap<>();
 
     public CookieManager(Cookie[] cookies) {
-        if (cookies == null) {
-            throw new BadRequestException(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
-        }
+        validateCookies(cookies);
         for (Cookie cookie : cookies) {
             cookieStore.put(cookie.getName(), cookie);
         }
     }
 
-    public CookieManager(Cookie cookie) {
-        if (cookie == null) {
+    private void validateCookies(final Cookie[] cookies) {
+        if (cookies == null) {
             throw new BadRequestException(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
         }
-        cookieStore.put(cookie.getName(), cookie);
     }
 
     public static Cookie createCookie(String name, String value) {

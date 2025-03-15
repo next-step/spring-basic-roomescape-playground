@@ -36,8 +36,8 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> loginCheck(@CookieValue(value = AUTH_TOKEN_COOKIE) Cookie cookie) {
-        LoginCheckResponse loginCheck = authService.loginCheck(cookie);
+    public ResponseEntity<LoginCheckResponse> loginCheck(LoginMember loginMember) {
+        LoginCheckResponse loginCheck = authService.loginCheck(loginMember);
         return ResponseEntity.ok(loginCheck);
     }
 

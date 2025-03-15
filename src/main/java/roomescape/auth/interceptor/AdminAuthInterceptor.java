@@ -8,6 +8,7 @@ import roomescape.auth.CookieManager;
 import roomescape.auth.service.AuthService;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
+import roomescape.member.domain.Member;
 
 import static roomescape.auth.controller.AuthController.AUTH_TOKEN_COOKIE;
 
@@ -25,9 +26,10 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         CookieManager cookieManager = new CookieManager(request.getCookies());
         String accessToken = cookieManager.getValue(AUTH_TOKEN_COOKIE);
 
-        if (authService.isNotAdmin(accessToken)) {
-            throw new UnAuthorizedException(ExceptionMessage.UNAUTHORIZED_MEMBER.getMessage());
+        Member member = authService.getLoginMember(accessToken);
+        if (member.isAdmin()) {
+            return true;
         }
-        return true;
+        throw new UnAuthorizedException(ExceptionMessage.UNAUTHORIZED_MEMBER.getMessage());
     }
 }
