@@ -19,17 +19,21 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.isInvalidName()) {
-            reservationRequest = getReservationRequestWithName(reservationRequest, loginMember);
-        }
+        reservationRequest = updateRequestIfNameIsInvalid(reservationRequest, loginMember);
         Reservation reservation = reservationDao.save(reservationRequest);
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(reservation);
     }
 
-    private ReservationRequest getReservationRequestWithName(ReservationRequest reservationRequest, LoginMember loginMember) {
-        String name = loginMember.name();
-        reservationRequest = reservationRequest.createWith(name);
+    private ReservationRequest updateRequestIfNameIsInvalid(ReservationRequest reservationRequest, final LoginMember loginMember) {
+        if (reservationRequest.isInvalidName()) {
+            reservationRequest = createReservationRequestWithName(reservationRequest, loginMember);
+        }
         return reservationRequest;
+    }
+
+    private ReservationRequest createReservationRequestWithName(ReservationRequest reservationRequest, LoginMember loginMember) {
+        String name = loginMember.name();
+        return reservationRequest.createWith(name);
     }
 
     public void deleteById(Long id) {
@@ -38,7 +42,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(ReservationResponse::new)
                 .toList();
     }
 }
