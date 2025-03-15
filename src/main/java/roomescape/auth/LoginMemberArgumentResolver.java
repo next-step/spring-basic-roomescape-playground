@@ -27,25 +27,19 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractToken(request);
-
-        if (token == null) {
-            throw new MissingRequestCookieException(TOKEN_NAME, parameter);
-        }
-
         MemberDetailResponse member = authService.checkLogin(token);
 
         return new LoginMember(member.id(), member.name(), member.email(), member.role());
     }
 
-    private String extractToken(HttpServletRequest request) {
+    private String extractToken(HttpServletRequest request) throws MissingRequestCookieException {
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName().equals("token"))
                 .map(Cookie::getValue)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new MissingRequestCookieException(TOKEN_NAME, null));
     }
 }
