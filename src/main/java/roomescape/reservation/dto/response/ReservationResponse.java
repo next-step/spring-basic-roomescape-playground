@@ -1,28 +1,38 @@
 package roomescape.reservation.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import roomescape.reservation.domain.Reservation;
 
-public class ReservationResponse {
-    private Long id;
-    private String name;
-    private String theme;
-    private String date;
-    private String time;
+import java.time.LocalDate;
 
-    protected ReservationResponse(Long id, String name, String theme, String date, String time) {
+public class ReservationResponse {
+
+    private Long id;
+
+    private String name;
+
+    @JsonProperty("themeId")
+    private String themeId;
+
+    private LocalDate date;
+
+    @JsonProperty("timeId")
+    private String timeId;
+
+    protected ReservationResponse(Long id, String name, String themeId, LocalDate date, String timeId) {
         this.id = id;
         this.name = name;
-        this.theme = theme;
+        this.themeId = themeId;
         this.date = date;
-        this.time = time;
+        this.timeId = timeId;
     }
 
     public ReservationResponse(Reservation reservation) {
         this.id = reservation.getId();
         this.name = reservation.getName();
-        this.theme = reservation.getTheme().getName();
+        this.themeId = reservation.getTheme().getName();
         this.date = reservation.getDate();
-        this.time = reservation.getTime().getValue();
+        this.timeId = reservation.getTime().getValue();
     }
 
     public Long getId() {
@@ -33,15 +43,15 @@ public class ReservationResponse {
         return name;
     }
 
-    public String getTheme() {
-        return theme;
+    public String getThemeId() {
+        return themeId;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public String getTime() {
-        return time;
+    public String getTimeId() {
+        return timeId;
     }
 }
