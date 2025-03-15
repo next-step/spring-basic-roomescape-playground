@@ -21,6 +21,7 @@ public class AuthService {
     public AuthResponse login(AuthRequest authRequest) {
         Member foundMember = memberDao.findByEmailAndPassword(authRequest.email(), authRequest.password());
         String accessToken = jwtTokenProvider.createToken(foundMember);
+
         return new AuthResponse(accessToken);
     }
 
