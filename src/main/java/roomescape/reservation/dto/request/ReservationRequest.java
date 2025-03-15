@@ -18,21 +18,29 @@ public class ReservationRequest {
     private final Long timeId;
 
     public ReservationRequest(String name, LocalDate date, Long themeId, Long timeId) {
-        validateNotBlank(date, themeId, timeId);
+        validateDate(date);
+        validateTheme(themeId);
+        validateTime(timeId);
         this.name = name;
         this.date = date;
         this.themeId = themeId;
         this.timeId = timeId;
     }
 
-    private void validateNotBlank(LocalDate date, Long theme, Long time) {
+    private void validateDate(final LocalDate date) {
         if (date == null) {
             throw new BadRequestException(ExceptionMessage.INVALID_DATE.getMessage());
         }
-        if (theme == null) {
+    }
+
+    private void validateTheme(final Long themeId) {
+        if (themeId == null) {
             throw new BadRequestException(ExceptionMessage.INVALID_THEME.getMessage());
         }
-        if (time == null) {
+    }
+
+    private void validateTime(final Long timeId) {
+        if (timeId == null) {
             throw new BadRequestException(ExceptionMessage.INVALID_TIME.getMessage());
         }
     }
