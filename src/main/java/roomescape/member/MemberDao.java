@@ -55,6 +55,19 @@ public class MemberDao {
         );
     }
 
+    public Member findByEmail(String email) {
+        return jdbcTemplate.queryForObject(
+                "SELECT id, name, email, role FROM member WHERE email = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                ),
+                email
+        );
+    }
+
     public Member findById(long id) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE id = ?",

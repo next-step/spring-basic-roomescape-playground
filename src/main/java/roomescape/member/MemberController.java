@@ -32,7 +32,7 @@ public class MemberController {
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
 
         Member member = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
-        String token = jwtTokenProvider.createToken(member.getId());
+        String token = jwtTokenProvider.createToken(member.getEmail());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);

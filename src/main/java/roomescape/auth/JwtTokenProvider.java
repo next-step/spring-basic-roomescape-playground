@@ -18,11 +18,13 @@ public class JwtTokenProvider {
     @Value("${roomescape.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(long id) {
+    private static final String CLAIM_KEY_EMAIL = "email";
+
+    public String createToken(String email) {
 
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
         Claims claims = Jwts.claims();
-        claims.put("id", String.valueOf(id));
+        claims.put(CLAIM_KEY_EMAIL, email);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -32,6 +34,20 @@ public class JwtTokenProvider {
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String getEmailFromToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey.getBytes())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return claims.get(CLAIM_KEY_EMAIL, String.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid token provided", e);
+        }
     }
 
     public Long getIdFromToken(String token) {

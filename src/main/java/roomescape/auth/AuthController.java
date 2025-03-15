@@ -38,8 +38,8 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        Long userId = jwtTokenProvider.getIdFromToken(token);
-        Member member = memberService.findById(userId);
+        String userEmail = jwtTokenProvider.getEmailFromToken(token);
+        Member member = memberService.findByEmail(userEmail);
 
         MemberResponse memberResponse = new MemberResponse(member.getId(), member.getName(), member.getEmail());
         return ResponseEntity.ok(memberResponse);
