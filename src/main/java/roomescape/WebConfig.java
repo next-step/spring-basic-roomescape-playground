@@ -1,8 +1,11 @@
 package roomescape;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.admin.AdminInterceptor;
 import roomescape.login.LoginMemberArgumentResolver;
 import roomescape.member.MemberService;
 
@@ -12,13 +15,21 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private final MemberService memberService;
+    private final String secretKey;
 
-    public WebConfig(MemberService memberService) {
+    public WebConfig(MemberService memberService, @Value("${roomescape.auth.jwt.secret}") String secretKey) {
         this.memberService = memberService;
+        this.secretKey = secretKey;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginMemberArgumentResolver(memberService));
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AdminInterceptor(secretKey))
+                .addPathPatterns("/admin/**");
     }
 }
