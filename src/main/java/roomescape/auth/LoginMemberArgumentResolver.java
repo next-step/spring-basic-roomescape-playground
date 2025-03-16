@@ -14,7 +14,6 @@ import roomescape.member.Member;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final String AUTH_TOKEN_COOKIE = "token";
     private final AuthService authService;
 
     public LoginMemberArgumentResolver(AuthService authService) {
@@ -33,7 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         CookieManager cookieManager = new CookieManager(request.getCookies());
-        String accessToken = cookieManager.getValue(AUTH_TOKEN_COOKIE);
+        String accessToken = cookieManager.getValue(AuthConstants.AUTH_TOKEN_COOKIE);
 
         Member member = authService.getLoginMember(accessToken);
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());

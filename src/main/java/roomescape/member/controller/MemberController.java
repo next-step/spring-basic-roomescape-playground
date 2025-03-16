@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.controller;
 
 
 import jakarta.servlet.http.Cookie;
@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import roomescape.auth.AuthService;
 import roomescape.auth.CookieManager;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.member.LoginResponse;
+import roomescape.member.MemberRequest;
+import roomescape.member.MemberResponse;
+import roomescape.member.MemberService;
 
 @RestController
 public class MemberController {
@@ -48,7 +50,4 @@ public class MemberController {
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
-
-
-
 }

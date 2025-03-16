@@ -51,18 +51,6 @@ public class JwtTokenProvider {
         }
     }
 
-    public Long getIdFromToken(String token) {
-
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey.getBytes())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        String idString = claims.get("id", String.class);
-        return Long.valueOf(idString);
-    }
-
     public boolean isTokenValid(String accessToken) {
         if (accessToken == null || accessToken.trim().isEmpty()) {
             return false;

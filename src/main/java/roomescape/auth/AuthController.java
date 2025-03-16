@@ -14,7 +14,6 @@ public class AuthController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
-    private final String AUTH_TOKEN_COOKIE = "token";
 
     public AuthController(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
         this.jwtTokenProvider = jwtTokenProvider;
@@ -25,7 +24,7 @@ public class AuthController {
     public ResponseEntity<MemberResponse> checkLoginStatus(HttpServletRequest request) {
 
         CookieManager cookieManager = new CookieManager(request.getCookies());
-        String token = cookieManager.getValue(AUTH_TOKEN_COOKIE);
+        String token = cookieManager.getValue(AuthConstants.AUTH_TOKEN_COOKIE);
 
         String userEmail = jwtTokenProvider.getEmailFromToken(token);
         Member member = memberService.findByEmail(userEmail);

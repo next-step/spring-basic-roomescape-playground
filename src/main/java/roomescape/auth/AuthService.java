@@ -30,10 +30,6 @@ public class AuthService {
         return memberDao.findByEmail(userEmail);
     }
 
-    public boolean isTokenValid(String accessToken) {
-        return jwtTokenProvider.isTokenValid(accessToken);
-    }
-
     public boolean isTokenInvalid(String accessToken) {
         return jwtTokenProvider.isTokenInvalid(accessToken);
     }
