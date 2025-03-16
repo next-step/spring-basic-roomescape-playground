@@ -28,8 +28,4 @@ public class AuthService {
         String userEmail = jwtTokenProvider.getEmailFromToken(token);
         return memberDao.findByEmail(userEmail);
     }
-
-
-
-
 }

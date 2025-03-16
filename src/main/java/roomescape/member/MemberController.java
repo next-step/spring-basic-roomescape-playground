@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import roomescape.auth.AuthService;
+import roomescape.auth.CookieManager;
 import roomescape.auth.JwtTokenProvider;
 
 @RestController
 public class MemberController {
 
     private final MemberService memberService;
-    private final AuthService authService;
+    private final String AUTH_TOKEN_COOKIE = "token";
 
-    public MemberController(MemberService memberService, AuthService authService) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.authService = authService;
     }
 
     @PostMapping("/members")
@@ -33,12 +33,7 @@ public class MemberController {
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
 
         LoginResponse loginResponse = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
-
-        Cookie cookie = new Cookie("token", loginResponse.getAccessToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
+        CookieManager.createCookie(response, AUTH_TOKEN_COOKIE, loginResponse.getAccessToken());
 
         return ResponseEntity.ok("Login successful");
 
@@ -46,7 +41,7 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", "");
+        Cookie cookie = new Cookie(AUTH_TOKEN_COOKIE, "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);

@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,13 +18,14 @@ public class CookieManager {
         }
     }
 
-    public static Cookie createCookie(String cookieName, String cookieValue) {
+    public static void createCookie(HttpServletResponse response, String cookieName, String cookieValue) {
 
         Cookie cookie = new Cookie(cookieName, cookieValue);
         cookie.setHttpOnly(true);
         cookie.setPath(COOKIE_PATH);
         cookie.setMaxAge(COOKIE_MAX_AGE);
-        return cookie;
+        response.addCookie(cookie);
+
     }
 
     public String getValue(String cookieName) {
