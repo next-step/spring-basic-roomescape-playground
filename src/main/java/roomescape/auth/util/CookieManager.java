@@ -26,10 +26,6 @@ public class CookieManager {
         response.addCookie(cookie);
     }
 
-    public static void removeCookie(HttpServletResponse response, String cookieName) {
-        createCookie(response, cookieName, "");
-    }
-
     public String getValue(String cookieName) {
        for(Cookie cookie : cookieMap.values()) {
            if(cookie.getName().equals(cookieName)) {
