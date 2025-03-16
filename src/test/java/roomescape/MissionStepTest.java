@@ -53,7 +53,7 @@ public class MissionStepTest {
     @Test
     void 이단계() {
 
-        String token = createToken();
+        String token = createToken("admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");

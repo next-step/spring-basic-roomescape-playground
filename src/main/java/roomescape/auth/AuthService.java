@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import roomescape.member.LoginResponse;
 import roomescape.member.Member;
@@ -9,7 +10,7 @@ import roomescape.member.MemberDao;
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private  final MemberDao memberDao;
+    private final MemberDao memberDao;
 
     public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
         this.jwtTokenProvider = jwtTokenProvider;
@@ -27,5 +28,13 @@ public class AuthService {
     public Member getLoginMember(String token) {
         String userEmail = jwtTokenProvider.getEmailFromToken(token);
         return memberDao.findByEmail(userEmail);
+    }
+
+    public boolean isTokenValid(String accessToken) {
+        return jwtTokenProvider.isTokenValid(accessToken);
+    }
+
+    public boolean isTokenInvalid(String accessToken) {
+        return jwtTokenProvider.isTokenInvalid(accessToken);
     }
 }
