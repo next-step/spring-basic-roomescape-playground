@@ -85,11 +85,30 @@ public class MissionStepTest {
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
-    private String createToken() {
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    private String createToken(String email, String password) {
 
         Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
+        params.put("email", email);
+        params.put("password", password);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -102,4 +121,6 @@ public class MissionStepTest {
         String cookieHeader = response.headers().get("Set-Cookie").getValue();
         return cookieHeader.split(";")[0].split("=")[1];  // "token=..." 형태에서 토큰만 추출
     }
+
+
 }
