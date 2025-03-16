@@ -2,13 +2,16 @@ package roomescape.member;
 
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.AuthService;
 
 @Service
 public class MemberService {
     private final MemberDao memberDao;
+    private final AuthService authService;
 
-    public MemberService(MemberDao memberDao) {
+    public MemberService(MemberDao memberDao, AuthService authService) {
         this.memberDao = memberDao;
+        this.authService = authService;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -16,8 +19,15 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public Member login(String email, String password){
-        return memberDao.findByEmailAndPassword(email,password);
+    public LoginResponse login(String email, String password) {
+        Member member = memberDao.findByEmailAndPassword(email, password);
+
+        if (member == null) {
+            throw new IllegalArgumentException("Invalid credentials");
+        }
+
+        LoginResponse token = authService.createToken(member.getEmail());
+        return token;
     }
 
     public Member findByEmail(String email){
