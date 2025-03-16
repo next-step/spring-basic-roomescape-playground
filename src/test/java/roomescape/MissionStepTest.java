@@ -5,7 +5,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -54,7 +53,7 @@ public class MissionStepTest {
     @Test
     void 이단계() {
 
-        String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+        String token = createToken();
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -86,11 +85,11 @@ public class MissionStepTest {
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
-    private String createToken(String email, String password) {
+    private String createToken() {
 
         Map<String, String> params = new HashMap<>();
-        params.put("email", email);
-        params.put("password", password);
+        params.put("email", "admin@email.com");
+        params.put("password", "password");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
