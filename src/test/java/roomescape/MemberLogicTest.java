@@ -101,6 +101,4 @@ public class MemberLogicTest {
 
         assertThat(response.statusCode()).isEqualTo(401);
     }
-
-
 }
