@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.security.JwtTokenProvider;
 
 @SpringBootTest
 @Transactional

@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import roomescape.auth.CookieManager;
-import roomescape.member.LoginResponse;
-import roomescape.member.MemberRequest;
-import roomescape.member.MemberResponse;
-import roomescape.member.MemberService;
+import roomescape.auth.util.CookieManager;
+import roomescape.auth.dto.LoginResponse;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.service.MemberService;
 
 @RestController
 public class MemberController {
