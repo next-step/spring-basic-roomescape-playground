@@ -4,6 +4,7 @@ package roomescape.member.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginResponse;
 import roomescape.auth.service.AuthService;
+import roomescape.exception.LoginFailedException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.dto.Member;
 import roomescape.member.dto.MemberRequest;
@@ -28,11 +29,10 @@ public class MemberService {
         Member member = memberDao.findByEmailAndPassword(email, password);
 
         if (member == null) {
-            throw new IllegalArgumentException("Invalid credentials");
+            throw new LoginFailedException("Invalid credentials");
         }
 
-        LoginResponse token = authService.createToken(member.getEmail());
-        return token;
+        return authService.createToken(member.getEmail());
     }
 
     public Member findByEmail(String email){

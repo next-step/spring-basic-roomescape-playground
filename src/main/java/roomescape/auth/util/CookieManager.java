@@ -19,20 +19,23 @@ public class CookieManager {
     }
 
     public static void createCookie(HttpServletResponse response, String cookieName, String cookieValue) {
-
         Cookie cookie = new Cookie(cookieName, cookieValue);
         cookie.setHttpOnly(true);
         cookie.setPath(COOKIE_PATH);
         cookie.setMaxAge(COOKIE_MAX_AGE);
         response.addCookie(cookie);
+    }
 
+    public static void removeCookie(HttpServletResponse response, String cookieName) {
+        createCookie(response, cookieName, "");
     }
 
     public String getValue(String cookieName) {
-        Cookie cookie = cookieMap.get(cookieName);
-        if (cookie == null || cookie.getValue().isEmpty()) {
-            throw new RuntimeException("Cookie not found: " + cookieName);
-        }
-        return cookie.getValue();
+       for(Cookie cookie : cookieMap.values()) {
+           if(cookie.getName().equals(cookieName)) {
+               return cookie.getValue();
+           }
+       }
+       return null;
     }
 }
