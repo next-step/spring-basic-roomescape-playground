@@ -8,7 +8,7 @@ import java.util.Objects;
 public class AuthUtil {
     public static final String TOKEN_NAME = "token";
 
-    protected AuthUtil() {
+    private AuthUtil() {
     }
 
     public static String extractToken(HttpServletRequest request) {
