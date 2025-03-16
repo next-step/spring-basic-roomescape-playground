@@ -13,6 +13,10 @@ public class ReservationRequest {
         this.time = time;
     }
 
+    public ReservationRequest createReservationWithName(String name) {
+        return new ReservationRequest(name, this.date, this.theme, this.time);
+    }
+
     public String getName() {
         return name;
     }
@@ -29,7 +33,5 @@ public class ReservationRequest {
         return time;
     }
 
-    public ReservationRequest createReservationWithName(String name) {
-       return new ReservationRequest(name, this.date, this.theme, this.time);
-    }
+
 }

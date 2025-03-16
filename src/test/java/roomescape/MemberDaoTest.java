@@ -31,7 +31,6 @@ public class MemberDaoTest {
         assertThat(savedMember).isNotNull();
         assertThat(savedMember.getName()).isEqualTo("Brown");
         assertThat(savedMember.getEmail()).isEqualTo("Brown@example.com");
-        //assertThat(savedMember.getPassword()).isEqualTo("password");
         assertThat(savedMember.getRole()).isEqualTo("USER");
         assertThat(savedMember.getId()).isGreaterThan(0);
     }
