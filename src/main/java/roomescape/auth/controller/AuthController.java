@@ -34,12 +34,8 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberDetailResponse> checkLogin(HttpServletRequest request) {
         String token = extractToken(request);
-
-        if (token.isEmpty()) {
-            throw new IllegalArgumentException("로그인을 해주세요.");
-        }
-
         MemberDetailResponse memberResponse = authService.checkLogin(token);
+
         return ResponseEntity.ok(memberResponse);
     }
 
