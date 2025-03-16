@@ -7,6 +7,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.restassured.RestAssured;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,12 +15,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.security.JwtTokenProvider;
 
-@SpringBootTest
-@Transactional
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JwtTokenProviderTest {
 
     private JwtTokenProvider jwtTokenProvider;
@@ -30,11 +32,15 @@ public class JwtTokenProviderTest {
     @Value("${roomescape.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
+    @LocalServerPort
+    private int port;
+
     @BeforeEach
     void setUp() {
         jwtTokenProvider = new JwtTokenProvider();
         ReflectionTestUtils.setField(jwtTokenProvider, "secretKey", secretKey);
         ReflectionTestUtils.setField(jwtTokenProvider, "validityInMilliseconds", validityInMilliseconds);
+        RestAssured.port = port;
     }
 
     @Test
@@ -53,8 +59,9 @@ public class JwtTokenProviderTest {
                 .build()
                 .parseClaimsJws(token).getBody()
                 .get("email", String.class))
-                .isEqualTo(String.valueOf(userEmail));
+                .isEqualTo(userEmail);
     }
+
 
     @Test
     @DisplayName("토큰에서_유저_아이디를_가져온다")
@@ -77,18 +84,16 @@ public class JwtTokenProviderTest {
                 .isThrownBy(() -> jwtTokenProvider.getEmailFromToken(null));
     }
 
-    @DisplayName("만료된_토큰으로_조회할_경우_예외를_발생시킨다.")
     @Test
+    @DisplayName("만료된_토큰으로_조회할_경우_예외를_발생시킨다.")
     void getPayloadByExpiredToken() {
         final String expiredToken = Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
                 .setSubject(String.valueOf(1L))
-                .setExpiration(new Date(System.currentTimeMillis() - 1000))
+                .setExpiration(new Date(System.currentTimeMillis() - 1000)) // Expired token (1 second ago)
                 .compact();
 
         assertThatExceptionOfType(ExpiredJwtException.class)
                 .isThrownBy(() -> jwtTokenProvider.getEmailFromToken(expiredToken));
     }
-
-
 }

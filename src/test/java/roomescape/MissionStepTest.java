@@ -119,6 +119,6 @@ public class MissionStepTest {
                 .extract();
 
         String cookieHeader = response.headers().get("Set-Cookie").getValue();
-        return cookieHeader.split(";")[0].split("=")[1];  // "token=..." 형태에서 토큰만 추출
+        return cookieHeader.split(";")[0].split("=")[1];
     }
 }

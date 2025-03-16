@@ -1,6 +1,7 @@
 package roomescape.member.controller;
 
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +42,11 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        CookieManager.removeCookie(response, AUTH_TOKEN_COOKIE);
+        Cookie cookie = new Cookie(AUTH_TOKEN_COOKIE, "");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 }
