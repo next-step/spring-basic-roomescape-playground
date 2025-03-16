@@ -7,7 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.constants.AuthConstants;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.util.CookieManager;
-import roomescape.member.dto.Member;
+import roomescape.member.entity.Member;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {

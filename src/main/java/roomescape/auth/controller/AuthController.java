@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.constants.AuthConstants;
 import roomescape.auth.util.CookieManager;
 import roomescape.auth.security.JwtTokenProvider;
-import roomescape.member.dto.Member;
-import roomescape.member.dto.MemberResponse;
+import roomescape.member.entity.Member;
+import roomescape.member.entity.MemberResponse;
 import roomescape.member.service.MemberService;
 
 @RestController

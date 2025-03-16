@@ -1,4 +1,4 @@
-package roomescape.member.dto;
+package roomescape.member.entity;
 
 
 import java.util.regex.Pattern;
@@ -30,7 +30,7 @@ public class MemberRequest {
 
     private void validatePassword(String password) {
         if (password == null || password.isEmpty()) {
-            throw new IllegalArgumentException("비밀번호는 필수 입력입니다.");
+            throw new CreateMemberFailException("비밀번호는 필수 입력입니다.");
         }
     }
 

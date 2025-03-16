@@ -6,9 +6,9 @@ import roomescape.auth.dto.LoginResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.exception.LoginFailedException;
 import roomescape.member.dao.MemberDao;
-import roomescape.member.dto.Member;
-import roomescape.member.dto.MemberRequest;
-import roomescape.member.dto.MemberResponse;
+import roomescape.member.entity.Member;
+import roomescape.member.entity.MemberRequest;
+import roomescape.member.entity.MemberResponse;
 
 @Service
 public class MemberService {

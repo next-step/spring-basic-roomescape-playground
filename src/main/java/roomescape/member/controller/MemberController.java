@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import roomescape.auth.constants.AuthConstants;
 import roomescape.auth.util.CookieManager;
 import roomescape.auth.dto.LoginResponse;
-import roomescape.member.dto.MemberRequest;
-import roomescape.member.dto.MemberResponse;
+import roomescape.member.entity.MemberRequest;
+import roomescape.member.entity.MemberResponse;
 import roomescape.member.service.MemberService;
 
 @RestController
 public class MemberController {
 
     private final MemberService memberService;
-    private final String AUTH_TOKEN_COOKIE = "token";
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -35,14 +35,14 @@ public class MemberController {
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
 
         LoginResponse loginResponse = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
-        CookieManager.createCookie(response, AUTH_TOKEN_COOKIE, loginResponse.getAccessToken());
+        CookieManager.createCookie(response, AuthConstants.AUTH_TOKEN_COOKIE, loginResponse.getAccessToken());
 
         return ResponseEntity.ok("Login successful");
     }
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(AUTH_TOKEN_COOKIE, "");
+        Cookie cookie = new Cookie(AuthConstants.AUTH_TOKEN_COOKIE, "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
