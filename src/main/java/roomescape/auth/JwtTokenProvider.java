@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -46,7 +47,10 @@ public class JwtTokenProvider {
                     .getBody();
 
             return claims.get(CLAIM_KEY_EMAIL, String.class);
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
+            throw e;
+        } catch
+        (Exception e) {
             throw new IllegalArgumentException("Invalid token provided", e);
         }
     }
