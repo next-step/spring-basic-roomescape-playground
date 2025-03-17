@@ -8,6 +8,7 @@ import roomescape.auth.CookieManager;
 import roomescape.auth.controller.AuthController;
 import roomescape.auth.service.AuthService;
 import roomescape.exception.ExceptionMessage;
+import roomescape.exception.ForbiddenException;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.member.domain.Member;
 
@@ -29,6 +30,6 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         if (member.isAdmin()) {
             return true;
         }
-        throw new UnAuthorizedException(ExceptionMessage.UNAUTHORIZED_MEMBER.getMessage());
+        throw new ForbiddenException(ExceptionMessage.UNAUTHORIZED_MEMBER.getMessage());
     }
 }
