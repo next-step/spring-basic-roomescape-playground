@@ -27,7 +27,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         String role = jwtResolver.getRole(token);
 
         if (name == null || role == null || !role.equals(JwtProperties.ADMIN)) {
-            response.setStatus(401);
+            response.setStatus(404);
             return false;
         }
         return true;
