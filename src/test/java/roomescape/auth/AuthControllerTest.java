@@ -14,9 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import roomescape.auth.session.cookie.CookieProvider;
-import roomescape.auth.session.cookie.CookieResolver;
-import roomescape.auth.session.jwt.JwtResolver;
+import roomescape.auth.token.cookie.CookieProvider;
+import roomescape.auth.token.cookie.CookieResolver;
+import roomescape.auth.token.jwt.JwtResolver;
 import roomescape.member.MemberService;
 
 @WebMvcTest(AuthController.class)

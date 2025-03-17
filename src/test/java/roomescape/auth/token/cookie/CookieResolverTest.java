@@ -1,4 +1,4 @@
-package roomescape.auth.session.cookie;
+package roomescape.auth.token.cookie;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -7,7 +7,7 @@ import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.auth.session.jwt.JwtProperties;
+import roomescape.auth.token.jwt.JwtProperties;
 import roomescape.global.exception.RoomescapeUnauthorizedException;
 
 public class CookieResolverTest {

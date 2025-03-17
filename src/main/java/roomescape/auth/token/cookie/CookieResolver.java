@@ -1,9 +1,9 @@
-package roomescape.auth.session.cookie;
+package roomescape.auth.token.cookie;
 
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
-import roomescape.auth.session.jwt.JwtProperties;
+import roomescape.auth.token.jwt.JwtProperties;
 import roomescape.global.exception.RoomescapeUnauthorizedException;
 
 @Component

@@ -1,9 +1,9 @@
-package roomescape.auth.session.cookie;
+package roomescape.auth.token.cookie;
 
 import java.time.Duration;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
-import roomescape.auth.session.jwt.JwtProperties;
+import roomescape.auth.token.jwt.JwtProperties;
 
 @Component
 public class CookieProvider {
