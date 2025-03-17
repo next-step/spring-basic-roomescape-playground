@@ -24,11 +24,12 @@ class CookieManagerTest {
     @Test
     void 쿠키를_생성할_수_있다() {
         // given & when
-        Cookie cookie = CookieManager.createCookie(AUTH_TOKEN_COOKIE, "value");
+        String cookieValue = "value";
+        Cookie cookie = CookieManager.createCookie(AUTH_TOKEN_COOKIE, cookieValue);
         // then
         assertAll(
                 () -> assertThat(cookie.getName()).isEqualTo(AUTH_TOKEN_COOKIE),
-                () -> assertThat(cookie.getValue()).isEqualTo("value")
+                () -> assertThat(cookie.getValue()).isEqualTo(cookieValue)
         );
     }
 
