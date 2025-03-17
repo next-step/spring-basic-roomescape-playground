@@ -15,7 +15,7 @@ import roomescape.global.exception.RoomescapeNotFoundException;
 @Repository
 public class ReservationTimeDao {
 
-    public static final RowMapper<ReservationTime> TIME_ROW_MAPPER = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationTime> TIME_ROW_MAPPER = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
                     resultSet.getObject("time_value", LocalTime.class)

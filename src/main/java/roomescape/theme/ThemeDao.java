@@ -13,7 +13,7 @@ import roomescape.global.exception.RoomescapeNotFoundException;
 @Repository
 public class ThemeDao {
 
-    public static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) ->
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) ->
             new Theme(
                     resultSet.getLong("id"),
                     resultSet.getObject("theme_name", String.class),
