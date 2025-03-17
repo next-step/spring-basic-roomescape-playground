@@ -42,9 +42,6 @@ public class MemberLogicTest {
     @Autowired
     private MemberController memberController;
 
-    @Autowired
-    private MemberService memberService;
-
     @Test
     @DisplayName("아이디_생성_테스트")
     void createMemberTest() {
@@ -76,9 +73,8 @@ public class MemberLogicTest {
     @DisplayName("빈_패스워드_테스트")
     void createMemberWithEmptyPasswordTest() {
         // given & when & then
-        assertThrows(CreateMemberFailException.class, () -> {
-            new MemberRequest("Doyo", "member@example.com", "");
-        });
+        assertThrows(CreateMemberFailException.class, () ->
+            new MemberRequest("Doyo", "member@example.com", ""));
     }
 
     @Disabled

@@ -50,8 +50,7 @@ public class JwtTokenProvider {
             return claims.get(CLAIM_KEY_EMAIL, String.class);
         } catch (ExpiredJwtException e) {
             throw e;
-        } catch
-        (Exception e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Invalid token provided", e);
         }
     }
