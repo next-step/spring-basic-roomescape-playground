@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 
-public record ReservationRequest(String name,
+public record ReservationRequest(@NotNull
+                                 String name,
                                  @NotNull
                                  LocalDate date,
                                  long theme,
