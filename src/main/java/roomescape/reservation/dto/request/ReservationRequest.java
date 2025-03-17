@@ -2,6 +2,9 @@ package roomescape.reservation.dto.request;
 
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
+import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.Time;
 
 import java.time.LocalDate;
 
@@ -62,5 +65,9 @@ public class ReservationRequest {
 
     public Long getTime() {
         return time;
+    }
+
+    public Reservation toReservation(Time time, Theme theme) {
+        return new Reservation(name, date, time, theme);
     }
 }

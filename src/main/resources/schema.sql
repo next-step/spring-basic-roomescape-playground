@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS time
 (
     id         BIGINT      NOT NULL AUTO_INCREMENT,
-    time_value VARCHAR(20) NOT NULL,
+    time_value TIME NOT NULL,
     deleted    BOOLEAN     NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id)
 );

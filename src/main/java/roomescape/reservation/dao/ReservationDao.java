@@ -5,7 +5,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -37,7 +36,7 @@ public class ReservationDao {
                         rs.getDate("reservation_date").toLocalDate(),
                         new Time(
                                 rs.getLong("time_id"),
-                                rs.getString("time_value")
+                                rs.getTime("time_value").toLocalTime()
                         ),
                         new Theme(
                                 rs.getLong("theme_id"),
@@ -46,31 +45,23 @@ public class ReservationDao {
                         )));
     }
 
-    public Reservation save(ReservationRequest reservationRequest) {
+    public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setDate(1, Date.valueOf(reservationRequest.getDate()));
-            ps.setString(2, reservationRequest.getName());
-            ps.setLong(3, reservationRequest.getTheme());
-            ps.setLong(4, reservationRequest.getTime());
+            ps.setDate(1, Date.valueOf(reservation.getDate()));
+            ps.setString(2, reservation.getName());
+            ps.setLong(3, reservation.getTheme().getId());
+            ps.setLong(4, reservation.getTime().getId());
             return ps;
         }, keyHolder);
 
-        Time time = jdbcTemplate.queryForObject("SELECT * FROM time WHERE id = ?",
-                (rs, rowNum) -> new Time(rs.getLong("id"), rs.getString("time_value")),
-                reservationRequest.getTime());
-
-        Theme theme = jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
-                (rs, rowNum) -> new Theme(rs.getLong("id"), rs.getString("name"), rs.getString("description")),
-                reservationRequest.getTheme());
-
         return new Reservation(
                 keyHolder.getKey().longValue(),
-                reservationRequest.getName(),
-                reservationRequest.getDate(),
-                time,
-                theme
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
         );
     }
 
@@ -94,7 +85,7 @@ public class ReservationDao {
                         rs.getDate("reservation_date").toLocalDate(),
                         new Time(
                                 rs.getLong("time_id"),
-                                rs.getString("time_value")
+                                rs.getTime("time_value").toLocalTime()
                         ),
                         new Theme(
                                 rs.getLong("theme_id"),
@@ -119,7 +110,7 @@ public class ReservationDao {
                         rs.getDate("reservation_date").toLocalDate(),
                         new Time(
                                 rs.getLong("time_id"),
-                                rs.getString("time_value")
+                                rs.getTime("time_value").toLocalTime()
                         ),
                         new Theme(
                                 rs.getLong("theme_id"),

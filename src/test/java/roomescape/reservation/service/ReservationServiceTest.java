@@ -18,6 +18,7 @@ import roomescape.time.dao.TimeDao;
 import roomescape.time.domain.Time;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -48,7 +49,7 @@ class ReservationServiceTest {
         Theme theme = new Theme("커스텀테마1", "커스텀테마 입니다.");
         Theme savedTheme = themeDao.save(theme);
 
-        Time time = new Time("22:00");
+        Time time = new Time(LocalTime.of(22,0));
         Time savedTime = timeDao.save(time);
 
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
@@ -71,7 +72,7 @@ class ReservationServiceTest {
         Theme theme = new Theme("커스텀테마1", "커스텀테마 입니다.");
         Theme savedTheme = themeDao.save(theme);
 
-        Time time = new Time("22:00");
+        Time time = new Time(LocalTime.of(22,0));
         Time savedTime = timeDao.save(time);
 
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
