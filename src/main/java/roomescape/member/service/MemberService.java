@@ -37,8 +37,4 @@ public class MemberService {
     public Member findByEmail(String email){
         return memberDao.findByEmail(email);
     }
-
-    public Member findById(long id){
-        return memberDao.findById(id);
-    }
 }
