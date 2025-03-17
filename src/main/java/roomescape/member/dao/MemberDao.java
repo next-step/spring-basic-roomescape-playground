@@ -1,5 +1,6 @@
 package roomescape.member.dao;
 
+
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -33,7 +34,6 @@ public class MemberDao {
     }
 
     public Member findByEmailAndPassword(String email, String password) {
-
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
                 (rs, rowNum) -> new Member(
@@ -44,7 +44,6 @@ public class MemberDao {
                 ),
                 email, password
         );
-
     }
 
     public Member findByName(String name) {
@@ -59,7 +58,7 @@ public class MemberDao {
                 name
         );
     }
-
+    
     public Member findByEmail(String email) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE email = ?",
@@ -72,7 +71,6 @@ public class MemberDao {
                 email
         );
     }
-
     public Member findById(long id) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE id = ?",

@@ -6,6 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
 public class MissionStepTest {
 
     @LocalServerPort
@@ -28,7 +30,6 @@ public class MissionStepTest {
     void setUp() {
         RestAssured.port = port;
     }
-
 
     @Test
     void 일단계() {
@@ -48,7 +49,6 @@ public class MissionStepTest {
 
         assertThat(token).isNotBlank();
     }
-
 
     @Test
     void 이단계() {
