@@ -44,7 +44,7 @@ class ReservationServiceTest {
 
 
     @Test
-    void 로그인_정보를_활용_없이_예약을_생성할_수_있다() {
+    void 쿠키_값인_토큰으로_멤버를_조회하여_예약을_생성할_수_있다() {
         // given
         Theme theme = new Theme("커스텀테마1", "커스텀테마 입니다.");
         Theme savedTheme = themeDao.save(theme);
@@ -66,6 +66,7 @@ class ReservationServiceTest {
                 () -> assertThat(response.getTime()).isEqualTo(time.getValue())
         );
     }
+
     @Test
     void 로그인_정보를_활용하여_예약을_생성할_수_있다() {
         // given
