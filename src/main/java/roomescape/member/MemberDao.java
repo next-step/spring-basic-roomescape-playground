@@ -35,13 +35,13 @@ public class MemberDao {
     }
 
     public Member findByEmailAndPassword(String email, String password) {
-        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
+        String sql = "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?";
 
         return jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, email, password);
     }
 
     public Member findByName(String name) {
-        String sql = "SELECT * FROM member WHERE name = ?";
+        String sql = "SELECT id, name, email, role FROM member WHERE name = ?";
 
         return jdbcTemplate.queryForObject(sql, MEMBER_ROW_MAPPER, name);
     }

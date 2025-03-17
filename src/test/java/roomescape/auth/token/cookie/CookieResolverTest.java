@@ -35,18 +35,22 @@ public class CookieResolverTest {
         void 쿠키에_토큰이_없으면_예외를_던진다() {
             Cookie[] cookies = {new Cookie("otherCookie", "someValue")};
 
-            assertThrows(RoomescapeUnauthorizedException.class, () -> {
+            RoomescapeUnauthorizedException exception = assertThrows(RoomescapeUnauthorizedException.class, () -> {
                 cookieResolver.getToken(cookies);
             });
+
+            assertThat(exception.getMessage()).isEqualTo("로그인 되어있지 않습니다.");
         }
 
         @Test
         void 쿠키가_비어있으면_예외를_던진다() {
             Cookie[] cookies = {};
 
-            assertThrows(RoomescapeUnauthorizedException.class, () -> {
+            RoomescapeUnauthorizedException exception = assertThrows(RoomescapeUnauthorizedException.class, () -> {
                 cookieResolver.getToken(cookies);
             });
+
+            assertThat(exception.getMessage()).isEqualTo("로그인 되어있지 않습니다.");
         }
     }
 }
