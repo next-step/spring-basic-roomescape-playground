@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.session.cookie.CookieResolver;
 import roomescape.auth.session.jwt.JwtResolver;
 import roomescape.global.interceptor.AuthInterceptor;
+import roomescape.global.resolver.MemberArgumentResolver;
 import roomescape.member.MemberService;
 
 @Configuration
@@ -19,7 +20,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     private final AuthInterceptor authInterceptor;
 
     public WebConfiguration(MemberService memberService, JwtResolver jwtResolver, CookieResolver cookieResolver,
-                            final AuthInterceptor authInterceptor) {
+                            AuthInterceptor authInterceptor) {
         this.memberService = memberService;
         this.jwtResolver = jwtResolver;
         this.cookieResolver = cookieResolver;
