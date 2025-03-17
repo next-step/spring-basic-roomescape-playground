@@ -6,6 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -29,7 +30,6 @@ public class MissionStepTest {
         RestAssured.port = port;
     }
 
-
     @Test
     void 일단계() {
         Map<String, String> params = new HashMap<>();
@@ -48,7 +48,6 @@ public class MissionStepTest {
 
         assertThat(token).isNotBlank();
     }
-
 
     @Test
     void 이단계() {

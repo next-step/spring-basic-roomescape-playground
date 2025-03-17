@@ -1,6 +1,5 @@
 package roomescape.member.service;
 
-
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginResponse;
 import roomescape.auth.service.AuthService;
@@ -42,5 +41,4 @@ public class MemberService {
     public Member findById(long id){
         return memberDao.findById(id);
     }
-
 }

@@ -2,7 +2,6 @@ package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,6 +30,7 @@ public class JwtTokenProviderTest {
 
     @Value("${roomescape.jwt.token.expire-length}")
     private long validityInMilliseconds;
+
 
     @LocalServerPort
     private int port;
@@ -90,7 +90,7 @@ public class JwtTokenProviderTest {
         final String expiredToken = Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
                 .setSubject(String.valueOf(1L))
-                .setExpiration(new Date(System.currentTimeMillis() - 1000)) // Expired token (1 second ago)
+                .setExpiration(new Date(System.currentTimeMillis() - 1000))
                 .compact();
 
         assertThatExceptionOfType(ExpiredJwtException.class)
