@@ -1,7 +1,7 @@
 package roomescape.auth.token.cookie;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,22 +35,18 @@ public class CookieResolverTest {
         void 쿠키에_토큰이_없으면_예외를_던진다() {
             Cookie[] cookies = {new Cookie("otherCookie", "someValue")};
 
-            RoomescapeUnauthorizedException exception = assertThrows(RoomescapeUnauthorizedException.class, () -> {
-                cookieResolver.getToken(cookies);
-            });
-
-            assertThat(exception.getMessage()).isEqualTo("로그인 되어있지 않습니다.");
+            assertThatThrownBy(() -> cookieResolver.getToken(cookies))
+                    .isInstanceOf(RoomescapeUnauthorizedException.class)
+                    .hasMessage("로그인 되어있지 않습니다.");
         }
 
         @Test
         void 쿠키가_비어있으면_예외를_던진다() {
             Cookie[] cookies = {};
 
-            RoomescapeUnauthorizedException exception = assertThrows(RoomescapeUnauthorizedException.class, () -> {
-                cookieResolver.getToken(cookies);
-            });
-
-            assertThat(exception.getMessage()).isEqualTo("로그인 되어있지 않습니다.");
+            assertThatThrownBy(() -> cookieResolver.getToken(cookies))
+                    .isInstanceOf(RoomescapeUnauthorizedException.class)
+                    .hasMessage("로그인 되어있지 않습니다.");
         }
     }
 }

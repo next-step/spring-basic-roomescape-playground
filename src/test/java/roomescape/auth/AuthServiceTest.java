@@ -1,6 +1,6 @@
 package roomescape.auth;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

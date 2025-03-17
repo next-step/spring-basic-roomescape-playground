@@ -1,7 +1,6 @@
 package roomescape.auth.token.cookie;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.auth.token.cookie.CookieProvider.PATH;
 
 import java.time.Duration;
 import org.junit.jupiter.api.Nested;
@@ -25,7 +24,7 @@ class CookieProviderTest {
             assertThat(cookie.toString())
                     .contains("token=" + value)
                     .contains("Max-Age=" + duration.getSeconds())
-                    .contains("Path=" + PATH);
+                    .contains("Path=" + CookieProvider.PATH);
         }
     }
 }
