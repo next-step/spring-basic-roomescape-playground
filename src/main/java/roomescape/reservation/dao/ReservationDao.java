@@ -1,6 +1,7 @@
 package roomescape.reservation.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,26 @@ import java.util.List;
 
 @Repository
 public class ReservationDao {
+
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
+    {
+        Time time = new Time(
+                rs.getLong("time_id"),
+                rs.getTime("time_value").toLocalTime()
+        );
+        Theme theme = new Theme(
+                rs.getLong("theme_id"),
+                rs.getString("theme_name"),
+                rs.getString("theme_description")
+        );
+        return new Reservation(
+                rs.getLong("reservation_id"),
+                rs.getString("reservation_name"),
+                rs.getDate("reservation_date").toLocalDate(),
+                time,
+                theme
+        );
+    };
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -29,20 +50,7 @@ public class ReservationDao {
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
                         "JOIN time ti ON r.time_id = ti.id",
-
-                (rs, rowNum) -> new Reservation(
-                        rs.getLong("reservation_id"),
-                        rs.getString("reservation_name"),
-                        rs.getDate("reservation_date").toLocalDate(),
-                        new Time(
-                                rs.getLong("time_id"),
-                                rs.getTime("time_value").toLocalTime()
-                        ),
-                        new Theme(
-                                rs.getLong("theme_id"),
-                                rs.getString("theme_name"),
-                                rs.getString("theme_description")
-                        )));
+                RESERVATION_ROW_MAPPER);
     }
 
     public Reservation save(Reservation reservation) {
@@ -79,19 +87,7 @@ public class ReservationDao {
                         "JOIN time ti ON r.time_id = ti.id" +
                         "WHERE r.date = ? AND r.theme_id = ?",
                 new Object[]{date, themeId},
-                (rs, rowNum) -> new Reservation(
-                        rs.getLong("reservation_id"),
-                        rs.getString("reservation_name"),
-                        rs.getDate("reservation_date").toLocalDate(),
-                        new Time(
-                                rs.getLong("time_id"),
-                                rs.getTime("time_value").toLocalTime()
-                        ),
-                        new Theme(
-                                rs.getLong("theme_id"),
-                                rs.getString("theme_name"),
-                                rs.getString("theme_description")
-                        )));
+                RESERVATION_ROW_MAPPER);
     }
 
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
@@ -104,18 +100,6 @@ public class ReservationDao {
                         "JOIN time ti ON r.time_id = ti.id " +
                         "WHERE r.date = ? AND r.theme_id = ?",
                 new Object[]{date, themeId},
-                (rs, rowNum) -> new Reservation(
-                        rs.getLong("reservation_id"),
-                        rs.getString("reservation_name"),
-                        rs.getDate("reservation_date").toLocalDate(),
-                        new Time(
-                                rs.getLong("time_id"),
-                                rs.getTime("time_value").toLocalTime()
-                        ),
-                        new Theme(
-                                rs.getLong("theme_id"),
-                                rs.getString("theme_name"),
-                                rs.getString("theme_description")
-                        )));
+                RESERVATION_ROW_MAPPER);
     }
 }
