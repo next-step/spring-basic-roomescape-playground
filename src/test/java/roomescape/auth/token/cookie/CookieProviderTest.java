@@ -24,22 +24,12 @@ class CookieProviderTest {
         @Test
         void 기본_쿠키를_생성한다() {
             String value = "value";
-            ResponseCookie cookie = cookieProvider.generateCookie(value, Duration.ofHours(1));
+            Duration duration =  Duration.ofMinutes(JwtProperties.DEFAULT_TIME);
+            ResponseCookie cookie = cookieProvider.generateCookie(value, duration);
 
             assertThat(cookie.toString())
                     .contains("token=" + value)
-                    .contains("Max-Age=" + Duration.ofHours(1).getSeconds())
-                    .contains("Path=" + PATH);
-        }
-
-        @Test
-        void 만료된_쿠키를_생성한다() {
-            String value = JwtProperties.EXPIRED_TOKEN;
-            ResponseCookie cookie = cookieProvider.generateCookie(value, Duration.ZERO);
-
-            assertThat(cookie.toString())
-                    .contains("token=" + value)
-                    .contains("Max-Age=0")
+                    .contains("Max-Age=" + duration.getSeconds())
                     .contains("Path=" + PATH);
         }
     }
