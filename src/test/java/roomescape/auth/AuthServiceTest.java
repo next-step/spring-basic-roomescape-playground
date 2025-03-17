@@ -1,7 +1,6 @@
 package roomescape.auth;
 
 import static org.assertj.core.api.Assertions.*;
-import static roomescape.auth.session.jwt.JwtProvider.SECRET_KEY;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.session.jwt.JwtProperties;
 import roomescape.member.Member;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -44,7 +44,7 @@ class AuthServiceTest {
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(JwtProperties.SECRET_KEY.getBytes()))
                 .compact();
 
         LoginCheckResponse response = authService.checkAccessToken(jwt);

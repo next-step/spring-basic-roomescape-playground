@@ -1,9 +1,5 @@
 package roomescape.auth.session.jwt;
 
-import static roomescape.auth.session.jwt.JwtProvider.NAME;
-import static roomescape.auth.session.jwt.JwtProvider.ROLE;
-import static roomescape.auth.session.jwt.JwtProvider.SECRET_KEY;
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -14,17 +10,17 @@ import roomescape.global.exception.RoomescapeUnauthorizedException;
 public class JwtResolver {
 
     public String getName(String token) {
-        return resolveToken(token, NAME);
+        return resolveToken(token, JwtProperties.NAME);
     }
 
     public String getRole(String token) {
-        return resolveToken(token, ROLE);
+        return resolveToken(token, JwtProperties.ROLE);
     }
 
     private String resolveToken(String token, String target) {
         try {
             String name = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .setSigningKey(Keys.hmacShaKeyFor(JwtProperties.SECRET_KEY.getBytes()))
                     .build()
                     .parseClaimsJws(token)
                     .getBody()

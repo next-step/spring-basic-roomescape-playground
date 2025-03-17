@@ -2,12 +2,12 @@ package roomescape.auth.session.cookie;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static roomescape.auth.session.jwt.JwtProvider.TOKEN;
 
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.session.jwt.JwtProperties;
 import roomescape.global.exception.RoomescapeUnauthorizedException;
 
 public class CookieResolverTest {
@@ -23,7 +23,7 @@ public class CookieResolverTest {
     class getTokenTest {
         @Test
         void 쿠키에서_토큰을_정상적으로_가져온다() {
-            Cookie tokenCookie = new Cookie(TOKEN, "testToken");
+            Cookie tokenCookie = new Cookie(JwtProperties.TOKEN, "testToken");
             Cookie[] cookies = {tokenCookie};
 
             String token = cookieResolver.getToken(cookies);

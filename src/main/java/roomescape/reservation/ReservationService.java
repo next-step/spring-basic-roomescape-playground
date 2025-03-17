@@ -1,7 +1,6 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeDao;
@@ -15,7 +14,8 @@ public class ReservationService {
     private final ThemeDao themeDao;
     private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, final ReservationTimeDao reservationTimeDao) {
+    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao,
+                              final ReservationTimeDao reservationTimeDao) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
         this.reservationTimeDao = reservationTimeDao;

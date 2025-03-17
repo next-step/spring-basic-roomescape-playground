@@ -1,11 +1,10 @@
 package roomescape.auth;
 
-import static roomescape.auth.session.jwt.JwtProvider.SECRET_KEY;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.auth.session.jwt.JwtProperties;
 import roomescape.auth.session.jwt.JwtProvider;
 import roomescape.global.exception.RoomescapeUnauthorizedException;
 import roomescape.member.Member;
@@ -36,7 +35,7 @@ public class AuthService {
 
     public LoginCheckResponse checkAccessToken(String accessToken) {
         String name = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(JwtProperties.SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(accessToken)
                 .getBody()

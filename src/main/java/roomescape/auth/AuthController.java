@@ -1,8 +1,5 @@
 package roomescape.auth;
 
-import static roomescape.auth.session.jwt.JwtProvider.DEFAULT_TIME;
-import static roomescape.auth.session.jwt.JwtProvider.EXPIRED_TOKEN;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.auth.session.cookie.CookieResolver;
 import roomescape.auth.session.cookie.CookieProvider;
+import roomescape.auth.session.jwt.JwtProperties;
 
 @Controller
 public class AuthController {
@@ -33,7 +31,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest) {
         String accessToken = authService.generateAccessToken(loginRequest);
-        ResponseCookie responseCookie = cookieProvider.generateCookie(accessToken, Duration.ofMinutes(DEFAULT_TIME));
+        ResponseCookie responseCookie = cookieProvider.generateCookie(accessToken,
+                Duration.ofMinutes(JwtProperties.DEFAULT_TIME));
 
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
@@ -52,7 +51,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        ResponseCookie responseCookie = cookieProvider.generateCookie(EXPIRED_TOKEN, Duration.ZERO);
+        ResponseCookie responseCookie = cookieProvider.generateCookie(JwtProperties.EXPIRED_TOKEN, Duration.ZERO);
 
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())

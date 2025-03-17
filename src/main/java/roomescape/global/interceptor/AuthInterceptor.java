@@ -1,12 +1,11 @@
 package roomescape.global.interceptor;
 
-import static roomescape.auth.session.jwt.JwtProvider.ADMIN;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.session.cookie.CookieResolver;
+import roomescape.auth.session.jwt.JwtProperties;
 import roomescape.auth.session.jwt.JwtResolver;
 
 @Component
@@ -27,7 +26,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         String name = jwtResolver.getName(token);
         String role = jwtResolver.getRole(token);
 
-        if (name == null || role == null || !role.equals(ADMIN)) {
+        if (name == null || role == null || !role.equals(JwtProperties.ADMIN)) {
             response.setStatus(401);
             return false;
         }

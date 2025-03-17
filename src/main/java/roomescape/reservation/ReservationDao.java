@@ -3,7 +3,6 @@ package roomescape.reservation;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;

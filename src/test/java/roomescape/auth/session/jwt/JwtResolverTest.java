@@ -2,7 +2,6 @@ package roomescape.auth.session.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.auth.session.jwt.JwtProvider.SECRET_KEY;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -29,7 +28,7 @@ class JwtResolverTest {
                     .setSubject("1")
                     .claim("name", "어드민")
                     .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1시간 유효
-                    .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .signWith(Keys.hmacShaKeyFor(JwtProperties.SECRET_KEY.getBytes()))
                     .compact();
             String name = jwtResolver.getName(token);
 
@@ -42,7 +41,7 @@ class JwtResolverTest {
                     .setSubject("1")
                     .claim("name", "어드민")
                     .setExpiration(new Date(System.currentTimeMillis() - 1000 * 60)) // 1분 전에 만료
-                    .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .signWith(Keys.hmacShaKeyFor(JwtProperties.SECRET_KEY.getBytes()))
                     .compact();
 
             assertThatThrownBy(() -> jwtResolver.getName(expiredToken))
