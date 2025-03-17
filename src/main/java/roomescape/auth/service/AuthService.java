@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.security.JwtTokenProvider;
 import roomescape.auth.dto.LoginResponse;
 import roomescape.exception.LoginFailedException;
-import roomescape.member.entity.Member;
+import roomescape.member.dto.Member;
 import roomescape.member.dao.MemberDao;
 
 @Service

@@ -5,9 +5,9 @@ import roomescape.auth.dto.LoginResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.exception.LoginFailedException;
 import roomescape.member.dao.MemberDao;
-import roomescape.member.entity.Member;
-import roomescape.member.entity.MemberRequest;
-import roomescape.member.entity.MemberResponse;
+import roomescape.member.dto.Member;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 @Service
 public class MemberService {
@@ -38,7 +38,4 @@ public class MemberService {
         return memberDao.findByEmail(email);
     }
 
-    public Member findById(long id){
-        return memberDao.findById(id);
-    }
 }

@@ -1,12 +1,10 @@
 package roomescape.member.dao;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.exception.LoginFailedException;
-import roomescape.member.entity.Member;
+import roomescape.member.dto.Member;
 
 @Repository
 public class MemberDao {

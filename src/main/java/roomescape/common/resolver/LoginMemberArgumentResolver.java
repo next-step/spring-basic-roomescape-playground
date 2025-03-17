@@ -12,7 +12,7 @@ import roomescape.auth.constants.AuthConstants;
 import roomescape.auth.util.CookieManager;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.dto.LoginMember;
-import roomescape.member.entity.Member;
+import roomescape.member.dto.Member;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {

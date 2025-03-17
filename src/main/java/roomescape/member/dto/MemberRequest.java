@@ -1,4 +1,4 @@
-package roomescape.member.entity;
+package roomescape.member.dto;
 
 
 import java.util.regex.Pattern;

@@ -3,7 +3,6 @@ package roomescape.member.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,8 +13,8 @@ import java.net.URI;
 import roomescape.auth.constants.AuthConstants;
 import roomescape.auth.util.CookieManager;
 import roomescape.auth.dto.LoginResponse;
-import roomescape.member.entity.MemberRequest;
-import roomescape.member.entity.MemberResponse;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
 
 @RestController

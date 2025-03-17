@@ -23,8 +23,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.exception.CreateMemberFailException;
 import roomescape.member.controller.MemberController;
-import roomescape.member.entity.MemberRequest;
-import roomescape.member.entity.MemberResponse;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

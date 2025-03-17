@@ -1,4 +1,4 @@
-package roomescape.member.entity;
+package roomescape.member.dto;
 
 public class MemberResponse {
     private Long id;
