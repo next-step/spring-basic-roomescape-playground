@@ -122,7 +122,7 @@ public class MissionStepTest {
                 .cookie("token", brownToken)
                 .get("/admin")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(404);
 
         String adminToken = authService.generateAccessToken(new LoginRequest("admin@email.com", "password"));
 

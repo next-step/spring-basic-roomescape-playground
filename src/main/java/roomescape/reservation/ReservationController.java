@@ -31,9 +31,7 @@ public class ReservationController {
     public ResponseEntity create(@AuthMember Member member, @RequestBody ReservationRequest reservationRequest) {
         String name = reservationRequest.name();
         if (name == null || name.isEmpty()) {
-            name = member.getName();
-            System.out.println("name = " + name);
-            reservationRequest = reservationRequest.update(name);
+            reservationRequest = reservationRequest.update(member.getName());
         }
         System.out.println("reservationRequest = " + reservationRequest.theme() + "," + reservationRequest.time());
         ReservationResponse result = reservationService.save(reservationRequest);
