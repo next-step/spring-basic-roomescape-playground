@@ -20,11 +20,6 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = extractToken(request);
 
-        if (token == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return false;
-        }
-
         MemberDetailResponse memberResponse = authService.checkLogin(token);
         LoginMember member = new LoginMember(memberResponse.id(), memberResponse.name(), memberResponse.email(), memberResponse.role());
 
