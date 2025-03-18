@@ -3,19 +3,15 @@ package roomescape.auth.token.cookie;
 import java.time.Duration;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
-import roomescape.auth.token.jwt.JwtProperties;
 
 @Component
 public class CookieProvider {
 
-    public static final String PATH = "/";
-
     public ResponseCookie generateCookie(String value, Duration duration) {
-        ResponseCookie responseCookie = ResponseCookie.from(JwtProperties.TOKEN, value)
-                .path(PATH)
+        return ResponseCookie.from(CookieProperties.TOKEN, value)
+                .path(CookieProperties.PATH)
                 .httpOnly(true)
                 .maxAge(duration)
                 .build();
-        return responseCookie;
     }
 }

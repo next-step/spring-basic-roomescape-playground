@@ -23,7 +23,7 @@ public class CookieResolverTest {
     class getTokenTest {
         @Test
         void 쿠키에서_토큰을_정상적으로_가져온다() {
-            Cookie tokenCookie = new Cookie(JwtProperties.TOKEN, "testToken");
+            Cookie tokenCookie = new Cookie(CookieProperties.TOKEN, "testToken");
             Cookie[] cookies = {tokenCookie};
 
             String token = cookieResolver.getToken(cookies);
