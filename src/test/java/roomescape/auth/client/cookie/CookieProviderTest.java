@@ -6,7 +6,6 @@ import java.time.Duration;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseCookie;
-import roomescape.auth.AuthController;
 
 class CookieProviderTest {
 
@@ -16,7 +15,7 @@ class CookieProviderTest {
     class GenerateCookieTests {
 
         @Test
-        void 기본_쿠키를_생성한다() {
+        void 쿠키를_생성한다() {
             String value = "value";
             Duration duration =  Duration.ofMinutes(60L);
             ResponseCookie cookie = cookieProvider.generateCookie(value, duration);
