@@ -17,8 +17,8 @@ import roomescape.auth.client.cookie.CookieProvider;
 @Controller
 public class AuthController {
 
-    public static final String EXPIRED_TOKEN = "";
-    public static final Long DEFAULT_TIME = 60L;
+    private static final String EXPIRED_TOKEN = "";
+    private static final Long DEFAULT_TIME = 60L;
 
     private final AuthService authService;
     private final CookieProvider cookieProvider;
