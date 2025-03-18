@@ -24,7 +24,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         LoginMember member = new LoginMember(memberResponse.id(), memberResponse.name(), memberResponse.email(), memberResponse.role());
 
         if (!member.isAdmin()) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
 
