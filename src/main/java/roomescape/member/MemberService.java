@@ -1,19 +1,17 @@
 package roomescape.member;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.util.JwtUtil;
 
 @Service
 public class MemberService {
     private final MemberDao memberDao;
-    private final String secretKey;
+    private final JwtUtil jwtUtil;
 
-    public MemberService(MemberDao memberDao, @Value("${roomescape.auth.jwt.secret}") String secretKey) {
+    public MemberService(MemberDao memberDao, JwtUtil jwtUtil) {
         this.memberDao = memberDao;
-        this.secretKey = secretKey;
+        this.jwtUtil = jwtUtil;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -22,11 +20,7 @@ public class MemberService {
     }
 
     public Member findMemberByToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = jwtUtil.parseClaims(token);
 
         Double idDouble = claims.get("id", Double.class);
         Long id = null;
