@@ -1,8 +1,11 @@
 package roomescape.reservation;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.web.server.ResponseStatusException;
+import roomescape.auth.domain.LoginMember;
 
 @Service
 public class ReservationService {
@@ -18,7 +21,14 @@ public class ReservationService {
         return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(Long id, LoginMember loginMember) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."));
+
+        if (!loginMember.isAdmin() && !reservation.getName().equals(loginMember.name())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "자신의 예약만 삭제할 수 있습니다.");
+        }
+
         reservationDao.deleteById(id);
     }
 
