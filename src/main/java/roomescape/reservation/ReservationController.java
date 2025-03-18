@@ -33,7 +33,6 @@ public class ReservationController {
         if (name == null || name.isEmpty()) {
             reservationRequest = reservationRequest.update(member.getName());
         }
-        System.out.println("reservationRequest = " + reservationRequest.theme() + "," + reservationRequest.time());
         ReservationResponse result = reservationService.save(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + result.id()))
