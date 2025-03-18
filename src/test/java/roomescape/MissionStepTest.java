@@ -18,7 +18,7 @@ import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.auth.AuthService;
 import roomescape.auth.LoginRequest;
-import roomescape.auth.token.jwt.JwtResolver;
+import roomescape.auth.client.jwt.JwtResolver;
 import roomescape.member.MemberDao;
 import roomescape.reservation.ReservationDao;
 import roomescape.reservation.ReservationResponse;

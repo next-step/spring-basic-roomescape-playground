@@ -1,4 +1,4 @@
-package roomescape.auth.token.jwt;
+package roomescape.auth.client.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

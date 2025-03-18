@@ -1,4 +1,4 @@
-package roomescape.auth.token.jwt;
+package roomescape.auth.client.jwt;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

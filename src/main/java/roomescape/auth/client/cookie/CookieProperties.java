@@ -1,4 +1,4 @@
-package roomescape.auth.token.cookie;
+package roomescape.auth.client.cookie;
 
 public class CookieProperties {
     public static final String TOKEN = "token";

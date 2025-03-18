@@ -4,9 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.token.cookie.CookieResolver;
-import roomescape.auth.token.jwt.JwtProperties;
-import roomescape.auth.token.jwt.JwtResolver;
+import roomescape.auth.client.cookie.CookieResolver;
+import roomescape.auth.client.jwt.JwtProperties;
+import roomescape.auth.client.jwt.JwtResolver;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {

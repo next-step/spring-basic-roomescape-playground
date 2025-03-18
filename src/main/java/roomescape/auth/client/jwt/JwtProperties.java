@@ -1,4 +1,4 @@
-package roomescape.auth.token.jwt;
+package roomescape.auth.client.jwt;
 
 public class JwtProperties {
     public static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";

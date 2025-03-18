@@ -1,4 +1,4 @@
-package roomescape.auth.token.cookie;
+package roomescape.auth.client.cookie;
 
 import java.time.Duration;
 import org.springframework.http.ResponseCookie;

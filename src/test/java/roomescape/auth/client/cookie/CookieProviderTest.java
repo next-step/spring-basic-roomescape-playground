@@ -1,4 +1,4 @@
-package roomescape.auth.token.cookie;
+package roomescape.auth.client.cookie;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

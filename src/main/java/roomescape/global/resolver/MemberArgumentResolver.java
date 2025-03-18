@@ -7,8 +7,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.AuthMember;
-import roomescape.auth.token.cookie.CookieResolver;
-import roomescape.auth.token.jwt.JwtResolver;
+import roomescape.auth.client.cookie.CookieResolver;
+import roomescape.auth.client.jwt.JwtResolver;
 import roomescape.global.exception.RoomescapeBadRequestException;
 import roomescape.member.MemberService;
 

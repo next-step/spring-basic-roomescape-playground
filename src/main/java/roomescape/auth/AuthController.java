@@ -11,8 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.auth.token.cookie.CookieResolver;
-import roomescape.auth.token.cookie.CookieProvider;
+import roomescape.auth.client.cookie.CookieResolver;
+import roomescape.auth.client.cookie.CookieProvider;
 
 @Controller
 public class AuthController {
