@@ -15,10 +15,15 @@ public class ReservationService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
+    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
+        if (!reservationRequest.getName().equals(loginMember.name()) && !loginMember.isAdmin()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 이름으로만 예약할 수 있습니다.");
+        }
+
         Reservation reservation = reservationDao.save(reservationRequest);
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(reservation.getId(), reservationRequest.getName(),
+                reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id, LoginMember loginMember) {

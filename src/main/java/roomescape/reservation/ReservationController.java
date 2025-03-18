@@ -37,7 +37,7 @@ public class ReservationController {
             reservationRequest = new ReservationRequest(loginMember.name(), reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime());
         }
 
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
