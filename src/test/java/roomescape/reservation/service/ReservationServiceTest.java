@@ -44,7 +44,7 @@ class ReservationServiceTest {
 
 
     @Test
-    void 쿠키_값인_토큰으로_멤버를_조회하여_예약을_생성할_수_있다() {
+    void 로그인_없이_예약을_생성할_수_있다() {
         // given
         Theme theme = new Theme("커스텀테마1", "커스텀테마 입니다.");
         Theme savedTheme = themeDao.save(theme);
