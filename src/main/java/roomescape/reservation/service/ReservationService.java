@@ -1,7 +1,7 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.controller.LoginMember;
+import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.reservation.dao.ReservationDao;
