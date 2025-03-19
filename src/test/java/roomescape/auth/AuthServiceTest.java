@@ -1,32 +1,26 @@
 package roomescape.auth;
 
-import static org.assertj.core.api.Assertions.*;
-import static roomescape.auth.AuthService.SECRET_KEY;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.client.jwt.JwtProperties;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
 
-@JdbcTest
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class AuthServiceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private MemberDao memberDao;
+    @Autowired
     private AuthService authService;
-
-    @BeforeEach
-    void setUp() {
-        memberDao = new MemberDao(jdbcTemplate);
-        authService = new AuthService(memberDao);
-    }
 
     @Test
     void generateAccessToken() {
@@ -41,13 +35,16 @@ class AuthServiceTest {
     @Test
     void checkAccessToken() {
         jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)", "망고",
-                "test@naver.com", "test1234", "admin");
-        Member member = new Member(0L, "망고", "test@naver.com", "admin");
+                "test2@naver.com", "test1234", "admin");
+        Long insertedId = jdbcTemplate.queryForObject("SELECT id FROM member WHERE email = 'test2@naver.com'",
+                Long.class);
+
+        Member member = new Member(insertedId, "망고", "test2@naver.com", "admin");
         String jwt = Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(JwtProperties.SECRET_KEY.getBytes()))
                 .compact();
 
         LoginCheckResponse response = authService.checkAccessToken(jwt);

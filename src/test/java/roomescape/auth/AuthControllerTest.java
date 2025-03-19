@@ -14,12 +14,24 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import roomescape.auth.client.cookie.CookieProvider;
+import roomescape.auth.client.cookie.CookieResolver;
+import roomescape.auth.client.jwt.JwtResolver;
+import roomescape.member.MemberService;
 
 @WebMvcTest(AuthController.class)
 class AuthControllerTest {
 
     @MockBean
+    private MemberService memberService;
+    @MockBean
+    private JwtResolver jwtResolver;
+    @MockBean
+    private CookieResolver cookieResolver;
+    @MockBean
     private AuthService authService;
+    @MockBean
+    private CookieProvider cookieProvider;
 
     @Autowired
     private MockMvc mockMvc;
@@ -27,7 +39,8 @@ class AuthControllerTest {
     @Test
     void validTest() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        LoginRequest loginRequest = new LoginRequest("example.com", "a".repeat(256));
+        LoginRequest loginRequest = new LoginRequest("b".repeat(LoginRequest.MAX_EMAIL_LENGTH + 1),
+                "a".repeat(LoginRequest.MAX_PASSWORD_LENGTH + 1));
         String json = mapper.writeValueAsString(loginRequest);
 
         MvcResult result = mockMvc.perform(post("/login")
@@ -41,7 +54,8 @@ class AuthControllerTest {
         List<String> list = getExceptionMessages(exception);
         assertThat(list).containsExactlyInAnyOrder(
                 "[email] 이메일 양식에 맞지 않습니다.",
-                "[password] 비밀번호는 20자 이하여야 합니다.");
+                "[email] 이메일은 20자 이하여야 합니다.",
+                "[password] 비밀번호는 255자 이하여야 합니다.");
     }
 
     private List<String> getExceptionMessages(MethodArgumentNotValidException exception) {
