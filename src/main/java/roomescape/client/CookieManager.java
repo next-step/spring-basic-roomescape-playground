@@ -1,10 +1,13 @@
 package roomescape.client;
 
 import jakarta.servlet.http.Cookie;
+import roomescape.auth.controller.AuthController;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
+import roomescape.exception.UnAuthorizedException;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class CookieManager {
 
@@ -22,17 +25,17 @@ public class CookieManager {
         return cookie;
     }
 
-    public static String getValue(Cookie[] cookies, String cookieName) {
-        Cookie cookie = findCookieByName(cookies, cookieName);
+    public static String getToken(Cookie[] cookies) {
+        Cookie cookie = findCookieByName(cookies, AuthController.AUTH_TOKEN_COOKIE)
+                .orElseThrow(() -> new UnAuthorizedException(ExceptionMessage.AUTHENTICATION_NEEDED.getMessage()));
         validateCookie(cookie);
         return cookie.getValue();
     }
 
-    private static Cookie findCookieByName(Cookie[] cookies, String cookieName) {
+    private static Optional<Cookie> findCookieByName(Cookie[] cookies, String cookieName) {
         return Arrays.stream(cookies)
                 .filter(cookie -> cookieName.equals(cookie.getName()))
-                .findAny()
-                .orElseThrow(() -> new BadRequestException(ExceptionMessage.COOKIE_NOT_FOUND.getMessage()));
+                .findAny();
     }
 
     private static void validateCookie(Cookie cookie) {

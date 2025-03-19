@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import roomescape.auth.controller.AuthController;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
+import roomescape.exception.UnAuthorizedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,12 +30,12 @@ class CookieManagerTest {
     @Test
     void 쿠키_값을_조회할_수_있다() {
         // given
-        String cookieName = "cookieName";
+        String cookieName = "token";
         String cookieValue = "accessToken";
         Cookie cookie = new Cookie(cookieName, cookieValue);
         Cookie[] cookies = {cookie};
         // when
-        String resultValue = CookieManager.getValue(cookies, cookieName);
+        String resultValue = CookieManager.getToken(cookies);
         // then
         assertThat(resultValue).isEqualTo(cookieValue);
     }
@@ -45,9 +46,9 @@ class CookieManagerTest {
         Cookie cookie = new Cookie("invalid_name", "accessToken");
         Cookie[] cookies = {cookie};
         // when & then
-        assertThatThrownBy(() -> CookieManager.getValue(cookies, AuthController.AUTH_TOKEN_COOKIE))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> CookieManager.getToken(cookies))
+                .isInstanceOf(UnAuthorizedException.class)
+                .hasMessage(ExceptionMessage.AUTHENTICATION_NEEDED.getMessage());
     }
 
     @ParameterizedTest
@@ -57,7 +58,7 @@ class CookieManagerTest {
         Cookie cookie = new Cookie(AuthController.AUTH_TOKEN_COOKIE, accessToken);
         Cookie[] cookies = {cookie};
         // when & then
-        assertThatThrownBy(() -> CookieManager.getValue(cookies, AuthController.AUTH_TOKEN_COOKIE))
+        assertThatThrownBy(() -> CookieManager.getToken(cookies))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(ExceptionMessage.INVALID_COOKIE_VALUE.getMessage());
     }
