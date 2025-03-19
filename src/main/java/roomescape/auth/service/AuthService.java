@@ -3,7 +3,6 @@ package roomescape.auth.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.security.JwtTokenProvider;
 import roomescape.auth.dto.LoginResponse;
-import roomescape.exception.LoginFailedException;
 import roomescape.member.dto.Member;
 import roomescape.member.dao.MemberDao;
 
@@ -19,11 +18,7 @@ public class AuthService {
     }
 
     public LoginResponse createToken(String email) {
-
         Member member = memberDao.findByEmail(email);
-        if(member == null) {
-            throw new LoginFailedException("Invalid email");
-        }
         String token = jwtTokenProvider.createToken(member.getEmail());
         return new LoginResponse(token);
     }

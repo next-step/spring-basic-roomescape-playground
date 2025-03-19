@@ -20,7 +20,8 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberDao.save(
+                new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
@@ -28,13 +29,13 @@ public class MemberService {
         Member member = memberDao.findByEmailAndPassword(email, password);
 
         if (member == null) {
-            throw new LoginFailedException("Invalid credentials");
+            throw new LoginFailedException("아이디와 비밀번호를 다시 확인해주세요.");
         }
 
         return authService.createToken(member.getEmail());
     }
 
-    public Member findByEmail(String email){
+    public Member findByEmail(String email) {
         return memberDao.findByEmail(email);
     }
 

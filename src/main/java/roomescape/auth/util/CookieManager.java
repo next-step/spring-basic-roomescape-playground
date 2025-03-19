@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import roomescape.exception.LoginFailedException;
 
 public class CookieManager {
 
@@ -13,6 +14,11 @@ public class CookieManager {
     private final Map<String, Cookie> cookieMap = new HashMap<String, Cookie>();
 
     public CookieManager(Cookie[] cookies) {
+
+        if (cookies == null || cookies.length == 0) {
+            throw new LoginFailedException("사용자 정보를 불러올 수 없습니다.");
+        }
+
         for (Cookie cookie : cookies) {
             cookieMap.put(cookie.getName(), cookie);
         }
