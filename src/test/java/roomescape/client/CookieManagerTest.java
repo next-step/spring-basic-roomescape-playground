@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.client;
 
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -13,13 +13,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class CookieManagerTest {
-
-    @Test
-    void 쿠키가_존재하지_않는_경우_예외가_발생한다() {
-        assertThatThrownBy(() -> new CookieManager(null))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
-    }
 
     @Test
     void 쿠키를_생성할_수_있다() {
@@ -39,9 +32,9 @@ class CookieManagerTest {
         String cookieName = "cookieName";
         String cookieValue = "accessToken";
         Cookie cookie = new Cookie(cookieName, cookieValue);
-        CookieManager cookieManager = new CookieManager(new Cookie[]{cookie});
+        Cookie[] cookies = {cookie};
         // when
-        String resultValue = cookieManager.getValue(cookieName);
+        String resultValue = CookieManager.getValue(cookies, cookieName);
         // then
         assertThat(resultValue).isEqualTo(cookieValue);
     }
@@ -50,9 +43,9 @@ class CookieManagerTest {
     void 요청한_이름의_쿠키가_존재하지_않는_경우_예외가_발생한다() {
         // given
         Cookie cookie = new Cookie("invalid_name", "accessToken");
-        CookieManager cookieManager = new CookieManager(new Cookie[]{cookie});
+        Cookie[] cookies = {cookie};
         // when & then
-        assertThatThrownBy(() -> cookieManager.getValue(AuthController.AUTH_TOKEN_COOKIE))
+        assertThatThrownBy(() -> CookieManager.getValue(cookies, AuthController.AUTH_TOKEN_COOKIE))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
     }
@@ -62,9 +55,9 @@ class CookieManagerTest {
     void 쿠키_값이_존재하지_않는_경우_예외가_발생한다(String accessToken) {
         // given
         Cookie cookie = new Cookie(AuthController.AUTH_TOKEN_COOKIE, accessToken);
-        CookieManager cookieManager = new CookieManager(new Cookie[]{cookie});
+        Cookie[] cookies = {cookie};
         // when & then
-        assertThatThrownBy(() -> cookieManager.getValue(AuthController.AUTH_TOKEN_COOKIE))
+        assertThatThrownBy(() -> CookieManager.getValue(cookies, AuthController.AUTH_TOKEN_COOKIE))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage(ExceptionMessage.INVALID_COOKIE_VALUE.getMessage());
     }
