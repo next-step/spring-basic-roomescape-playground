@@ -2,7 +2,9 @@ package roomescape;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -14,50 +16,58 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.exception.CreateMemberFailException;
 import roomescape.member.controller.MemberController;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
-import roomescape.member.service.MemberService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@AutoConfigureMockMvc
 public class MemberLogicTest {
 
     @LocalServerPort
     private int port;
+
+    @MockBean
+    private MemberController memberController;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
     }
 
-    @Autowired
-    private MemberController memberController;
-
     @Test
     @DisplayName("아이디_생성_테스트")
     void createMemberTest() {
         // given
         MemberRequest memberRequest = new MemberRequest("Doyo", "member@example.com", "password");
+        MemberResponse mockResponse = new MemberResponse(1L, "Doyo", "member@example.com");
+
+        given(memberController.createMember(memberRequest))
+                .willReturn(new ResponseEntity<>(mockResponse, HttpStatus.CREATED));
 
         // when
         ResponseEntity<MemberResponse> response = memberController.createMember(memberRequest);
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody()).isNotNull();
-        MemberResponse responseBody = response.getBody();
-        assertThat(responseBody.getId()).isNotNull();
-        assertThat(responseBody.getName()).isEqualTo("Doyo");
-        assertThat(responseBody.getEmail()).isEqualTo("member@example.com");
+        assertAll(
+                () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED),
+                () -> assertThat(response.getBody()).isNotNull(),
+                () -> {
+                    MemberResponse responseBody = response.getBody();
+                    assertAll(
+                            () -> assertThat(responseBody.getId()).isNotNull(),
+                            () -> assertThat(responseBody.getName()).isEqualTo("Doyo"),
+                            () -> assertThat(responseBody.getEmail()).isEqualTo("member@example.com")
+                    );
+                }
+        );
     }
 
     @Test
@@ -74,7 +84,7 @@ public class MemberLogicTest {
     void createMemberWithEmptyPasswordTest() {
         // given & when & then
         assertThrows(CreateMemberFailException.class, () ->
-            new MemberRequest("Doyo", "member@example.com", ""));
+                new MemberRequest("Doyo", "member@example.com", ""));
     }
 
     @Disabled

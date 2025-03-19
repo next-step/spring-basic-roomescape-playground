@@ -15,11 +15,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey;
+    private final String secretKey;
+    private final long validityInMilliseconds;
 
-    @Value("${roomescape.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    public JwtTokenProvider(
+            @Value("${roomescape.auth.jwt.secret}") String secretKey,
+            @Value("${roomescape.jwt.token.expire-length}") long validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
     private static final String CLAIM_KEY_EMAIL = "email";
 
