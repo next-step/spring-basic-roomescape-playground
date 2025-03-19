@@ -1,7 +1,6 @@
 package roomescape.client;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 
