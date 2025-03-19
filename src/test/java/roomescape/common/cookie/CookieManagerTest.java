@@ -1,4 +1,4 @@
-package roomescape.client;
+package roomescape.common.cookie;
 
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;

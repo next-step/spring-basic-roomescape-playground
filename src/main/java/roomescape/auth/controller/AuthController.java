@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.LoginMember;
 import roomescape.auth.service.AuthService;
-import roomescape.client.CookieManager;
+import roomescape.common.cookie.CookieManager;
 import roomescape.member.dto.request.LoginRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
 import roomescape.member.dto.response.LoginResponse;

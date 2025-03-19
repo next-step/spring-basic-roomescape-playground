@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.service.AuthService;
-import roomescape.client.CookieManager;
+import roomescape.common.cookie.CookieManager;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.ForbiddenException;
 import roomescape.member.domain.Member;
