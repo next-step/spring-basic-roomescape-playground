@@ -32,9 +32,8 @@ public class MissionStepTest {
 
     @Test
     void 일단계() {
-        Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
+        Map<String, String> params = Map.of("email", "admin@email.com",
+                "password", "password");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -54,7 +53,9 @@ public class MissionStepTest {
 
         String token = createToken("admin@email.com", "password");
 
-        Map<String, String> params = Map.of("date", "2024-03-01", "time", "1", "theme", "1");
+        Map<String, String> params = Map.of("date", "2024-03-01",
+                "time", "1",
+                "theme", "1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -102,7 +103,8 @@ public class MissionStepTest {
 
     private String createToken(String email, String password) {
 
-        Map<String, String> params = Map.of("email", email, "password", password);
+        Map<String, String> params = Map.of("email", email,
+                "password", password);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
