@@ -17,6 +17,7 @@ public class JwtTokenProvider {
 
     private final String secretKey;
     private final long validityInMilliseconds;
+    private static final String CLAIM_KEY = "email";
 
     public JwtTokenProvider(
             @Value("${roomescape.auth.jwt.secret}") String secretKey,
@@ -25,13 +26,11 @@ public class JwtTokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    private static final String CLAIM_KEY_EMAIL = "email";
-
     public String createToken(String email) {
 
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
         Claims claims = Jwts.claims();
-        claims.put(CLAIM_KEY_EMAIL, email);
+        claims.put(CLAIM_KEY, email);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -51,7 +50,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody();
 
-            return claims.get(CLAIM_KEY_EMAIL, String.class);
+            return claims.get(CLAIM_KEY, String.class);
         } catch (ExpiredJwtException e) {
             throw e;
         } catch (Exception e) {
