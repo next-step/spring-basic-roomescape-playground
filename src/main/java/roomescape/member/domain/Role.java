@@ -10,4 +10,8 @@ public enum Role {
     Role(final String description) {
         this.description = description;
     }
+
+    public boolean isAdmin() {
+        return this == ADMIN;
+    }
 }
