@@ -60,7 +60,7 @@ public class MemberLogicTest {
     }
 
     @Test
-    @DisplayName("잘못된_이메일_형식_테스트")
+    @DisplayName("잘못된_이메일_형식으로_아이디를_생성할때_실패한다")
     void createMemberWithInvalidEmailTest() {
         // given & when & then
         assertThrows(CreateMemberFailException.class, () -> {
@@ -69,7 +69,7 @@ public class MemberLogicTest {
     }
 
     @Test
-    @DisplayName("빈_패스워드_테스트")
+    @DisplayName("빈_패스워드로_아이디를_생성할때_예외가_발생한다")
     void createMemberWithEmptyPasswordTest() {
         // given & when & then
         assertThrows(CreateMemberFailException.class, () ->

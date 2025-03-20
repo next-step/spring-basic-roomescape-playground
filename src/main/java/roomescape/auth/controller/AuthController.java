@@ -7,34 +7,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.constants.AuthConstants;
+import roomescape.auth.dto.LoginMember;
+import roomescape.auth.service.AuthService;
 import roomescape.auth.util.CookieManager;
-import roomescape.auth.security.JwtTokenProvider;
 import roomescape.exception.UnauthorizedAccessException;
 import roomescape.member.dto.Member;
-import roomescape.member.dto.MemberResponse;
-import roomescape.member.service.MemberService;
 
 @RestController
 public class AuthController {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public AuthController(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.memberService = memberService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLoginStatus(HttpServletRequest request) {
+    public ResponseEntity<LoginMember> checkLoginStatus(HttpServletRequest request) {
         try {
             CookieManager cookieManager = new CookieManager(request.getCookies());
-            String token = cookieManager.getValue(AuthConstants.AUTH_TOKEN_COOKIE);
-            String userEmail = jwtTokenProvider.getEmailFromToken(token);
-            Member member = memberService.findByEmail(userEmail);
+            String accessToken = cookieManager.getValue(AuthConstants.AUTH_TOKEN_COOKIE);
+            Member member = authService.getLoginMember(accessToken);
 
-            MemberResponse memberResponse = new MemberResponse(member.getId(), member.getName(), member.getEmail());
-            return ResponseEntity.ok(memberResponse);
+            LoginMember loginMember = new LoginMember(
+                    member.getId(),
+                    member.getName(),
+                    member.getEmail(),
+                    member.getRole()
+            );
+            return ResponseEntity.ok(loginMember);
         } catch (UnauthorizedAccessException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
