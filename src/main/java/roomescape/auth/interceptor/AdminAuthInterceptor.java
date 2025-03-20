@@ -24,6 +24,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         String accessToken = CookieManager.getToken(request.getCookies());
 
         Member member = authService.getLoginMember(accessToken);
+        if (member.hasPermission()) {
             return true;
         }
         throw new ForbiddenException(ExceptionMessage.UNAUTHORIZED_MEMBER.getMessage());
