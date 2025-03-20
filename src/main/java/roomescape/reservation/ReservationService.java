@@ -16,7 +16,7 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (!reservationRequest.getName().equals(loginMember.name()) && !loginMember.isAdmin()) {
+        if (loginMember.notHaveName(reservationRequest.getName()) && loginMember.isNotAdmin()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 이름으로만 예약할 수 있습니다.");
         }
 
@@ -30,7 +30,7 @@ public class ReservationService {
         Reservation reservation = reservationDao.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."));
 
-        if (!loginMember.isAdmin() && !reservation.getName().equals(loginMember.name())) {
+        if (loginMember.isNotAdmin() && loginMember.notHaveName(reservation.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "자신의 예약만 삭제할 수 있습니다.");
         }
 

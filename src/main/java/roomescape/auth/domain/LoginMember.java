@@ -9,4 +9,12 @@ public record LoginMember(
     public boolean isAdmin() {
         return "ADMIN".equals(role);
     }
+
+    public boolean isNotAdmin() {
+        return !"ADMIN".equals(role);
+    }
+
+    public boolean notHaveName(String requestName) {
+        return !name.equals(requestName);
+    }
 }
