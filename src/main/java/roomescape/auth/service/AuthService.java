@@ -1,7 +1,8 @@
 package roomescape.auth.service;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.JwtTokenManager;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
@@ -14,17 +15,17 @@ import roomescape.member.dto.response.LoginResponse;
 @Service
 public class AuthService {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenManager jwtTokenManager;
     private final MemberDao memberDao;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AuthService(JwtTokenManager jwtTokenManager, MemberDao memberDao) {
+        this.jwtTokenManager = jwtTokenManager;
         this.memberDao = memberDao;
     }
 
     public LoginResponse login(LoginRequest request) {
         Member member = getMemberWithLogin(request);
-        String accessToken = jwtTokenProvider.createAccessToken(member);
+        String accessToken = jwtTokenManager.createAccessToken(member);
         return new LoginResponse(accessToken);
     }
 
@@ -38,7 +39,7 @@ public class AuthService {
     }
 
     public Member getLoginMember(String accessToken) {
-        long memberId = jwtTokenProvider.parseToken(accessToken);
+        long memberId = jwtTokenManager.parseToken(accessToken);
         return getMemberById(memberId);
     }
 

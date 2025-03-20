@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.DataBaseCleaner;
-import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.member.domain.Member;
@@ -18,25 +17,25 @@ import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.auth.JwtTokenProvider.ACCESS_TOKEN_EXP;
+import static roomescape.auth.JwtTokenManager.ACCESS_TOKEN_EXP;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ExtendWith(DataBaseCleaner.class)
-class JwtTokenProviderTest {
+class JwtTokenManagerTest {
 
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtTokenManager jwtTokenManager;
 
     @Test
     void 액세스_토큰을_파싱할_수_있다() {
         // given
         Member member = new Member(1L, "멤버", "member@email.com", Role.USER);
-        String accessToken = jwtTokenProvider.createAccessToken(member);
+        String accessToken = jwtTokenManager.createAccessToken(member);
         // when
-        long resultOfParseToken = jwtTokenProvider.parseToken(accessToken);
+        long resultOfParseToken = jwtTokenManager.parseToken(accessToken);
         // then
         assertThat(resultOfParseToken).isEqualTo(member.getId());
     }
@@ -47,7 +46,7 @@ class JwtTokenProviderTest {
         Member member = new Member(1L, "멤버", "member@email.com", Role.USER);
         String token = createExpiredToken(member);
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.parseToken(token))
+        assertThatThrownBy(() -> jwtTokenManager.parseToken(token))
                 .isInstanceOf(UnAuthorizedException.class)
                 .hasMessage(ExceptionMessage.EXPIRED_TOKEN.getMessage());
     }
@@ -58,7 +57,7 @@ class JwtTokenProviderTest {
         Member member = new Member(1L, "멤버", "member@email.com", Role.USER);
         String invalidToken = createInvalidToken(member);
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.parseToken(invalidToken))
+        assertThatThrownBy(() -> jwtTokenManager.parseToken(invalidToken))
                 .isInstanceOf(UnAuthorizedException.class)
                 .hasMessage(ExceptionMessage.INVALID_TOKEN.getMessage());
     }

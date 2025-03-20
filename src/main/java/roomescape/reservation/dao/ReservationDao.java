@@ -77,29 +77,20 @@ public class ReservationDao {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
-    public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
-        return jdbcTemplate.query(
-                "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
-                        "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
-                        "ti.id AS time_id, ti.time_value AS time_value " +
-                        "FROM reservation r " +
-                        "JOIN theme t ON r.theme_id = t.id " +
-                        "JOIN time ti ON r.time_id = ti.id" +
-                        "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
-                RESERVATION_ROW_MAPPER);
-    }
-
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
         return jdbcTemplate.query(
-                "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
+                "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date AS reservation_date, " +
                         "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
                         "ti.id AS time_id, ti.time_value AS time_value " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
                         "JOIN time ti ON r.time_id = ti.id " +
                         "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
-                RESERVATION_ROW_MAPPER);
+                (ps) -> {
+                    ps.setString(1, date);
+                    ps.setLong(2, themeId);
+                },
+                RESERVATION_ROW_MAPPER
+        );
     }
 }

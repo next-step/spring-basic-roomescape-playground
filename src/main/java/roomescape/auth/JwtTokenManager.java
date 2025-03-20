@@ -7,7 +7,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.member.domain.Member;
@@ -15,7 +14,7 @@ import roomescape.member.domain.Member;
 import java.util.Date;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenManager {
 
     public static final long ACCESS_TOKEN_EXP = 60L * 60L * 1000L; // 1시간
 
