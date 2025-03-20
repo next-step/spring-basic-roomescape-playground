@@ -1,7 +1,6 @@
 package roomescape.reservation;
 
 import java.util.Optional;
-import javax.swing.text.html.Option;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
