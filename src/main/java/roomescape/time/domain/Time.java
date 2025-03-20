@@ -1,15 +1,17 @@
 package roomescape.time.domain;
 
+import java.time.LocalTime;
+
 public class Time {
     private Long id;
-    private String value;
+    private LocalTime value;
 
-    public Time(Long id, String value) {
+    public Time(Long id, LocalTime value) {
         this.id = id;
         this.value = value;
     }
 
-    public Time(String value) {
+    public Time(LocalTime value) {
         this.value = value;
     }
 
@@ -21,7 +23,7 @@ public class Time {
         return id;
     }
 
-    public String getValue() {
+    public LocalTime getValue() {
         return value;
     }
 }

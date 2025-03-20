@@ -1,6 +1,5 @@
 package roomescape.auth.service;
 
-import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,19 +7,21 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.DataBaseCleaner;
+import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
+import roomescape.exception.UnAuthorizedException;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.dto.request.LoginRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
 import roomescape.member.dto.response.LoginResponse;
-import roomescape.auth.JwtTokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.auth.controller.AuthController.COOKIE_NAME;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ExtendWith(DataBaseCleaner.class)
@@ -76,50 +77,38 @@ class AuthServiceTest {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         Member savedMember = memberDao.save(member);
-        String accessToken = jwtTokenProvider.createAccessToken(savedMember);
-        Cookie cookie = new Cookie(COOKIE_NAME, accessToken);
+        LoginMember loginMember = new LoginMember(savedMember.getId(), savedMember.getName(), savedMember.getEmail(), Role.USER);
         // when
-        LoginCheckResponse loginCheckResponse = authService.loginCheck(cookie);
+        LoginCheckResponse loginCheckResponse = authService.loginCheck(loginMember);
         // then
-        assertThat(loginCheckResponse.name()).isEqualTo(member.getName());
+        assertThat(loginCheckResponse.name()).isEqualTo(savedMember.getName());
     }
 
     @Test
-    void 인증_정보_조회_시_토큰이_유효하지_않은_경우_예외가_발생한다() {
+    void 로그인_한_멤버를_조회할_수_있다() {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        memberDao.save(member);
-        String invalidAccessToken = "invalid.token";
-        Cookie cookie = new Cookie(COOKIE_NAME, invalidAccessToken);
-        // when & then
-        assertThatThrownBy(() -> authService.loginCheck(cookie))
-                .isInstanceOf(BadRequestException.class)
+        Member savedMember = memberDao.save(member);
+        String accessToken = jwtTokenProvider.createAccessToken(savedMember);
+        // when
+        Member loginMember = authService.getLoginMember(accessToken);
+        // then
+        assertAll(
+                () -> assertThat(loginMember.getId()).isEqualTo(savedMember.getId()),
+                () -> assertThat(loginMember.getName()).isEqualTo(savedMember.getName()),
+                () -> assertThat(loginMember.getEmail()).isEqualTo(savedMember.getEmail()),
+                () -> assertThat(loginMember.getRole()).isEqualTo(savedMember.getRole())
+        );
+    }
+
+    @Test
+    void 로그인시_유효한_토큰이_아니면_예외가_발생한다() {
+        //given & when
+        String invalidToken = "invalid.token";
+        //then
+        assertThatThrownBy(() -> authService.getLoginMember(invalidToken))
+                .isInstanceOf(UnAuthorizedException.class)
                 .hasMessage(ExceptionMessage.INVALID_TOKEN.getMessage());
-    }
-
-    @Test
-    void 인증_정보_조회_시_쿠키가_존재하지_않는_경우_예외가_발생한다() {
-        // given
-        Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        memberDao.save(member);
-        Cookie cookie = null;
-        // when & then
-        assertThatThrownBy(() -> authService.loginCheck(cookie))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void 인증_정보_조회_시_쿠키_값이_존재하지_않는_경우_예외가_발생한다(String accessToken) {
-        // given
-        Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        memberDao.save(member);
-        Cookie cookie = new Cookie(COOKIE_NAME, accessToken);
-        // when & then
-        assertThatThrownBy(() -> authService.loginCheck(cookie))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage(ExceptionMessage.COOKIE_NOT_FOUND.getMessage());
     }
 }
 

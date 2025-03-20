@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.DataBaseCleaner;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
+import roomescape.exception.UnAuthorizedException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 
@@ -47,7 +48,7 @@ class JwtTokenProviderTest {
         String token = createExpiredToken(member);
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.parseToken(token))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(UnAuthorizedException.class)
                 .hasMessage(ExceptionMessage.EXPIRED_TOKEN.getMessage());
     }
 
@@ -58,7 +59,7 @@ class JwtTokenProviderTest {
         String invalidToken = createInvalidToken(member);
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.parseToken(invalidToken))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(UnAuthorizedException.class)
                 .hasMessage(ExceptionMessage.INVALID_TOKEN.getMessage());
     }
 
