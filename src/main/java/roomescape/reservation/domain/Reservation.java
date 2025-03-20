@@ -4,6 +4,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Reservation {
 
@@ -49,5 +50,13 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public String getThemeName() {
+        return theme.getName();
+    }
+
+    public LocalTime getTimeValue() {
+        return time.getValue();
     }
 }
