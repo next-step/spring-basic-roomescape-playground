@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.DataBaseCleaner;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.JwtTokenManager;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
@@ -34,7 +34,7 @@ class AuthServiceTest {
     private MemberDao memberDao;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtTokenManager jwtTokenManager;
 
     @Test
     void 로그인을_할_수_있다() {
@@ -89,7 +89,7 @@ class AuthServiceTest {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
         Member savedMember = memberDao.save(member);
-        String accessToken = jwtTokenProvider.createAccessToken(savedMember);
+        String accessToken = jwtTokenManager.createAccessToken(savedMember);
         // when
         Member loginMember = authService.getLoginMember(accessToken);
         // then
