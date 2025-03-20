@@ -7,14 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.security.JwtTokenProvider;
 
@@ -24,15 +21,6 @@ public class JwtTokenProviderTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
-    @LocalServerPort
-    private int port;
-
-    @Test
-    @DisplayName("랜덤포트_할당_출력")
-    void test() {
-        System.out.println("Port: " + port);
-    }
 
     @Test
     @DisplayName("토큰이_올바르게_생성된다")
@@ -47,7 +35,7 @@ public class JwtTokenProviderTest {
         assertAll(
                 () -> assertThat(token).isNotEmpty(),
                 () -> assertThat(Jwts.parserBuilder()
-                        .setSigningKey("secretKey".getBytes())
+                        .setSigningKey(jwtTokenProvider.getKey())
                         .build()
                         .parseClaimsJws(token).getBody()
                         .get("email", String.class))
@@ -81,7 +69,7 @@ public class JwtTokenProviderTest {
     @DisplayName("만료된_토큰으로_조회할_경우_예외를_발생시킨다.")
     void getPayloadByExpiredToken() {
         final String expiredToken = Jwts.builder()
-                .signWith(Keys.hmacShaKeyFor("secretKey".getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .signWith(jwtTokenProvider.getKey(), SignatureAlgorithm.HS256)
                 .setSubject(String.valueOf(1L))
                 .setExpiration(new Date(System.currentTimeMillis() - 1000))
                 .compact();

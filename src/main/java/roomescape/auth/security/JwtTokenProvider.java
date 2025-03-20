@@ -77,4 +77,8 @@ public class JwtTokenProvider {
     public boolean isTokenInvalid(String accessToken) {
         return !isTokenValid(accessToken);
     }
+
+    public Key getKey() {
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
 }
