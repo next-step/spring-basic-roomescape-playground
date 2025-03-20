@@ -4,7 +4,6 @@ import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import roomescape.auth.controller.AuthController;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
@@ -19,10 +18,10 @@ class CookieManagerTest {
     void 쿠키를_생성할_수_있다() {
         // given & when
         String cookieValue = "value";
-        Cookie cookie = CookieManager.createCookie(AuthController.AUTH_TOKEN_COOKIE, cookieValue);
+        Cookie cookie = CookieManager.createCookie(CookieManager.AUTH_TOKEN_COOKIE, cookieValue);
         // then
         assertAll(
-                () -> assertThat(cookie.getName()).isEqualTo(AuthController.AUTH_TOKEN_COOKIE),
+                () -> assertThat(cookie.getName()).isEqualTo(CookieManager.AUTH_TOKEN_COOKIE),
                 () -> assertThat(cookie.getValue()).isEqualTo(cookieValue)
         );
     }
@@ -55,7 +54,7 @@ class CookieManagerTest {
     @NullAndEmptySource
     void 쿠키_값이_존재하지_않는_경우_예외가_발생한다(String accessToken) {
         // given
-        Cookie cookie = new Cookie(AuthController.AUTH_TOKEN_COOKIE, accessToken);
+        Cookie cookie = new Cookie(CookieManager.AUTH_TOKEN_COOKIE, accessToken);
         Cookie[] cookies = {cookie};
         // when & then
         assertThatThrownBy(() -> CookieManager.getToken(cookies))

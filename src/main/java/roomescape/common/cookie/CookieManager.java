@@ -1,7 +1,6 @@
 package roomescape.common.cookie;
 
 import jakarta.servlet.http.Cookie;
-import roomescape.auth.controller.AuthController;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
@@ -11,6 +10,7 @@ import java.util.Optional;
 
 public class CookieManager {
 
+    public static final String AUTH_TOKEN_COOKIE = "token";
     private static final String COOKIE_PATH = "/";
     private static final int COOKIE_VALID_TIME = 3600;
 
@@ -26,7 +26,7 @@ public class CookieManager {
     }
 
     public static String getToken(Cookie[] cookies) {
-        Cookie cookie = findCookieByName(cookies, AuthController.AUTH_TOKEN_COOKIE)
+        Cookie cookie = findCookieByName(cookies, AUTH_TOKEN_COOKIE)
                 .orElseThrow(() -> new UnAuthorizedException(ExceptionMessage.AUTHENTICATION_NEEDED.getMessage()));
         validateCookie(cookie);
         return cookie.getValue();
