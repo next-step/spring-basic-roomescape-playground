@@ -1,5 +1,6 @@
 package roomescape.auth.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.auth.security.JwtTokenProvider;
 import roomescape.auth.dto.LoginResponse;
@@ -12,6 +13,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberDao memberDao;
 
+    @Autowired
     public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.memberDao = memberDao;

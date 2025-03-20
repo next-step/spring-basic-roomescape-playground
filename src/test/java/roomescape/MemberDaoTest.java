@@ -1,11 +1,13 @@
 package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import roomescape.member.dto.Member;
 import roomescape.member.dao.MemberDao;
@@ -28,11 +30,13 @@ public class MemberDaoTest {
         Member savedMember = memberDao.save(member);
 
         // Then
-        assertThat(savedMember).isNotNull();
-        assertThat(savedMember.getName()).isEqualTo("Brown");
-        assertThat(savedMember.getEmail()).isEqualTo("Brown@example.com");
-        assertThat(savedMember.getRole()).isEqualTo("USER");
-        assertThat(savedMember.getId()).isGreaterThan(0);
+        assertAll(
+                () -> assertThat(savedMember).isNotNull(),
+                () -> assertThat(savedMember.getName()).isEqualTo("Brown"),
+                () -> assertThat(savedMember.getEmail()).isEqualTo("Brown@example.com"),
+                () -> assertThat(savedMember.getRole()).isEqualTo("USER"),
+                () -> assertThat(savedMember.getId()).isGreaterThan(0)
+        );
     }
 
     @Test
@@ -78,7 +82,7 @@ public class MemberDaoTest {
 
         Member foundMember = memberDao.findByName("Popo");
         assertThat(foundMember)
-        .usingRecursiveComparison()
+                .usingRecursiveComparison()
                 .isEqualTo(savedMember);
     }
 }

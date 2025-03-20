@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.constants.AuthConstants;
 import roomescape.auth.util.CookieManager;
 import roomescape.auth.security.JwtTokenProvider;
-import roomescape.exception.LoginFailedException;
 import roomescape.exception.UnauthorizedAccessException;
 import roomescape.member.dto.Member;
 import roomescape.member.dto.MemberResponse;
@@ -40,5 +39,4 @@ public class AuthController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
-
 }

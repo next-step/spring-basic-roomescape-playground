@@ -3,16 +3,17 @@ package roomescape.member.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-
 import roomescape.auth.constants.AuthConstants;
 import roomescape.auth.util.CookieManager;
 import roomescape.auth.dto.LoginResponse;
+import roomescape.exception.LoginFailedException;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
@@ -34,11 +35,14 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
+        try {
+            LoginResponse loginResponse = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
+            CookieManager.createCookie(response, AuthConstants.AUTH_TOKEN_COOKIE, loginResponse.getAccessToken());
+            return ResponseEntity.ok("Login successful");
+        } catch (LoginFailedException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        LoginResponse loginResponse = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
-        CookieManager.createCookie(response, AuthConstants.AUTH_TOKEN_COOKIE, loginResponse.getAccessToken());
-
-        return ResponseEntity.ok("Login successful");
     }
 
     @PostMapping("/logout")

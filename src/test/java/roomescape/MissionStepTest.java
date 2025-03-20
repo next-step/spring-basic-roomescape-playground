@@ -14,12 +14,13 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.dto.ReservationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
     @LocalServerPort
@@ -53,9 +54,10 @@ public class MissionStepTest {
 
         String token = createToken("admin@email.com", "password");
 
-        Map<String, String> params = Map.of("date", "2024-03-01",
-                "time", "1",
-                "theme", "1");
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
