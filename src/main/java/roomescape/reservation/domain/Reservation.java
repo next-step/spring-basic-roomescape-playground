@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -27,23 +27,15 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDate date;
 
-    @OneToOne
-    @JoinColumn(name = "time_id")
+    @ManyToOne
+    @JoinColumn(name = "time_id", nullable = false)
     private Time time;
 
-    @OneToOne
-    @JoinColumn(name = "theme_id")
+    @ManyToOne
+    @JoinColumn(name = "theme_id", nullable = false)
     private Theme theme;
 
     protected Reservation() {
-    }
-
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
     }
 
     public Reservation(String name, LocalDate date, Time time, Theme theme) {
