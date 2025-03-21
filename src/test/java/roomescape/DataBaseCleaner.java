@@ -1,39 +1,46 @@
 package roomescape;
 
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.springframework.context.ApplicationContext;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class DataBaseCleaner implements AfterEachCallback {
+@Component
+public class DataBaseCleaner {
 
-    @Override
-    public void afterEach(ExtensionContext extensionContext) throws Exception {
-        ApplicationContext context = SpringExtension.getApplicationContext(extensionContext);
-        cleanup(context);
+    private List<String> tables = new ArrayList<>();
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public DataBaseCleaner(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
-    private void cleanup(ApplicationContext context) {
-        JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+    @PostConstruct
+    void findTables() {
+        this.tables = entityManager.getMetamodel()
+                .getEntities().stream()
+                .map(entityType -> entityType.getName().toUpperCase(Locale.ROOT))
+                .toList();
+    }
 
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+    @Transactional
+    public void cleanup() {
+        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 
-        for (String tableName : findTableNames(jdbcTemplate)) {
-            jdbcTemplate.execute("TRUNCATE TABLE " + tableName + " RESTART IDENTITY");
+        for (String tableName : tables) {
+            entityManager.createNativeQuery("TRUNCATE TABLE " + tableName + " RESTART IDENTITY").executeUpdate();
         }
 
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-    }
+        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
 
-    private List<String> findTableNames(JdbcTemplate jdbcTemplate) {
-        String tableNameSelectQuery = """
-                SELECT TABLE_NAME
-                FROM INFORMATION_SCHEMA.TABLES
-                WHERE TABLE_SCHEMA = 'PUBLIC'
-                """;
-        return jdbcTemplate.queryForList(tableNameSelectQuery, String.class);
+        entityManager.flush();
+        entityManager.clear();
     }
 }

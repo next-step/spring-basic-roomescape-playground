@@ -1,7 +1,7 @@
 package roomescape.auth.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@ExtendWith(DataBaseCleaner.class)
 class AuthServiceTest {
 
     @Autowired
@@ -35,6 +34,14 @@ class AuthServiceTest {
 
     @Autowired
     private JwtTokenManager jwtTokenManager;
+
+    @Autowired
+    private DataBaseCleaner dataBaseCleaner;
+
+    @AfterEach
+    void cleanup() {
+        dataBaseCleaner.cleanup();
+    }
 
     @Test
     void 로그인을_할_수_있다() {

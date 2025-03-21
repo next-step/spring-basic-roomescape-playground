@@ -3,11 +3,9 @@ package roomescape.auth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.DataBaseCleaner;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.member.domain.Member;
@@ -20,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.auth.JwtTokenManager.ACCESS_TOKEN_EXP;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@ExtendWith(DataBaseCleaner.class)
 class JwtTokenManagerTest {
 
     @Value("${roomescape.auth.jwt.secret}")
