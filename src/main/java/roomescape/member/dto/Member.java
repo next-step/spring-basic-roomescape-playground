@@ -1,11 +1,11 @@
-package roomescape.member.domain;
+package roomescape.member.dto;
 
 public class Member {
     private Long id;
-    private final String name;
-    private final String email;
+    private String name;
+    private String email;
     private String password;
-    private final String role;
+    private String role;
 
     public Member(Long id, String name, String email, String role) {
         this.id = id;

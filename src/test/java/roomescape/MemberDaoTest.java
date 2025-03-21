@@ -1,13 +1,15 @@
 package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import roomescape.member.domain.Member;
+import roomescape.member.dto.Member;
 import roomescape.member.dao.MemberDao;
 
 
@@ -20,7 +22,7 @@ public class MemberDaoTest {
 
     @Test
     @DisplayName("멤버_생성_조회_테스트")
-    void saveMember_Test() {
+    void saveMemberTest() {
         // Given
         Member member = new Member("Brown", "Brown@example.com", "password", "USER");
 
@@ -28,16 +30,18 @@ public class MemberDaoTest {
         Member savedMember = memberDao.save(member);
 
         // Then
-        assertThat(savedMember).isNotNull();
-        assertThat(savedMember.getName()).isEqualTo("Brown");
-        assertThat(savedMember.getEmail()).isEqualTo("Brown@example.com");
-        assertThat(savedMember.getRole()).isEqualTo("USER");
-        assertThat(savedMember.getId()).isGreaterThan(0);
+        assertAll(
+                () -> assertThat(savedMember).isNotNull(),
+                () -> assertThat(savedMember.getName()).isEqualTo("Brown"),
+                () -> assertThat(savedMember.getEmail()).isEqualTo("Brown@example.com"),
+                () -> assertThat(savedMember.getRole()).isEqualTo("USER"),
+                () -> assertThat(savedMember.getId()).isGreaterThan(0)
+        );
     }
 
     @Test
     @DisplayName("이메일과_비밀번호로_회원_조회_테스트")
-    void findByEmailAndPassword_Test() {
+    void findByEmailAndPassword_success() {
 
         //given
         Member member = new Member("Member", "test@email.com", "password", "USER");
@@ -54,7 +58,7 @@ public class MemberDaoTest {
 
     @Test
     @DisplayName("아이디로_회원_조회_테스트")
-    void findById_Test() {
+    void findById_success() {
 
         //given
         Member member = new Member("Member", "test@email.com", "password", "USER");
@@ -63,8 +67,7 @@ public class MemberDaoTest {
         //when
         Member foundMember = memberDao.findById(savedMember.getId());
 
-        // then
-        assertThat(foundMember).isNotNull();
+        //then
         assertThat(foundMember)
                 .usingRecursiveComparison()
                 .isEqualTo(savedMember);
@@ -72,14 +75,14 @@ public class MemberDaoTest {
 
     @Test
     @DisplayName("이름으로_회원_조회_테스트")
-    void findByName_Test() {
+    void findByName_success() {
 
         Member member = new Member("Popo", "test@email.com", "password", "USER");
         Member savedMember = memberDao.save(member);
 
         Member foundMember = memberDao.findByName("Popo");
         assertThat(foundMember)
-        .usingRecursiveComparison()
+                .usingRecursiveComparison()
                 .isEqualTo(savedMember);
     }
 }

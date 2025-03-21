@@ -1,37 +1,42 @@
 package roomescape.member.service;
 
-
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.LoginResponse;
+import roomescape.auth.service.AuthService;
 import roomescape.exception.LoginFailedException;
-import roomescape.member.domain.Member;
-import roomescape.member.dto.response.MemberResponse;
 import roomescape.member.dao.MemberDao;
-import roomescape.member.dto.request.MemberRequest;
+import roomescape.member.dto.Member;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 @Service
 public class MemberService {
-
     private final MemberDao memberDao;
+    private final AuthService authService;
 
-    public MemberService(MemberDao memberDao) {
+    public MemberService(MemberDao memberDao, AuthService authService) {
         this.memberDao = memberDao;
+        this.authService = authService;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberDao.save(
+                new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public Member login(String email, String password){
-        try {
-            return memberDao.findByEmailAndPassword(email, password);
-        } catch (EmptyResultDataAccessException e) {
-            throw new LoginFailedException("Invalid email or password.");
+    public LoginResponse login(String email, String password) {
+        Member member = memberDao.findByEmailAndPassword(email, password);
+
+        if (member == null) {
+            throw new LoginFailedException("아이디와 비밀번호를 다시 확인해주세요.");
         }
+
+        return authService.createToken(member.getEmail());
     }
 
-    public Member findById(long id){
-        return memberDao.findById(id);
+    public Member findByEmail(String email) {
+        return memberDao.findByEmail(email);
     }
+
 }

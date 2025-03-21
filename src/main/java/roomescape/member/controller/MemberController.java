@@ -10,23 +10,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import roomescape.auth.JwtTokenProvider;
-import roomescape.member.domain.Member;
-import roomescape.member.dto.response.MemberResponse;
+import roomescape.auth.constants.AuthConstants;
+import roomescape.auth.util.CookieManager;
+import roomescape.auth.dto.LoginResponse;
+import roomescape.exception.LoginFailedException;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.MemberService;
-import roomescape.member.dto.request.LoginRequest;
-import roomescape.member.dto.request.MemberRequest;
 
 @RestController
 public class MemberController {
 
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final String USER_TOKEN = "loginUser";
 
-    public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/members")
@@ -36,34 +34,25 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-
-        Member member = memberService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<String> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
+        try {
+            LoginResponse loginResponse = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
+            CookieManager.createCookie(response, AuthConstants.AUTH_TOKEN_COOKIE, loginResponse.getAccessToken());
+            return ResponseEntity.ok("Login successful");
+        } catch (LoginFailedException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        String token = jwtTokenProvider.createToken(member.getId());
-        addCookie(response, token);
-
-        return ResponseEntity.ok("Login successful : " + member.getName());
     }
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(USER_TOKEN, "");
+
+        Cookie cookie = new Cookie(AuthConstants.AUTH_TOKEN_COOKIE, "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
-    }
-
-    private void addCookie(HttpServletResponse response, String token) {
-        Cookie cookie = new Cookie(USER_TOKEN, token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
     }
 }
