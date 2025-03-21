@@ -12,12 +12,12 @@ import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
-import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.dto.request.LoginRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
 import roomescape.member.dto.response.LoginResponse;
+import roomescape.member.repository.MemberRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -31,7 +31,7 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @Autowired
     private JwtTokenManager jwtTokenManager;
@@ -40,7 +40,7 @@ class AuthServiceTest {
     void 로그인을_할_수_있다() {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        memberDao.save(member);
+        memberRepository.save(member);
         LoginRequest loginRequest = new LoginRequest(member.getEmail(), member.getPassword());
         // when
         LoginResponse loginResponse = authService.login(loginRequest);
@@ -53,7 +53,7 @@ class AuthServiceTest {
     void 이메일이_비어있으면_예외가_발생한다(String email) {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        memberDao.save(member);
+        memberRepository.save(member);
         // when & then
         assertThatThrownBy(() -> authService.login(new LoginRequest(email, member.getPassword())))
                 .isInstanceOf(BadRequestException.class)
@@ -65,7 +65,7 @@ class AuthServiceTest {
     void 비밀번호가_비어있으면_예외가_발생한다(String password) {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        memberDao.save(member);
+        memberRepository.save(member);
         // when & then
         assertThatThrownBy(() -> authService.login(new LoginRequest(member.getEmail(), password)))
                 .isInstanceOf(BadRequestException.class)
@@ -76,7 +76,7 @@ class AuthServiceTest {
     void 인증_정보를_조회할_수_있다() {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        Member savedMember = memberDao.save(member);
+        Member savedMember = memberRepository.save(member);
         LoginMember loginMember = new LoginMember(savedMember.getId(), savedMember.getName(), savedMember.getEmail(), Role.USER);
         // when
         LoginCheckResponse loginCheckResponse = authService.loginCheck(loginMember);
@@ -88,7 +88,7 @@ class AuthServiceTest {
     void 로그인_한_멤버를_조회할_수_있다() {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        Member savedMember = memberDao.save(member);
+        Member savedMember = memberRepository.save(member);
         String accessToken = jwtTokenManager.createAccessToken(savedMember);
         // when
         Member loginMember = authService.getLoginMember(accessToken);

@@ -1,9 +1,8 @@
-package roomescape.member.dao;
+package roomescape.member.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 
@@ -12,20 +11,19 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@JdbcTest
-@Import(MemberDao.class)
-class MemberDaoTest {
+@DataJpaTest
+class MemberRepositoryTest {
 
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @Test
     void 아이디를_통해_멤버를_조회한다() {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        Member savedMember = memberDao.save(member);
+        Member savedMember = memberRepository.save(member);
         // when
-        Optional<Member> foundMember = memberDao.findById(savedMember.getId());
+        Optional<Member> foundMember = memberRepository.findById(savedMember.getId());
         // then
         assertThat(foundMember)
                 .hasValueSatisfying(memberResult -> assertAll(
@@ -38,7 +36,7 @@ class MemberDaoTest {
     @Test
     void 특정_아이디를_가진_멤버가_없을시_빈_값을_반환한다() {
         // given &  when
-        Optional<Member> foundMember = memberDao.findById(0L);
+        Optional<Member> foundMember = memberRepository.findById(0L);
         // then
         assertThat(foundMember).isEmpty();
     }
@@ -47,9 +45,9 @@ class MemberDaoTest {
     void 이메일_및_비밀번호를_통해_멤버를_조회한다() {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        Member savedMember = memberDao.save(member);
+        Member savedMember = memberRepository.save(member);
         // when
-        Optional<Member> foundMember = memberDao.findByEmailAndPassword(member.getEmail(), member.getPassword());
+        Optional<Member> foundMember = memberRepository.findByEmailAndPassword(member.getEmail(), member.getPassword());
         // then
         assertThat(foundMember)
                 .hasValueSatisfying(memberResult -> assertAll(
@@ -63,10 +61,10 @@ class MemberDaoTest {
     void 이메일_또는_비밀번호가_일치하지_않으면_빈_값을_반환한다() {
         // given
         Member member = new Member("멤버", "member@email.com", "password", Role.USER);
-        memberDao.save(member);
+        memberRepository.save(member);
         // when
-        Optional<Member> foundMemberWithWrongEmail = memberDao.findByEmailAndPassword("wrong@email.com", member.getPassword());
-        Optional<Member> foundMemberWithWrongPassword = memberDao.findByEmailAndPassword(member.getEmail(), "wrongPassword");
+        Optional<Member> foundMemberWithWrongEmail = memberRepository.findByEmailAndPassword("wrong@email.com", member.getPassword());
+        Optional<Member> foundMemberWithWrongPassword = memberRepository.findByEmailAndPassword(member.getEmail(), "wrongPassword");
         // then
         assertAll(
                 () -> assertThat(foundMemberWithWrongEmail).isEmpty(),

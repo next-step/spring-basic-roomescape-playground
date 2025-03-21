@@ -21,11 +21,6 @@ public class Time {
     protected Time() {
     }
 
-    public Time(Long id, LocalTime value) {
-        this.id = id;
-        this.value = value;
-    }
-
     public Time(LocalTime value) {
         this.value = value;
     }

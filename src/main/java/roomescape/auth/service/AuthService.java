@@ -1,26 +1,25 @@
 package roomescape.auth.service;
 
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenManager;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
-import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.request.LoginRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
 import roomescape.member.dto.response.LoginResponse;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class AuthService {
 
     private final JwtTokenManager jwtTokenManager;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public AuthService(JwtTokenManager jwtTokenManager, MemberDao memberDao) {
+    public AuthService(JwtTokenManager jwtTokenManager, MemberRepository memberRepository) {
         this.jwtTokenManager = jwtTokenManager;
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -30,7 +29,7 @@ public class AuthService {
     }
 
     private Member getMemberWithLogin(LoginRequest request) {
-        return memberDao.findByEmailAndPassword(request.email(), request.password())
+        return memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
@@ -44,7 +43,7 @@ public class AuthService {
     }
 
     private Member getMemberById(long memberId) {
-        return memberDao.findById(memberId)
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 }
