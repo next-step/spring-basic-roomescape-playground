@@ -17,6 +17,7 @@ import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.auth.AuthService;
 import roomescape.auth.LoginRequest;
+import roomescape.auth.client.jwt.JwtProvider;
 import roomescape.reservation.ReservationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +31,8 @@ public class MissionStepTest {
 
     @LocalServerPort
     private int randomPort;
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @BeforeEach
     void setUp() {
@@ -66,7 +69,7 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        String token = authService.generateAccessToken(new LoginRequest("admin@email.com", "password"));
+        String token = jwtProvider.generateToken(0L, "admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -100,7 +103,7 @@ public class MissionStepTest {
 
     @Test
     void 삼단계() {
-        String brownToken = authService.generateAccessToken(new LoginRequest("brown@email.com", "password"));
+        String brownToken = jwtProvider.generateToken(0L, "brown@email.com", "password");
 
         RestAssured.given().log().all()
                 .cookie("token", brownToken)
@@ -108,7 +111,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(404);
 
-        String adminToken = authService.generateAccessToken(new LoginRequest("admin@email.com", "password"));
+        String adminToken = jwtProvider.generateToken(0L, "admin@email.com", "password");
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
