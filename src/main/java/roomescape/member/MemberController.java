@@ -50,7 +50,7 @@ public class MemberController {
     public ResponseEntity<AuthUserNameResponse> getAuthenticatedInfo(HttpServletRequest request) {
         String token = cookieManager.getTokenFrom(request);
 
-        AuthUserNameResponse checkResponse = authService.findByToken(token);
+        AuthUserNameResponse checkResponse = authService.findNameByToken(token);
         return ResponseEntity.ok().body(checkResponse);
     }
 
