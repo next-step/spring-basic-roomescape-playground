@@ -8,19 +8,18 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.CookieManager;
-import roomescape.auth.AuthService;
+import roomescape.member.JwtProvider;
 import roomescape.member.LoginMember;
-import roomescape.member.Member;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final AuthService authService;
     private final CookieManager cookieManager;
+    private final JwtProvider jwtProvider;
 
-    public LoginMemberArgumentResolver(AuthService authService, CookieManager cookieExtractor) {
-        this.authService = authService;
+    public LoginMemberArgumentResolver(CookieManager cookieExtractor, JwtProvider jwtProvider) {
         this.cookieManager = cookieExtractor;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -35,8 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = cookieManager.getTokenFrom(request);
 
-        Member member = authService.findMemberByToken(token);
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        return jwtProvider.parseLoginMemberFromToken(token);
     }
 
 }
