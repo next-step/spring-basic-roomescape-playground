@@ -2,29 +2,32 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
+import roomescape.global.exception.RoomescapeNotFoundException;
+import roomescape.reservationTime.ReservationTimeRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeDao;
 import roomescape.reservationTime.ReservationTime;
-import roomescape.reservationTime.ReservationTimeDao;
 
 @Service
 public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
-    private final ReservationTimeDao reservationTimeDao;
+    private final ReservationTimeRepository reservationTimeRepository;
 
     public ReservationService(ReservationDao reservationDao, ThemeDao themeDao,
-                              final ReservationTimeDao reservationTimeDao) {
+                              ReservationTimeRepository reservationTimeRepository) {
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
-        this.reservationTimeDao = reservationTimeDao;
+        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         Theme theme = themeDao.findById(reservationRequest.theme());
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.time());
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.time())
+                .orElseThrow(() -> new RoomescapeNotFoundException("예약 시간을 찾을 수 없습니다."));
         Reservation reservation = reservationDao.save(reservationRequest.toReservation(theme, reservationTime));
+
         return new ReservationResponse(reservation);
     }
 
