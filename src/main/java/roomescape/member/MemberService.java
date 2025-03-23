@@ -26,7 +26,7 @@ public class MemberService {
     }
 
     private MemberResponse toMemberResponse(Member member) {
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
 }
