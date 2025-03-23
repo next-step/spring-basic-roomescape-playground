@@ -6,12 +6,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.CookieManager;
 import roomescape.auth.AuthService;
-import roomescape.member.Member;
+import roomescape.member.LoginMember;
 
 @Component
 public class RoleInterceptor implements HandlerInterceptor {
-
-    public static final String ADMIN = "ADMIN";
 
     private final AuthService authService;
     private final CookieManager cookieManager;
@@ -27,17 +25,13 @@ public class RoleInterceptor implements HandlerInterceptor {
 
         String token = cookieManager.getTokenFrom(request);
 
-        Member member = authService.findMemberByToken(token);
+        LoginMember member = authService.getLoginMemberFromToken(token);
 
-        if (isAdmin(member)) {
+        if (member.isAdmin()) {
             return true;
         }
 
-        throw new RuntimeException("권한 없음 401 에러코드");
-    }
-
-    private boolean isAdmin(Member member) {
-        return member.getRole().equals(ADMIN);
+        throw new RuntimeException("권한 없음");
     }
 
 }
