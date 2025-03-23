@@ -22,7 +22,6 @@ import roomescape.auth.client.jwt.JwtResolver;
 import roomescape.member.MemberDao;
 import roomescape.reservation.ReservationDao;
 import roomescape.reservation.ReservationResponse;
-import roomescape.reservationTime.ReservationTimeDao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,17 +34,6 @@ public class MissionStepTest {
 
     @LocalServerPort
     private int randomPort;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private MemberDao memberDao;
-    @Autowired
-    private ReservationDao reservationDao;
-    @Autowired
-    private ReservationTimeDao reservationTimeDao;
-    @Autowired
-    private JwtResolver jwtResolver;
 
     @BeforeEach
     void setUp() {

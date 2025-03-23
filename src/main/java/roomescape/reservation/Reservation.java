@@ -51,7 +51,7 @@ public class Reservation {
     }
 
     public String getTimeValue() {
-        return reservationTime.getValue()
+        return reservationTime.getTimeValue()
                 .toString();
     }
 

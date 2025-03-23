@@ -1,8 +1,13 @@
 package roomescape;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import roomescape.reservationTime.ReservationTime;
+import roomescape.reservationTime.ReservationTimeRepository;
 
 @DataJpaTest
 public class JpaTest {
@@ -11,16 +16,16 @@ public class JpaTest {
     private TestEntityManager entityManager;
 
     @Autowired
-    private TimeRepository timeRepository;
+    private ReservationTimeRepository timeRepository;
 
     @Test
     void 사단계() {
-        Time time = new Time("10:00");
+        ReservationTime time = new ReservationTime("10:00");
         entityManager.persist(time);
         entityManager.flush();
 
-        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
+        ReservationTime persistTime = timeRepository.findById(time.getId()).orElse(null);
 
-        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+        assertThat(persistTime.getTimeValue()).isEqualTo(time.getTimeValue());
     }
 }
