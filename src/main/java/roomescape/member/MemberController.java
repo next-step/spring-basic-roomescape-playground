@@ -10,7 +10,7 @@ import java.net.URI;
 @RestController
 public class MemberController {
 
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -20,6 +20,7 @@ public class MemberController {
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
 
-        return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
+        return ResponseEntity.created(URI.create("/members/" + member.id()))
+                .body(member);
     }
 }

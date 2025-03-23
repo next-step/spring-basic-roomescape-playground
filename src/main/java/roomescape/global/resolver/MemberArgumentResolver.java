@@ -7,20 +7,20 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.AuthMember;
+import roomescape.auth.AuthService;
 import roomescape.auth.client.cookie.CookieResolver;
 import roomescape.auth.client.jwt.JwtResolver;
 import roomescape.global.exception.RoomescapeBadRequestException;
-import roomescape.member.MemberService;
 
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
+    private final AuthService authService;
     private final JwtResolver jwtResolver;
     private final CookieResolver cookieResolver;
 
-    public MemberArgumentResolver(MemberService memberService, JwtResolver jwtResolver,
+    public MemberArgumentResolver(AuthService authService, JwtResolver jwtResolver,
                                   CookieResolver cookieResolver) {
-        this.memberService = memberService;
+        this.authService = authService;
         this.jwtResolver = jwtResolver;
         this.cookieResolver = cookieResolver;
     }
@@ -39,8 +39,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         if (accessToken == null) {
             throw new RoomescapeBadRequestException("토큰이 잘못되었습니다.");
         }
-        String name = jwtResolver.getName(accessToken);
+        Long id = jwtResolver.getSub(accessToken);
 
-        return memberService.findByName(name);
+        return authService.findById(id);
     }
 }

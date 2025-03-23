@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.auth.client.cookie.CookieResolver;
 import roomescape.auth.client.cookie.CookieProvider;
+import roomescape.auth.client.jwt.JwtProvider;
+import roomescape.auth.client.jwt.JwtResolver;
+import roomescape.member.Member;
 
 @Controller
 public class AuthController {
@@ -23,16 +26,24 @@ public class AuthController {
     private final AuthService authService;
     private final CookieProvider cookieProvider;
     private final CookieResolver cookieResolver;
+    private final JwtProvider jwtProvider;
+    private final JwtResolver jwtResolver;
 
-    public AuthController(AuthService authService, CookieProvider cookieProvider, CookieResolver cookieResolver) {
+    public AuthController(AuthService authService, CookieProvider cookieProvider,
+                          CookieResolver cookieResolver,
+                          JwtProvider jwtProvider, JwtResolver jwtResolver) {
         this.authService = authService;
         this.cookieProvider = cookieProvider;
         this.cookieResolver = cookieResolver;
+        this.jwtProvider = jwtProvider;
+        this.jwtResolver = jwtResolver;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest) {
-        String accessToken = authService.generateAccessToken(loginRequest);
+        Member findMember = getMember(loginRequest);
+        String accessToken = jwtProvider.generateToken(findMember.getId(),
+                findMember.getName(), findMember.getRole());
         ResponseCookie responseCookie = cookieProvider.generateCookie(accessToken,
                 Duration.ofMinutes(DEFAULT_TIME));
 
@@ -45,8 +56,9 @@ public class AuthController {
     public ResponseEntity<LoginCheckResponse> loginCheck(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String accessToken = cookieResolver.getToken(cookies);
+        String name = jwtResolver.getName(accessToken);
 
-        LoginCheckResponse result = authService.checkAccessToken(accessToken);
+        LoginCheckResponse result = new LoginCheckResponse(name);
         return ResponseEntity.ok()
                 .body(result);
     }
@@ -58,5 +70,12 @@ public class AuthController {
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                 .build();
+    }
+
+    private Member getMember(final LoginRequest loginRequest) {
+        String email = loginRequest.email();
+        String password = loginRequest.password();
+        Member findMember = authService.findMemberByEmailAndPassword(email, password);
+        return findMember;
     }
 }
