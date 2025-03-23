@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import org.springframework.web.server.ResponseStatusException;
 import roomescape.auth.domain.LoginMember;
+import roomescape.error.ErrorMessage;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -25,13 +26,13 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         if (loginMember.notHaveName(reservationRequest.getName()) && loginMember.isNotAdmin()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 이름으로만 예약할 수 있습니다.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
         }
 
         Time time = timeRepository.findById(reservationRequest.getTime())
-                .orElseThrow(() -> new IllegalArgumentException("없는 시간입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
-                .orElseThrow(() -> new IllegalArgumentException("없는 테마입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
 
         Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -42,10 +43,10 @@ public class ReservationService {
 
     public void deleteById(Long id, LoginMember loginMember) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
 
         if (loginMember.isNotAdmin() && loginMember.notHaveName(reservation.getName())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "자신의 예약만 삭제할 수 있습니다.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_DELETE.getMessage());
         }
 
         reservationRepository.deleteById(id);
