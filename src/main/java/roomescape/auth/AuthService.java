@@ -1,7 +1,9 @@
 package roomescape.auth;
 
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.member.JwtProvider;
+import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.member.dto.AuthUserNameResponse;
@@ -32,20 +34,19 @@ public class AuthService {
 
     private Member getMemberByEmailAndPassword(String email, String password) {
         return memberDao.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+                .orElseThrow(() -> new NoSuchElementException("Member not found"));
     }
 
-    public AuthUserNameResponse findByToken(String token) {
-        Long memberId = jwtProvider.parseMemberIdFrom(token);
+    public AuthUserNameResponse findNameByToken(String token) {
+        LoginMember loginMember = jwtProvider.parseLoginMemberFromToken(token);
 
-        Member member = getMemberById(memberId);
+        Member member = getMemberById(loginMember.id());
 
         return new AuthUserNameResponse(member.getName());
     }
 
-    public Member findMemberByToken(String token) {
-        Long memberId = jwtProvider.parseMemberIdFrom(token);
-        return getMemberById(memberId);
+    public LoginMember getLoginMemberFromToken(String token) {
+        return jwtProvider.parseLoginMemberFromToken(token);
     }
 
     private Member getMemberById(Long memberId) {
@@ -53,7 +54,7 @@ public class AuthService {
     }
 
     private MemberResponse toMemberResponse(Member member) {
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
 }
