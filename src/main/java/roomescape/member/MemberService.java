@@ -2,28 +2,26 @@ package roomescape.member;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.RoomescapeNotFoundException;
 import roomescape.global.exception.RoomescapeUnauthorizedException;
 
 @Service
 public class MemberService {
 
-    private MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(
+        Member member = memberRepository.save(
                 new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member findByName(String name) {
-        try {
-            return memberDao.findByName(name);
-        } catch (IncorrectResultSizeDataAccessException exception) {
-            throw new RoomescapeUnauthorizedException("회원 정보를 찾을 수 없습니다.");
-        }
+            return memberRepository.findByName(name)
+                    .orElseThrow(() -> new RoomescapeNotFoundException("회원 정보를 찾을 수 없습니다."));
     }
 }

@@ -11,13 +11,13 @@ import roomescape.theme.ThemeRepository;
 @Service
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(ReservationDao reservationDao, ThemeRepository themeRepository,
+    public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository,
                               ReservationTimeRepository reservationTimeRepository) {
-        this.reservationDao = reservationDao;
+        this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
@@ -28,16 +28,16 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.time())
                 .orElseThrow(() -> new RoomescapeNotFoundException("예약 시간을 찾을 수 없습니다."));
 
-        Reservation reservation = reservationDao.save(reservationRequest.toReservation(theme, reservationTime));
+        Reservation reservation = reservationRepository.save(reservationRequest.toReservation(theme, reservationTime));
         return new ReservationResponse(reservation);
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it))
                 .toList();
     }

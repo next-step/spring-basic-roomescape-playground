@@ -8,27 +8,24 @@ import roomescape.auth.client.jwt.JwtProperties;
 import roomescape.auth.client.jwt.JwtProvider;
 import roomescape.global.exception.RoomescapeUnauthorizedException;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Service
 public class AuthService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
-    public AuthService(MemberDao memberDao, JwtProvider jwtProvider) {
-        this.memberDao = memberDao;
+    public AuthService(MemberRepository memberRepository, JwtProvider jwtProvider) {
+        this.memberRepository = memberRepository;
         this.jwtProvider = jwtProvider;
     }
 
     public String generateAccessToken(LoginRequest loginRequest) {
         String email = loginRequest.email();
         String password = loginRequest.password();
-        Member findMember = memberDao.findByEmailAndPassword(email, password);
-
-        if (findMember == null) {
-            throw new RoomescapeUnauthorizedException("회원 정보를 찾을 수 없습니다.");
-        }
+        Member findMember = memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new RoomescapeUnauthorizedException("회원 정보를 찾을 수 없습니다."));
 
         return jwtProvider.generateToken(findMember.getId(), findMember.getName(), findMember.getRole());
     }
@@ -41,7 +38,7 @@ public class AuthService {
                 .getBody()
                 .get("name", String.class);
         try {
-            memberDao.findByName(name);
+            memberRepository.findByName(name);
             return new LoginCheckResponse(name);
         } catch (IncorrectResultSizeDataAccessException exception) {
             throw new RoomescapeUnauthorizedException("회원 정보를 찾을 수 없습니다." + name);

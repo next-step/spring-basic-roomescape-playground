@@ -1,26 +1,27 @@
 package roomescape.reservationTime;
 
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.RoomescapeBadRequestException;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
 
 import java.util.List;
+import roomescape.reservation.ReservationRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
 
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ReservationDao reservationDao) {
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
-        this.reservationDao = reservationDao;
+        this.reservationRepository = reservationRepository;
     }
 
-    public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findAllReservationsByDateAndTheme(date, themeId);
+    public List<AvailableTime> getAvailableTime(LocalDate date, Long themeId) {
+        List<Reservation> reservations = reservationRepository.findByDateAndTheme_Id(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
