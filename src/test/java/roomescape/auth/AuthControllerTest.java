@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import roomescape.auth.client.cookie.CookieProvider;
 import roomescape.auth.client.cookie.CookieResolver;
+import roomescape.auth.client.jwt.JwtProvider;
 import roomescape.auth.client.jwt.JwtResolver;
 import roomescape.member.MemberService;
 
@@ -32,7 +33,9 @@ class AuthControllerTest {
     private AuthService authService;
     @MockBean
     private CookieProvider cookieProvider;
-
+    @MockBean
+    private JwtProvider jwtProvider;
+    
     @Autowired
     private MockMvc mockMvc;
 

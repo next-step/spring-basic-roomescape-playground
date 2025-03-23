@@ -10,13 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import roomescape.auth.AuthService;
-import roomescape.auth.LoginRequest;
 import roomescape.auth.client.jwt.JwtProvider;
 import roomescape.reservation.ReservationResponse;
 
@@ -26,13 +25,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class MissionStepTest {
 
-    @Autowired
-    private AuthService authService;
-
     @LocalServerPort
     private int randomPort;
+
     @Autowired
     private JwtProvider jwtProvider;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -69,7 +68,8 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        String token = jwtProvider.generateToken(0L, "admin@email.com", "password");
+        String email = "admin@email.com";
+        String token = getToken(email);
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -103,7 +103,8 @@ public class MissionStepTest {
 
     @Test
     void 삼단계() {
-        String brownToken = jwtProvider.generateToken(0L, "brown@email.com", "password");
+        String brownEmail = "brown@email.com";
+        String brownToken = getToken(brownEmail);
 
         RestAssured.given().log().all()
                 .cookie("token", brownToken)
@@ -111,12 +112,22 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(404);
 
-        String adminToken = jwtProvider.generateToken(0L, "admin@email.com", "password");
+        String email = "admin@email.com";
+        String adminToken = getToken(email);
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    private String getToken(String email) {
+        String sql = "select id, role from member where email = ?";
+        Map<String, Object> result = jdbcTemplate.queryForMap(sql, email);
+        Long id = (Long) result.get("id");
+        String role = (String) result.get("role");
+
+        return jwtProvider.generateToken(id, email, role);
     }
 }
