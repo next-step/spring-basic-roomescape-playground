@@ -19,9 +19,6 @@ import roomescape.member.dto.MemberResponse;
 @RestController
 public class MemberController {
 
-    public static final int ONE_HOUR = 3600;
-    public static final int ZERO = 0;
-
     private final MemberService memberService;
     private final AuthService authService;
     private final CookieManager cookieManager;
@@ -42,7 +39,7 @@ public class MemberController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         LoginResponse loginResponse = authService.login(request);
 
-        cookieManager.addTokenToCookie(loginResponse.token(), ONE_HOUR, response);
+        cookieManager.addTokenToCookie(loginResponse.token(), response);
         return ResponseEntity.ok().build();
     }
 
@@ -56,7 +53,7 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        cookieManager.addTokenToCookie(null, ZERO, response);
+        cookieManager.deleteCookie("token", response);
         return ResponseEntity.ok().build();
     }
 
