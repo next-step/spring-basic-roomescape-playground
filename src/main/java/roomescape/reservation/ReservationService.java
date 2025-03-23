@@ -39,7 +39,7 @@ public class ReservationService {
     }
 
     private Member getMemberById(LoginMember loginMember) {
-        return memberDao.findById(loginMember.getId())
+        return memberDao.findById(loginMember.id())
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
     }
 
@@ -62,4 +62,5 @@ public class ReservationService {
                 .map(this::toReservationResponse)
                 .toList();
     }
+
 }
