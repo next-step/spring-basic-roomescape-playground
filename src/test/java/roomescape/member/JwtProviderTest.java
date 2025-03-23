@@ -3,7 +3,6 @@ package roomescape.member;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.jsonwebtoken.security.SignatureException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,7 +44,7 @@ class JwtProviderTest {
 
         // then
         assertThatThrownBy(() -> jwtProvider.parseLoginMemberFromToken(tamperedToken))
-                .isInstanceOf(SignatureException.class);
+                .isInstanceOf(SecurityException.class);
     }
 
     private static @NotNull MemberResponse getMemberResponse() {
