@@ -18,9 +18,6 @@ public class Time {
     @Column(name = "time_value", nullable = false)
     private String value;
 
-    @OneToMany(mappedBy = "time")
-    private List<Reservation> reservations;
-
     protected Time() {
     }
 
