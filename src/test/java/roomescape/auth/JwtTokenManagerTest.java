@@ -2,10 +2,12 @@ package roomescape.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.WeakKeyException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.member.domain.Member;
@@ -35,6 +37,16 @@ class JwtTokenManagerTest {
         long resultOfParseToken = jwtTokenManager.parseToken(accessToken);
         // then
         assertThat(resultOfParseToken).isEqualTo(member.getId());
+    }
+
+    @Test
+    void 시크릿_키의_길이가_짧으면_예외가_발생한다() {
+        // given
+        Member member = new Member(1L, "멤버", "member@email.com", Role.USER);
+        // when & then
+        assertThatThrownBy(() -> createTokenWithShortSecretKey(member))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
     }
 
     @Test
@@ -79,5 +91,18 @@ class JwtTokenManagerTest {
                 .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor("wrong-secret-keyYDfhiadomlkasiuhuj".getBytes()))
                 .compact();
+    }
+
+    private String createTokenWithShortSecretKey(final Member member) {
+        try {
+            return Jwts.builder()
+                    .setSubject(member.getId().toString())
+                    .claim("name", member.getName())
+                    .claim("role", member.getRole())
+                    .signWith(Keys.hmacShaKeyFor("shortSecretKey".getBytes()))
+                    .compact();
+        } catch (WeakKeyException weakKeyException) {
+            throw new BadRequestException(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
+        }
     }
 }
