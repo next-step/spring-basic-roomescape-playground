@@ -16,9 +16,6 @@ public class Theme {
     private String name;
     private String description;
 
-    @OneToMany(mappedBy = "theme")
-    private List<Reservation> reservations;
-
     protected Theme() {
     }
 
