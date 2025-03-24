@@ -1,17 +1,19 @@
 package roomescape.auth.domain;
 
+import roomescape.member.Role;
+
 public record LoginMember(
         Long id,
         String name,
         String email,
-        String role
+        Role role
 ) {
     public boolean isAdmin() {
-        return "ADMIN".equals(role);
+        return role == Role.ADMIN;
     }
 
     public boolean isNotAdmin() {
-        return !"ADMIN".equals(role);
+        return role != Role.ADMIN;
     }
 
     public boolean notHaveName(String requestName) {
