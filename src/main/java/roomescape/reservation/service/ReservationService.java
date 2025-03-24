@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
@@ -37,16 +37,6 @@ public class ReservationService {
         return new ReservationResponse(reservationWithId);
     }
 
-    private Time findTime(long timeId) {
-        return timeRepository.findById(timeId)
-                .orElseThrow(() -> new BadRequestException(ExceptionMessage.INVALID_TIME.getMessage()));
-    }
-
-    private Theme findTheme(long themeId) {
-        return themeRepository.findById(themeId)
-                .orElseThrow(() -> new BadRequestException(ExceptionMessage.INVALID_THEME.getMessage()));
-    }
-
     private ReservationRequest updateRequestIfNameIsInvalid(ReservationRequest reservationRequest, LoginMember loginMember) {
         if (reservationRequest.isInvalidName()) {
             reservationRequest = createReservationRequestWithName(reservationRequest, loginMember);
@@ -57,6 +47,16 @@ public class ReservationService {
     private ReservationRequest createReservationRequestWithName(ReservationRequest reservationRequest, LoginMember loginMember) {
         String name = loginMember.name();
         return reservationRequest.createWith(name);
+    }
+
+    private Time findTime(long timeId) {
+        return timeRepository.findById(timeId)
+                .orElseThrow(() -> new BadRequestException(ExceptionMessage.INVALID_TIME.getMessage()));
+    }
+
+    private Theme findTheme(long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new BadRequestException(ExceptionMessage.INVALID_THEME.getMessage()));
     }
 
     public void deleteById(Long id) {
