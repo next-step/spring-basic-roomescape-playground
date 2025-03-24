@@ -9,11 +9,11 @@ public record LoginMember(
         Role role
 ) {
     public boolean isAdmin() {
-        return "ADMIN".equals(role.getDescription());
+        return role == Role.ADMIN;
     }
 
     public boolean isNotAdmin() {
-        return !"ADMIN".equals(role.getDescription());
+        return role != Role.ADMIN;
     }
 
     public boolean notHaveName(String requestName) {
