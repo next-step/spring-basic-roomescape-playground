@@ -19,9 +19,4 @@ public class MemberService {
                 new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
-
-    public Member findByName(String name) {
-            return memberRepository.findByName(name)
-                    .orElseThrow(() -> new RoomescapeNotFoundException("회원 정보를 찾을 수 없습니다."));
-    }
 }

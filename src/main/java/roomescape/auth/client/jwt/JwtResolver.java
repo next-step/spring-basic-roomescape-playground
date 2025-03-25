@@ -17,6 +17,22 @@ public class JwtResolver {
         return resolveToken(token, JwtProperties.ROLE);
     }
 
+    private String resolveToken(String token, String target) {
+        try {
+            String name = Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(JwtProperties.SECRET_KEY.getBytes()))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get(target, String.class);
+            return name;
+        } catch (ExpiredJwtException exception) {
+            throw new RoomescapeUnauthorizedException("만료된 토큰입니다.");
+        } catch (Exception exception) {
+            throw new RoomescapeUnauthorizedException("잘못된 토큰입니다. 다시 로그인 해주세요.");
+        }
+    }
+
     public Long getSub(String token) {
         try {
             return Long.parseLong(
@@ -27,22 +43,6 @@ public class JwtResolver {
                             .getBody()
                             .getSubject()
             );
-        } catch (ExpiredJwtException exception) {
-            throw new RoomescapeUnauthorizedException("만료된 토큰입니다.");
-        } catch (Exception exception) {
-            throw new RoomescapeUnauthorizedException("잘못된 토큰입니다. 다시 로그인 해주세요.");
-        }
-    }
-
-    private String resolveToken(String token, String target) {
-        try {
-            String name = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(JwtProperties.SECRET_KEY.getBytes()))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .get(target, String.class);
-            return name;
         } catch (ExpiredJwtException exception) {
             throw new RoomescapeUnauthorizedException("만료된 토큰입니다.");
         } catch (Exception exception) {
