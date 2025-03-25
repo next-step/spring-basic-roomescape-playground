@@ -25,6 +25,12 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> showMyReservations(LoginMember loginMember) {
+        List<MyReservationResponse> myReservationResponses = reservationService.findMyAllReservations(loginMember);
+        return ResponseEntity.ok().body(myReservationResponses);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
         if (reservationRequest.getDate() == null

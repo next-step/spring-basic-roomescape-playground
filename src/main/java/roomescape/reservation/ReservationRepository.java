@@ -8,4 +8,5 @@ import roomescape.theme.Theme;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findByDateAndTheme(String date, Theme theme);
+    List<Reservation> findByMemberId(Long memberId);
 }

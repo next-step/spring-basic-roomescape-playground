@@ -1,12 +1,13 @@
 package roomescape.reservation;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import org.springframework.web.server.ResponseStatusException;
 import roomescape.auth.domain.LoginMember;
 import roomescape.error.ErrorMessage;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -15,11 +16,14 @@ import roomescape.time.TimeRepository;
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository,
+                              TimeRepository timeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
     }
@@ -29,16 +33,19 @@ public class ReservationService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
         }
 
+        Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         Time time = timeRepository.findById(reservationRequest.getTime())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
 
-        Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme);
+        Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme, member);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return new ReservationResponse(savedReservation.getId(), savedReservation.getName(),
-                savedReservation.getTheme().getName(), savedReservation.getDate(), savedReservation.getTime().getValue());
+                savedReservation.getTheme().getName(), savedReservation.getDate(),
+                savedReservation.getTime().getValue());
     }
 
     public void deleteById(Long id, LoginMember loginMember) {
@@ -54,7 +61,18 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(reservation -> new ReservationResponse(reservation.getId(), reservation.getName(),
+                        reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue()))
+                .toList();
+    }
+
+    public List<MyReservationResponse> findMyAllReservations(LoginMember loginMember) {
+        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
+
+        return reservations.stream()
+                .filter(reservation -> reservation.isSame(loginMember.id()))
+                .map(reservation -> new MyReservationResponse(reservation.getId(), reservation.getTheme().getName(),
+                        reservation.getDate(), reservation.getTime().getValue(), Status.RESERVATION.getDescription()))
                 .toList();
     }
 }
