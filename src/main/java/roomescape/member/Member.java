@@ -39,10 +39,6 @@ public class Member {
         this.role = role;
     }
 
-    public Member(Long id, String name, String email, Role role) {
-        this(id, name, email, null, role);
-    }
-
     public Member(String name, String email, String password, Role role) {
         this(null, name, email, password, role);
     }

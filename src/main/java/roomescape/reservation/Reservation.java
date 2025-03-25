@@ -34,7 +34,7 @@ public class Reservation {
     protected Reservation() {
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+    public Reservation(long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
