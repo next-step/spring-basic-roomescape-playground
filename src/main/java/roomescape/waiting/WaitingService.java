@@ -40,7 +40,7 @@ public class WaitingService {
                 .filter(waiting -> waiting.isMyReservation(loginMember.id()))
                 .filter(waiting -> waiting.getTheme().getId().equals(waitingRequest.getTheme()))
                 .filter(waiting -> waiting.getDate().equals(waitingRequest.getDate()))
-                .filter(waiting -> waiting.getTime().equals(waitingRequest.getTime()))
+                .filter(waiting -> waiting.getTime().equals(time.getValue()))
                 .findAny()
                 .ifPresent(waiting -> {
                     throw new IllegalArgumentException(ErrorMessage.ALREADY_WAITING.getMessage());
@@ -48,6 +48,6 @@ public class WaitingService {
 
         Waiting waiting = waitingRepository.save(new Waiting(waitingRequest.getDate(), time.getValue(), theme, member));
 
-        return new WaitingResponse(waiting.getId(), waiting.getTheme().getId(), waiting.getDate(), waiting.getTime(), waitings.size());
+        return new WaitingResponse(waiting.getId(), waiting.getTheme().getId(), waiting.getDate(), waiting.getTime(), waitings.size()+1);
     }
 }
