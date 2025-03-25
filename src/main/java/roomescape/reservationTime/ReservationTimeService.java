@@ -25,13 +25,22 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
-                .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getTimeValue().toString(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
-                ))
+                .map(time -> toAvailableTime(time, reservations))
                 .toList();
+    }
+
+    private AvailableTime toAvailableTime(ReservationTime time, List<Reservation> reservations) {
+        boolean isBooked = isTimeBooked(time.getId(), reservations);
+        return new AvailableTime(
+                time.getId(),
+                time.getTimeValue().toString(),
+                isBooked
+        );
+    }
+
+    private boolean isTimeBooked(Long timeId, List<Reservation> reservations) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getTime().getId().equals(timeId));
     }
 
     public List<ReservationTime> findAll() {
