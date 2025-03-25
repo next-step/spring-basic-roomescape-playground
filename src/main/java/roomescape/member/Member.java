@@ -2,6 +2,8 @@ package roomescape.member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,11 +25,13 @@ public class Member {
     private String password;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    protected Member() {}
+    protected Member() {
+    }
 
-    public Member(Long id, String name, String email, String password, String role) {
+    public Member(Long id, String name, String email, String password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -35,11 +39,11 @@ public class Member {
         this.role = role;
     }
 
-    public Member(Long id, String name, String email, String role) {
+    public Member(Long id, String name, String email, Role role) {
         this(id, name, email, null, role);
     }
 
-    public Member(String name, String email, String password, String role) {
+    public Member(String name, String email, String password, Role role) {
         this(null, name, email, password, role);
     }
 
@@ -60,6 +64,6 @@ public class Member {
     }
 
     public String getRole() {
-        return role;
+        return role.name();
     }
 }
