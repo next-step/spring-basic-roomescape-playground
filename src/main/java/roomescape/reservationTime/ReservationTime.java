@@ -35,6 +35,11 @@ public class ReservationTime {
         this.timeValue = LocalTime.parse(timeValue);
     }
 
+    public boolean isSame(ReservationTime reservationTime) {
+        return this.id
+                .equals(reservationTime.id);
+    }
+
     public Long getId() {
         return id;
     }

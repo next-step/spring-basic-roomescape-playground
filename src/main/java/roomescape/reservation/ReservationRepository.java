@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
+    @Query("")
     List<Reservation> findByDateAndTheme_Id(LocalDate date, long themeId);
 
     @Query("select r from Reservation r join fetch r.reservationTime")
