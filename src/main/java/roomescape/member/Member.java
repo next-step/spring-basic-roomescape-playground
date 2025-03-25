@@ -25,7 +25,7 @@ public class Member {
     @Column(nullable = false)
     private String role;
 
-    public Member() {}
+    protected Member() {}
 
     public Member(Long id, String name, String email, String password, String role) {
         this.id = id;

@@ -25,7 +25,7 @@ public class Theme {
 
     private boolean deleted = false;
 
-    public Theme() {
+    protected Theme() {
     }
 
     public Theme(Long id, String name, String description, boolean deleted) {

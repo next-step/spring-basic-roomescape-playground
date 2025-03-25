@@ -23,6 +23,9 @@ public class ReservationTime {
 
     private boolean deleted = false;
 
+    protected ReservationTime() {
+    }
+
     public ReservationTime(Long id, LocalTime timeValue) {
         this.id = id;
         this.timeValue = timeValue;
@@ -30,10 +33,6 @@ public class ReservationTime {
 
     public ReservationTime(String timeValue) {
         this.timeValue = LocalTime.parse(timeValue);
-    }
-
-    public ReservationTime() {
-
     }
 
     public Long getId() {

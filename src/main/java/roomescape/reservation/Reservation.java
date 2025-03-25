@@ -30,6 +30,9 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     private Theme theme;
 
+    protected Reservation() {
+    }
+
     public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         this.id = id;
         this.name = name;
@@ -43,10 +46,6 @@ public class Reservation {
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
-    }
-
-    public Reservation() {
-
     }
 
     public Long getId() {

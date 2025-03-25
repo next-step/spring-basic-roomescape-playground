@@ -58,9 +58,7 @@ public class AuthController {
         String accessToken = cookieResolver.getToken(cookies);
         String name = jwtResolver.getName(accessToken);
 
-        LoginCheckResponse result = new LoginCheckResponse(name);
-        return ResponseEntity.ok()
-                .body(result);
+        return ResponseEntity.ok(new LoginCheckResponse(name));
     }
 
     @PostMapping("/logout")
