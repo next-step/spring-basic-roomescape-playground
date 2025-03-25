@@ -6,21 +6,21 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Service
 public class LoginService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final String secretKey;
 
-    public LoginService(MemberDao memberDao, @Value("${roomescape.auth.jwt.secret}") String secreteKey) {
-        this.memberDao = memberDao;
+    public LoginService(MemberRepository memberRepository, @Value("${roomescape.auth.jwt.secret}") String secreteKey) {
+        this.memberRepository = memberRepository;
         this.secretKey = secreteKey;
     }
 
     public String login(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password);
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
@@ -38,7 +38,7 @@ public class LoginService {
                 .getBody();
 
         String memberName = claims.get("name", String.class);
-        Member member = memberDao.findByName(memberName);
+        Member member = memberRepository.findByName(memberName);
         return new LoginCheckResponse(member.getName());
     }
 }
