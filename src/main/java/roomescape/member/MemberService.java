@@ -1,9 +1,7 @@
 package roomescape.member;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
-import roomescape.global.exception.RoomescapeNotFoundException;
-import roomescape.global.exception.RoomescapeUnauthorizedException;
+
 
 @Service
 public class MemberService {
