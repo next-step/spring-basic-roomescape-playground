@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 
@@ -60,17 +61,12 @@ public class Reservation {
         return date;
     }
 
-    public String getDateValue() {
-        return date.toString();
-    }
-
     public ReservationTime getTime() {
         return reservationTime;
     }
 
-    public String getTimeValue() {
-        return reservationTime.getTimeValue()
-                .toString();
+    public LocalTime getTimeValue() {
+        return reservationTime.getTimeValue();
     }
 
     public Theme getTheme() {

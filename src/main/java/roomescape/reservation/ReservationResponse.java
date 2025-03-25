@@ -12,6 +12,6 @@ public record ReservationResponse(Long id,
 
     public ReservationResponse(Reservation reservation) {
         this(reservation.getId(), reservation.getName(), reservation.getThemeValue(),
-                reservation.getDate(), reservation.getTimeValue().formatted(TIME_FORMATTER));
+                reservation.getDate(), reservation.getTimeValue().format(TIME_FORMATTER));
     }
 }
