@@ -37,8 +37,8 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it))
+        return reservationRepository.findAllWithReservationTime().stream()
+                .map(reservation -> new ReservationResponse(reservation))
                 .toList();
     }
 }
