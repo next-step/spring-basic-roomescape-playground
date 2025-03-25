@@ -48,9 +48,10 @@ public class ReservationTimeService {
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
-        if (reservationTime.getId() == null || reservationTime.getTimeValue() == null) {
+        if (reservationTime.getTimeValue() == null) {
             throw new RoomescapeBadRequestException("잘못된 예약 시간 정보입니다.");
         }
+
         return reservationTimeRepository.save(reservationTime);
     }
 

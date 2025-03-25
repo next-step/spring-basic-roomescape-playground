@@ -26,11 +26,6 @@ public class ReservationTime {
     protected ReservationTime() {
     }
 
-    public ReservationTime(Long id, LocalTime timeValue) {
-        this.id = id;
-        this.timeValue = timeValue;
-    }
-
     public ReservationTime(String timeValue) {
         this.timeValue = LocalTime.parse(timeValue);
     }
