@@ -21,14 +21,14 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
+        Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid theme ID"));
-        Time time = timeRepository.findById(reservationRequest.getTime())
+        Time time = timeRepository.findById(reservationRequest.time())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid time ID"));
 
         Reservation reservation = new Reservation(
-                reservationRequest.getName(),
-                reservationRequest.getDate(),
+                reservationRequest.name(),
+                reservationRequest.date(),
                 time,
                 theme
         );
