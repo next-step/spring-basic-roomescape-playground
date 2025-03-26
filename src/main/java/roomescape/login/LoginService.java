@@ -21,11 +21,11 @@ public class LoginService {
         return memberService.generateToken(member);
     }
 
-    public LoginCheckResponse getUserInfoFromToken(String token) {
+    public String getUserInfoFromToken(String token) {
         Claims claims = memberService.parseClaims(token);
 
         String memberName = claims.get("name", String.class);
         Member member = memberRepository.findByName(memberName);
-        return new LoginCheckResponse(member.getName());
+        return member.getName();
     }
 }

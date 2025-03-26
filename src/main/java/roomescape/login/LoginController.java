@@ -28,6 +28,6 @@ public class LoginController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue("token") String token) {
-        return ResponseEntity.ok(loginService.getUserInfoFromToken(token));
+        return ResponseEntity.ok(new LoginCheckResponse(loginService.getUserInfoFromToken(token)));
     }
 }
