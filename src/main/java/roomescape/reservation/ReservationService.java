@@ -35,7 +35,7 @@ public class ReservationService {
     }
 
     private static void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
-        if (loginMember.notHaveName(reservation.getMemberName()) && loginMember.isNotAdmin()) {
+        if (loginMember.notHaveName(reservation.getMember().getName()) && loginMember.isNotAdmin()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
         }
     }
@@ -45,7 +45,7 @@ public class ReservationService {
         Time time = findTimeById(reservationRequest);
         Theme theme = findThemeById(reservationRequest);
 
-        Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme, member);
+        Reservation reservation = new Reservation(reservationRequest.getDate(), time, theme, member);
 
         validateReservationPermission(reservation, loginMember);
 
@@ -63,7 +63,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(reservation -> new ReservationResponse(reservation.getId(), reservation.getMemberName(),
+                .map(reservation -> new ReservationResponse(reservation.getId(), reservation.getMember().getName(),
                         reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue()))
                 .toList();
     }
@@ -93,7 +93,7 @@ public class ReservationService {
     private ReservationResponse saveReservation(Reservation reservation) {
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        return new ReservationResponse(savedReservation.getId(), savedReservation.getMemberName(),
+        return new ReservationResponse(savedReservation.getId(), savedReservation.getMember().getName(),
                 savedReservation.getTheme().getName(), savedReservation.getDate(),
                 savedReservation.getTime().getValue());
     }
