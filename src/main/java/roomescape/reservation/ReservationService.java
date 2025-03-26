@@ -34,33 +34,29 @@ public class ReservationService {
         this.waitingRepository = waitingRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (loginMember.notHaveName(reservationRequest.getName()) && loginMember.isNotAdmin()) {
+    private static void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
+        if (loginMember.notHaveName(reservation.getName()) && loginMember.isNotAdmin()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
         }
+    }
 
-        Member member = memberRepository.findById(loginMember.id())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        Time time = timeRepository.findById(reservationRequest.getTime())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
+    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
+        Member member = findMemberById(loginMember);
+        Time time = findTimeById(reservationRequest);
+        Theme theme = findThemeById(reservationRequest);
 
         Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme, member);
-        Reservation savedReservation = reservationRepository.save(reservation);
 
-        return new ReservationResponse(savedReservation.getId(), savedReservation.getName(),
-                savedReservation.getTheme().getName(), savedReservation.getDate(),
-                savedReservation.getTime().getValue());
+        validateReservationPermission(reservation, loginMember);
+
+        return saveReservation(reservation);
     }
 
     public void deleteById(Long id, LoginMember loginMember) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
 
-        if (loginMember.isNotAdmin() && loginMember.notHaveName(reservation.getName())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_DELETE.getMessage());
-        }
+        validateReservationPermission(reservation, loginMember);
 
         reservationRepository.deleteById(id);
     }
@@ -73,22 +69,56 @@ public class ReservationService {
     }
 
     public List<UserReservationResponse> findMyAllReservations(LoginMember loginMember) {
-        List<UserReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.id()).stream()
+        List<UserReservationResponse> reservations = findUserReservations(loginMember);
+        List<UserReservationResponse> waitings = findUserWaitings(loginMember);
+
+        return mergeAndSortReservationsByDate(reservations, waitings);
+    }
+
+    private Member findMemberById(LoginMember loginMember) {
+        return memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+    }
+
+    private Time findTimeById(ReservationRequest reservationRequest) {
+        return timeRepository.findById(reservationRequest.getTime())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
+    }
+
+    private Theme findThemeById(ReservationRequest reservationRequest) {
+        return themeRepository.findById(reservationRequest.getTheme())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
+    }
+
+    private ReservationResponse saveReservation(Reservation reservation) {
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        return new ReservationResponse(savedReservation.getId(), savedReservation.getName(),
+                savedReservation.getTheme().getName(), savedReservation.getDate(),
+                savedReservation.getTime().getValue());
+    }
+
+    private List<UserReservationResponse> findUserReservations(LoginMember loginMember) {
+        return reservationRepository.findByMemberId(loginMember.id()).stream()
                 .filter(reservation -> reservation.isSame(loginMember.id()))
                 .map(reservation -> new UserReservationResponse(reservation.getId(), reservation.getTheme().getName(),
                         reservation.getDate(), reservation.getTime().getValue(), Status.RESERVATION.getDescription()))
                 .toList();
+    }
 
-        List<UserReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id()).stream()
+    private List<UserReservationResponse> findUserWaitings(LoginMember loginMember) {
+        return waitingRepository.findWaitingsWithRankByMemberId(loginMember.id()).stream()
                 .map(waitingWithRank -> new UserReservationResponse(waitingWithRank.getWaiting().getId(),
                         waitingWithRank.getWaiting().getTheme().getName(), waitingWithRank.getWaiting().getDate(),
-                        waitingWithRank.getWaiting().getTime(), (waitingWithRank.getRank()+1) + "번째 " + Status.WAIT.getDescription()))
+                        waitingWithRank.getWaiting().getTime(),
+                        (waitingWithRank.getRank() + 1) + "번째 " + Status.WAIT.getDescription()))
                 .toList();
+    }
 
-        List<UserReservationResponse> results = Stream.concat(reservations.stream(), waitings.stream())
+    private List<UserReservationResponse> mergeAndSortReservationsByDate(List<UserReservationResponse> reservations,
+                                                                         List<UserReservationResponse> waitings) {
+        return Stream.concat(reservations.stream(), waitings.stream())
                 .sorted(Comparator.comparing(UserReservationResponse::getDate))
                 .toList();
-
-        return results;
     }
 }

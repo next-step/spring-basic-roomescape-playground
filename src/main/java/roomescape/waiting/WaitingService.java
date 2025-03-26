@@ -47,21 +47,18 @@ public class WaitingService {
     }
 
     private Member findMemberById(LoginMember loginMember) {
-        Member member = memberRepository.findById(loginMember.id())
+        return memberRepository.findById(loginMember.id())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        return member;
     }
 
     private Time findTimeById(WaitingRequest waitingRequest) {
-        Time time = timeRepository.findById(waitingRequest.getTime())
+        return timeRepository.findById(waitingRequest.getTime())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
-        return time;
     }
 
     private Theme findThemeById(WaitingRequest waitingRequest) {
-        Theme theme = themeRepository.findById(waitingRequest.getTheme())
+        return themeRepository.findById(waitingRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
-        return theme;
     }
 
     private void validateDuplicateWaitings(WaitingRequest waitingRequest, LoginMember loginMember,
