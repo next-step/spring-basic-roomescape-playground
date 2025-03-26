@@ -35,7 +35,7 @@ public class ReservationService {
     }
 
     private static void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
-        if (loginMember.notHaveName(reservation.getName()) && loginMember.isNotAdmin()) {
+        if (loginMember.notHaveName(reservation.getMemberName()) && loginMember.isNotAdmin()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
         }
     }
@@ -63,7 +63,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(reservation -> new ReservationResponse(reservation.getId(), reservation.getName(),
+                .map(reservation -> new ReservationResponse(reservation.getId(), reservation.getMemberName(),
                         reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue()))
                 .toList();
     }
@@ -93,7 +93,7 @@ public class ReservationService {
     private ReservationResponse saveReservation(Reservation reservation) {
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        return new ReservationResponse(savedReservation.getId(), savedReservation.getName(),
+        return new ReservationResponse(savedReservation.getId(), savedReservation.getMemberName(),
                 savedReservation.getTheme().getName(), savedReservation.getDate(),
                 savedReservation.getTime().getValue());
     }
