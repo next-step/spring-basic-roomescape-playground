@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.WeakKeyException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.BadRequestException;
@@ -15,12 +16,27 @@ import roomescape.member.domain.Member;
 import java.util.Date;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenManager {
 
     public static final long ACCESS_TOKEN_EXP = 60L * 60L * 1000L; // 1시간
+    private static final int BITS_IN_BYTE = 8;
+    private static final int MIN_KEY_SIZE = 256;
 
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey;
+    private final String secretKey;
+
+    public JwtTokenManager(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+        validateSecretKey(secretKey);
+        this.secretKey = secretKey;
+    }
+
+    private void validateSecretKey(String secretKey) {
+        byte[] keyBytes = secretKey.getBytes();
+        int keySizeInBits = keyBytes.length * BITS_IN_BYTE;
+
+        if (keySizeInBits < MIN_KEY_SIZE) {
+            throw new BadRequestException(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
+        }
+    }
 
     public String createAccessToken(Member member) {
         return createToken(member, ACCESS_TOKEN_EXP);
@@ -28,14 +44,17 @@ public class JwtTokenProvider {
 
     private String createToken(Member member, long expirationTime) {
         Date expirationDate = calculateExpirationDateFromNow(expirationTime);
-
-        return Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .setExpiration(expirationDate)
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
+        try {
+            return Jwts.builder()
+                    .setSubject(member.getId().toString())
+                    .claim("name", member.getName())
+                    .claim("role", member.getRole())
+                    .setExpiration(expirationDate)
+                    .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .compact();
+        } catch (WeakKeyException weakKeyException) {
+            throw new BadRequestException(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
+        }
     }
 
     private Date calculateExpirationDateFromNow(long expirationTime) {
@@ -60,5 +79,9 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String getSecretKey() {
+        return secretKey;
     }
 }

@@ -1,35 +1,35 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.JwtTokenManager;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
-import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.request.LoginRequest;
 import roomescape.member.dto.response.LoginCheckResponse;
 import roomescape.member.dto.response.LoginResponse;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class AuthService {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberDao memberDao;
+    private final JwtTokenManager jwtTokenManager;
+    private final MemberRepository memberRepository;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.memberDao = memberDao;
+    public AuthService(JwtTokenManager jwtTokenManager, MemberRepository memberRepository) {
+        this.jwtTokenManager = jwtTokenManager;
+        this.memberRepository = memberRepository;
     }
 
     public LoginResponse login(LoginRequest request) {
         Member member = getMemberWithLogin(request);
-        String accessToken = jwtTokenProvider.createAccessToken(member);
+        String accessToken = jwtTokenManager.createAccessToken(member);
         return new LoginResponse(accessToken);
     }
 
     private Member getMemberWithLogin(LoginRequest request) {
-        return memberDao.findByEmailAndPassword(request.email(), request.password())
+        return memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
@@ -38,12 +38,12 @@ public class AuthService {
     }
 
     public Member getLoginMember(String accessToken) {
-        long memberId = jwtTokenProvider.parseToken(accessToken);
+        long memberId = jwtTokenManager.parseToken(accessToken);
         return getMemberById(memberId);
     }
 
     private Member getMemberById(long memberId) {
-        return memberDao.findById(memberId)
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 }

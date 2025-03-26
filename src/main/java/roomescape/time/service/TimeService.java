@@ -2,26 +2,28 @@ package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dao.ReservationDao;
-import roomescape.time.dao.TimeDao;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.AvailableTime;
 import roomescape.time.domain.Time;
+import roomescape.time.repository.TimeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class TimeService {
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
 
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
+    private TimeRepository timeRepository;
+    private ReservationRepository reservationRepository;
+
+    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
+        this.timeRepository = timeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
-    public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+    public List<AvailableTime> getAvailableTime(LocalDate date, Long themeId) {
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        List<Time> times = timeRepository.findAll();
 
         return times.stream()
                 .map(time -> new AvailableTime(
@@ -34,14 +36,14 @@ public class TimeService {
     }
 
     public List<Time> findAll() {
-        return timeDao.findAll();
+        return timeRepository.findAll();
     }
 
     public Time save(Time time) {
-        return timeDao.save(time);
+        return timeRepository.save(time);
     }
 
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        timeRepository.deleteById(id);
     }
 }

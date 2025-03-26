@@ -28,9 +28,9 @@ public class ReservationResponse {
     public ReservationResponse(Reservation reservation) {
         this.id = reservation.getId();
         this.name = reservation.getName();
-        this.theme = reservation.getTheme().getName();
+        this.theme = reservation.getThemeName();
         this.date = reservation.getDate();
-        this.time = reservation.getTime().getValue();
+        this.time = reservation.getTimeValue();
     }
 
     public Long getId() {
