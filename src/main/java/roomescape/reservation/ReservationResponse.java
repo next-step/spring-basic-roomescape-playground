@@ -1,13 +1,15 @@
 package roomescape.reservation;
 
+import java.time.LocalDate;
+
 public class ReservationResponse {
     private Long id;
     private String name;
     private String theme;
-    private String date;
+    private LocalDate date;
     private String time;
 
-    public ReservationResponse(Long id, String name, String theme, String date, String time) {
+    public ReservationResponse(Long id, String name, String theme, LocalDate date, String time) {
         this.id = id;
         this.name = name;
         this.theme = theme;
@@ -27,7 +29,7 @@ public class ReservationResponse {
         return theme;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
