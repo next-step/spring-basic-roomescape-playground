@@ -25,8 +25,7 @@ public class TimeService {
                 .map(time -> new AvailableTime(
                         time.getId(),
                         time.getTimeValue(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
+                        isTimeReserved(time, reservations)
                 ))
                 .toList();
     }
@@ -41,5 +40,10 @@ public class TimeService {
 
     public void deleteById(Long id) {
         timeRepository.deleteById(id);
+    }
+
+    private boolean isTimeReserved(Time time, List<Reservation> reservations) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()));
     }
 }
