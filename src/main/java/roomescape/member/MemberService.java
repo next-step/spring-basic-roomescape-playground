@@ -26,8 +26,10 @@ public class MemberService {
 
     public Member findMemberByToken(String token) {
         String idString = getClaimValue(token, "id");
-        Long id = idString != null ? Long.valueOf(idString) : null;
-
+        Long id = null;
+        if (idString != null) {
+            id = Long.valueOf(idString);
+        }
         Optional<Member> optionalMember = memberRepository.findById(id);
         return optionalMember.orElse(null);
     }
