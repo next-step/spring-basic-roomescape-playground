@@ -1,13 +1,13 @@
 package roomescape.reservation;
 
-public class MyReservationResponse {
+public class UserReservationResponse {
     private Long id;
     private String theme;
     private String date;
     private String time;
     private String status;
 
-    public MyReservationResponse(Long id, String theme, String date, String time, String status) {
+    public UserReservationResponse(Long id, String theme, String date, String time, String status) {
         this.id = id;
         this.theme = theme;
         this.date = date;

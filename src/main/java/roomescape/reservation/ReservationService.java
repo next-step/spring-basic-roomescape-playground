@@ -72,21 +72,21 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<MyReservationResponse> findMyAllReservations(LoginMember loginMember) {
-        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.id()).stream()
+    public List<UserReservationResponse> findMyAllReservations(LoginMember loginMember) {
+        List<UserReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.id()).stream()
                 .filter(reservation -> reservation.isSame(loginMember.id()))
-                .map(reservation -> new MyReservationResponse(reservation.getId(), reservation.getTheme().getName(),
+                .map(reservation -> new UserReservationResponse(reservation.getId(), reservation.getTheme().getName(),
                         reservation.getDate(), reservation.getTime().getValue(), Status.RESERVATION.getDescription()))
                 .toList();
 
-        List<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id()).stream()
-                .map(waitingWithRank -> new MyReservationResponse(waitingWithRank.getWaiting().getId(),
+        List<UserReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id()).stream()
+                .map(waitingWithRank -> new UserReservationResponse(waitingWithRank.getWaiting().getId(),
                         waitingWithRank.getWaiting().getTheme().getName(), waitingWithRank.getWaiting().getDate(),
                         waitingWithRank.getWaiting().getTime(), (waitingWithRank.getRank()+1) + "번째 " + Status.WAIT.getDescription()))
                 .toList();
 
-        List<MyReservationResponse> results = Stream.concat(reservations.stream(), waitings.stream())
-                .sorted(Comparator.comparing(MyReservationResponse::getDate))
+        List<UserReservationResponse> results = Stream.concat(reservations.stream(), waitings.stream())
+                .sorted(Comparator.comparing(UserReservationResponse::getDate))
                 .toList();
 
         return results;
