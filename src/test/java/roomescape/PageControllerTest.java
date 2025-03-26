@@ -64,7 +64,7 @@ class PageControllerTest {
     @Test
     void 로그인을_안한_유저가_관리자_페이지_접근시_예외가_발생한다() {
         Member member = new Member("멤버1", "member@email.com", "password", Role.USER);
-        Member savedMember = memberRepository.save(member);
+        memberRepository.save(member);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
