@@ -20,7 +20,8 @@ public class WaitingService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public WaitingService(WaitingRepository waitingRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public WaitingService(WaitingRepository waitingRepository, MemberRepository memberRepository,
+                          TimeRepository timeRepository, ThemeRepository themeRepository) {
         this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
@@ -28,16 +29,43 @@ public class WaitingService {
     }
 
     public WaitingResponse createWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
+        Member member = findMemberById(loginMember);
+        Time time = findTimeById(waitingRequest);
+        Theme theme = findThemeById(waitingRequest);
+
+        List<Waiting> waitings = waitingRepository.findByThemeIdAndDateAndTime(
+                waitingRequest.getTheme(), waitingRequest.getDate(), time.getValue()
+        );
+
+        validateDuplicateWaitings(waitingRequest, loginMember, waitings, time);
+
+        return saveWaiting(waitingRequest, time, theme, member, waitings);
+    }
+
+    public void deleteWaiting(Long id) {
+        waitingRepository.deleteById(id);
+    }
+
+    private Member findMemberById(LoginMember loginMember) {
         Member member = memberRepository.findById(loginMember.id())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+        return member;
+    }
+
+    private Time findTimeById(WaitingRequest waitingRequest) {
         Time time = timeRepository.findById(waitingRequest.getTime())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
+        return time;
+    }
+
+    private Theme findThemeById(WaitingRequest waitingRequest) {
         Theme theme = themeRepository.findById(waitingRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
+        return theme;
+    }
 
-        List<Waiting> waitings = waitingRepository.findByThemeIdAndDateAndTime(waitingRequest.getTheme(),
-                waitingRequest.getDate(), time.getValue());
-
+    private void validateDuplicateWaitings(WaitingRequest waitingRequest, LoginMember loginMember,
+                                           List<Waiting> waitings, Time time) {
         waitings.stream()
                 .filter(waiting -> waiting.isMyReservation(loginMember.id()))
                 .filter(waiting -> waiting.getTheme().getId().equals(waitingRequest.getTheme()))
@@ -47,13 +75,12 @@ public class WaitingService {
                 .ifPresent(waiting -> {
                     throw new IllegalArgumentException(ErrorMessage.ALREADY_WAITING.getMessage());
                 });
-
-        Waiting waiting = waitingRepository.save(new Waiting(waitingRequest.getDate(), time.getValue(), theme, member));
-
-        return new WaitingResponse(waiting.getId(), waiting.getTheme().getId(), waiting.getDate(), waiting.getTime(), waitings.size()+1);
     }
 
-    public void deleteWaiting(Long id) {
-        waitingRepository.deleteById(id);
+    private WaitingResponse saveWaiting(WaitingRequest waitingRequest, Time time, Theme theme, Member member,
+                                        List<Waiting> waitings) {
+        Waiting waiting = waitingRepository.save(new Waiting(waitingRequest.getDate(), time.getValue(), theme, member));
+        return new WaitingResponse(waiting.getId(), waiting.getTheme().getId(), waiting.getDate(), waiting.getTime(),
+                waitings.size() + 1);
     }
 }
