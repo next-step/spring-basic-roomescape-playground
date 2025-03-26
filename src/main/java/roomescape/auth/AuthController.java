@@ -73,7 +73,7 @@ public class AuthController {
      Member getMember(final LoginRequest loginRequest) {
         String email = loginRequest.email();
         String password = loginRequest.password();
-        Member findMember = authService.findMemberByEmailAndPassword(email, password);
-        return findMember;
+
+        return authService.findMemberByEmailAndPassword(email, password);
     }
 }

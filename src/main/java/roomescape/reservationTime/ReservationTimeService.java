@@ -29,7 +29,8 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private AvailableTime toAvailableTime(ReservationTime reservationTime, List<Reservation> reservations) {
+    private AvailableTime toAvailableTime(ReservationTime reservationTime
+            , List<Reservation> reservations) {
         boolean isBooked = isTimeBooked(reservationTime, reservations);
         return new AvailableTime(
                 reservationTime.getId(),

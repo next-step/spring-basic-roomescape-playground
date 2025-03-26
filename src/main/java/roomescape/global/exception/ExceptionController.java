@@ -27,7 +27,8 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<String>> handleInvalidFormatException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<List<String>> handleInvalidFormatException(MethodArgumentNotValidException
+                                                                                 exception) {
         List<String> errors = new ArrayList<>();
         exception.getBindingResult().getFieldErrors().forEach(fieldError -> {
             errors.add("[" + fieldError.getField() + "] " + fieldError.getDefaultMessage());
