@@ -1,6 +1,8 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import roomescape.exception.InvalidThemeException;
+import roomescape.exception.InvalidTimeException;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -22,9 +24,9 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         Theme theme = themeRepository.findById(reservationRequest.theme())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid theme ID"));
+                .orElseThrow(() -> new InvalidThemeException("Invalid theme ID"));
         Time time = timeRepository.findById(reservationRequest.time())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid time ID"));
+                .orElseThrow(() -> new InvalidTimeException("Invalid time ID"));
 
         Reservation reservation = new Reservation(
                 reservationRequest.name(),
