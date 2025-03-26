@@ -22,11 +22,15 @@ import static roomescape.auth.JwtTokenManager.ACCESS_TOKEN_EXP;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class JwtTokenManagerTest {
 
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey;
-
     @Autowired
     private JwtTokenManager jwtTokenManager;
+
+    @Test
+    void 시크릿_키_길이가_충분하지_않은경우_예외가_발생한다() {
+        assertThatThrownBy(() -> new JwtTokenManager("short"))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
+    }
 
     @Test
     void 액세스_토큰을_파싱할_수_있다() {
@@ -37,16 +41,6 @@ class JwtTokenManagerTest {
         long resultOfParseToken = jwtTokenManager.parseToken(accessToken);
         // then
         assertThat(resultOfParseToken).isEqualTo(member.getId());
-    }
-
-    @Test
-    void 시크릿_키의_길이가_짧으면_예외가_발생한다() {
-        // given
-        Member member = new Member(1L, "멤버", "member@email.com", Role.USER);
-        // when & then
-        assertThatThrownBy(() -> createTokenWithShortSecretKey(member))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
     }
 
     @Test
@@ -80,7 +74,7 @@ class JwtTokenManagerTest {
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
                 .setExpiration(expiredDate)
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(jwtTokenManager.getSecretKey().getBytes()))
                 .compact();
     }
 
@@ -91,18 +85,5 @@ class JwtTokenManagerTest {
                 .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor("wrong-secret-keyYDfhiadomlkasiuhuj".getBytes()))
                 .compact();
-    }
-
-    private String createTokenWithShortSecretKey(final Member member) {
-        try {
-            return Jwts.builder()
-                    .setSubject(member.getId().toString())
-                    .claim("name", member.getName())
-                    .claim("role", member.getRole())
-                    .signWith(Keys.hmacShaKeyFor("shortSecretKey".getBytes()))
-                    .compact();
-        } catch (WeakKeyException weakKeyException) {
-            throw new BadRequestException(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
-        }
     }
 }

@@ -19,9 +19,24 @@ import java.util.Date;
 public class JwtTokenManager {
 
     public static final long ACCESS_TOKEN_EXP = 60L * 60L * 1000L; // 1시간
+    private static final int BITS_IN_BYTE = 8;
+    private static final int MIN_KEY_SIZE = 256;
 
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey;
+    private final String secretKey;
+
+    public JwtTokenManager(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+        validateSecretKey(secretKey);
+        this.secretKey = secretKey;
+    }
+
+    private void validateSecretKey(String secretKey) {
+        byte[] keyBytes = secretKey.getBytes();
+        int keySizeInBits = keyBytes.length * BITS_IN_BYTE;
+
+        if (keySizeInBits < MIN_KEY_SIZE) {
+            throw new BadRequestException(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
+        }
+    }
 
     public String createAccessToken(Member member) {
         return createToken(member, ACCESS_TOKEN_EXP);
@@ -64,5 +79,9 @@ public class JwtTokenManager {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String getSecretKey() {
+        return secretKey;
     }
 }
