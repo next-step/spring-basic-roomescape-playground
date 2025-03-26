@@ -25,13 +25,8 @@ public class MemberService {
     }
 
     public Member findMemberByToken(String token) {
-        Claims claims = parseClaims(token);
-
-        Double idDouble = claims.get("id", Double.class);
-        Long id = null;
-        if (idDouble != null) {
-            id = idDouble.longValue();
-        }
+        String idString = getClaimValue(token, "id");
+        Long id = idString != null ? Long.valueOf(idString) : null;
 
         Optional<Member> optionalMember = memberRepository.findById(id);
         return optionalMember.orElse(null);
