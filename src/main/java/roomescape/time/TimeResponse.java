@@ -1,4 +1,6 @@
 package roomescape.time;
 
-public record TimeResponse(Long id, String timeValue) {
+import java.time.LocalTime;
+
+public record TimeResponse(Long id, LocalTime value) {
 }

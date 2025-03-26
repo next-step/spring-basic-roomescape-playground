@@ -24,7 +24,7 @@ public class TimeService {
         return times.stream()
                 .map(time -> new AvailableTime(
                         time.getId(),
-                        time.getTimeValue(),
+                        time.getValue(),
                         isTimeReserved(time, reservations)
                 ))
                 .toList();

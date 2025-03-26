@@ -25,16 +25,16 @@ public class TimeController {
     @GetMapping("/times")
     public ResponseEntity<List<TimeResponse>> list() {
         List<TimeResponse> times = timeService.findAll().stream()
-                .map(time -> new TimeResponse(time.getId(), time.getTimeValue()))
+                .map(time -> new TimeResponse(time.getId(), time.getValue()))
                 .toList();
         return ResponseEntity.ok(times);
     }
 
     @PostMapping("/times")
     public ResponseEntity<TimeResponse> create(@Valid @RequestBody TimeRequest request) {
-        Time time = new Time(null, request.timeValue());
+        Time time = new Time(null, request.value());
         Time savedTime = timeService.save(time);
-        TimeResponse response = new TimeResponse(savedTime.getId(), savedTime.getTimeValue());
+        TimeResponse response = new TimeResponse(savedTime.getId(), savedTime.getValue());
         return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }
 

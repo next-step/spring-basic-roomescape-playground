@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
+import java.time.LocalTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -19,12 +21,12 @@ public class JpaTest {
 
     @Test
     void 사단계() {
-        Time time = new Time(null, "10:00");
+        Time time = new Time(null, LocalTime.of(10, 0));
         entityManager.persist(time);
         entityManager.flush();
 
         Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
-        assertThat(persistTime.getTimeValue()).isEqualTo(time.getTimeValue());
+        assertThat(persistTime.getValue()).isEqualTo(time.getValue());
     }
 }
