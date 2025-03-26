@@ -22,9 +22,7 @@ public class LoginService {
     }
 
     public String getUserInfoFromToken(String token) {
-        Claims claims = memberService.parseClaims(token);
-
-        String memberName = claims.get("name", String.class);
+        String memberName = memberService.getClaimValue(token, "name");
         Member member = memberRepository.findByName(memberName);
         return member.getName();
     }

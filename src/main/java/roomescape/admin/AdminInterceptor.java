@@ -41,7 +41,6 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     public String getUserRoleFromToken(String token) {
-        Claims claims = memberService.parseClaims(token);
-        return claims.get("role", String.class);
+        return memberService.getClaimValue(token, "role");
     }
 }

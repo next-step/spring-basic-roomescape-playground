@@ -37,12 +37,13 @@ public class MemberService {
         return optionalMember.orElse(null);
     }
 
-    public Claims parseClaims(String token) {
+    public String getClaimValue(String token, String key) {
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
+                .getBody()
+                .get(key, String.class);
     }
 
     public String generateToken(Member member) {
