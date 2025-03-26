@@ -4,25 +4,25 @@ import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
-import roomescape.util.JwtUtil;
+import roomescape.member.MemberService;
 
 @Service
 public class LoginService {
     private final MemberRepository memberRepository;
-    private final JwtUtil jwtUtil;
+    private final MemberService memberService;
 
-    public LoginService(MemberRepository memberRepository, JwtUtil jwtUtil) {
+    public LoginService(MemberRepository memberRepository, MemberService memberService) {
         this.memberRepository = memberRepository;
-        this.jwtUtil = jwtUtil;
+        this.memberService = memberService;
     }
 
     public String login(String email, String password) {
         Member member = memberRepository.findByEmailAndPassword(email, password);
-        return jwtUtil.generateToken(member);
+        return memberService.generateToken(member);
     }
 
     public LoginCheckResponse getUserInfoFromToken(String token) {
-        Claims claims = jwtUtil.parseClaims(token);
+        Claims claims = memberService.parseClaims(token);
 
         String memberName = claims.get("name", String.class);
         Member member = memberRepository.findByName(memberName);

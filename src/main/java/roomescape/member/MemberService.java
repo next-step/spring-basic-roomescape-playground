@@ -1,17 +1,22 @@
 package roomescape.member;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import roomescape.util.JwtUtil;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final JwtUtil jwtUtil;
+    private final String secretKey;
 
-    public MemberService(MemberRepository memberRepository, JwtUtil jwtUtil) {
+    public MemberService(MemberRepository memberRepository, @Value("${roomescape.auth.jwt.secret}") String secretKey) {
         this.memberRepository = memberRepository;
-        this.jwtUtil = jwtUtil;
+        this.secretKey = secretKey;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -20,7 +25,7 @@ public class MemberService {
     }
 
     public Member findMemberByToken(String token) {
-        Claims claims = jwtUtil.parseClaims(token);
+        Claims claims = parseClaims(token);
 
         Double idDouble = claims.get("id", Double.class);
         Long id = null;
@@ -28,6 +33,25 @@ public class MemberService {
             id = idDouble.longValue();
         }
 
-        return memberRepository.findById(id).orElse(null);
+        Optional<Member> optionalMember = memberRepository.findById(id);
+        return optionalMember.orElse(null);
+    }
+
+    public Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String generateToken(Member member) {
+        return Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("id", member.getId())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
     }
 }
