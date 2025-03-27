@@ -19,9 +19,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
      * fetch join, entityGraph 동작 확인 용
      */
     @Query("select r from Reservation r join fetch r.forStudies")
-    List<Reservation> findAllWithForStudy();
+    List<Reservation> findAllWithForStudyByFetch();
+
+    @Query("select r from Reservation r left join fetch r.forStudies")
+    List<Reservation> findAllWithForStudyByLeftFetch();
 
     @EntityGraph(value = "Reservation.forStudies", type = EntityGraph.EntityGraphType.FETCH)
     @Query("select r from Reservation r")
-    List<Reservation> findAllWithForStudyWithEntityGraph();
+    List<Reservation> findAllWithForStudyByEntityGraph();
 }
