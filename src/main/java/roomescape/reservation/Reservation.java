@@ -7,12 +7,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 
 @Entity
+@NamedEntityGraph(name = "Reservation.reservationTime", attributeNodes = @NamedAttributeNode("reservationTime"))
+@NamedEntityGraph(name = "Reservation.forStudies", attributeNodes = @NamedAttributeNode("forStudies"))
 public class Reservation {
 
     @Id
@@ -30,6 +36,9 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Theme theme;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reservation")
+    private List<ForStudy> forStudies;
 
     protected Reservation() {
     }
@@ -76,5 +85,9 @@ public class Reservation {
 
     public String getThemeValue() {
         return theme.getName();
+    }
+
+    public List<ForStudy> getForStudies() {
+        return forStudies;
     }
 }

@@ -8,9 +8,22 @@ VALUES ('테마1', '테마1입니다.', false),
        ('테마3', '테마3입니다.', false);
 
 INSERT INTO reservation_time (time_value, deleted)
-VALUES ('10:00', false), ('12:00', false), ('14:00', false), ('16:00', false), ('18:00', false), ('20:00', false);
+VALUES ('10:00', false),
+       ('12:00', false),
+       ('14:00', false),
+       ('16:00', false),
+       ('18:00', false),
+       ('20:00', false);
 
 INSERT INTO reservation (name, date, reservation_time_id, theme_id)
 VALUES ('어드민', '2024-03-01', 1, 1),
        ('어드민', '2024-03-01', 2, 2),
        ('어드민', '2024-03-01', 3, 3);
+
+INSERT INTO for_study (content, reservation_id)
+VALUES ('데이터1', 1),
+       ('데이터2', 1),
+       ('데이터2', 2),
+       ('데이터3', 2),
+       ('데이터3', 3),
+       ('데이터4', 3);

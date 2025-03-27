@@ -1,5 +1,6 @@
 package roomescape;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
@@ -7,11 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import net.bytebuddy.asm.Advice.Local;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import roomescape.reservation.ForStudy;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 import roomescape.reservationTime.ReservationTime;
@@ -42,18 +45,43 @@ public class JpaTest {
     @Test
     @DisplayName("구현 코드 결과를 확인하는 목적이 아닌, 설정에 따른 쿼리를 확인해보기위한 테스트입니다.")
     void ManyToOne_쿼리_확인() {
-        List<Reservation> times =  reservationRepository.findAll();
 
         System.out.println("=== FindAll Join Query ===");
 
-        List<LocalTime> localTimes = reservationRepository.findAll().stream()
+        reservationRepository.findAll().stream()
                 .map(reservation -> reservation.getTime().getTimeValue())
                 .toList();
 
         System.out.println("=== Fetch Join Query ===");
 
-        List<LocalTime> fetchedLocalTimes = reservationRepository.findAllWithReservationTime().stream()
+        List<Reservation> reservationsByFetchJoin = reservationRepository.findAllWithForStudy();
+        reservationsByFetchJoin.stream()
                 .map(reservation -> reservation.getTime().getTimeValue())
                 .toList();
+
+        for (Reservation reservation : reservationsByFetchJoin) {
+            System.out.println(reservation.getName() + ", " + reservation.getId());
+            for (ForStudy study : reservation.getForStudies()) {
+                System.out.println("study = " + study.getContent());
+            }
+        }
+        assertThat(reservationsByFetchJoin.size()).isEqualTo(3);
+
+        System.out.println("=== Entity Graph Query ===");
+
+        List<Reservation> reservationsByEntityGraph = reservationRepository.findAllWithForStudyWithEntityGraph();
+        reservationsByEntityGraph.stream()
+                .map(reservation -> reservation.getTime().getTimeValue())
+                .toList();
+
+        for (Reservation reservation : reservationsByEntityGraph) {
+            System.out.println(reservation.getName() + ", " + reservation.getId());
+            for (ForStudy study : reservation.getForStudies()) {
+                System.out.println("study = " + study.getContent());
+            }
+        }
+
+        assertThat(reservationsByEntityGraph.size()).isEqualTo(3);
+        // hibernate 6 위 버전부터는 oneTomany와 fetch join으로 인한 중복을 hibernate에서 처리해준다...
     }
 }
