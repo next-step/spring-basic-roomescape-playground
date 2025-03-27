@@ -34,6 +34,12 @@ public class ReservationService {
         this.waitingRepository = waitingRepository;
     }
 
+    private static void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
+        if (loginMember.notHaveName(reservation.getMember().getName()) && loginMember.isNotAdmin()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
+        }
+    }
+
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Member member = findMemberById(loginMember);
         Time time = findTimeById(reservationRequest);
@@ -53,12 +59,6 @@ public class ReservationService {
         validateReservationPermission(reservation, loginMember);
 
         reservationRepository.deleteById(id);
-    }
-
-    private void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
-        if (loginMember.notHaveName(reservation.getMember().getName()) && loginMember.isNotAdmin()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
-        }
     }
 
     public List<ReservationResponse> findAll() {
