@@ -46,7 +46,6 @@ public class MemberService {
     public String generateToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("id", member.getId())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
