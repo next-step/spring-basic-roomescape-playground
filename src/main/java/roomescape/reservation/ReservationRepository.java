@@ -10,7 +10,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByDateAndTheme_Id(LocalDate date, long themeId);
 
-    @Query("select r from Reservation r join fetch r.reservationTime")
+    @Query("select r from Reservation r left join fetch r.reservationTime")
     List<Reservation> findAllWithReservationTime();
 
 

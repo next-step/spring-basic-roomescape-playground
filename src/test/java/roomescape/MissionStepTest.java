@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.auth.client.jwt.JwtProvider;
 import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.ReservationService;
+import roomescape.reservationTime.ReservationTimeService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

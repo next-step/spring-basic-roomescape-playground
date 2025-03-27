@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import roomescape.reservation.ReservationResponse;
 import roomescape.reservation.study.ForStudy;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
@@ -34,6 +35,25 @@ public class JpaTest {
         ReservationTime persistTime = timeRepository.findById(time.getId()).orElse(null);
 
         assertThat(persistTime.getTimeValue()).isEqualTo(time.getTimeValue());
+    }
+
+    @Test
+    void 예약시간을_삭제해도_예약은_유지된다() {
+        List<Reservation> reservations = reservationRepository.findAll();
+        reservations.stream()
+                .forEach(reservation -> {
+                    System.out.println("reservation = " + reservation);
+                });
+
+        timeRepository.deleteById(1L);
+
+        List<Reservation> reservationsAfterDelete = reservationRepository.findAll();
+        reservationsAfterDelete.stream()
+                .forEach(reservation -> {
+                    System.out.println("reservation = " + reservation);
+                });
+
+        assertThat(reservationsAfterDelete.size()).isEqualTo(reservations.size());
     }
 
     @Test
