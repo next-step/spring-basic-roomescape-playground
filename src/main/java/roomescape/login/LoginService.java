@@ -1,6 +1,5 @@
 package roomescape.login;
 
-import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
