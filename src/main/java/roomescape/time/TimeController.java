@@ -32,8 +32,7 @@ public class TimeController {
 
     @PostMapping("/times")
     public ResponseEntity<TimeResponse> create(@Valid @RequestBody TimeRequest request) {
-        Time time = new Time(null, request.value());
-        Time savedTime = timeService.save(time);
+        Time savedTime = timeService.save(request);
         TimeResponse response = new TimeResponse(savedTime.getId(), savedTime.getValue());
         return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }

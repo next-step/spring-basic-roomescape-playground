@@ -34,10 +34,10 @@ public class TimeService {
         return timeRepository.findAll();
     }
 
-    public Time save(Time time) {
+    public Time save(TimeRequest request) {
+        Time time = new Time(null, request.value());
         return timeRepository.save(time);
     }
-
     public void deleteById(Long id) {
         timeRepository.deleteById(id);
     }
