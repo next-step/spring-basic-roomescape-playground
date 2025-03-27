@@ -34,18 +34,12 @@ public class ReservationService {
         this.waitingRepository = waitingRepository;
     }
 
-    private static void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
-        if (loginMember.notHaveName(reservation.getMemberName()) && loginMember.isNotAdmin()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
-        }
-    }
-
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Member member = findMemberById(loginMember);
         Time time = findTimeById(reservationRequest);
         Theme theme = findThemeById(reservationRequest);
 
-        Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme, member);
+        Reservation reservation = new Reservation(reservationRequest.getDate(), time, theme, member);
 
         validateReservationPermission(reservation, loginMember);
 
@@ -61,9 +55,15 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
+    private void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
+        if (loginMember.notHaveName(reservation.getMember().getName()) && loginMember.isNotAdmin()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
+        }
+    }
+
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(reservation -> new ReservationResponse(reservation.getId(), reservation.getMemberName(),
+                .map(reservation -> new ReservationResponse(reservation.getId(), reservation.getMember().getName(),
                         reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue()))
                 .toList();
     }
@@ -93,7 +93,7 @@ public class ReservationService {
     private ReservationResponse saveReservation(Reservation reservation) {
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        return new ReservationResponse(savedReservation.getId(), savedReservation.getMemberName(),
+        return new ReservationResponse(savedReservation.getId(), savedReservation.getMember().getName(),
                 savedReservation.getTheme().getName(), savedReservation.getDate(),
                 savedReservation.getTime().getValue());
     }
