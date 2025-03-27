@@ -30,8 +30,8 @@ public class MemberService {
         if (idClaim != null) {
             id = Long.valueOf(idClaim);
         }
-        Optional<Member> optionalMember = memberRepository.findById(id);
-        return optionalMember.orElse(null);
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found for the given token"));
     }
 
     public String getClaimValue(String token, String key) {
