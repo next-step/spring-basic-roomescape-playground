@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
@@ -27,7 +28,7 @@ public class ReservationService {
 
     private Member getMemberByName(ReservationRequest reservationRequest) {
         return memberDao.findByName(reservationRequest.getName())
-                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+                .orElseThrow(() -> new NoSuchElementException("Member not found"));
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
@@ -40,7 +41,7 @@ public class ReservationService {
 
     private Member getMemberById(LoginMember loginMember) {
         return memberDao.findById(loginMember.id())
-                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+                .orElseThrow(() -> new NoSuchElementException("Member not found"));
     }
 
     private Reservation saveReservation(ReservationRequest reservationRequest, Member member) {

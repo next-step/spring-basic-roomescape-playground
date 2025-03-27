@@ -27,13 +27,11 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest reservationRequest,
-                                                      LoginMember loginMember) {
-        /**
-         * 예약 생성 시 ReservationReqeust의 name이 없는 경우 Cookie에 담긴 정보를 활용하도록 리팩터링 합니다.
-         * ReservationReqeust에 name값이 있으면 name으로 Member를 찾고
-         * 없으면 로그인 정보를 활용해서 Member를 찾도록 수정합니다.
-         */
+    public ResponseEntity<ReservationResponse> create(
+            @RequestBody ReservationRequest reservationRequest,
+            LoginMember loginMember
+    ) {
+
         ReservationResponse reservation = Optional.ofNullable(reservationRequest.getName())
                 .map(name -> reservationService.save(reservationRequest))
                 .orElseGet(() -> reservationService.save(reservationRequest, loginMember));
