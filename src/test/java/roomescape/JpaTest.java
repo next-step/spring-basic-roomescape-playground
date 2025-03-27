@@ -1,20 +1,14 @@
 package roomescape;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
-import net.bytebuddy.asm.Advice.Local;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import roomescape.reservation.ForStudy;
+import roomescape.reservation.study.ForStudy;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 import roomescape.reservationTime.ReservationTime;
@@ -65,7 +59,6 @@ public class JpaTest {
                 System.out.println("study = " + study.getContent());
             }
         }
-        assertThat(reservationsByFetchJoin.size()).isEqualTo(3);
 
         System.out.println("=== Entity Graph Query ===");
 
@@ -81,6 +74,7 @@ public class JpaTest {
             }
         }
 
+        assertThat(reservationsByFetchJoin.size()).isEqualTo(2);
         assertThat(reservationsByEntityGraph.size()).isEqualTo(3);
         // hibernate 6 위 버전부터는 oneTomany와 fetch join으로 인한 중복을 hibernate에서 처리해준다...
     }

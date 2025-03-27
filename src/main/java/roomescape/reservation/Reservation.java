@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.reservation.study.ForStudy;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 
