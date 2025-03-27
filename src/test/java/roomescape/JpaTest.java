@@ -39,7 +39,7 @@ public class JpaTest {
 
     @Test
     void 예약시간을_삭제해도_예약은_유지된다() {
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAllWithReservationTime();
         reservations.stream()
                 .forEach(reservation -> {
                     System.out.println("reservation = " + reservation);
@@ -47,7 +47,7 @@ public class JpaTest {
 
         timeRepository.deleteById(1L);
 
-        List<Reservation> reservationsAfterDelete = reservationRepository.findAll();
+        List<Reservation> reservationsAfterDelete = reservationRepository.findAllWithReservationTime();
         reservationsAfterDelete.stream()
                 .forEach(reservation -> {
                     System.out.println("reservation = " + reservation);
