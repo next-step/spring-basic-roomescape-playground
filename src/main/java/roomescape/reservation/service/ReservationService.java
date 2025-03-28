@@ -6,6 +6,7 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.dto.response.MyReservationResponse;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -58,6 +59,13 @@ public class ReservationService {
     private Theme findTheme(long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.INVALID_THEME.getMessage()));
+    }
+
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
+        return reservations.stream()
+                .map(MyReservationResponse::new)
+                .toList();
     }
 
     public void deleteById(Long id) {

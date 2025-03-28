@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.LoginMember;
 import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.dto.response.MyReservationResponse;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
@@ -37,6 +38,12 @@ public class ReservationController {
         ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
         return ResponseEntity.created(URI.create(LOCATION_DEFAULT_VALUE + reservation.getId()))
                 .body(reservation);
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> findMyReservations(LoginMember loginMember) {
+        List<MyReservationResponse> reservations = reservationService.findMyReservations(loginMember);
+        return ResponseEntity.ok(reservations);
     }
 
     @DeleteMapping("/reservations/{id}")
