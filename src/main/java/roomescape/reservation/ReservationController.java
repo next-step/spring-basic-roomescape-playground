@@ -31,12 +31,7 @@ public class ReservationController {
         if (reservationRequest.name() == null) {
             reservationRequest = new ReservationRequest(loginMember.getName(), reservationRequest.date(), reservationRequest.theme(), reservationRequest.time());
         }
-        if (reservationRequest.name() == null
-                || reservationRequest.date() == null
-                || reservationRequest.theme() == null
-                || reservationRequest.time() == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        reservationRequest.validate();
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);

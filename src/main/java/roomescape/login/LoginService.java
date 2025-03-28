@@ -15,8 +15,8 @@ public class LoginService {
         this.memberService = memberService;
     }
 
-    public String login(String email, String password) {
-        Member member = memberRepository.findByEmailAndPassword(email, password);
+    public String login(LoginRequest loginRequest) {
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
         return memberService.generateToken(member);
     }
 
