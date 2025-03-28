@@ -17,10 +17,12 @@ import java.time.LocalTime;
 @Entity
 public class Reservation {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
+    private Long memberId;
 
     @Column(nullable = false)
     private String name;
@@ -37,6 +39,14 @@ public class Reservation {
     private Theme theme;
 
     protected Reservation() {
+    }
+
+    public Reservation(long memberId, String name, LocalDate date, Time time, Theme theme) {
+        this.memberId = memberId;
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
     }
 
     public Reservation(String name, LocalDate date, Time time, Theme theme) {

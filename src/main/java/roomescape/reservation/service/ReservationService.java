@@ -28,25 +28,26 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
+    public List<ReservationResponse> findAll() {
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
+
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        reservationRequest = updateRequestIfNameIsInvalid(reservationRequest, loginMember);
-        Time time = findTime(reservationRequest.getTime());
-        Theme theme = findTheme(reservationRequest.getTheme());
-        Reservation reservation = reservationRequest.toReservation(time, theme);
+        Reservation reservation = createReservation(reservationRequest, loginMember);
         Reservation reservationWithId = reservationRepository.save(reservation);
         return new ReservationResponse(reservationWithId);
     }
 
-    private ReservationRequest updateRequestIfNameIsInvalid(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.isInvalidName()) {
-            reservationRequest = createReservationRequestWithName(reservationRequest, loginMember);
-        }
-        return reservationRequest;
-    }
+    private Reservation createReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
+        Time time = findTime(reservationRequest.getTime());
+        Theme theme = findTheme(reservationRequest.getTheme());
 
-    private ReservationRequest createReservationRequestWithName(ReservationRequest reservationRequest, LoginMember loginMember) {
-        String name = loginMember.name();
-        return reservationRequest.createWith(name);
+        if (reservationRequest.isInvalidName()) {
+            return reservationRequest.toReservationByMember(loginMember, time, theme);
+        }
+        return reservationRequest.toReservationByAdmin(time, theme);
     }
 
     private Time findTime(long timeId) {
@@ -61,11 +62,5 @@ public class ReservationService {
 
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
-    }
-
-    public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponse::new)
-                .toList();
     }
 }
