@@ -76,10 +76,15 @@ function login() {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }
+          return response.headers.get('Location');
       })
-      .then(() => {
+      .then(redirectUrl => {
         updateUIBasedOnLogin(); // UI 업데이트
-        window.location.href = '/';
+          if (redirectUrl) {
+              window.location.href = redirectUrl;
+          } else {
+              window.location.href = '/';
+          }
       })
       .catch(error => {
         console.error('Error during login:', error);
