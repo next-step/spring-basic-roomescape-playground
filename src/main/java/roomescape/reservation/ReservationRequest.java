@@ -1,7 +1,5 @@
 package roomescape.reservation;
 
-import roomescape.member.LoginMember;
-
 import java.time.LocalDate;
 
 public record ReservationRequest(String name, LocalDate date, Long theme, Long time) {
