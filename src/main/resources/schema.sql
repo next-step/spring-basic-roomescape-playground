@@ -39,8 +39,9 @@ CREATE TABLE IF NOT EXISTS reservation
 );
 
 INSERT INTO member (name, email, password, role)
-VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
-       ('브라운', 'brown@email.com', 'password', 'USER');
+VALUES ('어드민', 'admin@email.com', 'qwer', 'ADMIN'),
+       ('브라운', 'brown@email.com', 'qwer', 'USER'),
+       ('브라운', 'ghtntkdnsk@naver.com', 'qwer', 'USER');
 
 INSERT INTO theme (name, description)
 VALUES ('테마1', '테마1입니다.'),
@@ -60,5 +61,3 @@ VALUES (1,'2024-03-01', 1, 1),
        (1,'2024-03-01', 2, 2),
        (1,'2024-03-01', 3, 3);
 
-INSERT INTO reservation (date, time_id, theme_id)
-VALUES ('2024-03-01', 1, 2);

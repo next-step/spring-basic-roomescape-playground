@@ -33,11 +33,11 @@ public class Reservation {
     protected Reservation() {
     }
 
-    public Reservation(String date, Time time, Theme theme, Member member) {
+    public Reservation(String date, Member member, Time time, Theme theme) {
         this.date = date;
+        this.member = member;
         this.time = time;
         this.theme = theme;
-        this.member = member;
     }
 
     public boolean isSame(Long id) {

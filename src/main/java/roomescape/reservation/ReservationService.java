@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import jakarta.transaction.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -17,6 +18,7 @@ import roomescape.time.TimeRepository;
 import roomescape.waiting.WaitingRepository;
 
 @Service
+@Transactional
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
@@ -34,27 +36,20 @@ public class ReservationService {
         this.waitingRepository = waitingRepository;
     }
 
-    private static void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
-        if (loginMember.notHaveName(reservation.getMember().getName()) && loginMember.isNotAdmin()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
-        }
-    }
-
-    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
+    public ReservationResponse saveUserReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
         Member member = findMemberById(loginMember);
         Time time = findTimeById(reservationRequest);
         Theme theme = findThemeById(reservationRequest);
 
-        Reservation reservation = new Reservation(reservationRequest.getDate(), time, theme, member);
+        Reservation reservation = new Reservation(reservationRequest.getDate(), member, time, theme);
 
         validateReservationPermission(reservation, loginMember);
 
-        return saveReservation(reservation);
+        return saveReservation(reservation, reservationRequest);
     }
 
     public void deleteById(Long id, LoginMember loginMember) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
+        Reservation reservation = findReservationById(id);
 
         validateReservationPermission(reservation, loginMember);
 
@@ -75,8 +70,14 @@ public class ReservationService {
         return mergeAndSortReservationsByDate(reservations, waitings);
     }
 
+    private void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
+        if (loginMember.notHaveName(reservation.getMember().getName()) && loginMember.isNotAdmin()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
+        }
+    }
+
     private Member findMemberById(LoginMember loginMember) {
-        return memberRepository.findById(loginMember.id())
+        return memberRepository.findMemberById(loginMember.id())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
@@ -90,12 +91,18 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
     }
 
-    private ReservationResponse saveReservation(Reservation reservation) {
+    private Reservation findReservationById(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
+    }
+
+    private ReservationResponse saveReservation(Reservation reservation, ReservationRequest reservationRequest) {
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        return new ReservationResponse(savedReservation.getId(), savedReservation.getMember().getName(),
+        return new ReservationResponse(savedReservation.getId(), reservationRequest.getName(),
                 savedReservation.getTheme().getName(), savedReservation.getDate(),
                 savedReservation.getTime().getValue());
+
     }
 
     private List<UserReservationResponse> findUserReservations(LoginMember loginMember) {

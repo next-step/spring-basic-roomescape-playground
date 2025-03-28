@@ -27,23 +27,19 @@ public class ReservationController {
 
     @GetMapping("/reservations-mine")
     public ResponseEntity<List<UserReservationResponse>> showMyReservations(LoginMember loginMember) {
-        List<UserReservationResponse> userReservationRespons = reservationService.findMyAllReservations(loginMember);
-        return ResponseEntity.ok().body(userReservationRespons);
+        List<UserReservationResponse> userReservationResponses = reservationService.findMyAllReservations(loginMember);
+        return ResponseEntity.ok().body(userReservationResponses);
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
+    public ResponseEntity createUserReservation(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
         if (reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
                 || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        if (reservationRequest.getName() == null) {
-            reservationRequest = new ReservationRequest(loginMember.name(), reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime());
-        }
-
-        ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
+        ReservationResponse reservation = reservationService.saveUserReservation(reservationRequest, loginMember);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
