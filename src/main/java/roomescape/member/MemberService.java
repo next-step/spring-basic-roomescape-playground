@@ -1,32 +1,52 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import roomescape.util.JwtUtil;
+
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class MemberService {
-    private final MemberDao memberDao;
-    private final JwtUtil jwtUtil;
+    private final MemberRepository memberRepository;
+    private final String secretKey;
 
-    public MemberService(MemberDao memberDao, JwtUtil jwtUtil) {
-        this.memberDao = memberDao;
-        this.jwtUtil = jwtUtil;
+    public MemberService(MemberRepository memberRepository, @Value("${roomescape.auth.jwt.secret}") String secretKey) {
+        this.memberRepository = memberRepository;
+        this.secretKey = secretKey;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member findMemberByToken(String token) {
-        Claims claims = jwtUtil.parseClaims(token);
-
-        Double idDouble = claims.get("id", Double.class);
+        String idClaim = getClaimValue(token, "id");
         Long id = null;
-        if (idDouble != null) {
-            id = idDouble.longValue();
+        if (idClaim != null) {
+            id = Long.valueOf(idClaim);
         }
-        return memberDao.findById(id);
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found for the given token"));
+    }
+
+    public String getClaimValue(String token, String key) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get(key, String.class);
+    }
+
+    public String generateToken(Member member) {
+        return Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
     }
 }

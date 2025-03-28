@@ -1,5 +1,6 @@
 package roomescape.time;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,29 +11,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 public class TimeController {
-    private TimeService timeService;
+    private final TimeService timeService;
 
     public TimeController(TimeService timeService) {
         this.timeService = timeService;
     }
 
     @GetMapping("/times")
-    public List<Time> list() {
-        return timeService.findAll();
+    public ResponseEntity<List<TimeResponse>> list() {
+        List<TimeResponse> times = timeService.findAll().stream()
+                .map(time -> new TimeResponse(time.getId(), time.getValue()))
+                .toList();
+        return ResponseEntity.ok(times);
     }
 
     @PostMapping("/times")
-    public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
-            throw new RuntimeException();
-        }
-
-        Time newTime = timeService.save(time);
-        return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
+    public ResponseEntity<TimeResponse> create(@Valid @RequestBody TimeRequest request) {
+        TimeResponse response = timeService.save(request);
+        return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }
 
     @DeleteMapping("/times/{id}")
@@ -42,7 +43,7 @@ public class TimeController {
     }
 
     @GetMapping("/available-times")
-    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date, @RequestParam Long themeId) {
+    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam LocalDate date, @RequestParam Long themeId) {
         return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
     }
 }

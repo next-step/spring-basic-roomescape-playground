@@ -1,34 +1,28 @@
 package roomescape.login;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
-import roomescape.util.JwtUtil;
+import roomescape.member.MemberRepository;
+import roomescape.member.MemberService;
 
 @Service
 public class LoginService {
-    private final MemberDao memberDao;
-    private final JwtUtil jwtUtil;
+    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
-    public LoginService(MemberDao memberDao, JwtUtil jwtUtil) {
-        this.memberDao = memberDao;
-        this.jwtUtil = jwtUtil;
+    public LoginService(MemberRepository memberRepository, MemberService memberService) {
+        this.memberRepository = memberRepository;
+        this.memberService = memberService;
     }
 
-    public String login(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
-        return jwtUtil.generateToken(member);
+    public String login(LoginRequest loginRequest) {
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
+        return memberService.generateToken(member);
     }
 
-    public LoginCheckResponse getUserInfoFromToken(String token) {
-        Claims claims = jwtUtil.parseClaims(token);
-
-        String memberName = claims.get("name", String.class);
-        Member member = memberDao.findByName(memberName);
-        return new LoginCheckResponse(member.getName());
+    public String getUserInfoFromToken(String token) {
+        String memberName = memberService.getClaimValue(token, "name");
+        Member member = memberRepository.findByName(memberName);
+        return member.getName();
     }
 }

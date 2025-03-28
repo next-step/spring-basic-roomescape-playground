@@ -4,13 +4,13 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.util.JwtUtil;
+import roomescape.member.MemberService;
 
 public class AdminInterceptor implements HandlerInterceptor {
-    private final JwtUtil jwtUtil;
+    private final MemberService memberService;
 
-    public AdminInterceptor(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public AdminInterceptor(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @Override
@@ -41,7 +41,6 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     public String getUserRoleFromToken(String token) {
-        Claims claims = jwtUtil.parseClaims(token);
-        return claims.get("role", String.class);
+        return memberService.getClaimValue(token, "role");
     }
 }
