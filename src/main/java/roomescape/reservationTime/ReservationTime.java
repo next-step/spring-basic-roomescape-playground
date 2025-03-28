@@ -1,30 +1,45 @@
 package roomescape.reservationTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import java.time.LocalTime;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
+@Entity
+@SQLDelete(sql = "UPDATE reservation_time SET deleted = true WHERE id = ?")
+@Where(clause = "deleted = false")
 public class ReservationTime {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalTime value;
 
-    public ReservationTime(Long id, LocalTime value) {
-        this.id = id;
-        this.value = value;
+    @Column(nullable = false)
+    private LocalTime timeValue;
+
+    private boolean deleted = false;
+
+    protected ReservationTime() {
     }
 
-    public ReservationTime(LocalTime value) {
-        this.value = value;
+    public ReservationTime(String timeValue) {
+        this.timeValue = LocalTime.parse(timeValue);
     }
 
-    public ReservationTime() {
-
+    public boolean isSame(ReservationTime reservationTime) {
+        return this.id
+                .equals(reservationTime.id);
     }
 
     public Long getId() {
         return id;
     }
 
-    public LocalTime getValue() {
-        return value;
+    public LocalTime getTimeValue() {
+        return timeValue;
     }
 }

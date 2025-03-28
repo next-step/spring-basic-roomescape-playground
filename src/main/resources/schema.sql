@@ -1,55 +1,27 @@
-CREATE TABLE IF NOT EXISTS reservationTime
-(
-    id         BIGINT  NOT NULL AUTO_INCREMENT,
-    time_value TIME    NOT NULL,
-    deleted    BOOLEAN NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id)
-    );
-
-CREATE TABLE IF NOT EXISTS theme
-(
-    id          BIGINT       NOT NULL AUTO_INCREMENT,
-    theme_name  VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    deleted     BOOLEAN      NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id)
-    );
-
-CREATE TABLE IF NOT EXISTS member
-(
-    id       BIGINT              NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(20)        NOT NULL,
-    email    VARCHAR(20) UNIQUE NOT NULL,
-    password VARCHAR(255)        NOT NULL,
-    role     VARCHAR(255)        NOT NULL,
-    PRIMARY KEY (id)
-    );
-
-CREATE TABLE IF NOT EXISTS reservation
-(
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    date     DATE         NOT NULL,
-    name     VARCHAR(255) NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
-    PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES reservationTime (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
-    );
-
 INSERT INTO member (name, email, password, role)
 VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
        ('브라운', 'brown@email.com', 'password', 'USER');
 
-INSERT INTO theme (theme_name, description)
-VALUES ('테마1', '테마1입니다.'),
-       ('테마2', '테마2입니다.'),
-       ('테마3', '테마3입니다.');
+INSERT INTO theme (name, description, deleted)
+VALUES ('테마1', '테마1입니다.', false),
+       ('테마2', '테마2입니다.', false),
+       ('테마3', '테마3입니다.', false);
 
-INSERT INTO reservationTime (time_value)
-VALUES ('10:00'), ('12:00'), ('14:00'), ('16:00'), ('18:00'), ('20:00');
+INSERT INTO reservation_time (time_value, deleted)
+VALUES ('10:00', false),
+       ('12:00', false),
+       ('14:00', false),
+       ('16:00', false),
+       ('18:00', false),
+       ('20:00', false);
 
-INSERT INTO reservation (name, date, time_id, theme_id)
+INSERT INTO reservation (name, date, reservation_time_id, theme_id)
 VALUES ('어드민', '2024-03-01', 1, 1),
        ('어드민', '2024-03-01', 2, 2),
        ('어드민', '2024-03-01', 3, 3);
+
+INSERT INTO for_study (content, reservation_id)
+VALUES ('데이터1', 1),
+       ('데이터2', 1),
+       ('데이터2', 2),
+       ('데이터3', 2);

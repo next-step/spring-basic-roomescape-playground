@@ -1,49 +1,62 @@
 package roomescape.reservationTime;
 
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.RoomescapeBadRequestException;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
 
 import java.util.List;
+import roomescape.reservation.ReservationRepository;
 
 @Service
 public class ReservationTimeService {
 
-    private ReservationTimeDao reservationTimeDao;
-    private ReservationDao reservationDao;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao) {
-        this.reservationTimeDao = reservationTimeDao;
-        this.reservationDao = reservationDao;
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
-    public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findAllReservationsByDateAndTheme(date, themeId);
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+    public List<AvailableTime> getAvailableTime(LocalDate date, Long themeId) {
+        List<Reservation> reservations = reservationRepository.findByDateAndTheme_Id(date, themeId);
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return reservationTimes.stream()
-                .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getValue().toString(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
-                ))
+                .map(reservationTime -> toAvailableTime(reservationTime, reservations))
                 .toList();
     }
 
+    private AvailableTime toAvailableTime(ReservationTime reservationTime
+            , List<Reservation> reservations) {
+        boolean isBooked = isTimeBooked(reservationTime, reservations);
+        return new AvailableTime(
+                reservationTime.getId(),
+                reservationTime.getTimeValue().toString(),
+                isBooked
+        );
+    }
+
+    private boolean isTimeBooked(ReservationTime reservationTime, List<Reservation> reservations) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservationTime.isSame(reservation.getTime()));
+    }
+
     public List<ReservationTime> findAll() {
-        return reservationTimeDao.findAll();
+        return reservationTimeRepository.findAll();
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
-        if (reservationTime.getId() == null || reservationTime.getValue() == null) {
+        if (reservationTime.getTimeValue() == null) {
             throw new RoomescapeBadRequestException("잘못된 예약 시간 정보입니다.");
         }
-        return reservationTimeDao.save(reservationTime);
+
+        return reservationTimeRepository.save(reservationTime);
     }
 
     public void deleteById(Long id) {
-        reservationTimeDao.deleteById(id);
+        reservationTimeRepository.deleteById(id);
     }
 }

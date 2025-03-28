@@ -1,50 +1,28 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
-import roomescape.auth.client.jwt.JwtProperties;
-import roomescape.auth.client.jwt.JwtProvider;
 import roomescape.global.exception.RoomescapeUnauthorizedException;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Service
 public class AuthService {
 
-    private final MemberDao memberDao;
-    private final JwtProvider jwtProvider;
+    private final MemberRepository memberRepository;
 
-    public AuthService(MemberDao memberDao, JwtProvider jwtProvider) {
-        this.memberDao = memberDao;
-        this.jwtProvider = jwtProvider;
+    public AuthService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
-    public String generateAccessToken(LoginRequest loginRequest) {
-        String email = loginRequest.email();
-        String password = loginRequest.password();
-        Member findMember = memberDao.findByEmailAndPassword(email, password);
-
-        if (findMember == null) {
-            throw new RoomescapeUnauthorizedException("회원 정보를 찾을 수 없습니다.");
-        }
-
-        return jwtProvider.generateToken(findMember.getId(), findMember.getName(), findMember.getRole());
+    public Member findMemberByEmailAndPassword(String email, String password) {
+        return memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() ->
+                        new RoomescapeUnauthorizedException("이메일 또는 패스워드가 잘못되었습니다."));
     }
 
-    public LoginCheckResponse checkAccessToken(String accessToken) {
-        String name = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(JwtProperties.SECRET_KEY.getBytes()))
-                .build()
-                .parseClaimsJws(accessToken)
-                .getBody()
-                .get("name", String.class);
-        try {
-            memberDao.findByName(name);
-            return new LoginCheckResponse(name);
-        } catch (IncorrectResultSizeDataAccessException exception) {
-            throw new RoomescapeUnauthorizedException("회원 정보를 찾을 수 없습니다." + name);
-        }
+    public Member findById(long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() ->
+                        new RoomescapeUnauthorizedException("회원 정보를 찾을 수 없습니다."));
     }
 }
