@@ -16,6 +16,16 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
     boolean existsByMemberIdAndDateAndTimeAndTheme(Long memberId, LocalDate date, Time time, Theme theme);
 
+    @Query("SELECT CAST((SELECT COUNT(w2) + 1 " +
+            "          FROM Waiting w2 " +
+            "          WHERE w2.theme = w.theme " +
+            "            AND w2.date = w.date " +
+            "            AND w2.time = w.time " +
+            "            AND w2.id < w.id) AS long) " +
+            "FROM Waiting w " +
+            "WHERE w.memberId = :memberId")
+    Long findWaitingNumberByMemberId(Long memberId);
+
     @Query("SELECT new roomescape.waiting.domain.WaitingWithRank(" +
             "    w, " +
             "    CAST((SELECT COUNT(w2) + 1 " +

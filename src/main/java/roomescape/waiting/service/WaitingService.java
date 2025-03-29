@@ -33,7 +33,9 @@ public class WaitingService {
 
         validateDuplicateWaiting(waiting);
         Waiting savedWaiting = waitingRepository.save(waiting);
-        return new WaitingResponse(savedWaiting);
+
+        Long waitingNumber = waitingRepository.findWaitingNumberByMemberId(loginMember.id());
+        return new WaitingResponse(savedWaiting.getId(), waitingNumber);
     }
 
     private Time findTime(long timeId) {
