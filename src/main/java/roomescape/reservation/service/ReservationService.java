@@ -13,8 +13,11 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.repository.TimeRepository;
+import roomescape.waiting.domain.WaitingWithRank;
+import roomescape.waiting.repository.WaitingRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -22,11 +25,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public List<ReservationResponse> findAll() {
@@ -63,8 +68,11 @@ public class ReservationService {
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
         List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
-        return reservations.stream()
-                .map(MyReservationResponse::new)
+        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id());
+
+        return Stream.concat(
+                reservations.stream().map(MyReservationResponse::new),
+                waitings.stream().map(MyReservationResponse::new))
                 .toList();
     }
 

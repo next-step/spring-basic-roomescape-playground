@@ -1,6 +1,7 @@
 package roomescape.reservation.dto.response;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.waiting.domain.WaitingWithRank;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,7 +18,16 @@ public record MyReservationResponse(
                 reservation.getThemeName(),
                 reservation.getDate(),
                 reservation.getTimeValue(),
-                "예약"
+                reservation.getRankStatus()
+        );
+    }
+
+    public MyReservationResponse(WaitingWithRank waitingWithRank) {
+        this(waitingWithRank.getWaitingId(),
+                waitingWithRank.getThemeName(),
+                waitingWithRank.getDate(),
+                waitingWithRank.getTimeValue(),
+                waitingWithRank.getRankStatus()
         );
     }
 }

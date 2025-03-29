@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
+import roomescape.waiting.domain.Status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -82,5 +83,9 @@ public class Reservation {
 
     public LocalTime getTimeValue() {
         return time.getValue();
+    }
+
+    public String getRankStatus() {
+        return Status.CONFIRMED.getStatus();
     }
 }
