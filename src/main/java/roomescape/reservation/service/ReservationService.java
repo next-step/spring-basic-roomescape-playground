@@ -42,6 +42,7 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Reservation reservation = createReservation(reservationRequest, loginMember);
+        validateDuplicateReservation(reservation);
         Reservation reservationWithId = reservationRepository.save(reservation);
         return new ReservationResponse(reservationWithId);
     }
@@ -66,13 +67,19 @@ public class ReservationService {
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.INVALID_THEME.getMessage()));
     }
 
+    private void validateDuplicateReservation(Reservation reservation) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservation.getTime(), reservation.getTheme())) {
+            throw new BadRequestException(ExceptionMessage.RESERVATION_ALREADY_EXISTS.getMessage());
+        }
+    }
+
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
         List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
         List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id());
 
         return Stream.concat(
-                reservations.stream().map(MyReservationResponse::new),
-                waitings.stream().map(MyReservationResponse::new))
+                        reservations.stream().map(MyReservationResponse::new),
+                        waitings.stream().map(MyReservationResponse::new))
                 .toList();
     }
 
