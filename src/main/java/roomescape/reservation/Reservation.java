@@ -59,12 +59,7 @@ public class Reservation {
 
     public boolean isBefore(LocalDateTime now) {
         LocalDateTime reservedDateTime = LocalDateTime.of(LocalDate.parse(date), LocalTime.parse(time.getValue()));
-        if (reservedDateTime.isBefore(now)) {
-            return true;
-        }
-        if (reservedDateTime.isAfter(now)) {
-            return false;
-        }
+        return reservedDateTime.isBefore(now);
     }
 
     public Long getId() {
