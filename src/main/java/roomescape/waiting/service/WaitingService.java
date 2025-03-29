@@ -51,4 +51,8 @@ public class WaitingService {
             throw new BadRequestException(ExceptionMessage.WAITING_ALREADY_EXISTS.getMessage());
         }
     }
+
+    public void delete(Long id) {
+        waitingRepository.deleteById(id);
+    }
 }
