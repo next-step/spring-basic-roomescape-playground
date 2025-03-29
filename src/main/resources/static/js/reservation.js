@@ -134,15 +134,15 @@ function saveRow(event) {
   const row = event.target.parentNode.parentNode;
   const nameInput = row.querySelector('input[type="text"]');
   const emailInput = row.querySelector('input[type="email"]');
-  const themeSelect = row.querySelector('select');
+  const themeSelect = row.querySelector('[id^="theme-select"]');
   const dateInput = row.querySelector('input[type="date"]');
-  const timeSelect = row.querySelector('select');
+  const timeSelect = row.querySelector('[id^="time-select"]');
 
   const reservation = {
-    name: nameInput.value,
-    email: emailInput.value,
-    theme: themeSelect.value,
     date: dateInput.value,
+    email: emailInput.value,
+    name: nameInput.value,
+    theme: themeSelect.value,
     time: timeSelect.value
   };
 
