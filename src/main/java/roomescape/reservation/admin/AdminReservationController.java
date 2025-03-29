@@ -32,7 +32,6 @@ public class AdminReservationController {
 
     @GetMapping("/admin/reservations")
     public List<AdminReservationResponse> list() {
-        System.out.println("this");
         return adminReservationService.findAll();
     }
 }

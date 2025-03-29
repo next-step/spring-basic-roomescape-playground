@@ -1,6 +1,8 @@
 package roomescape.reservation.admin;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import roomescape.error.ErrorMessage;
 import roomescape.member.Member;
@@ -11,6 +13,7 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
 @Service
 public class AdminReservationService {
@@ -18,13 +21,16 @@ public class AdminReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
 
     public AdminReservationService(MemberRepository memberRepository, ReservationRepository reservationRepository,
-                                   TimeRepository timeRepository, ThemeRepository themeRepository) {
+                                   TimeRepository timeRepository, ThemeRepository themeRepository,
+                                   WaitingRepository waitingRepository) {
         this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public AdminReservationResponse saveAdminReservation(AdminReservationRequest adminReservationRequest) {
@@ -35,6 +41,13 @@ public class AdminReservationService {
         Reservation reservation = new Reservation(adminReservationRequest.getDate(), member, time, theme);
 
         return saveReservation(reservation, adminReservationRequest);
+    }
+
+    public List<AdminReservationResponse> findAll() {
+        List<AdminReservationResponse> reservations = findUserReservations();
+        List<AdminReservationResponse> waitings = findUserWaitings();
+
+        return mergeAndSortReservationsByDate(reservations, waitings);
     }
 
     private Member findMemberByEmail(AdminReservationRequest adminReservationRequest) {
@@ -60,10 +73,26 @@ public class AdminReservationService {
                 savedReservation.getTime().getValue());
     }
 
-    public List<AdminReservationResponse> findAll() {
+    private List<AdminReservationResponse> findUserReservations() {
         return reservationRepository.findAll().stream()
-                .map(reservation -> new AdminReservationResponse(reservation.getId(), reservation.getMember().getName(), reservation.getMember().getEmail(),
-                        reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue()))
+                .map(reservation -> new AdminReservationResponse(reservation.getId(), reservation.getMember().getName(),
+                        reservation.getMember().getEmail(), reservation.getTheme().getName(), reservation.getDate(),
+                        reservation.getTime().getValue()))
+                .toList();
+    }
+
+    private List<AdminReservationResponse> findUserWaitings() {
+        return waitingRepository.findAll().stream()
+                .map(waiting -> new AdminReservationResponse(waiting.getReservation().getId(), waiting.getMember().getName(),
+                            waiting.getMember().getEmail(), waiting.getTheme().getName(), waiting.getDate(),
+                            waiting.getTime()))
+                .toList();
+    }
+
+    private List<AdminReservationResponse> mergeAndSortReservationsByDate(List<AdminReservationResponse> reservations,
+                                                                         List<AdminReservationResponse> waitings) {
+        return Stream.concat(reservations.stream(), waitings.stream())
+                .sorted(Comparator.comparing(AdminReservationResponse::getDate))
                 .toList();
     }
 }
