@@ -1,5 +1,6 @@
 package roomescape.reservation.admin;
 
+import jakarta.transaction.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -13,9 +14,11 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.Waiting;
 import roomescape.waiting.WaitingRepository;
 
 @Service
+@Transactional
 public class AdminReservationService {
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
@@ -34,11 +37,23 @@ public class AdminReservationService {
     }
 
     public AdminReservationResponse saveAdminReservation(AdminReservationRequest adminReservationRequest) {
-        Member member = findMemberByEmail(adminReservationRequest);
-        Time time = findTimeById(adminReservationRequest);
-        Theme theme = findThemeById(adminReservationRequest);
+        Member member = findMember(adminReservationRequest);
+        Time time = findTime(adminReservationRequest);
+        Theme theme = findTheme(adminReservationRequest);
 
         Reservation reservation = new Reservation(adminReservationRequest.getDate(), member, time, theme);
+
+        Reservation foundReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
+                reservation.getDate(), reservation.getTime().getId(),
+                reservation.getTheme().getId());
+
+        if (foundReservation != null) {
+            Waiting waiting = waitingRepository.save(new Waiting(adminReservationRequest.getDate(), time.getValue(),
+                    theme, member, foundReservation));
+            return new AdminReservationResponse(waiting.getReservation().getId(), waiting.getMember().getName(),
+                    waiting.getMember().getEmail(), waiting.getTheme().getName(), waiting.getDate(),
+                    waiting.getTime());
+        }
 
         return saveReservation(reservation, adminReservationRequest);
     }
@@ -50,17 +65,17 @@ public class AdminReservationService {
         return mergeAndSortReservationsByDate(reservations, waitings);
     }
 
-    private Member findMemberByEmail(AdminReservationRequest adminReservationRequest) {
-        return memberRepository.findMemberByEmail(adminReservationRequest.getEmail())
+    private Member findMember(AdminReservationRequest adminReservationRequest) {
+        return memberRepository.findMemberByEmailAndName(adminReservationRequest.getEmail(), adminReservationRequest.getName())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
-    private Time findTimeById(AdminReservationRequest adminReservationRequest) {
+    private Time findTime(AdminReservationRequest adminReservationRequest) {
         return timeRepository.findById(adminReservationRequest.getTime())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
     }
 
-    private Theme findThemeById(AdminReservationRequest adminReservationRequest) {
+    private Theme findTheme(AdminReservationRequest adminReservationRequest) {
         return themeRepository.findById(adminReservationRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
     }

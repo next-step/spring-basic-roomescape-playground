@@ -59,6 +59,6 @@ public class WaitingService {
         String time = waiting.getTime();
         String date = waiting.getDate();
 
-        return new WaitingResponse(waiting.getId(), id, date, time, waitingRepository.findByThemeIdAndDateAndTime(id, date, time).size() + 1);
+        return new WaitingResponse(waiting.getId(), id, date, time, waitingRepository.findByThemeIdAndDateAndTime(id, date, time).size());
     }
 }
