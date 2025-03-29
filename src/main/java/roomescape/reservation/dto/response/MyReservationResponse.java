@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record MyReservationResponse(
-        long reservationId,
+        long id,
         String theme,
         LocalDate date,
         LocalTime time,
