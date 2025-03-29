@@ -30,7 +30,8 @@ public class WaitingService {
         Time time = findTime(waitingRequest.time());
         Theme theme = findTheme(waitingRequest.theme());
         Waiting waiting = waitingRequest.toWaiting(loginMember.id(), time, theme);
-        //TODO: 이미 대기 신청 하였는지 검증
+
+        validateDuplicateWaiting(waiting);
         Waiting savedWaiting = waitingRepository.save(waiting);
         return new WaitingResponse(savedWaiting);
     }
@@ -43,5 +44,10 @@ public class WaitingService {
     private Theme findTheme(long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.INVALID_THEME.getMessage()));
+    }
+
+    private void validateDuplicateWaiting(Waiting waiting) {
+        waitingRepository.findById(waiting.getId())
+                .orElseThrow(() -> new BadRequestException(ExceptionMessage.WAITING_ALREADY_EXISTS.getMessage()));
     }
 }
