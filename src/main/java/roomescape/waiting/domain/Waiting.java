@@ -57,6 +57,14 @@ public class Waiting {
         return date;
     }
 
+    public Time getTime() {
+        return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
     public LocalTime getTimeValue() {
         return time.getValue();
     }

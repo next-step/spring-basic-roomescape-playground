@@ -3,13 +3,18 @@ package roomescape.waiting.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.Time;
 import roomescape.waiting.domain.Waiting;
 import roomescape.waiting.domain.WaitingWithRank;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
+
+    boolean existsByMemberIdAndDateAndTimeAndTheme(Long memberId, LocalDate date, Time time, Theme theme);
 
     @Query("SELECT new roomescape.waiting.domain.WaitingWithRank(" +
             "    w, " +

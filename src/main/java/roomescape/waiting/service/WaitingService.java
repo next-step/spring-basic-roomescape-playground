@@ -47,7 +47,8 @@ public class WaitingService {
     }
 
     private void validateDuplicateWaiting(Waiting waiting) {
-        waitingRepository.findById(waiting.getId())
-                .orElseThrow(() -> new BadRequestException(ExceptionMessage.WAITING_ALREADY_EXISTS.getMessage()));
+        if (waitingRepository.existsByMemberIdAndDateAndTimeAndTheme(waiting.getMemberId(), waiting.getDate(), waiting.getTime(), waiting.getTheme())) {
+            throw new BadRequestException(ExceptionMessage.WAITING_ALREADY_EXISTS.getMessage());
+        }
     }
 }
