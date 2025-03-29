@@ -10,7 +10,7 @@ document.getElementById('logout-btn').addEventListener('click', function () {
       .then(response => {
         if(response.ok) {
           // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
-          window.location.reload();
+            window.location.href = '/';
         } else {
           // 로그아웃 실패 처리
           console.error('Logout failed');
