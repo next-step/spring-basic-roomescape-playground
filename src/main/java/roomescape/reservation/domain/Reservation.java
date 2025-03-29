@@ -86,6 +86,6 @@ public class Reservation {
     }
 
     public String getRankStatus() {
-        return Status.CONFIRMED.getStatus();
+        return Status.CONFIRMED.getDescription();
     }
 }

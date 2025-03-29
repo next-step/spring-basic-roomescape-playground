@@ -5,20 +5,20 @@ public enum Status {
     CONFIRMED("예약"),
     WAITING("번째 예약대기");
 
-    private String status;
+    private final String description;
 
-    Status(String status) {
-        this.status = status;
+    Status(String description) {
+        this.description = description;
     }
 
     public String getStatus(long rank) {
         if (this == WAITING) {
-            return rank + status;
+            return rank + description;
         }
-        return status;
+        return description;
     }
 
-    public String getStatus() {
-        return status;
+    public String getDescription() {
+        return description;
     }
 }
