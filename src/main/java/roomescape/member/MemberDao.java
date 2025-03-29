@@ -1,6 +1,7 @@
 package roomescape.member;
 
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,7 +18,7 @@ public class MemberDao {
             rs.getString("role")
     );
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -39,33 +40,29 @@ public class MemberDao {
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.query(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                email, password
-        ).stream().findFirst();
+        try {
+            String sql = "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, mapper, email, password));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
-    public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE name = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                name
-        );
+    public Optional<Member> findByName(String name) {
+        try {
+            String sql = "SELECT id, name, email, role FROM member WHERE name = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, mapper, name));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public Optional<Member> findById(Long id) {
-        String query = "SELECT id, name, email, role FROM member WHERE id = ?";
-        return jdbcTemplate.query(query, mapper, id).stream().findFirst();
+        try {
+            String query = "SELECT id, name, email, role FROM member WHERE id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, mapper, id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 }
