@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
@@ -16,11 +17,13 @@ import roomescape.waiting.repository.WaitingRepository;
 @Service
 public class WaitingService {
 
+    private final ReservationRepository reservationRepository;
     private final WaitingRepository waitingRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public WaitingService(WaitingRepository waitingRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public WaitingService(ReservationRepository reservationRepository, WaitingRepository waitingRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
         this.waitingRepository = waitingRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
@@ -49,6 +52,9 @@ public class WaitingService {
     }
 
     private void validateDuplicateWaiting(Waiting waiting) {
+        if (reservationRepository.existsByMemberIdAndDateAndTimeAndTheme(waiting.getMemberId(), waiting.getDate(), waiting.getTime(), waiting.getTheme())) {
+            throw new BadRequestException(ExceptionMessage.RESERVATION_ALREADY_EXISTS.getMessage());
+        }
         if (waitingRepository.existsByMemberIdAndDateAndTimeAndTheme(waiting.getMemberId(), waiting.getDate(), waiting.getTime(), waiting.getTheme())) {
             throw new BadRequestException(ExceptionMessage.WAITING_ALREADY_EXISTS.getMessage());
         }
