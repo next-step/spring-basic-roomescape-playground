@@ -7,9 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
+import roomescape.waiting.Waiting;
 
 @Entity
 public class Reservation {
@@ -30,6 +33,9 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
+    @OneToMany(mappedBy = "reservation")
+    private List<Waiting> waitings;
+
     protected Reservation() {
     }
 
@@ -42,6 +48,10 @@ public class Reservation {
 
     public boolean isSame(Long id) {
         return this.member.getId().equals(id);
+    }
+
+    public boolean remainWaitings() {
+        return !waitings.isEmpty();
     }
 
     public Long getId() {
@@ -62,5 +72,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public void changeMember(Member member) {
+        this.member = member;
     }
 }

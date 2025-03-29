@@ -41,7 +41,8 @@ CREATE TABLE IF NOT EXISTS reservation
 INSERT INTO member (name, email, password, role)
 VALUES ('어드민', 'admin@email.com', 'qwer', 'ADMIN'),
        ('브라운', 'brown@email.com', 'qwer', 'USER'),
-       ('브라운', 'ghtntkdnsk@naver.com', 'qwer', 'USER');
+       ('브라운', 'ghtntkdnsk@naver.com', 'qwer', 'USER'),
+       ('파도', 'ghtntkdnsk1@naver.com', 'qwer', 'USER');
 
 INSERT INTO theme (name, description)
 VALUES ('테마1', '테마1입니다.'),

@@ -15,6 +15,7 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.Waiting;
 import roomescape.waiting.WaitingRepository;
 
 @Service
@@ -48,12 +49,11 @@ public class ReservationService {
         return saveReservation(reservation, reservationRequest);
     }
 
-    public void deleteById(Long id, LoginMember loginMember) {
+    public void deleteReservation(Long id, LoginMember loginMember) {
         Reservation reservation = findReservationById(id);
 
         validateReservationPermission(reservation, loginMember);
-
-        reservationRepository.deleteById(id);
+        deleteReservation(reservation);
     }
 
     public List<ReservationResponse> findAll() {
@@ -93,7 +93,7 @@ public class ReservationService {
 
     private Reservation findReservationById(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
     }
 
     private ReservationResponse saveReservation(Reservation reservation, ReservationRequest reservationRequest) {
@@ -106,7 +106,7 @@ public class ReservationService {
     }
 
     private List<UserReservationResponse> findUserReservations(LoginMember loginMember) {
-        return reservationRepository.findByMemberId(loginMember.id()).stream()
+        return reservationRepository.findAllByMemberId(loginMember.id()).stream()
                 .filter(reservation -> reservation.isSame(loginMember.id()))
                 .map(reservation -> new UserReservationResponse(reservation.getId(), reservation.getTheme().getName(),
                         reservation.getDate(), reservation.getTime().getValue(), Status.RESERVATION.getDescription()))
@@ -127,5 +127,16 @@ public class ReservationService {
         return Stream.concat(reservations.stream(), waitings.stream())
                 .sorted(Comparator.comparing(UserReservationResponse::getDate))
                 .toList();
+    }
+
+    private void deleteReservation(Reservation reservation) {
+        if (reservation.remainWaitings()) {
+            Waiting waiting = waitingRepository.findTopByReservationOrderByCreatedDateTime(reservation)
+                    .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.WAITING_NOT_FOUND.getMessage()));
+            waitingRepository.delete(waiting);
+            waiting.changeToReservation();
+        } else {
+            reservationRepository.deleteById(reservation.getId());
+        }
     }
 }

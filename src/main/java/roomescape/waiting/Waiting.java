@@ -7,7 +7,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import roomescape.member.Member;
+import roomescape.reservation.Reservation;
 import roomescape.theme.Theme;
 
 @Entity
@@ -17,6 +21,7 @@ public class Waiting {
     private Long id;
     private String date;
     private String time;
+    private LocalDateTime createdDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
@@ -26,14 +31,29 @@ public class Waiting {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Waiting() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
+    protected Waiting() {
     }
 
-    public Waiting(String date, String time, Theme theme, Member member) {
+    public Waiting(String date, String time, Theme theme, Member member, Reservation reservation) {
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
+        this.reservation = reservation;
+        this.createdDateTime = LocalDateTime.now();
+    }
+
+    public boolean isBefore(LocalDateTime now) {
+        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(date), LocalTime.parse(time));
+        return localDateTime.isBefore(now);
+    }
+
+    public void changeToReservation() {
+        this.reservation.changeMember(member);
     }
 
     public Long getId() {
@@ -52,7 +72,11 @@ public class Waiting {
         return theme;
     }
 
-    public boolean isMyReservation(Long id) {
-        return this.member.getId().equals(id);
+    public Member getMember() {
+        return member;
+    }
+
+    public Reservation getReservation() {
+        return reservation;
     }
 }
