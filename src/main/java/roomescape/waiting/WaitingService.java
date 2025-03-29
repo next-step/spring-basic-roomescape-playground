@@ -33,14 +33,14 @@ public class WaitingService {
         return saveWaiting(waiting);
     }
 
+    public void deleteWaiting(Long id) {
+        waitingRepository.deleteById(id);
+    }
+
     private void validateWaiting(Waiting waiting) {
         if (waiting.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException(ErrorMessage.WAITING_MUST_AFTER_NOW.getMessage());
         }
-    }
-
-    public void deleteWaiting(Long id) {
-        waitingRepository.deleteById(id);
     }
 
     private Member findMemberById(LoginMember loginMember) {

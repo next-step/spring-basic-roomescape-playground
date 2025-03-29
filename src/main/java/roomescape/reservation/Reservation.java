@@ -8,6 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
@@ -52,6 +55,16 @@ public class Reservation {
 
     public boolean remainWaitings() {
         return !waitings.isEmpty();
+    }
+
+    public boolean isBefore(LocalDateTime now) {
+        LocalDateTime reservedDateTime = LocalDateTime.of(LocalDate.parse(date), LocalTime.parse(time.getValue()));
+        if (reservedDateTime.isBefore(now)) {
+            return true;
+        }
+        if (reservedDateTime.isAfter(now)) {
+            return false;
+        }
     }
 
     public Long getId() {

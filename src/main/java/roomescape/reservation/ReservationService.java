@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -45,6 +46,7 @@ public class ReservationService {
         Reservation reservation = new Reservation(reservationRequest.getDate(), member, time, theme);
 
         validateReservationPermission(reservation, loginMember);
+        validateReservationCreation(reservation);
 
         return saveReservation(reservation, reservationRequest);
     }
@@ -73,6 +75,12 @@ public class ReservationService {
     private void validateReservationPermission(Reservation reservation, LoginMember loginMember) {
         if (loginMember.notHaveName(reservation.getMember().getName()) && loginMember.isNotAdmin()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, ErrorMessage.FORBIDDEN_RESERVATION.getMessage());
+        }
+    }
+
+    private void validateReservationCreation(Reservation reservation) {
+        if (reservation.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ErrorMessage.RESERVATION_MUST_AFTER_NOW.getMessage());
         }
     }
 
