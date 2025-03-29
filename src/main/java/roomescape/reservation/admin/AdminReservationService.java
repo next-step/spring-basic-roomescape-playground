@@ -1,6 +1,7 @@
 package roomescape.reservation.admin;
 
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -43,16 +44,22 @@ public class AdminReservationService {
 
         Reservation reservation = new Reservation(adminReservationRequest.getDate(), member, time, theme);
 
+        validateReservationCreation(reservation);
+
         Reservation foundReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
                 reservation.getDate(), reservation.getTime().getId(),
                 reservation.getTheme().getId());
 
         if (foundReservation != null) {
-            Waiting waiting = waitingRepository.save(new Waiting(adminReservationRequest.getDate(), time.getValue(),
-                    theme, member, foundReservation));
-            return new AdminReservationResponse(waiting.getReservation().getId(), waiting.getMember().getName(),
-                    waiting.getMember().getEmail(), waiting.getTheme().getName(), waiting.getDate(),
-                    waiting.getTime());
+            Waiting waiting = new Waiting(adminReservationRequest.getDate(), time.getValue(), theme, member, foundReservation);
+
+            validateWaiting(waiting);
+
+            Waiting savedWaiting = waitingRepository.save(waiting);
+
+            return new AdminReservationResponse(savedWaiting.getReservation().getId(), savedWaiting.getMember().getName(),
+                    savedWaiting.getMember().getEmail(), savedWaiting.getTheme().getName(), savedWaiting.getDate(),
+                    savedWaiting.getTime());
         }
 
         return saveReservation(reservation, adminReservationRequest);
@@ -78,6 +85,18 @@ public class AdminReservationService {
     private Theme findTheme(AdminReservationRequest adminReservationRequest) {
         return themeRepository.findById(adminReservationRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
+    }
+
+    private void validateReservationCreation(Reservation reservation) {
+        if (reservation.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ErrorMessage.RESERVATION_MUST_AFTER_NOW.getMessage());
+        }
+    }
+
+    private void validateWaiting(Waiting waiting) {
+        if (waiting.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ErrorMessage.WAITING_MUST_AFTER_NOW.getMessage());
+        }
     }
 
     private AdminReservationResponse saveReservation(Reservation reservation, AdminReservationRequest adminReservationRequest) {

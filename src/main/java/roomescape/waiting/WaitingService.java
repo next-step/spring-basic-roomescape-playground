@@ -30,6 +30,7 @@ public class WaitingService {
         Waiting waiting = new Waiting(reservation.getDate(), reservation.getTime().getValue(), reservation.getTheme(), member, reservation);
 
         validateWaiting(waiting);
+
         return saveWaiting(waiting);
     }
 
