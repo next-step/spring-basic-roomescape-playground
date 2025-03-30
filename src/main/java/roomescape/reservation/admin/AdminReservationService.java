@@ -103,15 +103,6 @@ public class AdminReservationService {
         return saveReservation(reservation, adminReservationRequest);
     }
 
-    private AdminReservationResponse saveReservation(Reservation reservation, AdminReservationRequest adminReservationRequest) {
-        Reservation savedReservation = reservationRepository.save(reservation);
-
-        return new AdminReservationResponse(savedReservation.getId(), adminReservationRequest.getName(),
-                adminReservationRequest.getEmail(),
-                savedReservation.getTheme().getName(), savedReservation.getDate(),
-                savedReservation.getTime().getValue(), Status.RESERVATION.getDescription());
-    }
-
     private AdminReservationResponse saveWaiting(AdminReservationRequest adminReservationRequest,
                                                  Reservation reservation, Time time, Theme theme,
                                                  Member member) {
@@ -126,6 +117,15 @@ public class AdminReservationService {
                 savedWaiting.getMember().getName(),
                 savedWaiting.getMember().getEmail(), savedWaiting.getTheme().getName(), savedWaiting.getDate(),
                 savedWaiting.getTime(), Status.WAIT.getDescription());
+    }
+
+    private AdminReservationResponse saveReservation(Reservation reservation, AdminReservationRequest adminReservationRequest) {
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        return new AdminReservationResponse(savedReservation.getId(), adminReservationRequest.getName(),
+                adminReservationRequest.getEmail(),
+                savedReservation.getTheme().getName(), savedReservation.getDate(),
+                savedReservation.getTime().getValue(), Status.RESERVATION.getDescription());
     }
 
     private void validateWaiting(Waiting waiting) {
