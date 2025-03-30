@@ -10,6 +10,7 @@ import roomescape.waiting.domain.WaitingWithRank;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
@@ -37,4 +38,12 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
             "FROM Waiting w " +
             "WHERE w.memberId = :memberId")
     List<WaitingWithRank> findWaitingsWithRankByMemberId(Long memberId);
+
+    @Query("SELECT w " +
+            "FROM Waiting w " +
+            "WHERE w.date = :date " +
+            "  AND w.time = :time " +
+            "  AND w.theme = :theme " +
+            "ORDER BY w.id ASC")
+    Optional<Waiting> findFirstWaitingByDateAndTimeAndTheme(LocalDate date, Time time, Theme theme);
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -25,6 +26,9 @@ public class Waiting {
     private Long memberId;
 
     @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
     private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,11 +42,16 @@ public class Waiting {
     protected Waiting() {
     }
 
-    public Waiting(long memberId, LocalDate date, Time time, Theme theme) {
+    public Waiting(long memberId, String name, LocalDate date, Time time, Theme theme) {
         this.memberId = memberId;
+        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public Reservation toReservation() {
+        return new Reservation(memberId, name, date, time, theme);
     }
 
     public Long getId() {
@@ -51,6 +60,10 @@ public class Waiting {
 
     public Long getMemberId() {
         return memberId;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public LocalDate getDate() {

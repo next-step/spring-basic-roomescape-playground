@@ -83,7 +83,19 @@ public class ReservationService {
                 .toList();
     }
 
-    public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+    public void delete(Long id) {
+        reservationRepository.findById(id)
+                .ifPresent(reservation -> {
+                    reservationRepository.deleteById(id);
+                    saveFirstWaitingAsReservation(reservation);
+                });
+    }
+
+    private void saveFirstWaitingAsReservation(Reservation reservation) {
+        waitingRepository.findFirstWaitingByDateAndTimeAndTheme(reservation.getDate(), reservation.getTime(), reservation.getTheme())
+                .ifPresent(waiting -> {
+                    reservationRepository.save(waiting.toReservation());
+                    waitingRepository.delete(waiting);
+                });
     }
 }

@@ -32,7 +32,7 @@ public class WaitingService {
     public WaitingResponse createWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
         Time time = findTime(waitingRequest.time());
         Theme theme = findTheme(waitingRequest.theme());
-        Waiting waiting = waitingRequest.toWaiting(loginMember.id(), time, theme);
+        Waiting waiting = waitingRequest.toWaiting(loginMember.id(), loginMember.name(), time, theme);
 
         validateDuplicateWaiting(waiting);
         Waiting savedWaiting = waitingRepository.save(waiting);

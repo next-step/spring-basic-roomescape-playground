@@ -11,9 +11,10 @@ public record WaitingRequest(
         long time,
         long theme
 ) {
-    public Waiting toWaiting(long memberId, Time time, Theme theme) {
+    public Waiting toWaiting(long memberId, String name, Time time, Theme theme) {
         return new Waiting(
                 memberId,
+                name,
                 date,
                 time,
                 theme
