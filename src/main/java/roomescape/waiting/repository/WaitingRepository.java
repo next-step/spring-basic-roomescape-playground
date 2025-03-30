@@ -44,6 +44,8 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
             "WHERE w.date = :date " +
             "  AND w.time = :time " +
             "  AND w.theme = :theme " +
-            "ORDER BY w.id ASC")
+            "ORDER BY w.id ASC " +
+            "LIMIT 1"
+    )
     Optional<Waiting> findFirstWaitingByDateAndTimeAndTheme(LocalDate date, Time time, Theme theme);
 }
