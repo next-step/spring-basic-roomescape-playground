@@ -17,6 +17,10 @@ public class WaitingWithRank {
         return waiting.getId();
     }
 
+    public Long getMemberId() {
+        return waiting.getMemberId();
+    }
+
     public LocalDate getDate() {
         return waiting.getDate();
     }
