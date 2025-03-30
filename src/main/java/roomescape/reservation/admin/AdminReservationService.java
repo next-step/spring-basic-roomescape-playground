@@ -43,12 +43,10 @@ public class AdminReservationService {
         Time time = findTime(adminReservationRequest);
         Theme theme = findTheme(adminReservationRequest);
         Reservation reservation = new Reservation(adminReservationRequest.getDate(), member, time, theme);
-        boolean existsReservation = reservationRepository.existsByDateAndTimeIdAndThemeId(reservation.getDate(),
-                reservation.getTime().getId(), reservation.getTheme().getId());
 
         validateReservationCreation(reservation);
 
-        return saveReservationOrWaiting(adminReservationRequest, existsReservation, reservation, member, time, theme);
+        return saveReservationOrWaiting(adminReservationRequest, reservation, member, time, theme);
     }
 
     public List<AdminReservationResponse> findAll() {
@@ -80,15 +78,11 @@ public class AdminReservationService {
         }
     }
 
-    private void validateWaiting(Waiting waiting) {
-        if (waiting.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException(ErrorMessage.WAITING_MUST_AFTER_NOW.getMessage());
-        }
-    }
-
     private AdminReservationResponse saveReservationOrWaiting(AdminReservationRequest adminReservationRequest,
-                                                              boolean existsReservation, Reservation reservation,
-                                                              Member member, Time time, Theme theme) {
+                                                              Reservation reservation, Member member, Time time, Theme theme) {
+        boolean existsReservation = reservationRepository.existsByDateAndTimeIdAndThemeId(reservation.getDate(),
+                reservation.getTime().getId(), reservation.getTheme().getId());
+
         if (existsReservation) {
             Reservation savedReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
                     reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
@@ -132,6 +126,12 @@ public class AdminReservationService {
                 savedWaiting.getMember().getName(),
                 savedWaiting.getMember().getEmail(), savedWaiting.getTheme().getName(), savedWaiting.getDate(),
                 savedWaiting.getTime(), Status.WAIT.getDescription());
+    }
+
+    private void validateWaiting(Waiting waiting) {
+        if (waiting.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ErrorMessage.WAITING_MUST_AFTER_NOW.getMessage());
+        }
     }
 
     private List<AdminReservationResponse> findUserReservations() {
