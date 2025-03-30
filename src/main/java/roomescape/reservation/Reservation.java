@@ -53,6 +53,10 @@ public class Reservation {
         return this.member.getId().equals(id);
     }
 
+    public boolean isSavedSameMember(Member member) {
+        return this.member.getEmail().equals(member.getEmail());
+    }
+
     public boolean remainWaitings() {
         return !waitings.isEmpty();
     }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.Reservation;
+import roomescape.theme.Theme;
 
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
@@ -25,4 +26,6 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
     List<WaitingWithRank> findWaitingsWithRankByMemberId(@Param("memberId") Long memberId);
 
     Optional<Waiting> findTopByReservationOrderByCreatedDateTime(Reservation reservation);
+
+    boolean existsByMemberEmailAndDateAndTimeAndThemeId(String email, String date, String time, Long theme);
 }

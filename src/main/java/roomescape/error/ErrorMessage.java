@@ -10,10 +10,11 @@ public enum ErrorMessage {
     FORBIDDEN_DELETE("본인 예약만 삭제할 수 있습니다."),
     NO_COOKIES_FOUND("쿠키가 없습니다. 로그인 상태를 확인해주세요."),
     NO_AUTH_TOKEN_FOUND("로그인 토큰이 없습니다. 쿠키를 확인해주세요."),
-    ALREADY_WAITING("이미 대기 중인 시간입니다."),
+    RESERVATION_MUST_AFTER_NOW("예약은 현재 시간 이후로 해주시길 바랍니다."),
+    ALREADY_RESERVATION("이미 예약 되어 있습니다."),
+    ALREADY_WAITING("이미 대기 중입니다."),
     NOT_HAVE_DELETE_PERMISSION("삭제할 권한이 없습니다."),
-    WAITING_MUST_AFTER_NOW("예약 대기는 현재 시간 이후로 해주시길 바랍니다."),
-    RESERVATION_MUST_AFTER_NOW("예약은 현재 시간 이후로 해주시길 바랍니다.");
+    WAITING_MUST_AFTER_NOW("예약 대기는 현재 시간 이후로 해주시길 바랍니다.");
 
     private static final String PREFIX = "[ERROR] ";
     private final String message;

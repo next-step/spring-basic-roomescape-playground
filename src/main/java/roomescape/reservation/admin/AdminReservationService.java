@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import roomescape.error.ErrorMessage;
 import roomescape.member.Member;
@@ -43,19 +42,13 @@ public class AdminReservationService {
         Member member = findMember(adminReservationRequest);
         Time time = findTime(adminReservationRequest);
         Theme theme = findTheme(adminReservationRequest);
-
         Reservation reservation = new Reservation(adminReservationRequest.getDate(), member, time, theme);
+        boolean existsReservation = reservationRepository.existsByDateAndTimeIdAndThemeId(reservation.getDate(),
+                reservation.getTime().getId(), reservation.getTheme().getId());
 
         validateReservationCreation(reservation);
 
-        AdminReservationResponse savedWaiting = saveWaiting(adminReservationRequest, reservation, time, theme, member);
-        AdminReservationResponse savedReservation = saveReservation(reservation, adminReservationRequest);
-
-        if (savedWaiting != null) {
-            return savedWaiting;
-        }
-
-        return savedReservation;
+        return saveReservationOrWaiting(adminReservationRequest, existsReservation, reservation, member, time, theme);
     }
 
     public List<AdminReservationResponse> findAll() {
@@ -66,7 +59,8 @@ public class AdminReservationService {
     }
 
     private Member findMember(AdminReservationRequest adminReservationRequest) {
-        return memberRepository.findMemberByEmailAndName(adminReservationRequest.getEmail(), adminReservationRequest.getName())
+        return memberRepository.findMemberByEmailAndName(adminReservationRequest.getEmail(),
+                        adminReservationRequest.getName())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
@@ -92,10 +86,34 @@ public class AdminReservationService {
         }
     }
 
+    private AdminReservationResponse saveReservationOrWaiting(AdminReservationRequest adminReservationRequest,
+                                                              boolean existsReservation, Reservation reservation,
+                                                              Member member, Time time, Theme theme) {
+        if (existsReservation) {
+            Reservation savedReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
+                    reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
+            boolean existsWaiting = waitingRepository.existsByMemberEmailAndDateAndTimeAndThemeId(
+                    reservation.getMember().getEmail(), reservation.getDate(), reservation.getTime().getValue(), reservation.getTheme().getId());
+
+            if (savedReservation.isSavedSameMember(member)) {
+                throw new IllegalArgumentException(ErrorMessage.ALREADY_RESERVATION.getMessage());
+            }
+
+            if (existsWaiting) {
+                throw new IllegalArgumentException(ErrorMessage.ALREADY_WAITING.getMessage());
+            }
+
+            return saveWaiting(adminReservationRequest, savedReservation, time, theme, member);
+        }
+
+        return saveReservation(reservation, adminReservationRequest);
+    }
+
     private AdminReservationResponse saveReservation(Reservation reservation, AdminReservationRequest adminReservationRequest) {
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        return new AdminReservationResponse(savedReservation.getId(), adminReservationRequest.getName(), adminReservationRequest.getEmail(),
+        return new AdminReservationResponse(savedReservation.getId(), adminReservationRequest.getName(),
+                adminReservationRequest.getEmail(),
                 savedReservation.getTheme().getName(), savedReservation.getDate(),
                 savedReservation.getTime().getValue(), Status.RESERVATION.getDescription());
     }
@@ -103,23 +121,17 @@ public class AdminReservationService {
     private AdminReservationResponse saveWaiting(AdminReservationRequest adminReservationRequest,
                                                  Reservation reservation, Time time, Theme theme,
                                                  Member member) {
-        Reservation foundReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
-                reservation.getDate(), reservation.getTime().getId(),
-                reservation.getTheme().getId());
 
-        if (foundReservation != null) {
-            Waiting waiting = new Waiting(adminReservationRequest.getDate(), time.getValue(), theme, member, foundReservation);
+        Waiting waiting = new Waiting(adminReservationRequest.getDate(), time.getValue(), theme, member, reservation);
 
-            validateWaiting(waiting);
+        validateWaiting(waiting);
 
-            Waiting savedWaiting = waitingRepository.save(waiting);
+        Waiting savedWaiting = waitingRepository.save(waiting);
 
-            return new AdminReservationResponse(savedWaiting.getReservation().getId(),
-                    savedWaiting.getMember().getName(),
-                    savedWaiting.getMember().getEmail(), savedWaiting.getTheme().getName(), savedWaiting.getDate(),
-                    savedWaiting.getTime(), Status.WAIT.getDescription());
-        }
-        return null;
+        return new AdminReservationResponse(savedWaiting.getReservation().getId(),
+                savedWaiting.getMember().getName(),
+                savedWaiting.getMember().getEmail(), savedWaiting.getTheme().getName(), savedWaiting.getDate(),
+                savedWaiting.getTime(), Status.WAIT.getDescription());
     }
 
     private List<AdminReservationResponse> findUserReservations() {
@@ -132,14 +144,15 @@ public class AdminReservationService {
 
     private List<AdminReservationResponse> findUserWaitings() {
         return waitingRepository.findAll().stream()
-                .map(waiting -> new AdminReservationResponse(waiting.getReservation().getId(), waiting.getMember().getName(),
-                            waiting.getMember().getEmail(), waiting.getTheme().getName(), waiting.getDate(),
-                            waiting.getTime(), Status.WAIT.getDescription()))
+                .map(waiting -> new AdminReservationResponse(waiting.getReservation().getId(),
+                        waiting.getMember().getName(),
+                        waiting.getMember().getEmail(), waiting.getTheme().getName(), waiting.getDate(),
+                        waiting.getTime(), Status.WAIT.getDescription()))
                 .toList();
     }
 
     private List<AdminReservationResponse> mergeAndSortReservationsByDate(List<AdminReservationResponse> reservations,
-                                                                         List<AdminReservationResponse> waitings) {
+                                                                          List<AdminReservationResponse> waitings) {
         return Stream.concat(reservations.stream(), waitings.stream())
                 .sorted(Comparator.comparing(AdminReservationResponse::getDate))
                 .toList();
