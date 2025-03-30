@@ -7,14 +7,17 @@ public class AdminReservationResponse {
     private String theme;
     private String date;
     private String time;
+    private String status;
 
-    public AdminReservationResponse(Long id, String name, String email, String theme, String date, String time) {
+    public AdminReservationResponse(Long id, String name, String email, String theme, String date, String time,
+                                    String status) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.theme = theme;
         this.date = date;
         this.time = time;
+        this.status = status;
     }
 
     public Long getId() {
@@ -39,5 +42,9 @@ public class AdminReservationResponse {
 
     public String getTime() {
         return time;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

@@ -29,6 +29,7 @@ function render(data) {
     row.insertCell(3).textContent = item.theme;
     row.insertCell(4).textContent = item.date;
     row.insertCell(5).textContent = item.time;
+    row.insertCell(6).textContent = item.status;
 
     const actionCell = row.insertCell(row.cells.length);
     actionCell.appendChild(createActionButton('삭제', 'btn-danger', deleteRow));
@@ -93,7 +94,7 @@ function addInputRow() {
   const timeDropdown = createSelect(timesOptions, "시간 선택", 'time-select', 'value');
   const themeDropdown = createSelect(themesOptions, "테마 선택", 'theme-select', 'name');
 
-  const cellFieldsToCreate = ['', nameInput, emailInput, themeDropdown, dateInput, timeDropdown];
+  const cellFieldsToCreate = ['', nameInput, emailInput, themeDropdown, dateInput, timeDropdown, ''];
 
   cellFieldsToCreate.forEach((field, index) => {
     const cell = row.insertCell(index);
