@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.member.Member;
 import roomescape.reservation.study.ForStudy;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
@@ -37,6 +38,9 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Theme theme;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reservation")
     private List<ForStudy> forStudies;

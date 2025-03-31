@@ -59,7 +59,7 @@ public class Member {
         return password;
     }
 
-    public String getRole() {
-        return role.name();
+    public Role getRole() {
+        return role;
     }
 }

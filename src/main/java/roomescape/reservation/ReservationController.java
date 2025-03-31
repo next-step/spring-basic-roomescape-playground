@@ -12,6 +12,7 @@ import java.net.URI;
 import java.util.List;
 import roomescape.auth.AuthMember;
 import roomescape.member.Member;
+import roomescape.member.Role;
 
 @RestController
 public class ReservationController {
@@ -27,9 +28,19 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservation-mine")
+    public ResponseEntity<List<MyReservationResponse>> mine() {
+        return ResponseEntity.ok(null);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@AuthMember Member member
             , @RequestBody ReservationRequest reservationRequest) {
+        Role role = member.getRole();
+
+        if (role.isAdmin()) {
+
+        }
         String name = reservationRequest.name();
         if (name == null || name.isEmpty()) {
             reservationRequest = reservationRequest.update(member.getName());

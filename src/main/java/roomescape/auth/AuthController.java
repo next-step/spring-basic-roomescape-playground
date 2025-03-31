@@ -43,7 +43,7 @@ public class AuthController {
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest) {
         Member findMember = getMember(loginRequest);
         String accessToken = jwtProvider.generateToken(findMember.getId(),
-                findMember.getName(), findMember.getRole());
+                findMember.getName(), findMember.getRole().name());
         ResponseCookie responseCookie = cookieProvider.generateCookie(accessToken,
                 Duration.ofMinutes(DEFAULT_TIME));
 

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.auth.client.jwt.JwtProvider;
+import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.reservation.ReservationService;
 import roomescape.reservationTime.ReservationTimeService;
@@ -132,5 +133,20 @@ public class MissionStepTest {
         String role = (String) result.get("role");
 
         return jwtProvider.generateToken(id, email, role);
+    }
+
+    @Test
+    void 오단계() {
+        String email = "admin@email.com";
+        String token = getToken(email);
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", token)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 }
