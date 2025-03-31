@@ -34,6 +34,7 @@ public class WaitingService {
         Theme theme = findTheme(waitingRequest.theme());
         Waiting waiting = waitingRequest.toWaiting(loginMember.id(), loginMember.name(), time, theme);
 
+        validateIsAlreadyReserved(waiting);
         validateDuplicateWaiting(waiting);
         Waiting savedWaiting = waitingRepository.save(waiting);
 
@@ -49,6 +50,12 @@ public class WaitingService {
     private Theme findTheme(long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.INVALID_THEME.getMessage()));
+    }
+
+    private void validateIsAlreadyReserved(Waiting waiting) {
+        if (!reservationRepository.existsByDateAndTimeAndTheme(waiting.getDate(), waiting.getTime(), waiting.getTheme())) {
+            throw new BadRequestException(ExceptionMessage.RESERVATION_NOT_FOUND.getMessage());
+        }
     }
 
     private void validateDuplicateWaiting(Waiting waiting) {
