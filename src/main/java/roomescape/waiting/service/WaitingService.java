@@ -1,14 +1,18 @@
-package roomescape.waiting;
+package roomescape.waiting.service;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.LoginMember;
 import roomescape.error.ErrorMessage;
-import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.dto.WaitingRequest;
+import roomescape.waiting.dto.WaitingResponse;
+import roomescape.waiting.repository.WaitingRepository;
 
 @Service
 @Transactional

@@ -6,11 +6,10 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.LoginMember;
 import roomescape.reservation.Status;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.waiting.Waiting;
-import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.repository.WaitingRepository;
 
 @Service
 public class ReservationFindService {

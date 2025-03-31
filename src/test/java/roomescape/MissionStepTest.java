@@ -16,7 +16,7 @@ import roomescape.auth.dto.AuthRequest;
 import roomescape.auth.dto.AuthResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.waiting.WaitingResponse;
+import roomescape.waiting.dto.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

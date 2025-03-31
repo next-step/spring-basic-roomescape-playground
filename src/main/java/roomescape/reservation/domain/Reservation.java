@@ -12,10 +12,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.member.Member;
-import roomescape.theme.Theme;
+import roomescape.member.domain.Member;
+import roomescape.theme.domain.Theme;
 import roomescape.time.Time;
-import roomescape.waiting.Waiting;
+import roomescape.waiting.domain.Waiting;
 
 @Entity
 public class Reservation {

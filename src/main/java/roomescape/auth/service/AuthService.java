@@ -6,8 +6,8 @@ import roomescape.auth.dto.AuthResponse;
 import roomescape.auth.dto.MemberDetailResponse;
 import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.error.ErrorMessage;
-import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class AuthService {

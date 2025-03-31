@@ -1,6 +1,4 @@
-package roomescape.waiting;
-
-import roomescape.reservation.domain.Reservation;
+package roomescape.waiting.dto;
 
 public class WaitingResponse {
     private Long id;

@@ -1,4 +1,4 @@
-package roomescape.waiting;
+package roomescape.waiting.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.waiting.domain.WaitingWithRank;
+import roomescape.waiting.domain.Waiting;
 
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {

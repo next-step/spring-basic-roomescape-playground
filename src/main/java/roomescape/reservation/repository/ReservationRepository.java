@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.Theme;
+import roomescape.theme.domain.Theme;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {

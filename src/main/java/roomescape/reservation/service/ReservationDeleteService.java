@@ -8,8 +8,8 @@ import roomescape.auth.domain.LoginMember;
 import roomescape.error.ErrorMessage;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.waiting.Waiting;
-import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.repository.WaitingRepository;
 
 @Service
 @Transactional

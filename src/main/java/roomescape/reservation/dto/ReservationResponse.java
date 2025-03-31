@@ -2,7 +2,7 @@ package roomescape.reservation.dto;
 
 import roomescape.reservation.Status;
 import roomescape.reservation.domain.Reservation;
-import roomescape.waiting.Waiting;
+import roomescape.waiting.domain.Waiting;
 
 public class ReservationResponse {
     private Long id;

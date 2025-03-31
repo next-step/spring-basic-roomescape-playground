@@ -5,20 +5,20 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.LoginMember;
 import roomescape.error.ErrorMessage;
-import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.Status;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.AdminReservationRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.Theme;
-import roomescape.theme.ThemeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
-import roomescape.waiting.Waiting;
-import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.repository.WaitingRepository;
 
 @Service
 @Transactional

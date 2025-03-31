@@ -1,4 +1,4 @@
-package roomescape.waiting;
+package roomescape.waiting.dto;
 
 public class WaitingRequest {
     private String date;
