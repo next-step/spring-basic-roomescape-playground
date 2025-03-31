@@ -1,13 +1,15 @@
-package roomescape.reservation;
+package roomescape.reservation.dto;
 
-public class ReservationRequest {
+public class AdminReservationRequest {
     private String name;
+    private String email;
     private String date;
     private Long theme;
     private Long time;
 
-    public ReservationRequest(String name, String date, Long theme, Long time) {
+    public AdminReservationRequest(String name, String email, String date, Long theme, Long time) {
         this.name = name;
+        this.email = email;
         this.date = date;
         this.theme = theme;
         this.time = time;
@@ -15,6 +17,10 @@ public class ReservationRequest {
 
     public String getName() {
         return name;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getDate() {

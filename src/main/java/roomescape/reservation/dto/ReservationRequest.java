@@ -1,30 +1,20 @@
-package roomescape.reservation.admin;
+package roomescape.reservation.dto;
 
-public class AdminReservationRequest {
+public class ReservationRequest {
     private String name;
-    private String email;
     private String date;
     private Long theme;
     private Long time;
 
-    public AdminReservationRequest(String name, String email, String date, Long theme, Long time) {
+    public ReservationRequest(String name, String date, Long theme, Long time) {
         this.name = name;
-        this.email = email;
         this.date = date;
         this.theme = theme;
         this.time = time;
     }
 
-    public boolean hasEmail() {
-        return !this.email.isBlank();
-    }
-
     public String getName() {
         return name;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public String getDate() {

@@ -15,8 +15,7 @@ import java.util.Map;
 import roomescape.auth.dto.AuthRequest;
 import roomescape.auth.dto.AuthResponse;
 import roomescape.auth.service.AuthService;
-import roomescape.reservation.UserReservationResponse;
-import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.waiting.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -118,12 +117,12 @@ public class MissionStepTest {
     void 오단계() {
         String adminToken = createToken("admin@email.com", "password");
 
-        List<UserReservationResponse> reservations = RestAssured.given().log().all()
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .cookie("token", adminToken)
                 .get("/reservations-mine")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".", UserReservationResponse.class);
+                .extract().jsonPath().getList(".", ReservationResponse.class);
 
         assertThat(reservations).hasSize(3);
     }
@@ -148,14 +147,14 @@ public class MissionStepTest {
                 .extract().as(WaitingResponse.class);
 
         // 내 예약 목록 조회
-        List<UserReservationResponse> myReservations = RestAssured.given().log().all()
+        List<ReservationResponse> myReservations = RestAssured.given().log().all()
                 .body(params)
                 .cookie("token", brownToken)
                 .contentType(ContentType.JSON)
                 .get("/reservations-mine")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".", UserReservationResponse.class);
+                .extract().jsonPath().getList(".", ReservationResponse.class);
 
         // 예약 대기 상태 확인
         String status = myReservations.stream()

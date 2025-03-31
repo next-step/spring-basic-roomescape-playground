@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -42,6 +42,14 @@ public class Reservation {
     protected Reservation() {
     }
 
+    public Reservation(Long id, String date, Member member, Time time, Theme theme) {
+        this.id = id;
+        this.date = date;
+        this.member = member;
+        this.time = time;
+        this.theme = theme;
+    }
+
     public Reservation(String date, Member member, Time time, Theme theme) {
         this.date = date;
         this.member = member;
@@ -66,6 +74,10 @@ public class Reservation {
         return reservedDateTime.isBefore(now);
     }
 
+    public void changeMember(Member member) {
+        this.member = member;
+    }
+
     public Long getId() {
         return id;
     }
@@ -84,9 +96,5 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    public void changeMember(Member member) {
-        this.member = member;
     }
 }

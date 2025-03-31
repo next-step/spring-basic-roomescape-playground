@@ -27,11 +27,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
         String token = authService.login(authRequest).token();
+        String redirectUrl = findRedirectUrl(token);
         addCookie(response, token);
 
-        String redirectUrl = findRedirectUrl(token);
-
-        return ResponseEntity.status(200).header("Location", redirectUrl).build();
+        return ResponseEntity.status(200)
+                .header("Location", redirectUrl)
+                .build();
     }
 
     @GetMapping("/login/check")
