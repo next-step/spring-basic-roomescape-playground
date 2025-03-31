@@ -111,7 +111,10 @@ public class ReservationCreateService {
     private ReservationResponse createWaiting(String date, Member member, Time time, Theme theme,
                                               Reservation reservation) {
         Reservation savedReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
-                reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        ).orElseThrow(() -> new IllegalArgumentException(ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
 
         if (savedReservation.isSavedSameMember(member)) {
             throw new IllegalArgumentException(ErrorMessage.ALREADY_RESERVATION.getMessage());

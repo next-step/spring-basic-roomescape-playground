@@ -28,37 +28,10 @@ public class WaitingService {
         Member member = findMember(loginMember);
         Reservation reservation = findReservation(waitingRequest);
 
-        boolean existsReservation = reservationRepository.existsByDateAndTimeIdAndThemeId(reservation.getDate(),
-                reservation.getTime().getId(), reservation.getTheme().getId());
+        validateWaitingConditions(loginMember, reservation, member);
 
-        if (existsReservation) {
-            Reservation savedReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
-                    reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
-            boolean existsWaiting = waitingRepository.existsByMemberEmailAndDateAndTimeAndThemeId(
-                    loginMember.email(), reservation.getDate(), reservation.getTime().getValue(), reservation.getTheme().getId());
-
-            if (savedReservation.isSavedSameMember(member)) {
-                throw new IllegalArgumentException(ErrorMessage.ALREADY_RESERVATION.getMessage());
-            }
-
-            if (existsWaiting) {
-                throw new IllegalArgumentException(ErrorMessage.ALREADY_WAITING.getMessage());
-            }
-
-            Waiting waiting = new Waiting(reservation.getDate(), reservation.getTime().getValue(), reservation.getTheme(), member, reservation);
-
-            validateWaiting(waiting);
-
-            waitingRepository.save(waiting);
-
-            Long id = waiting.getTheme().getId();
-            String time = waiting.getTime();
-            String date = waiting.getDate();
-
-            return new WaitingResponse(waiting.getId(), id, date, time,
-                    waitingRepository.findByThemeIdAndDateAndTime(id, date, time).size());
-        }
-        return null;
+        Waiting waiting = new Waiting(reservation.getDate(), reservation.getTime().getValue(), reservation.getTheme(), member, reservation);
+        return saveWaiting(waiting);
     }
 
     public void deleteWaiting(Long id) {
@@ -71,45 +44,49 @@ public class WaitingService {
     }
 
     private Reservation findReservation(WaitingRequest waitingRequest) {
-        return reservationRepository.findByDateAndTimeIdAndThemeId(waitingRequest.getDate(), waitingRequest.getTime(), waitingRequest.getTheme());
+        return reservationRepository.findByDateAndTimeIdAndThemeId(
+                        waitingRequest.getDate(),
+                        waitingRequest.getTime(),
+                        waitingRequest.getTheme()
+                ).orElseThrow(() -> new IllegalArgumentException(ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
     }
 
-//    private WaitingResponse saveWaiting(LoginMember loginMember, Reservation reservation, Member member,
-//                                        Waiting waiting) {
-//        boolean existsReservation = reservationRepository.existsByDateAndTimeIdAndThemeId(reservation.getDate(),
-//                reservation.getTime().getId(), reservation.getTheme().getId());
-//
-//        if (existsReservation) {
-//            Reservation savedReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
-//                    reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
-//            boolean existsWaiting = waitingRepository.existsByMemberEmailAndDateAndTimeAndThemeId(
-//                    loginMember.email(), reservation.getDate(), reservation.getTime().getValue(), reservation.getTheme().getId());
-//
-//            if (savedReservation.isSavedSameMember(member)) {
-//                throw new IllegalArgumentException(ErrorMessage.ALREADY_RESERVATION.getMessage());
-//            }
-//
-//            if (existsWaiting) {
-//                throw new IllegalArgumentException(ErrorMessage.ALREADY_WAITING.getMessage());
-//            }
-//
-//            return saveWaiting(waiting);
-//        }
-//        return null;
-//    }
+    private void validateWaitingConditions(LoginMember loginMember, Reservation reservation, Member member) {
+        Reservation savedReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        ).orElseThrow(() -> new IllegalArgumentException(ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
 
-//    private WaitingResponse saveWaiting(Waiting waiting) {
-//        validateWaiting(waiting);
-//
-//        waitingRepository.save(waiting);
-//
-//        Long id = waiting.getTheme().getId();
-//        String time = waiting.getTime();
-//        String date = waiting.getDate();
-//
-//        return new WaitingResponse(waiting.getId(), id, date, time,
-//                waitingRepository.findByThemeIdAndDateAndTime(id, date, time).size());
-//    }
+        if (savedReservation.isSavedSameMember(member)) {
+            throw new IllegalArgumentException(ErrorMessage.ALREADY_RESERVATION.getMessage());
+        }
+
+        if (isAlreadyInWaiting(loginMember, reservation)) {
+            throw new IllegalArgumentException(ErrorMessage.ALREADY_WAITING.getMessage());
+        }
+    }
+
+    private boolean isAlreadyInWaiting(LoginMember loginMember, Reservation reservation) {
+        return waitingRepository.existsByMemberEmailAndDateAndTimeAndThemeId(
+                loginMember.email(),
+                reservation.getDate(),
+                reservation.getTime().getValue(),
+                reservation.getTheme().getId()
+        );
+    }
+
+    private WaitingResponse saveWaiting(Waiting waiting) {
+        validateWaiting(waiting);
+        waitingRepository.save(waiting);
+
+        Long id = waiting.getTheme().getId();
+        String time = waiting.getTime();
+        String date = waiting.getDate();
+
+        return new WaitingResponse(waiting.getId(), id, date, time,
+                waitingRepository.findByThemeIdAndDateAndTime(id, date, time).size());
+    }
 
     private void validateWaiting(Waiting waiting) {
         if (waiting.isBefore(LocalDateTime.now())) {
