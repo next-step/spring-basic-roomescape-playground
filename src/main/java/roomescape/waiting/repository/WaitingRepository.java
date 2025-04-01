@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
-import roomescape.waiting.domain.WaitingWithRank;
+import roomescape.waiting.domain.RankedWaiting;
 import roomescape.waiting.domain.Waiting;
 
 @Repository
@@ -24,7 +24,7 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
             "       AND w2.id < w.id) AS LONG)) " +
             "FROM Waiting w " +
             "WHERE w.member.id = :memberId")
-    List<WaitingWithRank> findWaitingsWithRankByMemberId(@Param("memberId") Long memberId);
+    List<RankedWaiting> findWaitingsWithRankByMemberId(@Param("memberId") Long memberId);
 
     Optional<Waiting> findTopByReservationOrderByCreatedDateTime(Reservation reservation);
 
