@@ -72,7 +72,7 @@ public class WaitingService {
     }
 
     private boolean isAlreadyInWaiting(LoginMember loginMember, Reservation reservation) {
-        return waitingRepository.existsByMemberEmailAndDateAndTimeAndThemeId(
+        return waitingRepository.existsWaitingByMemberEmailAndDateAndTimeAndThemeId(
                 loginMember.email(),
                 reservation.getDate(),
                 reservation.getTime().getValue(),
@@ -89,7 +89,7 @@ public class WaitingService {
         String date = waiting.getDate();
 
         return new WaitingResponse(waiting.getId(), id, date, time,
-                waitingRepository.findByThemeIdAndDateAndTime(id, date, time).size());
+                waitingRepository.findWaitingsByThemeIdAndDateAndTime(id, date, time).size());
     }
 
     private void validateWaiting(Waiting waiting) {

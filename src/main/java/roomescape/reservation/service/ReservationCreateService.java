@@ -96,7 +96,7 @@ public class ReservationCreateService {
     }
 
     private boolean isAlreadyReserved(Reservation reservation) {
-        return reservationRepository.existsByDateAndTimeIdAndThemeId(
+        return reservationRepository.existsReservationByDateAndTimeIdAndThemeId(
                 reservation.getDate(),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId()
@@ -131,7 +131,7 @@ public class ReservationCreateService {
     }
 
     private boolean isAlreadyInWaiting(Reservation reservation) {
-        return waitingRepository.existsByMemberEmailAndDateAndTimeAndThemeId(
+        return waitingRepository.existsWaitingByMemberEmailAndDateAndTimeAndThemeId(
                 reservation.getMember().getEmail(),
                 reservation.getDate(),
                 reservation.getTime().getValue(),

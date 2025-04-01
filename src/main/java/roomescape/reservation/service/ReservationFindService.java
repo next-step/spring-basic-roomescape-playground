@@ -57,7 +57,7 @@ public class ReservationFindService {
     }
 
     private List<ReservationResponse> findMemberWaitings(LoginMember loginMember) {
-        return waitingRepository.findWaitingsWithRankByMemberId(loginMember.id()).stream()
+        return waitingRepository.findRankedWaitingsByMemberId(loginMember.id()).stream()
                 .map(waitingWithRank -> {
                     Waiting waiting = waitingWithRank.getWaiting();
                     String status = (waitingWithRank.getRank() + 1) + "번째 " + Status.WAIT.getDescription();
