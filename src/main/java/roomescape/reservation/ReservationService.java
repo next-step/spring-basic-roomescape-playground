@@ -3,6 +3,7 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import roomescape.global.exception.RoomescapeNotFoundException;
+import roomescape.member.Member;
 import roomescape.reservationTime.ReservationTimeRepository;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
@@ -24,15 +25,33 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Theme theme = themeRepository.findById(reservationRequest.theme())
-                .orElseThrow(() -> new RoomescapeNotFoundException("테마를 찾을 수 없습니다."));
-        ReservationTime reservationTime = reservationTimeRepository
-                .findById(reservationRequest.time())
-                .orElseThrow(() -> new RoomescapeNotFoundException("예약 시간을 찾을 수 없습니다."));
+        Theme theme = getTheme(reservationRequest);
+        ReservationTime reservationTime = getReservationTime(reservationRequest);
 
         Reservation reservation = reservationRepository
                 .save(reservationRequest.toReservation(theme, reservationTime));
         return new ReservationResponse(reservation);
+    }
+
+    public ReservationResponse saveWithMember(ReservationRequest reservationRequest,
+                                              Member member) {
+        Theme theme = getTheme(reservationRequest);
+        ReservationTime reservationTime = getReservationTime(reservationRequest);
+
+        Reservation reservation = reservationRepository
+                .save(reservationRequest.toReservationWithMember(theme, reservationTime, member));
+        return new ReservationResponse(reservation);
+    }
+
+    private ReservationTime getReservationTime(final ReservationRequest reservationRequest) {
+        return reservationTimeRepository
+                .findById(reservationRequest.time())
+                .orElseThrow(() -> new RoomescapeNotFoundException("예약 시간을 찾을 수 없습니다."));
+    }
+
+    private Theme getTheme(final ReservationRequest reservationRequest) {
+        return themeRepository.findById(reservationRequest.theme())
+                .orElseThrow(() -> new RoomescapeNotFoundException("테마를 찾을 수 없습니다."));
     }
 
     public void deleteById(Long id) {

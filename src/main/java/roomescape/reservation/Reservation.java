@@ -64,6 +64,14 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation(Member member, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this.member = member;
+        this.name = name;
+        this.date = date;
+        this.reservationTime = reservationTime;
+        this.theme = theme;
+    }
+
     public Long getId() {
         return id;
     }

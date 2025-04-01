@@ -109,8 +109,8 @@ public class JpaTest {
         }
 
         assertThat(reservationsByFetchJoin.size()).isEqualTo(2);
-        assertThat(reservationsByFetchLeftJoin.size()).isEqualTo(3);
-        assertThat(reservationsByEntityGraph.size()).isEqualTo(3);
+        assertThat(reservationsByFetchLeftJoin.size()).isEqualTo(4);
+        assertThat(reservationsByEntityGraph.size()).isEqualTo(4);
         // hibernate 6 위 버전부터는 OneToMany와 fetch join으로 인한 중복을 hibernate에서 처리해준다... + entityGraph
     }
 }

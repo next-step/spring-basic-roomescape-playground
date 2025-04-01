@@ -28,7 +28,7 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
-    @GetMapping("/reservation-mine")
+    @GetMapping("/reservations-mine")
     public ResponseEntity<List<MyReservationResponse>> mine() {
         return ResponseEntity.ok(null);
     }
@@ -37,18 +37,26 @@ public class ReservationController {
     public ResponseEntity create(@AuthMember Member member
             , @RequestBody ReservationRequest reservationRequest) {
         Role role = member.getRole();
-
-        if (role.isAdmin()) {
-
-        }
+        boolean isAdmin = role.isAdmin();
         String name = reservationRequest.name();
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty() || !isAdmin) {
             reservationRequest = reservationRequest.update(member.getName());
         }
-        ReservationResponse result = reservationService.save(reservationRequest);
+
+        ReservationResponse result = getReservationResponse(member,
+                reservationRequest, isAdmin);
 
         return ResponseEntity.created(URI.create("/reservations/" + result.id()))
                 .body(result);
+    }
+
+    private ReservationResponse getReservationResponse(Member member,
+                                                       ReservationRequest reservationRequest,
+                                                       boolean isAdmin) {
+        if (isAdmin) {
+            return reservationService.save(reservationRequest);
+        }
+        return reservationService.saveWithMember(reservationRequest, member);
     }
 
     @DeleteMapping("/reservations/{id}")

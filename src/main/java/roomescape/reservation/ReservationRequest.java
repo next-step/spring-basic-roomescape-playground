@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 
@@ -10,6 +11,11 @@ public record ReservationRequest(@NotNull String name, @NotNull LocalDate date, 
 
     public Reservation toReservation(Theme theme, ReservationTime reservationTime) {
         return new Reservation(name, date, reservationTime, theme);
+    }
+
+    public Reservation toReservationWithMember(Theme theme, ReservationTime reservationTime,
+                                               Member member) {
+        return new Reservation(member, name, date, reservationTime, theme);
     }
 
     public ReservationRequest update(String name) {
