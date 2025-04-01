@@ -18,10 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.auth.client.jwt.JwtProvider;
-import roomescape.reservation.MyReservationResponse;
+import roomescape.reservation.MemberReservationResponse;
 import roomescape.reservation.ReservationResponse;
-import roomescape.reservation.ReservationService;
-import roomescape.reservationTime.ReservationTimeService;
 import roomescape.waiting.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -141,12 +139,12 @@ public class MissionStepTest {
         String email = "admin@email.com";
         String token = getToken(email);
 
-        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+        List<MemberReservationResponse> reservations = RestAssured.given().log().all()
                 .cookie("token", token)
                 .get("/reservations-mine")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".", MyReservationResponse.class);
+                .extract().jsonPath().getList(".", MemberReservationResponse.class);
 
         assertThat(reservations).hasSize(3);
     }
@@ -172,14 +170,14 @@ public class MissionStepTest {
                 .extract().as(WaitingResponse.class);
 
         // 내 예약 목록 조회
-        List<MyReservationResponse> myReservations = RestAssured.given().log().all()
+        List<MemberReservationResponse> myReservations = RestAssured.given().log().all()
                 .body(params)
                 .cookie("token", brownToken)
                 .contentType(ContentType.JSON)
                 .get("/reservations-mine")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".", MyReservationResponse.class);
+                .extract().jsonPath().getList(".", MemberReservationResponse.class);
 
         // 예약 대기 상태 확인
         String status = myReservations.stream()

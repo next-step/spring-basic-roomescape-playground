@@ -3,10 +3,10 @@ package roomescape.reservation;
 import java.time.LocalDate;
 import roomescape.reservation.view.Formatter;
 
-public record MyReservationResponse(long reservationId, String theme, LocalDate date
+public record MemberReservationResponse(long reservationId, String theme, LocalDate date
         , String time, String status) {
 
-    public MyReservationResponse(Reservation reservation) {
+    public MemberReservationResponse(Reservation reservation) {
         this(
                 reservation.getId(),
                 reservation.getThemeValue(),

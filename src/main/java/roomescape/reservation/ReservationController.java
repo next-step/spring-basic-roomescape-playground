@@ -29,8 +29,8 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations-mine")
-    public ResponseEntity<List<MyReservationResponse>> mine(@AuthMember Member member) {
-        List<MyReservationResponse> result = reservationService.getMyReservations(member.getId());
+    public ResponseEntity<List<MemberReservationResponse>> mine(@AuthMember Member member) {
+        List<MemberReservationResponse> result = reservationService.getMyReservations(member.getId());
 
         return ResponseEntity.ok(result);
     }
