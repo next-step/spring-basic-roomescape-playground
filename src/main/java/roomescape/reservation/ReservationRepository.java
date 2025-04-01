@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import roomescape.member.Member;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
@@ -13,6 +15,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("select r from Reservation r left join fetch r.reservationTime")
     List<Reservation> findAllWithReservationTime();
 
+    @Query("SELECT r FROM Reservation r join fetch r.member m WHERE m = :member")
+    List<Reservation> findAllByMember(@Param("member") Member member);
 
     /**
      * 아래는 학습을 위해 만든 메서드입니다.

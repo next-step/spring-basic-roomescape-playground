@@ -29,8 +29,10 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations-mine")
-    public ResponseEntity<List<MyReservationResponse>> mine() {
-        return ResponseEntity.ok(null);
+    public ResponseEntity<List<MyReservationResponse>> mine(@AuthMember Member member) {
+        List<MyReservationResponse> result = reservationService.getMyReservations(member);
+
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/reservations")

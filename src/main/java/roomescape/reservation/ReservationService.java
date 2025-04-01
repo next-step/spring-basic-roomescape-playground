@@ -43,15 +43,23 @@ public class ReservationService {
         return new ReservationResponse(reservation);
     }
 
-    private ReservationTime getReservationTime(final ReservationRequest reservationRequest) {
+    private ReservationTime getReservationTime(ReservationRequest reservationRequest) {
         return reservationTimeRepository
                 .findById(reservationRequest.time())
                 .orElseThrow(() -> new RoomescapeNotFoundException("예약 시간을 찾을 수 없습니다."));
     }
 
-    private Theme getTheme(final ReservationRequest reservationRequest) {
+    private Theme getTheme(ReservationRequest reservationRequest) {
         return themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(() -> new RoomescapeNotFoundException("테마를 찾을 수 없습니다."));
+    }
+
+    public List<MyReservationResponse> getMyReservations(Member member) {
+        List<Reservation> reservations = reservationRepository.findAllByMember(member);
+
+        return reservations.stream()
+                .map(reservation -> new MyReservationResponse(reservation))
+                .toList();
     }
 
     public void deleteById(Long id) {
