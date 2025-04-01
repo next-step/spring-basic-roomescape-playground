@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.member.dto.MemberResponse;
+import roomescape.member.enums.Role;
 
 class JwtProviderTest {
 
@@ -48,7 +49,7 @@ class JwtProviderTest {
     }
 
     private static @NotNull MemberResponse getMemberResponse() {
-        return new MemberResponse(1L, "test", "test@mail.com", "ADMIN");
+        return new MemberResponse(1L, "test", "test@mail.com", Role.ADMIN);
     }
 
 }

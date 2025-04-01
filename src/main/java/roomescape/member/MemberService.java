@@ -3,11 +3,10 @@ package roomescape.member;
 import org.springframework.stereotype.Service;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
+import roomescape.member.enums.Role;
 
 @Service
 public class MemberService {
-
-    public static final String DEFAULT_ROLE = "USER";
 
     private final MemberDao memberDao;
 
@@ -22,7 +21,7 @@ public class MemberService {
 
     private Member registerMember(MemberRequest memberRequest) {
         return memberDao.save(
-                new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), DEFAULT_ROLE));
+                new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
     }
 
     private MemberResponse toMemberResponse(Member member) {

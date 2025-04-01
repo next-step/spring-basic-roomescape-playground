@@ -1,13 +1,31 @@
 package roomescape.reservation;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+@Entity
 public class Reservation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private String date;
+
+    @OneToOne
+    @JoinColumn(name = "time_id", referencedColumnName = "id")
     private Time time;
+
+    @OneToOne
+    @JoinColumn(name = "theme_id", referencedColumnName = "id")
     private Theme theme;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
