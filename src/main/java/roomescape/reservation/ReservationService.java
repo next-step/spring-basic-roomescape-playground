@@ -54,8 +54,8 @@ public class ReservationService {
                 .orElseThrow(() -> new RoomescapeNotFoundException("테마를 찾을 수 없습니다."));
     }
 
-    public List<MyReservationResponse> getMyReservations(Member member) {
-        List<Reservation> reservations = reservationRepository.findAllByMember(member);
+    public List<MyReservationResponse> getMyReservations(long memberId) {
+        List<Reservation> reservations = reservationRepository.findAllByMemberId(memberId);
 
         return reservations.stream()
                 .map(reservation -> new MyReservationResponse(reservation))
