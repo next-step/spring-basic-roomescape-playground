@@ -19,9 +19,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT r FROM Reservation r join fetch r.member m WHERE m.id = :memberId")
     List<Reservation> findAllByMemberId(long memberId);
 
-    Optional<Reservation> findByDateAndReservationTime_IdAndTheme_Id(LocalDate date, Long timeId,
-                                                                     Long themeId);
+    Optional<Reservation> findByDateAndReservationTime_IdAndTheme_Id(LocalDate date, long timeId,
+                                                                     long themeId);
 
+    boolean existsByDateAndTheme_IdAndReservationTime_Id(LocalDate date, long themeId, long reservationId);
     /**
      * 아래는 학습을 위해 만든 메서드입니다. fetch join, entityGraph 동작 확인 용
      */

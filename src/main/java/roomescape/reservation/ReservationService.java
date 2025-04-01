@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
+import roomescape.global.exception.RoomescapeBadRequestException;
 import roomescape.global.exception.RoomescapeNotFoundException;
 import roomescape.member.Member;
 import roomescape.reservationTime.ReservationTimeRepository;
@@ -25,6 +26,7 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
+        validatedRequest(reservationRequest);
         Theme theme = getTheme(reservationRequest);
         ReservationTime reservationTime = getReservationTime(reservationRequest);
 
@@ -35,12 +37,20 @@ public class ReservationService {
 
     public ReservationResponse saveWithMember(ReservationRequest reservationRequest,
                                               Member member) {
+        validatedRequest(reservationRequest);
         Theme theme = getTheme(reservationRequest);
         ReservationTime reservationTime = getReservationTime(reservationRequest);
 
         Reservation reservation = reservationRepository
                 .save(reservationRequest.toReservationWithMember(theme, reservationTime, member));
         return new ReservationResponse(reservation);
+    }
+
+    private void validatedRequest(ReservationRequest reservationRequest) {
+        if (reservationRepository.existsByDateAndTheme_IdAndReservationTime_Id(
+                reservationRequest.date(), reservationRequest.theme(), reservationRequest.time())) {
+            throw new RoomescapeBadRequestException("이미 예약 된 방입니다.");
+        }
     }
 
     private ReservationTime getReservationTime(ReservationRequest reservationRequest) {

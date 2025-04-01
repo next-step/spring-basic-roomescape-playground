@@ -43,6 +43,7 @@ public class ReservationController {
         return ResponseEntity.ok(results.addWaitings(memberWaitings));
     }
 
+    // fixme: 중복 예약 허용 x
     @PostMapping("/reservations")
     public ResponseEntity create(@AuthMember Member member
             , @RequestBody ReservationRequest reservationRequest) {
@@ -53,15 +54,14 @@ public class ReservationController {
             reservationRequest = reservationRequest.update(member.getName());
         }
 
-        ReservationResponse result = save(member,
-                reservationRequest, isAdmin);
+        ReservationResponse result = create(member, reservationRequest, isAdmin);
 
         return ResponseEntity.created(URI.create("/reservations/" + result.id()))
                 .body(result);
     }
 
-    private ReservationResponse save(Member member, ReservationRequest reservationRequest,
-                                     boolean isAdmin) {
+    private ReservationResponse create(Member member, ReservationRequest reservationRequest,
+                                       boolean isAdmin) {
         if (isAdmin) {
             return reservationService.save(reservationRequest);
         }
