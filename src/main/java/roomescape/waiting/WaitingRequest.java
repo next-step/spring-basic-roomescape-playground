@@ -1,4 +1,6 @@
 package roomescape.waiting;
 
-public record WaitingRequest() {
+import java.time.LocalDate;
+
+public record WaitingRequest(LocalDate date, long time, long theme) {
 }

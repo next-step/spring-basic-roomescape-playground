@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,9 +19,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT r FROM Reservation r join fetch r.member m WHERE m.id = :memberId")
     List<Reservation> findAllByMemberId(long memberId);
 
+    Optional<Reservation> findByDateAndReservationTime_IdAndTheme_Id(LocalDate date, Long timeId,
+                                                                     Long themeId);
+
     /**
-     * 아래는 학습을 위해 만든 메서드입니다.
-     * fetch join, entityGraph 동작 확인 용
+     * 아래는 학습을 위해 만든 메서드입니다. fetch join, entityGraph 동작 확인 용
      */
     @Query("select r from Reservation r join fetch r.forStudies")
     List<Reservation> findAllWithForStudyByFetch();

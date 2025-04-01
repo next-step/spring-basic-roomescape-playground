@@ -6,7 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import roomescape.member.Member;
 import roomescape.reservation.Reservation;
 
@@ -18,14 +20,57 @@ public class Waiting {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private LocalDateTime createdTime;
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     private Member member;
 
     @ManyToOne
     private Reservation reservation;
+
+    public Waiting() {
+
+    }
+
+    public Waiting(Member member, Reservation reservation) {
+        this.updatedAt = LocalDateTime.now();
+        this.member = member;
+        this.reservation = reservation;
+    }
+
+    public void refreshTimestamp() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public Reservation getReservation() {
+        return reservation;
+    }
+
+    public String getThemeValue() {
+        return reservation.getThemeValue();
+    }
+
+    public LocalDate getDate() {
+        return reservation.getDate();
+    }
+
+    public LocalTime getTime() {
+        return reservation.getTimeValue();
+    }
+
+    public String getMemberName() {
+        return member.getName();
+    }
 }
