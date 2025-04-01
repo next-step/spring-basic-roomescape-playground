@@ -144,7 +144,7 @@ public class MissionStepTest {
                 .get("/reservations-mine")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".", MemberReservationResponse.class);
+                .extract().jsonPath().getList("responses", MemberReservationResponse.class);
 
         assertThat(reservations).hasSize(3);
     }
@@ -177,7 +177,7 @@ public class MissionStepTest {
                 .get("/reservations-mine")
                 .then().log().all()
                 .statusCode(200)
-                .extract().jsonPath().getList(".", MemberReservationResponse.class);
+                .extract().jsonPath().getList("responses", MemberReservationResponse.class);
 
         // 예약 대기 상태 확인
         String status = myReservations.stream()

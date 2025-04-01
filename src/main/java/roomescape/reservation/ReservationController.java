@@ -13,14 +13,19 @@ import java.util.List;
 import roomescape.auth.AuthMember;
 import roomescape.member.Member;
 import roomescape.member.Role;
+import roomescape.waiting.WaitingRankingResponse;
+import roomescape.waiting.WaitingService;
 
 @RestController
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final WaitingService waitingService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService,
+                                 WaitingService waitingService) {
         this.reservationService = reservationService;
+        this.waitingService = waitingService;
     }
 
     @GetMapping("/reservations")
@@ -29,10 +34,13 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations-mine")
-    public ResponseEntity<List<MemberReservationResponse>> mine(@AuthMember Member member) {
-        List<MemberReservationResponse> result = reservationService.getMyReservations(member.getId());
+    public ResponseEntity<MemberReservationResponses> getMemberReservations(
+            @AuthMember Member member) {
+        MemberReservationResponses results = new MemberReservationResponses(
+                reservationService.getMemberReservations(member.getId()));
+        List<WaitingRankingResponse> memberWaitings = waitingService.getMemberWaitings(member);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(results.addWaitings(memberWaitings));
     }
 
     @PostMapping("/reservations")
@@ -45,16 +53,15 @@ public class ReservationController {
             reservationRequest = reservationRequest.update(member.getName());
         }
 
-        ReservationResponse result = getReservationResponse(member,
+        ReservationResponse result = save(member,
                 reservationRequest, isAdmin);
 
         return ResponseEntity.created(URI.create("/reservations/" + result.id()))
                 .body(result);
     }
 
-    private ReservationResponse getReservationResponse(Member member,
-                                                       ReservationRequest reservationRequest,
-                                                       boolean isAdmin) {
+    private ReservationResponse save(Member member, ReservationRequest reservationRequest,
+                                     boolean isAdmin) {
         if (isAdmin) {
             return reservationService.save(reservationRequest);
         }

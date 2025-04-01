@@ -18,11 +18,11 @@ public class WaitingController {
     }
 
     @PostMapping("/waitings")
-    public ResponseEntity<WaitingResponse> create(@AuthMember Member member,
+    public ResponseEntity<WaitingRankingResponse> create(@AuthMember Member member,
                                                   @RequestBody WaitingRequest waitingRequest) {
-        WaitingResponse result = waitingService.create(member, waitingRequest);
+        WaitingRankingResponse result = waitingService.create(member, waitingRequest);
 
-        return ResponseEntity.created(URI.create("/waitings/" + result.id()))
+        return ResponseEntity.created(URI.create("/waitings/" + result.reservationId()))
                 .body(result);
     }
 }

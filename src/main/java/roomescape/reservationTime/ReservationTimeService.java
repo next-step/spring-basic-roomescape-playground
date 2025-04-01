@@ -32,6 +32,7 @@ public class ReservationTimeService {
     private AvailableTime toAvailableTime(ReservationTime reservationTime
             , List<Reservation> reservations) {
         boolean isBooked = isTimeBooked(reservationTime, reservations);
+
         return new AvailableTime(
                 reservationTime.getId(),
                 reservationTime.getTimeValue().toString(),
@@ -43,6 +44,7 @@ public class ReservationTimeService {
         return reservations.stream()
                 .anyMatch(reservation -> reservationTime.isSame(reservation.getTime()));
     }
+
 
     public List<ReservationTimeResponse> findAll() {
         return reservationTimeRepository.findAll()

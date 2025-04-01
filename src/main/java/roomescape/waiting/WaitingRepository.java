@@ -15,12 +15,12 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
                         FROM Waiting w2
                         WHERE w2.reservation = w.reservation
                           AND w2.updatedAt < w.updatedAt
-                    )
+                    ) + 1L
                 )
                 FROM Waiting w
                 WHERE w.member.id = :memberId
             """)
-    List<WaitingRanking> findWaitingRankingByMemberId(Long memberId);
+    List<WaitingRanking> findWaitingRankingByMemberId(long memberId);
 
     @Query("""
                 SELECT new roomescape.waiting.WaitingRanking(
@@ -30,13 +30,11 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
                         FROM Waiting w2
                         WHERE w2.reservation = w.reservation
                           AND w2.updatedAt < w.updatedAt
-                    )
+                    ) + 1L
                 )
                 FROM Waiting w
-                WHERE w.reservation.id = :reservationId
-                ORDER BY w.updatedAt ASC
+                WHERE w.member.id = :memberId
+                  AND w.reservation.id = :reservationId
             """)
-    Optional<WaitingRanking> findFirstWaitingRankingByReservationId(Long reservationId);
-
-    Optional<Waiting> findByMemberId(Long memberId);
+    Optional<WaitingRanking> findAllByMemberIdAndReservationId(long memberId, long reservationId);
 }

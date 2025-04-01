@@ -1,7 +1,10 @@
 package roomescape.waiting;
 
+import java.util.List;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.RoomescapeBadRequestException;
 import roomescape.global.exception.RoomescapeNotFoundException;
 import roomescape.member.Member;
 import roomescape.reservation.Reservation;
@@ -19,19 +22,41 @@ public class WaitingService {
         this.reservationRepository = reservationRepository;
     }
 
-    public WaitingResponse create(Member member, WaitingRequest request) {
+    public WaitingRankingResponse create(Member member, WaitingRequest request) {
+        Reservation reservation = getReservation(member, request);
+        Optional<WaitingRanking> existedWaiting = waitingRepository.findAllByMemberIdAndReservationId(
+                member.getId(), reservation.getId());
+
+        if (existedWaiting.isPresent()) {
+            WaitingRanking waitingRanking = existedWaiting.get();
+            waitingRanking.getWaiting()
+                    .refreshTimestamp();
+            return new WaitingRankingResponse(waitingRepository.save(waitingRanking.getWaiting()),
+                    waitingRanking.getRank());
+        }
+
+        Waiting newWaiting = new Waiting(member, reservation);
+        return new WaitingRankingResponse(waitingRepository.save(newWaiting), 1L);
+    }
+
+    private Reservation getReservation(Member member, WaitingRequest request) {
         Reservation reservation = reservationRepository.findByDateAndReservationTime_IdAndTheme_Id(
                         request.date(), request.time(), request.theme())
                 .orElseThrow(
                         () -> new RoomescapeNotFoundException("예약이 존재하지 않습니다. 대기 대신 예약을 해주세요."));
-        Optional<Waiting> existedWaiting = waitingRepository.findByMemberId(member.getId());
-
-        if (existedWaiting.isPresent()) {
-            existedWaiting.get().refreshTimestamp();
-            return new WaitingResponse(waitingRepository.save(existedWaiting.get()));
+        if (reservation.isOwner(member)){
+            throw new RoomescapeBadRequestException("본인이 예약한 방에는 대기를 할 수 없습니다.");
         }
+        return reservation;
+    }
 
-        Waiting newWaiting = new Waiting(member, reservation);
-        return new WaitingResponse(waitingRepository.save(newWaiting));
+    public List<WaitingRankingResponse> getMemberWaitings(Member member) {
+        List<WaitingRanking> waitingRankings = waitingRepository.findWaitingRankingByMemberId(
+                member.getId());
+
+        return waitingRankings.stream()
+                .map(waitingRanking -> new WaitingRankingResponse(waitingRanking.getWaiting(),
+                        waitingRanking.getRank()))
+                .toList();
     }
 }

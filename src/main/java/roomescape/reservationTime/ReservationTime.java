@@ -32,7 +32,7 @@ public class ReservationTime {
 
     public boolean isSame(ReservationTime reservationTime) {
         return this.id
-                .equals(reservationTime.id);
+                .equals(reservationTime.getId());
     }
 
     public Long getId() {

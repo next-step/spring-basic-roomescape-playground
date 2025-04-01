@@ -2,9 +2,12 @@ package roomescape.reservation;
 
 import java.time.LocalDate;
 import roomescape.reservation.view.Formatter;
+import roomescape.waiting.WaitingRankingResponse;
 
-public record MemberReservationResponse(long reservationId, String theme, LocalDate date
+public record MemberReservationResponse(long id, String theme, LocalDate date
         , String time, String status) {
+
+    public static final String WAITING_STATUS_MESSAGE = "%d번째 예약대기";
 
     public MemberReservationResponse(Reservation reservation) {
         this(
@@ -14,5 +17,11 @@ public record MemberReservationResponse(long reservationId, String theme, LocalD
                 reservation.getTimeValue().format(Formatter.TIME_FORMATTER),
                 "예약"
         );
+    }
+
+    public static MemberReservationResponse from(WaitingRankingResponse response) {
+        return new MemberReservationResponse(response.reservationId(), response.theme(),
+                response.date(), response.time(),
+                WAITING_STATUS_MESSAGE.formatted(response.ranking()));
     }
 }

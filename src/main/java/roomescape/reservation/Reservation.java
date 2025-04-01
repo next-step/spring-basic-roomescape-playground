@@ -106,4 +106,8 @@ public class Reservation {
     public List<ForStudy> getForStudies() {
         return forStudies;
     }
+
+    public boolean isOwner(Member member) {
+        return this.member.equals(member);
+    }
 }
