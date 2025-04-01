@@ -44,8 +44,11 @@ public class ReservationTimeService {
                 .anyMatch(reservation -> reservationTime.isSame(reservation.getTime()));
     }
 
-    public List<ReservationTime> findAll() {
-        return reservationTimeRepository.findAll();
+    public List<ReservationTimeResponse> findAll() {
+        return reservationTimeRepository.findAll()
+                .stream()
+                .map(ReservationTimeResponse::new)
+                .toList();
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
