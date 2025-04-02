@@ -107,6 +107,10 @@ public class Reservation {
         return forStudies;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     public boolean isOwner(Member member) {
         return this.member.getId()
                 .equals(member.getId());
