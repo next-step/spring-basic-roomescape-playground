@@ -63,7 +63,7 @@ public class ReservationController {
     private ReservationResponse create(Member member, ReservationRequest reservationRequest,
                                        boolean isAdmin) {
         if (isAdmin) {
-            return reservationService.save(reservationRequest);
+            return reservationService.create(reservationRequest);
         }
         return reservationService.saveWithMember(reservationRequest, member);
     }

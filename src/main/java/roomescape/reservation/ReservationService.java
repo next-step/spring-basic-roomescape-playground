@@ -25,7 +25,7 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
+    public ReservationResponse create(ReservationRequest reservationRequest) {
         validatedRequest(reservationRequest);
         Theme theme = getTheme(reservationRequest);
         ReservationTime reservationTime = getReservationTime(reservationRequest);
