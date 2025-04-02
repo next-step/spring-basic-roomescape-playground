@@ -108,7 +108,8 @@ public class Reservation {
     }
 
     public boolean isOwner(Member member) {
-        return this.member.equals(member);
+        return this.member.getId()
+                .equals(member.getId());
     }
 
     public boolean isMadeByAdmin() {

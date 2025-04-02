@@ -3,6 +3,7 @@ package roomescape.waiting;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.RoomescapeBadRequestException;
 import roomescape.global.exception.RoomescapeNotFoundException;
 import roomescape.member.Member;
@@ -21,6 +22,7 @@ public class WaitingService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional
     public WaitingRankingResponse create(Member member, WaitingRequest request) {
         Reservation reservation = getReservation(member, request);
         Optional<WaitingRanking> existedWaiting = waitingRepository.findAllByMemberIdAndReservationId(
