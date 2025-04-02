@@ -57,10 +57,6 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean isSame(Long id) {
-        return this.member.getId().equals(id);
-    }
-
     public boolean isSavedSameMember(Member member) {
         return this.member.getEmail().equals(member.getEmail());
     }
