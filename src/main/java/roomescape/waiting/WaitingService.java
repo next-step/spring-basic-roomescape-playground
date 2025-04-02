@@ -25,15 +25,15 @@ public class WaitingService {
     @Transactional
     public WaitingRankingResponse create(Member member, WaitingRequest request) {
         Reservation reservation = getReservation(member, request);
-        Optional<WaitingRanking> existedWaiting = waitingRepository.findAllByMemberIdAndReservationId(
-                member.getId(), reservation.getId());
+        Optional<WaitingRanking> existedWaiting = waitingRepository.findAllByReservationId(
+                reservation.getId());
 
         if (existedWaiting.isPresent()) {
             WaitingRanking waitingRanking = existedWaiting.get();
             waitingRanking.getWaiting()
                     .refreshTimestamp();
             return new WaitingRankingResponse(waitingRepository.save(waitingRanking.getWaiting()),
-                    waitingRanking.getRank());
+                    waitingRanking.getRank() + 1L);
         }
 
         Waiting newWaiting = new Waiting(member, reservation);
@@ -65,7 +65,8 @@ public class WaitingService {
                 .toList();
     }
 
-    public void deleteById(long id) {
-        waitingRepository.deleteById(id);
+    @Transactional
+    public void deleteById(long reservationId, long memberId) {
+        waitingRepository.deleteByReservation_IdAndMember_Id(reservationId, memberId);
     }
 }

@@ -43,13 +43,16 @@ class WaitingServiceTest {
         void 관리자가_만든_예약에_대기를_생성한다() {
             Member admin = new Member(1L, "어드민", "admin@email.com", "password", Role.ADMIN);
             Member brown = new Member(2L, "브라운", "brown@email.com", "password", Role.USER);
+            Member manggo = new Member(3L, "망고", "manggo@email.com", "password", Role.USER);
             insertReservation(admin, "2025-04-03", 1L, 1L);
 
             WaitingRequest request = new WaitingRequest(LocalDate.parse("2025-04-03"), 1L, 1L);
             WaitingRankingResponse response = waitingService.create(brown, request);
+            WaitingRankingResponse response2 = waitingService.create(manggo, request);
 
             assertThat(response.reservationId()).isGreaterThan(0L);
             assertThat(response.ranking()).isEqualTo(1L);
+            assertThat(response2.ranking()).isEqualTo(2L);
         }
 
         @Test

@@ -37,10 +37,9 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
                     ) + 1L
                 )
                 FROM Waiting w
-                WHERE w.member.id = :memberId
-                  AND w.reservation.id = :reservationId
+                WHERE w.reservation.id = :reservationId
             """)
-    Optional<WaitingRanking> findAllByMemberIdAndReservationId(long memberId, long reservationId);
+    Optional<WaitingRanking> findAllByReservationId(long reservationId);
 
-
+    void deleteByReservation_IdAndMember_Id(long reservationId, long memberId);
 }

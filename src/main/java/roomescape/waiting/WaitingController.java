@@ -29,8 +29,8 @@ public class WaitingController {
     }
 
     @DeleteMapping("/waitings/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
-        waitingService.deleteById(id);
+    public ResponseEntity<Void> delete(@AuthMember Member member, @PathVariable long id) {
+        waitingService.deleteById(id, member.getId());
         return ResponseEntity.noContent().build();
     }
 }
