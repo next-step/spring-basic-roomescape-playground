@@ -57,23 +57,6 @@ public class ReservationCreateService {
         );
     }
 
-    private ReservationResponse processReservation(String date, Member member, Time time, Theme theme, LoginMember loginMember) {
-        Reservation reservation = new Reservation(date, member, time, theme);
-        
-        validateReservationCreation(reservation);
-
-        if (loginMember.isNotAdmin()) {
-            return createReservation(reservation);
-        }
-
-        if (isAlreadyReserved(reservation)) {
-            return createWaiting(date, member, time, theme, reservation);
-        }
-
-        reservationRepository.save(reservation);
-        return ReservationResponse.from(reservation, Status.RESERVATION);
-    }
-
     private Member findMember(String email, String name) {
         return memberRepository.findByEmailAndName(email, name)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
@@ -87,6 +70,23 @@ public class ReservationCreateService {
     private Theme findTheme(Long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
+    }
+
+    private ReservationResponse processReservation(String date, Member member, Time time, Theme theme, LoginMember loginMember) {
+        Reservation reservation = new Reservation(date, member, time, theme);
+
+        validateReservationCreation(reservation);
+
+        if (loginMember.isNotAdmin()) {
+            return createReservation(reservation);
+        }
+
+        if (isAlreadyReserved(reservation)) {
+            return createWaiting(date, member, time, theme, reservation);
+        }
+
+        reservationRepository.save(reservation);
+        return ReservationResponse.from(reservation, Status.RESERVATION);
     }
 
     private void validateReservationCreation(Reservation reservation) {
@@ -108,26 +108,36 @@ public class ReservationCreateService {
         return ReservationResponse.from(reservation);
     }
 
-    private ReservationResponse createWaiting(String date, Member member, Time time, Theme theme,
-                                              Reservation reservation) {
-        Reservation savedReservation = reservationRepository.findByDateAndTimeIdAndThemeId(
-                reservation.getDate(),
-                reservation.getTime().getId(),
-                reservation.getTheme().getId()
-        ).orElseThrow(() -> new IllegalArgumentException(ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
+    private ReservationResponse createWaiting(String date, Member member, Time time, Theme theme, Reservation reservation) {
+        Reservation savedReservation = findSavedReservation(reservation);
 
-        if (savedReservation.isSavedSameMember(member)) {
-            throw new IllegalArgumentException(ErrorMessage.ALREADY_RESERVATION.getMessage());
-        }
-
-        if (isAlreadyInWaiting(reservation)) {
-            throw new IllegalArgumentException(ErrorMessage.ALREADY_WAITING.getMessage());
-        }
+        validateSameMember(member, savedReservation);
+        validateAlreadyInWaiting(reservation);
 
         Waiting waiting = new Waiting(date, time.getValue(), theme, member, savedReservation);
         Waiting savedWaiting = waitingRepository.save(waiting);
 
         return ReservationResponse.from(savedWaiting.getReservation(), Status.WAIT);
+    }
+
+    private Reservation findSavedReservation(Reservation reservation) {
+        return reservationRepository.findByDateAndTimeIdAndThemeId(
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        ).orElseThrow(() -> new IllegalArgumentException(ErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
+    }
+
+    private static void validateSameMember(Member member, Reservation savedReservation) {
+        if (savedReservation.isSavedSameMember(member)) {
+            throw new IllegalArgumentException(ErrorMessage.ALREADY_RESERVATION.getMessage());
+        }
+    }
+
+    private void validateAlreadyInWaiting(Reservation reservation) {
+        if (isAlreadyInWaiting(reservation)) {
+            throw new IllegalArgumentException(ErrorMessage.ALREADY_WAITING.getMessage());
+        }
     }
 
     private boolean isAlreadyInWaiting(Reservation reservation) {
