@@ -18,6 +18,9 @@ public class Time {
 	@Column(name = "deleted", nullable = false, columnDefinition = "DEFAULT FALSE")
 	private boolean deleted;
 
+    protected Time() {
+    }
+
 	private Time(Long id, String value, boolean deleted) {
 		this.id = id;
 		this.value = value;
@@ -26,9 +29,6 @@ public class Time {
 
 	public static Time ofDeletedFalse(String value) {
 		return new Time(null, value, false);
-	}
-
-	protected Time() {
 	}
 
 	public void markAsDeleted() {

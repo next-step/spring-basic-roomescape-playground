@@ -8,39 +8,43 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Theme {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(name = "name", nullable = false)
-    private String name;
-    @Column(name = "description", nullable = false)
-    private String description;
-    @Column(name = "deleted", nullable = false, columnDefinition = "DEFAULT FALSE")
-    private boolean deleted;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@Column(name = "name", nullable = false)
+	private String name;
+	@Column(name = "description", nullable = false)
+	private String description;
+	@Column(name = "deleted", nullable = false, columnDefinition = "DEFAULT FALSE")
+	private boolean deleted;
 
-    protected Theme() {
-    }
+	protected Theme() {
+	}
 
-    public Theme(Long id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
+	private Theme(Long id, String name, String description, boolean deleted) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.deleted = deleted;
+	}
 
-    public Theme(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
+	public static Theme ofDeletedFalse(String name, String description) {
+		return new Theme(null, name, description, false);
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void martAsDeleted() {
+		this.deleted = true;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getName() {
+		return name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
 }

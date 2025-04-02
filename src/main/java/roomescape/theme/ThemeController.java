@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,8 +32,11 @@ public class ThemeController {
 	}
 
 	@DeleteMapping("/themes/{id}")
+	@Transactional
 	public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-		themeRepository.deleteById(id);
+		Theme theme = themeRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Theme not found with id: " + id));
+		theme.martAsDeleted();
 		return ResponseEntity.noContent().build();
 	}
 }
