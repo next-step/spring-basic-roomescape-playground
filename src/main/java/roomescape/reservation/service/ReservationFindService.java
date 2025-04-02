@@ -23,18 +23,18 @@ public class ReservationFindService {
 
     public List<ReservationResponse> findReservations(LoginMember loginMember) {
         if (loginMember.isAdmin()) {
-            return findAdminReservations();
+            return findReservationsForAdmin();
         }
-        return findUserReservations(loginMember);
+        return findReservationsForMember(loginMember);
     }
 
-    private List<ReservationResponse> findAdminReservations() {
+    private List<ReservationResponse> findReservationsForAdmin() {
         List<ReservationResponse> reservations = findAllReservations();
         List<ReservationResponse> waitings = findAllWaitings();
         return mergeAndSortByDate(reservations, waitings);
     }
 
-    private List<ReservationResponse> findUserReservations(LoginMember loginMember) {
+    private List<ReservationResponse> findReservationsForMember(LoginMember loginMember) {
         List<ReservationResponse> reservations = findMemberReservations(loginMember);
         List<ReservationResponse> waitings = findMemberWaitings(loginMember);
         return mergeAndSortByDate(reservations, waitings);
