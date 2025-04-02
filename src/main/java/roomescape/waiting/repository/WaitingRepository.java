@@ -12,7 +12,7 @@ import roomescape.waiting.domain.Waiting;
 
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
-    List<Waiting> findWaitingsByThemeIdAndDateAndTime(Long themeId, String date, String time);
+    List<Waiting> findAllByThemeIdAndDateAndTime(Long themeId, String date, String time);
 
     @Query("SELECT new roomescape.waiting.domain.RankedWaiting(" +
             "    w, " +
@@ -28,5 +28,5 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
     Optional<Waiting> findTopByReservationOrderByCreatedDateTime(Reservation reservation);
 
-    boolean existsWaitingByMemberEmailAndDateAndTimeAndThemeId(String email, String date, String time, Long theme);
+    boolean existsByMemberEmailAndDateAndTimeAndThemeId(String email, String date, String time, Long theme);
 }

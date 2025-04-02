@@ -43,7 +43,7 @@ public class WaitingService {
     }
 
     private Member findMember(LoginMember loginMember) {
-        return memberRepository.findMemberByEmailAndName(loginMember.email(), loginMember.name())
+        return memberRepository.findByEmailAndName(loginMember.email(), loginMember.name())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
@@ -72,7 +72,7 @@ public class WaitingService {
     }
 
     private boolean isAlreadyInWaiting(LoginMember loginMember, Reservation reservation) {
-        return waitingRepository.existsWaitingByMemberEmailAndDateAndTimeAndThemeId(
+        return waitingRepository.existsByMemberEmailAndDateAndTimeAndThemeId(
                 loginMember.email(),
                 reservation.getDate(),
                 reservation.getTime().getValue(),
@@ -89,7 +89,7 @@ public class WaitingService {
         String date = waiting.getDate();
 
         return new WaitingResponse(waiting.getId(), id, date, time,
-                waitingRepository.findWaitingsByThemeIdAndDateAndTime(id, date, time).size());
+                waitingRepository.findAllByThemeIdAndDateAndTime(id, date, time).size());
     }
 
     private void validateWaiting(Waiting waiting) {

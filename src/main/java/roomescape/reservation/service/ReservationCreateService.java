@@ -75,7 +75,7 @@ public class ReservationCreateService {
     }
 
     private Member findMember(String email, String name) {
-        return memberRepository.findMemberByEmailAndName(email, name)
+        return memberRepository.findByEmailAndName(email, name)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
@@ -96,7 +96,7 @@ public class ReservationCreateService {
     }
 
     private boolean isAlreadyReserved(Reservation reservation) {
-        return reservationRepository.existsReservationByDateAndTimeIdAndThemeId(
+        return reservationRepository.existsByDateAndTimeIdAndThemeId(
                 reservation.getDate(),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId()
@@ -131,7 +131,7 @@ public class ReservationCreateService {
     }
 
     private boolean isAlreadyInWaiting(Reservation reservation) {
-        return waitingRepository.existsWaitingByMemberEmailAndDateAndTimeAndThemeId(
+        return waitingRepository.existsByMemberEmailAndDateAndTimeAndThemeId(
                 reservation.getMember().getEmail(),
                 reservation.getDate(),
                 reservation.getTime().getValue(),
