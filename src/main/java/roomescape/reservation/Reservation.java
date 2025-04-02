@@ -110,4 +110,8 @@ public class Reservation {
     public boolean isOwner(Member member) {
         return this.member.equals(member);
     }
+
+    public boolean isMadeByAdmin() {
+        return this.member == null;
+    }
 }

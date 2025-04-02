@@ -2,7 +2,6 @@ package roomescape.waiting;
 
 import java.util.List;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.RoomescapeBadRequestException;
 import roomescape.global.exception.RoomescapeNotFoundException;
@@ -44,7 +43,11 @@ public class WaitingService {
                         request.date(), request.time(), request.theme())
                 .orElseThrow(
                         () -> new RoomescapeNotFoundException("예약이 존재하지 않습니다. 대기 대신 예약을 해주세요."));
-        if (reservation.isOwner(member)){
+
+        if (reservation.isMadeByAdmin()) {
+            return reservation;
+        }
+        if (reservation.isOwner(member)) {
             throw new RoomescapeBadRequestException("본인이 예약한 방에는 대기를 할 수 없습니다.");
         }
         return reservation;
@@ -58,5 +61,9 @@ public class WaitingService {
                 .map(waitingRanking -> new WaitingRankingResponse(waitingRanking.getWaiting(),
                         waitingRanking.getRank()))
                 .toList();
+    }
+
+    public void deleteById(long id) {
+        waitingRepository.deleteById(id);
     }
 }

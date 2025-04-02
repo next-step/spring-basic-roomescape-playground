@@ -37,4 +37,6 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
                   AND w.reservation.id = :reservationId
             """)
     Optional<WaitingRanking> findAllByMemberIdAndReservationId(long memberId, long reservationId);
+
+
 }
