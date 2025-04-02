@@ -1,7 +1,5 @@
 package roomescape.reservation;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -18,9 +16,9 @@ class ReservationRepositoryTest {
 	@DisplayName("")
 	@Test
 	void testMethodNameHere() {
-	    //given
+		//given
 		List<Reservation> reservations = reservationRepository.findAllWithThemeAndTime();
 		// when
-	    // then
+		// then
 	}
 }
