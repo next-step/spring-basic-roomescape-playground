@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import roomescape.auth.dto.LoginMember;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 import roomescape.waiting.domain.Status;
@@ -42,15 +43,28 @@ public class Reservation {
     protected Reservation() {
     }
 
-    public Reservation(long memberId, String name, LocalDate date, Time time, Theme theme) {
-        this.memberId = memberId;
+    public Reservation(LoginMember loginMember, String name, LocalDate date, Time time, Theme theme) {
+        this(date, time, theme);
+        if (isInvalidName(name)) {
+            this.memberId = loginMember.id();
+            this.name = loginMember.name();
+            return;
+        }
         this.name = name;
+    }
+
+    public Reservation(LocalDate date, Time time, Theme theme) {
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, Time time, Theme theme) {
+    private boolean isInvalidName(final String name) {
+        return name == null || name.isBlank();
+    }
+
+    public Reservation(long memberId, String name, LocalDate date, Time time, Theme theme) {
+        this.memberId = memberId;
         this.name = name;
         this.date = date;
         this.time = time;

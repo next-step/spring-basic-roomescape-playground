@@ -44,16 +44,8 @@ public class ReservationRequest {
         }
     }
 
-    public boolean isInvalidName() {
-        return this.name == null || this.name.isBlank();
-    }
-
-    public Reservation toReservationByAdmin(Time time, Theme theme) {
-        return new Reservation(name, date, time, theme);
-    }
-
-    public Reservation toReservationByMember(LoginMember loginMember, Time time, Theme theme) {
-        return new Reservation(loginMember.id(), loginMember.name(), date, time, theme);
+    public Reservation toReservation(LoginMember loginMember, Time time, Theme theme) {
+        return new Reservation(loginMember, name, date, time, theme);
     }
 
     public String getName() {

@@ -50,11 +50,7 @@ public class ReservationService {
     private Reservation createReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
         Time time = findTime(reservationRequest.getTime());
         Theme theme = findTheme(reservationRequest.getTheme());
-
-        if (reservationRequest.isInvalidName()) {
-            return reservationRequest.toReservationByMember(loginMember, time, theme);
-        }
-        return reservationRequest.toReservationByAdmin(time, theme);
+        return reservationRequest.toReservation(loginMember, time, theme);
     }
 
     private Time findTime(long timeId) {
