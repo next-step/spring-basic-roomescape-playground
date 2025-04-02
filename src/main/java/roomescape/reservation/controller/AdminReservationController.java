@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -24,15 +25,7 @@ public class AdminReservationController {
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity<ReservationResponse> createAdminReservation(@RequestBody AdminReservationRequest request, LoginMember loginMember) {
-        if (request.getDate() == null
-                || request.getEmail() == null
-                || request.getTheme() == null
-                || request.getTime() == null) {
-            return ResponseEntity.badRequest()
-                    .build();
-        }
-
+    public ResponseEntity<ReservationResponse> createAdminReservation(@Valid @RequestBody AdminReservationRequest request, LoginMember loginMember) {
         ReservationResponse reservation = createService.saveAdminReservation(request, loginMember);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))

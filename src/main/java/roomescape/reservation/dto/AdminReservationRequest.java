@@ -1,10 +1,17 @@
 package roomescape.reservation.dto;
 
+import org.jetbrains.annotations.NotNull;
+
 public class AdminReservationRequest {
+    @NotNull
     private String name;
+    @NotNull
     private String email;
+    @NotNull
     private String date;
+    @NotNull
     private Long theme;
+    @NotNull
     private Long time;
 
     public AdminReservationRequest(String name, String email, String date, Long theme, Long time) {
