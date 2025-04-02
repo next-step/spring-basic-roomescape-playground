@@ -2,6 +2,7 @@ package roomescape.theme;
 
 import java.net.URI;
 import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,26 +13,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ThemeController {
-    private ThemeDao themeDao;
+	private ThemeRepository themeRepository;
 
-    public ThemeController(ThemeDao themeDao) {
-        this.themeDao = themeDao;
-    }
+	public ThemeController(ThemeRepository themeRepository) {
+		this.themeRepository = themeRepository;
+	}
 
-    @PostMapping("/themes")
-    public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
-        Theme newTheme = themeDao.save(theme);
-        return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
-    }
+	@PostMapping("/themes")
+	public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
+		Theme newTheme = themeRepository.save(theme);
+		return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
+	}
 
-    @GetMapping("/themes")
-    public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeDao.findAll());
-    }
+	@GetMapping("/themes")
+	public ResponseEntity<List<Theme>> list() {
+		return ResponseEntity.ok(themeRepository.findAllByDeletedFalse());
+	}
 
-    @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeDao.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/themes/{id}")
+	public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+		themeRepository.deleteById(id);
+		return ResponseEntity.noContent().build();
+	}
 }

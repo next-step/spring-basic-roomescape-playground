@@ -41,6 +41,10 @@ public class Member {
     protected Member() {
     }
 
+    public static Member ofUser(String name, String email, String password) {
+        return new Member(name, email, password, Role.USER);
+    }
+
     public Long getId() {
         return id;
     }

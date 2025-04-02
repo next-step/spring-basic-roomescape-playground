@@ -1,31 +1,30 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
+
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
-import roomescape.member.enums.Role;
 
 @Service
 public class MemberService {
 
-    private final MemberDao memberDao;
+	private final MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
-    }
+	public MemberService(MemberRepository memberRepository) {
+		this.memberRepository = memberRepository;
+	}
 
-    public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = registerMember(memberRequest);
-        return toMemberResponse(member);
-    }
+	public MemberResponse createMember(MemberRequest memberRequest) {
+		String name = memberRequest.name();
+		String email = memberRequest.email();
+		String password = memberRequest.password();
 
-    private Member registerMember(MemberRequest memberRequest) {
-        return memberDao.save(
-                new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
-    }
+		Member member = memberRepository.save(Member.ofUser(name, email, password));
+		return toMemberResponse(member);
+	}
 
-    private MemberResponse toMemberResponse(Member member) {
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
-    }
+	private MemberResponse toMemberResponse(Member member) {
+		return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
+	}
 
 }

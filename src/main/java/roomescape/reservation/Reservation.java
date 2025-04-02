@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,11 +21,11 @@ public class Reservation {
     @Column(nullable = false)
     private String date;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id", referencedColumnName = "id")
     private Time time;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id", referencedColumnName = "id")
     private Theme theme;
 
@@ -43,7 +44,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation() {
+    protected Reservation() {
 
     }
 
