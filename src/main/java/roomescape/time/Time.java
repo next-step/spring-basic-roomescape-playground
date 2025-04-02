@@ -8,38 +8,38 @@ import jakarta.persistence.Id;
 @Entity
 public class Time {
 
-    @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "time_value", nullable = false, length = 20)
-    private String value;
+	@Column(name = "time_value", nullable = false, length = 20)
+	private String value;
 
-    @Column(name = "deleted", nullable = false, columnDefinition = "DEFAULT FALSE")
-    private boolean deleted;
+	@Column(name = "deleted", nullable = false, columnDefinition = "DEFAULT FALSE")
+	private boolean deleted;
 
-    private Time(Long id, String value, boolean deleted) {
-        this.id = id;
-        this.value = value;
-        this.deleted = deleted;
-    }
+	private Time(Long id, String value, boolean deleted) {
+		this.id = id;
+		this.value = value;
+		this.deleted = deleted;
+	}
 
-    public static Time ofDeletedFalse(String value) {
-        return new Time(null, value, false);
-    }
+	public static Time ofDeletedFalse(String value) {
+		return new Time(null, value, false);
+	}
 
-    protected Time() {
-    }
+	protected Time() {
+	}
 
-    public void markAsDeleted() {
-        this.deleted = true;
-    }
+	public void markAsDeleted() {
+		this.deleted = true;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	public String getValue() {
+		return value;
+	}
 }
