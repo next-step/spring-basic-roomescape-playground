@@ -19,6 +19,10 @@ public class MemberService {
 		String email = memberRequest.email();
 		String password = memberRequest.password();
 
+		if (memberRepository.existsByEmail(email)) {
+			throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+		}
+
 		Member member = memberRepository.save(Member.ofUser(name, email, password));
 		return toMemberResponse(member);
 	}
