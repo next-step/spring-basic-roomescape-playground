@@ -1,6 +1,7 @@
 package roomescape.time;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,11 @@ public class TimeService {
 		return timeRepository.save(time);
 	}
 
+	@Transactional
 	public void deleteById(Long id) {
-		timeRepository.deleteById(id);
+		Time time = timeRepository.findById(id)
+			.orElseThrow(() -> new NoSuchElementException("Time not found with id: " + id));
+		time.markAsDeleted();
 	}
+
 }
