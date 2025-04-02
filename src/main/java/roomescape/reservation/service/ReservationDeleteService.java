@@ -41,13 +41,14 @@ public class ReservationDeleteService {
     }
 
     private void deleteReservation(Reservation reservation) {
-        if (reservation.remainWaitings()) {
-            Waiting waiting = waitingRepository.findTopByReservationOrderByCreatedDateTime(reservation)
-                    .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.WAITING_NOT_FOUND.getMessage()));
-            waitingRepository.delete(waiting);
-            waiting.changeToReservation();
-        } else {
+        if (!reservation.remainWaitings()) {
             reservationRepository.deleteById(reservation.getId());
+            return;
         }
+
+        Waiting waiting = waitingRepository.findTopByReservationOrderByCreatedDateTime(reservation)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.WAITING_NOT_FOUND.getMessage()));
+        waitingRepository.delete(waiting);
+        waiting.changeToReservation();
     }
 }
