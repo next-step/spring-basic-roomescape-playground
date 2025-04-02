@@ -29,6 +29,10 @@ public class Reservation {
     @JoinColumn(name = "theme_id", referencedColumnName = "id")
     private Theme theme;
 
+    protected Reservation() {
+
+    }
+
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
         this.id = id;
         this.name = name;
@@ -42,10 +46,6 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    protected Reservation() {
-
     }
 
     public Long getId() {
