@@ -109,7 +109,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    @Transactional(readOnly = true)
     void 예약_및_대기_목록을_조회한다() {
         // given
         LoginMember loginMember = createLoginMember("멤버", "member@email.com");
@@ -154,7 +153,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    @Transactional
     void 예약을_취소하면_첫번째_대기멤버가_예약에_성공한다() {
         // given
         LoginMember loginMember1 = createLoginMember("멤버1", "member1@email.com");

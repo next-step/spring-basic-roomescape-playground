@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -41,6 +43,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Reservation reservation = createReservation(reservationRequest, loginMember);
         validateDuplicateReservation(reservation);
@@ -88,6 +91,7 @@ public class ReservationService {
         return new WaitingWithRank(waiting, waiting.calculateRank(waitingsOnCondition));
     }
 
+    @Transactional
     public void delete(Long id) {
         reservationRepository.findById(id)
                 .ifPresent(reservation -> {
