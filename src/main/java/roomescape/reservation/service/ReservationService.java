@@ -13,6 +13,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.repository.TimeRepository;
+import roomescape.waiting.domain.Waiting;
 import roomescape.waiting.domain.WaitingWithRank;
 import roomescape.waiting.repository.WaitingRepository;
 
@@ -70,13 +71,21 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
-        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id());
+        List<Reservation> reservations = reservationRepository.findAllByMemberId(loginMember.id());
+        List<Waiting> waitings = waitingRepository.findAllByMemberId(loginMember.id());
+        List<WaitingWithRank> waitingWithRanks = waitings.stream()
+                .map(this::toWaitingWithRank)
+                .toList();
 
         return Stream.concat(
                         reservations.stream().map(MyReservationResponse::new),
-                        waitings.stream().map(MyReservationResponse::new))
+                        waitingWithRanks.stream().map(MyReservationResponse::new))
                 .toList();
+    }
+
+    private WaitingWithRank toWaitingWithRank(Waiting waiting) {
+        List<Waiting> waitingsOnCondition = waitingRepository.findAllByDateAndTimeAndTheme(waiting.getDate(), waiting.getTime(), waiting.getTheme());
+        return new WaitingWithRank(waiting, waiting.calculateRank(waitingsOnCondition));
     }
 
     public void delete(Long id) {

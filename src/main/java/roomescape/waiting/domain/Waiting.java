@@ -14,9 +14,12 @@ import roomescape.time.domain.Time;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 public class Waiting {
+
+    private static final int BASE_RANK = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +55,16 @@ public class Waiting {
 
     public Reservation toReservation() {
         return new Reservation(memberId, name, date, time, theme);
+    }
+
+    public long calculateRank(List<Waiting> waitings) {
+        return waitings.stream()
+                .filter(this::isLaterThan)
+                .count() + BASE_RANK;
+    }
+
+    private boolean isLaterThan(Waiting waiting) {
+        return waiting.getId() < this.id;
     }
 
     public Long getId() {

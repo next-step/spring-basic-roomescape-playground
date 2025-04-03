@@ -73,29 +73,6 @@ class WaitingRepositoryTest {
     }
 
     @Test
-    void 멤버의_대기중인_예약_목록을_조회한다() {
-        // given
-        Member member = createMember("멤버", "member@email.com");
-        Theme theme = createTheme();
-        Time time = createTime();
-        LocalDate date1 = LocalDate.of(2025, 3, 30);
-        LocalDate date2 = LocalDate.of(2025, 3, 31);
-
-        Waiting waiting1 = new Waiting(member.getId(), member.getName(), date1, time, theme);
-        Waiting waiting2 = new Waiting(member.getId(), member.getName(), date2, time, theme);
-        waitingRepository.save(waiting1);
-        waitingRepository.save(waiting2);
-        // when
-        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(member.getId());
-        // then
-        assertAll(
-                () -> assertThat(waitings).hasSize(2),
-                () -> assertThat(waitings.get(0).getMemberId()).isEqualTo(member.getId()),
-                () -> assertThat(waitings.get(1).getMemberId()).isEqualTo(member.getId())
-        );
-    }
-
-    @Test
     void 특정_날짜_시간_테마에_해당하는_첫번째_대기를_조회한다() {
         // given
         Theme theme = createTheme();

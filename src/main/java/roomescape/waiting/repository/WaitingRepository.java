@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 import roomescape.waiting.domain.Waiting;
-import roomescape.waiting.domain.WaitingWithRank;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,17 +26,9 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
             "WHERE w.memberId = :memberId")
     Long findWaitingNumberByMemberId(Long memberId);
 
-    @Query("SELECT new roomescape.waiting.domain.WaitingWithRank(" +
-            "    w, " +
-            "    CAST((SELECT COUNT(w2) + 1 " +
-            "          FROM Waiting w2 " +
-            "          WHERE w2.theme = w.theme " +
-            "            AND w2.date = w.date " +
-            "            AND w2.time = w.time " +
-            "            AND w2.id < w.id) AS long)) " +
-            "FROM Waiting w " +
-            "WHERE w.memberId = :memberId")
-    List<WaitingWithRank> findWaitingsWithRankByMemberId(Long memberId);
+    List<Waiting> findAllByMemberId(Long memberId);
+
+    List<Waiting> findAllByDateAndTimeAndTheme(LocalDate date, Time time, Theme theme);
 
     @Query("SELECT w " +
             "FROM Waiting w " +
