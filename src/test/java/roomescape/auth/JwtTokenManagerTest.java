@@ -61,7 +61,8 @@ class JwtTokenManagerTest {
     }
 
     private JwtTokenManager createJwtTokenManager() {
-        return new JwtTokenManager("test-secret-keyyyyyyyyyyyyyyyyyyyyy");
+        String testSecretKey = "test-secret-keyyyyyyyyyyyyyyyyyyyyy";
+        return new JwtTokenManager(testSecretKey);
     }
 
     private String createExpiredToken(Member member) {
