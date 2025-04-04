@@ -2,10 +2,11 @@ package roomescape.auth;
 
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.JwtProvider;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.member.dto.AuthUserNameResponse;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.LoginResponse;
@@ -15,42 +16,37 @@ import roomescape.member.dto.MemberResponse;
 public class AuthService {
 
     private final JwtProvider jwtProvider;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public AuthService(JwtProvider jwtProvider, MemberDao memberDao) {
+    public AuthService(JwtProvider jwtProvider, MemberRepository memberRepository) {
         this.jwtProvider = jwtProvider;
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
     }
 
+    @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest loginRequest) {
         MemberResponse memberResponse = authenticate(loginRequest.email(), loginRequest.password());
         return new LoginResponse(jwtProvider.generateToken(memberResponse));
     }
 
     private MemberResponse authenticate(String email, String password) {
-        Member member = getMemberByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new NoSuchElementException("Member not found"));
         return toMemberResponse(member);
     }
 
-    private Member getMemberByEmailAndPassword(String email, String password) {
-        return memberDao.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new NoSuchElementException("Member not found"));
-    }
-
+    @Transactional(readOnly = true)
     public AuthUserNameResponse findNameByToken(String token) {
         LoginMember loginMember = jwtProvider.parseLoginMemberFromToken(token);
 
-        Member member = getMemberById(loginMember.id());
+        Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         return new AuthUserNameResponse(member.getName());
     }
 
     public LoginMember getLoginMemberFromToken(String token) {
         return jwtProvider.parseLoginMemberFromToken(token);
-    }
-
-    private Member getMemberById(Long memberId) {
-        return memberDao.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Member not found"));
     }
 
     private MemberResponse toMemberResponse(Member member) {

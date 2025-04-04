@@ -7,25 +7,19 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.annotation.DirtiesContext;
 import roomescape.member.JwtProvider;
 import roomescape.member.dto.MemberResponse;
+import roomescape.member.enums.Role;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
 
     @Autowired
     private JwtProvider jwtProvider;
@@ -46,7 +40,7 @@ class ReservationControllerTest {
     @DisplayName("예약 생성")
     @Test
     void given_token_body_when_create_reservations_then_success() {
-        String token = jwtProvider.generateToken(new MemberResponse(1L, "어드민", "admin@email.com", "ADMIN"));
+        String token = jwtProvider.generateToken(new MemberResponse(1L, "어드민", "admin@email.com", Role.ADMIN));
         // given
         Map<String, String> body = Map.of(
                 "date", "2025-03-01",

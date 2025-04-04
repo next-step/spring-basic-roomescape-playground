@@ -7,22 +7,23 @@ import roomescape.member.dto.MemberResponse;
 @Service
 public class MemberService {
 
-    public static final String DEFAULT_ROLE = "USER";
+    private final MemberRepository memberRepository;
 
-    private final MemberDao memberDao;
-
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = registerMember(memberRequest);
-        return toMemberResponse(member);
-    }
+        String name = memberRequest.name();
+        String email = memberRequest.email();
+        String password = memberRequest.password();
 
-    private Member registerMember(MemberRequest memberRequest) {
-        return memberDao.save(
-                new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), DEFAULT_ROLE));
+        if (memberRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+
+        Member member = memberRepository.save(Member.createUser(name, email, password));
+        return toMemberResponse(member);
     }
 
     private MemberResponse toMemberResponse(Member member) {

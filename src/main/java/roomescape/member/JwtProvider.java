@@ -29,7 +29,7 @@ public class JwtProvider {
         Map<String, String> claims = new HashMap<>();
         claims.put("name", memberResponse.name());
         claims.put("email", memberResponse.email());
-        claims.put("role", memberResponse.role());
+        claims.put("role", memberResponse.role().name());
         return Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .setHeaderParam(HEADER_TYPE, TOKEN_TYPE)
