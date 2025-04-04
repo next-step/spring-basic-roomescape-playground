@@ -28,5 +28,5 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
     Optional<Waiting> findTopByReservationOrderByCreatedDateTime(Reservation reservation);
 
-    boolean existsByMemberEmailAndDateAndTimeAndThemeId(String email, String date, String time, Long theme);
+    boolean existsByMemberEmailAndDateAndTimeAndThemeId(String email, String date, String time, Long themeId);
 }
