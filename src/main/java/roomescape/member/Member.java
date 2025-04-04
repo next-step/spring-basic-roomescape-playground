@@ -16,17 +16,17 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     protected Member() {
@@ -39,7 +39,7 @@ public class Member {
         this.role = role;
     }
 
-    public static Member ofUser(String name, String email, String password) {
+    public static Member createUser(String name, String email, String password) {
         return new Member(name, email, password, Role.USER);
     }
 

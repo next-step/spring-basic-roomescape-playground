@@ -56,12 +56,14 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAllWithThemeAndTime().stream().map(this::toReservationResponse).toList();
+        return reservationRepository.findAllWithThemeAndTime()
+                .stream()
+                .map(this::toReservationResponse)
+                .toList();
     }
 
     private ReservationResponse toReservationResponse(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(),
-                reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(reservation);
     }
 
 }

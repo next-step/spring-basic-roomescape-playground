@@ -35,7 +35,7 @@ public class ThemeController {
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Theme not found with id: " + id));
-        theme.martAsDeleted();
+        theme.markAsDeleted();
         return ResponseEntity.noContent().build();
     }
 }

@@ -21,7 +21,7 @@ class MemberRepositoryTest {
         String username = "gomgom";
         String email = "gome@email.com";
         String password = "1234";
-        Member member = Member.ofUser(username, email, password);
+        Member member = Member.createUser(username, email, password);
         memberRepository.save(member);
         // when
         Member foundMember = memberRepository.findByEmailAndPassword(email, password)
@@ -40,7 +40,7 @@ class MemberRepositoryTest {
     void given_save_member_when_findByName_then_return() {
         // given
         String username = "gomgom";
-        Member member = Member.ofUser(username, "gome@email.com", "1234");
+        Member member = Member.createUser(username, "gome@email.com", "1234");
         memberRepository.save(member);
         // when
         Member foundmember = memberRepository.findByName(username)
@@ -58,7 +58,7 @@ class MemberRepositoryTest {
         // given
         String username = "gomgom";
         String email = "gome@email.com";
-        Member member = Member.ofUser(username, email, "1234");
+        Member member = Member.createUser(username, email, "1234");
         memberRepository.save(member);
         // when
         boolean result = memberRepository.existsByEmail(email);

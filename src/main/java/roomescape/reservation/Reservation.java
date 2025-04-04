@@ -18,18 +18,18 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "date", nullable = false)
     private String date;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "time_id", referencedColumnName = "id")
+    @JoinColumn(name = "time_id")
     private Time time;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "theme_id", referencedColumnName = "id")
+    @JoinColumn(name = "theme_id")
     private Theme theme;
 
     protected Reservation() {

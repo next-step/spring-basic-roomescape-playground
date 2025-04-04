@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 public class Time {
@@ -15,20 +16,21 @@ public class Time {
 	@Column(name = "time_value", nullable = false, length = 20)
 	private String value;
 
-	@Column(name = "deleted", nullable = false, columnDefinition = "DEFAULT FALSE")
+	@ColumnDefault("false")
+	@Column(name = "deleted", nullable = false)
 	private boolean deleted;
 
     protected Time() {
     }
 
-	private Time(Long id, String value, boolean deleted) {
+	private Time(Long id, String value) {
 		this.id = id;
 		this.value = value;
-		this.deleted = deleted;
+		this.deleted = false;
 	}
 
-	public static Time ofDeletedFalse(String value) {
-		return new Time(null, value, false);
+	public Time(String value) {
+		this(null, value);
 	}
 
 	public void markAsDeleted() {

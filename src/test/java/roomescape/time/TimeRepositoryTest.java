@@ -7,7 +7,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @DataJpaTest
 class TimeRepositoryTest {
 
@@ -18,24 +20,21 @@ class TimeRepositoryTest {
     @Test
     void given_new_timeEntity_when_findAll_then_contain_result() {
         //given
-        Time time = Time.ofDeletedFalse("10:00");
-        timeRepository.save(time);
+        Time time1 = new Time("10:00");
+        Time time2 = new Time("11:00");
+        Time time3 = new Time("12:00");
+        time3.markAsDeleted();
+
+        timeRepository.save(time1);
+        timeRepository.save(time2);
+        timeRepository.save(time3);
+
         // when
         List<Time> times = timeRepository.findAllByDeletedFalse();
+
         // then
-        assertThat(times).contains(time);
+        assertThat(times).containsExactly(time1, time2)
+                .doesNotContain(time3);
     }
 
-    @DisplayName("findAllByDeletedFalse : 삭제된 Time은 조회되지 않는다.")
-    @Test
-    void given_deleted_timeEntity_when_findAll_then_not_contain_result() {
-        //given
-        Time time = Time.ofDeletedFalse("10:00");
-        timeRepository.save(time);
-        time.markAsDeleted();
-        // when
-        List<Time> times = timeRepository.findAllByDeletedFalse();
-        // then
-        assertThat(times).doesNotContain(time);
-    }
 }
