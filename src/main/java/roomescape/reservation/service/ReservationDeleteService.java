@@ -24,7 +24,6 @@ public class ReservationDeleteService {
 
     public void deleteReservation(Long id, LoginMember loginMember) {
         Reservation reservation = findReservationById(id);
-
         validateReservationPermission(reservation, loginMember);
         deleteReservation(reservation);
     }

@@ -31,10 +31,15 @@ public class WaitingService {
     public WaitingResponse createWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
         Member member = findMember(loginMember);
         Reservation reservation = findReservation(waitingRequest);
-
         validateWaitingConditions(loginMember, reservation, member);
 
-        Waiting waiting = new Waiting(reservation.getDate(), reservation.getTime().getValue(), reservation.getTheme(), member, reservation);
+        Waiting waiting = new Waiting(reservation.getDate(),
+                reservation.getTime().getValue(),
+                reservation.getTheme(),
+                member,
+                reservation
+        );
+
         return saveWaiting(waiting);
     }
 
@@ -65,7 +70,6 @@ public class WaitingService {
         if (savedReservation.isSavedSameMember(member)) {
             throw new IllegalArgumentException(ErrorMessage.ALREADY_RESERVATION.getMessage());
         }
-
         if (isAlreadyInWaiting(loginMember, reservation)) {
             throw new IllegalArgumentException(ErrorMessage.ALREADY_WAITING.getMessage());
         }

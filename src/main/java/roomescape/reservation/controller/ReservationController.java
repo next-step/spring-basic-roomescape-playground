@@ -33,6 +33,7 @@ public class ReservationController {
     @GetMapping("/reservations-mine")
     public ResponseEntity<List<ReservationResponse>> showMyReservations(LoginMember loginMember) {
         List<ReservationResponse> reservationResponses = findService.findReservations(loginMember);
+
         return ResponseEntity.ok()
                 .body(reservationResponses);
     }
@@ -48,6 +49,7 @@ public class ReservationController {
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, LoginMember loginMember) {
         deleteService.deleteReservation(id, loginMember);
+
         return ResponseEntity.noContent()
                 .build();
     }

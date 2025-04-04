@@ -74,18 +74,16 @@ public class ReservationCreateService {
 
     private ReservationResponse processReservation(String date, Member member, Time time, Theme theme, LoginMember loginMember) {
         Reservation reservation = new Reservation(date, member, time, theme);
-
         validateReservationCreation(reservation);
 
         if (loginMember.isNotAdmin()) {
             return createReservation(reservation);
         }
-
         if (isAlreadyReserved(reservation)) {
             return createWaiting(date, member, time, theme, reservation);
         }
-
         reservationRepository.save(reservation);
+
         return ReservationResponse.from(reservation, Status.RESERVATION);
     }
 
@@ -110,7 +108,6 @@ public class ReservationCreateService {
 
     private ReservationResponse createWaiting(String date, Member member, Time time, Theme theme, Reservation reservation) {
         Reservation savedReservation = findSavedReservation(reservation);
-
         validateSameMember(member, savedReservation);
         validateAlreadyInWaiting(reservation);
 
