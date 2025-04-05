@@ -1,12 +1,9 @@
-package roomescape.theme;
+package roomescape.theme.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.List;
-import roomescape.reservation.Reservation;
 
 @Entity
 public class Theme {
@@ -15,9 +12,6 @@ public class Theme {
     private Long id;
     private String name;
     private String description;
-
-    @OneToMany(mappedBy = "theme")
-    private List<Reservation> reservations;
 
     protected Theme() {
     }

@@ -1,29 +1,27 @@
-package roomescape.reservation;
+package roomescape.waiting.dto;
 
-public class ReservationResponse {
+public class WaitingResponse {
     private Long id;
     private String name;
-    private String theme;
+    private String email;
+    private Long theme;
     private String date;
     private String time;
+    private int waitingNumber;
 
-    public ReservationResponse(Long id, String name, String theme, String date, String time) {
+    public WaitingResponse(Long id, Long theme, String date, String time, int waitingNumber) {
         this.id = id;
-        this.name = name;
         this.theme = theme;
         this.date = date;
         this.time = time;
+        this.waitingNumber = waitingNumber;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getTheme() {
+    public Long getTheme() {
         return theme;
     }
 
@@ -33,5 +31,9 @@ public class ReservationResponse {
 
     public String getTime() {
         return time;
+    }
+
+    public int getWaitingNumber() {
+        return waitingNumber;
     }
 }

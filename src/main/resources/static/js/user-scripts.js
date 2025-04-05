@@ -10,7 +10,7 @@ document.getElementById('logout-btn').addEventListener('click', function () {
       .then(response => {
         if(response.ok) {
           // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
-          window.location.reload();
+            window.location.href = '/';
         } else {
           // 로그아웃 실패 처리
           console.error('Logout failed');
@@ -76,10 +76,15 @@ function login() {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }
+          return response.headers.get('Location');
       })
-      .then(() => {
+      .then(redirectUrl => {
         updateUIBasedOnLogin(); // UI 업데이트
-        window.location.href = '/';
+          if (redirectUrl) {
+              window.location.href = redirectUrl;
+          } else {
+              window.location.href = '/';
+          }
       })
       .catch(error => {
         console.error('Error during login:', error);

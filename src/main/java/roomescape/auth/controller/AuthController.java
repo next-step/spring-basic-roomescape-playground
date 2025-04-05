@@ -27,8 +27,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
         String token = authService.login(authRequest).token();
+        String redirectUrl = findRedirectUrl(token);
         addCookie(response, token);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.status(200)
+                .header("Location", redirectUrl)
+                .build();
     }
 
     @GetMapping("/login/check")
@@ -44,5 +48,13 @@ public class AuthController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
+    }
+
+    private String findRedirectUrl(String token) {
+        MemberDetailResponse memberDetailResponse = authService.checkLogin(token);
+        if (memberDetailResponse.role().isAdmin()) {
+            return "/admin";
+        }
+        return "/";
     }
 }

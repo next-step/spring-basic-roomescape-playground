@@ -27,19 +27,22 @@ CREATE TABLE IF NOT EXISTS member
 
 CREATE TABLE IF NOT EXISTS reservation
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    date     VARCHAR(255) NOT NULL,
-    name     VARCHAR(255) NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    date      VARCHAR(255) NOT NULL,
+    member_id BIGINT,
+    time_id   BIGINT,
+    theme_id  BIGINT,
     PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
 INSERT INTO member (name, email, password, role)
-VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
-       ('브라운', 'brown@email.com', 'password', 'USER');
+VALUES ('어드민', 'admin@email.com', 'qwer', 'ADMIN'),
+       ('브라운', 'brown@email.com', 'qwer', 'USER'),
+       ('브라운', 'ghtntkdnsk@naver.com', 'qwer', 'USER'),
+       ('파도', 'ghtntkdnsk1@naver.com', 'qwer', 'USER');
 
 INSERT INTO theme (name, description)
 VALUES ('테마1', '테마1입니다.'),
@@ -54,7 +57,8 @@ VALUES ('10:00'),
        ('18:00'),
        ('20:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('어드민', '2024-03-01', 1, 1),
-       ('어드민', '2024-03-01', 2, 2),
-       ('어드민', '2024-03-01', 3, 3);
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (1,'2024-03-01', 1, 1),
+       (1,'2024-03-01', 2, 2),
+       (1,'2024-03-01', 3, 3);
+

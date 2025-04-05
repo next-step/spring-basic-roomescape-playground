@@ -1,5 +1,5 @@
 let isEditing = false;
-const RESERVATION_API_ENDPOINT = '/reservations';
+const RESERVATION_API_ENDPOINT = '/admin/reservations';
 const TIME_API_ENDPOINT = '/times';
 const THEME_API_ENDPOINT = '/themes';
 const timesOptions = [];
@@ -25,9 +25,11 @@ function render(data) {
 
     row.insertCell(0).textContent = item.id;
     row.insertCell(1).textContent = item.name;
-    row.insertCell(2).textContent = item.theme;
-    row.insertCell(3).textContent = item.date;
-    row.insertCell(4).textContent = item.time;
+    row.insertCell(2).textContent = item.email;
+    row.insertCell(3).textContent = item.theme;
+    row.insertCell(4).textContent = item.date;
+    row.insertCell(5).textContent = item.time;
+    row.insertCell(6).textContent = item.status;
 
     const actionCell = row.insertCell(row.cells.length);
     actionCell.appendChild(createActionButton('삭제', 'btn-danger', deleteRow));
@@ -87,11 +89,12 @@ function addInputRow() {
   isEditing = true;
 
   const nameInput = createInput('text');
+  const emailInput = createInput('email');
   const dateInput = createInput('date');
   const timeDropdown = createSelect(timesOptions, "시간 선택", 'time-select', 'value');
   const themeDropdown = createSelect(themesOptions, "테마 선택", 'theme-select', 'name');
 
-  const cellFieldsToCreate = ['', nameInput, themeDropdown, dateInput, timeDropdown];
+  const cellFieldsToCreate = ['', nameInput, emailInput, themeDropdown, dateInput, timeDropdown, ''];
 
   cellFieldsToCreate.forEach((field, index) => {
     const cell = row.insertCell(index);
@@ -131,14 +134,16 @@ function saveRow(event) {
 
   const row = event.target.parentNode.parentNode;
   const nameInput = row.querySelector('input[type="text"]');
-  const themeSelect = row.querySelector('select');
+  const emailInput = row.querySelector('input[type="email"]');
+  const themeSelect = row.querySelector('[id^="theme-select"]');
   const dateInput = row.querySelector('input[type="date"]');
-  const timeSelect = row.querySelector('select');
+  const timeSelect = row.querySelector('[id^="time-select"]');
 
   const reservation = {
+    date: dateInput.value,
+    email: emailInput.value,
     name: nameInput.value,
     theme: themeSelect.value,
-    date: dateInput.value,
     time: timeSelect.value
   };
 
@@ -179,7 +184,7 @@ function requestDelete(id) {
     method: 'DELETE',
   };
 
-  return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
+  return fetch(`/reservations/${id}`, requestOptions)
       .then(response => {
         if (response.status !== 204) throw new Error('Delete failed');
       });

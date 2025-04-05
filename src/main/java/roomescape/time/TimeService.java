@@ -1,12 +1,12 @@
 package roomescape.time;
 
 import org.springframework.stereotype.Service;
-import roomescape.reservation.Reservation;
+import roomescape.reservation.domain.Reservation;
 
 import java.util.List;
-import roomescape.reservation.ReservationRepository;
-import roomescape.theme.Theme;
-import roomescape.theme.ThemeRepository;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class TimeService {
