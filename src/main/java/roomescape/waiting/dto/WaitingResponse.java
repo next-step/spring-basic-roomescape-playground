@@ -1,9 +1,9 @@
 package roomescape.waiting.dto;
 
+import roomescape.reservation.domain.Reservation;
+
 public class WaitingResponse {
     private Long id;
-    private String name;
-    private String email;
     private Long theme;
     private String date;
     private String time;

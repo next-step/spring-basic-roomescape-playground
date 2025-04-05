@@ -11,18 +11,19 @@ import roomescape.auth.domain.LoginMember;
 import roomescape.waiting.dto.WaitingRequest;
 import roomescape.waiting.dto.WaitingResponse;
 import roomescape.waiting.service.WaitingService;
+import roomescape.waiting.service.impl.WaitingServiceImpl;
 
 @RestController
 public class WaitingController {
     private final WaitingService waitingService;
 
-    public WaitingController(WaitingService waitingService) {
+    public WaitingController(WaitingServiceImpl waitingService) {
         this.waitingService = waitingService;
     }
 
     @PostMapping("/waitings")
     public ResponseEntity<WaitingResponse> createWaiting(@RequestBody WaitingRequest waitingRequest, LoginMember loginMember) {
-        WaitingResponse waitingResponse = waitingService.createWaiting(waitingRequest, loginMember);
+        WaitingResponse waitingResponse = waitingService.createWaiting(waitingRequest, null, loginMember);
         return ResponseEntity.created(URI.create("/waitings/" + waitingResponse.getId())).body(waitingResponse);
     }
 

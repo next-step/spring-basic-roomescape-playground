@@ -18,7 +18,10 @@ import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.dto.WaitingRequest;
+import roomescape.waiting.dto.WaitingResponse;
 import roomescape.waiting.repository.WaitingRepository;
+import roomescape.waiting.service.WaitingService;
 
 @Service
 @Transactional
@@ -28,15 +31,17 @@ public class ReservationCreateService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final WaitingRepository waitingRepository;
+    private final WaitingService waitingService;
 
     public ReservationCreateService(ReservationRepository reservationRepository, MemberRepository memberRepository,
                                     TimeRepository timeRepository, ThemeRepository themeRepository,
-                                    WaitingRepository waitingRepository) {
+                                    WaitingRepository waitingRepository, WaitingService waitingService) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.waitingRepository = waitingRepository;
+        this.waitingService = waitingService;
     }
 
     public ReservationResponse saveUserReservation(ReservationRequest request, LoginMember loginMember) {
@@ -80,7 +85,13 @@ public class ReservationCreateService {
             return createReservation(reservation);
         }
         if (isAlreadyReserved(reservation)) {
-            return createWaiting(date, member, time, theme, reservation);
+            WaitingRequest waitingRequest = new WaitingRequest(date, time.getId(), theme.getId());
+            WaitingResponse waitingResponse = waitingService.createWaiting(waitingRequest, member, loginMember);
+            Waiting waiting = waitingRepository.findById(waitingResponse.getId())
+                    .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.WAITING_NOT_FOUND.getMessage()));
+
+            return ReservationResponse.from(waiting.getReservation(), Status.WAIT);
+//            return createWaiting(date, member, time, theme, reservation);
         }
         reservationRepository.save(reservation);
 
