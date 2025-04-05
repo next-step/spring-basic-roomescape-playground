@@ -9,7 +9,7 @@ public record MemberReservationResponses(List<MemberReservationResponse> respons
     public MemberReservationResponses addWaitings(List<WaitingRankingResponse> waitings) {
         List<MemberReservationResponse> newList = new ArrayList<>(responses);
         waitings.forEach(waiting ->
-                newList.add(MemberReservationResponse.from(waiting))
+                newList.add(new MemberReservationResponse(waiting))
         );
         return new MemberReservationResponses(List.copyOf(newList));
     }

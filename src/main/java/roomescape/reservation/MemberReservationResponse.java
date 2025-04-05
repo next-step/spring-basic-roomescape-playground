@@ -19,9 +19,11 @@ public record MemberReservationResponse(long id, String theme, LocalDate date
         );
     }
 
-    public static MemberReservationResponse from(WaitingRankingResponse response) {
-        return new MemberReservationResponse(response.reservationId(), response.theme(),
-                response.date(), response.time(),
+    public MemberReservationResponse(WaitingRankingResponse response) {
+        this(response.reservationId(),
+                response.theme(),
+                response.date(),
+                response.time(),
                 WAITING_STATUS_MESSAGE.formatted(response.ranking()));
     }
 }
