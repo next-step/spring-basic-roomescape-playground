@@ -11,6 +11,7 @@ import roomescape.reservationTime.ReservationTimeRepository;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 import roomescape.theme.ThemeRepository;
+import roomescape.waiting.WaitingRankingResponse;
 
 @Service
 public class ReservationService {
@@ -66,7 +67,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findAllByMemberId(memberId);
 
         return reservations.stream()
-                .map(reservation -> new MemberReservationResponse(reservation))
+                .map(MemberReservationResponse::new)
                 .toList();
     }
 

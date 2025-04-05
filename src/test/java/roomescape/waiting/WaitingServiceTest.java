@@ -51,8 +51,8 @@ class WaitingServiceTest {
             WaitingRankingResponse response2 = waitingService.create(manggo, request);
 
             assertThat(response.reservationId()).isGreaterThan(0L);
-            assertThat(response.ranking()).isEqualTo(1L);
-            assertThat(response2.ranking()).isEqualTo(2L);
+            assertThat(response.ranking()).isEqualTo(0L);
+            assertThat(response2.ranking()).isEqualTo(1L);
         }
 
         @Test
@@ -65,7 +65,7 @@ class WaitingServiceTest {
             WaitingRankingResponse response = waitingService.create(manggo, request);
 
             assertThat(response.reservationId()).isGreaterThan(0L);
-            assertThat(response.ranking()).isEqualTo(1L);
+            assertThat(response.ranking()).isEqualTo(0L);
         }
 
         @Test

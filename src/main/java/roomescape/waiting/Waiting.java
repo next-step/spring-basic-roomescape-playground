@@ -1,6 +1,5 @@
 package roomescape.waiting;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -8,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import roomescape.member.Member;
 import roomescape.reservation.Reservation;
@@ -61,5 +59,10 @@ public class Waiting {
 
     public String getMemberName() {
         return member.getName();
+    }
+
+    public boolean isOwner(long id) {
+        return this.member.getId()
+                .equals(id);
     }
 }

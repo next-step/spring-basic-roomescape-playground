@@ -2,6 +2,7 @@ package roomescape.waiting;
 
 import java.util.List;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.RoomescapeBadRequestException;
@@ -25,10 +26,22 @@ public class WaitingService {
     @Transactional
     public WaitingRankingResponse create(Member member, WaitingRequest request) {
         Reservation reservation = getReservation(member, request);
-        validateNotAlreadyWaited (reservation);
+        List<Waiting> waitings = getWaitings(member, reservation);
 
         Waiting newWaiting = new Waiting(member, reservation);
-        return new WaitingRankingResponse(waitingRepository.save(newWaiting), 1L);
+        return new WaitingRankingResponse(waitingRepository.save(newWaiting), waitings.size());
+    }
+
+    private List<Waiting> getWaitings(Member member, Reservation reservation) {
+        List<Waiting> waitings = waitingRepository.findAllByReservationId(
+                reservation.getId());
+
+        waitings.stream()
+                .filter(waiting -> waiting.isOwner(member.getId()))
+                .findAny()
+                .ifPresent(w -> { throw new RoomescapeBadRequestException("이미 해당 예약에 대기를 하셨습니다."); });
+
+        return waitings;
     }
 
     private Reservation getReservation(Member member, WaitingRequest request) {
@@ -44,14 +57,6 @@ public class WaitingService {
             throw new RoomescapeBadRequestException("본인이 예약한 방에는 대기를 할 수 없습니다.");
         }
         return reservation;
-    }
-
-    private void validateNotAlreadyWaited (final Reservation reservation) {
-        Optional<WaitingRanking> existedWaiting = waitingRepository.findAllByReservationId(
-                reservation.getId());
-        if (existedWaiting.isPresent()) {
-            throw new RoomescapeBadRequestException("이미 해당 예약에 대기를 하셨습니다.");
-        }
     }
 
     public List<WaitingRankingResponse> getMemberWaitings(Member member) {
