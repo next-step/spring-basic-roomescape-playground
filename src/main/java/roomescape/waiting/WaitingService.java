@@ -25,16 +25,7 @@ public class WaitingService {
     @Transactional
     public WaitingRankingResponse create(Member member, WaitingRequest request) {
         Reservation reservation = getReservation(member, request);
-        Optional<WaitingRanking> existedWaiting = waitingRepository.findAllByReservationId(
-                reservation.getId());
-
-        if (existedWaiting.isPresent()) {
-            WaitingRanking waitingRanking = existedWaiting.get();
-            waitingRanking.getWaiting()
-                    .refreshTimestamp();
-            return new WaitingRankingResponse(waitingRepository.save(waitingRanking.getWaiting()),
-                    waitingRanking.getRank() + 1L);
-        }
+        validateNotAlreadyWaited (reservation);
 
         Waiting newWaiting = new Waiting(member, reservation);
         return new WaitingRankingResponse(waitingRepository.save(newWaiting), 1L);
@@ -53,6 +44,14 @@ public class WaitingService {
             throw new RoomescapeBadRequestException("본인이 예약한 방에는 대기를 할 수 없습니다.");
         }
         return reservation;
+    }
+
+    private void validateNotAlreadyWaited (final Reservation reservation) {
+        Optional<WaitingRanking> existedWaiting = waitingRepository.findAllByReservationId(
+                reservation.getId());
+        if (existedWaiting.isPresent()) {
+            throw new RoomescapeBadRequestException("이미 해당 예약에 대기를 하셨습니다.");
+        }
     }
 
     public List<WaitingRankingResponse> getMemberWaitings(Member member) {

@@ -22,7 +22,6 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
                 JOIN FETCH r.theme t
                 JOIN FETCH r.reservationTime rt
                 WHERE w.member.id = :memberId
-                ORDER BY r.date ASC, rt.timeValue ASC
             """)
     List<WaitingRanking> findWaitingRankingByMemberId(long memberId);
 

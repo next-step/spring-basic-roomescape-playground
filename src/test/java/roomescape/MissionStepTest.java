@@ -170,7 +170,7 @@ public class MissionStepTest {
                 .extract().as(WaitingRankingResponse.class);
 
         // 내 예약 목록 조회
-        List<MemberReservationResponse> myReservations = RestAssured.given().log().all()
+        List<MemberReservationResponse> memberReservations = RestAssured.given().log().all()
                 .body(params)
                 .cookie("token", brownToken)
                 .contentType(ContentType.JSON)
@@ -180,9 +180,9 @@ public class MissionStepTest {
                 .extract().jsonPath().getList("responses", MemberReservationResponse.class);
 
         // 예약 대기 상태 확인
-        String status = myReservations.stream()
-                .filter(it -> it.id() == waiting.reservationId())
-                .filter(it -> !it.status().equals("예약"))
+        String status = memberReservations.stream()
+                .filter(memberReservation -> memberReservation.id() == waiting.reservationId())
+                .filter(memberReservation -> !memberReservation.status().equals("예약"))
                 .findFirst()
                 .map(it -> it.status())
                 .orElse(null);

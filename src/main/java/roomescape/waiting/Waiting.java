@@ -20,9 +20,6 @@ public class Waiting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
@@ -34,21 +31,12 @@ public class Waiting {
     }
 
     public Waiting(Member member, Reservation reservation) {
-        this.updatedAt = LocalDateTime.now();
         this.member = member;
         this.reservation = reservation;
     }
 
-    public void refreshTimestamp() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public Long getId() {
         return id;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     public Member getMember() {
