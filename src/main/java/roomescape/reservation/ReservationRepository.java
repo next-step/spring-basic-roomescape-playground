@@ -27,4 +27,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 //    @EntityGraph(value = "Reservation.forStudies", type = EntityGraph.EntityGraphType.FETCH)
 //    @Query("select r from Reservation r")
 //    List<Reservation> findAllWithForStudyByEntityGraph();
+
+    @Query("SELECT r FROM Reservation r join fetch r.member m WHERE m = :member")
+    List<Reservation> findAllForTest(Member member);
 }

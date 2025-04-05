@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 import roomescape.reservationTime.ReservationTime;
@@ -22,6 +24,8 @@ public class JpaTest {
     private ReservationTimeRepository timeRepository;
     @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     void 사단계() {
@@ -51,6 +55,13 @@ public class JpaTest {
                 });
 
         assertThat(reservationsAfterDelete.size()).isEqualTo(reservations.size());
+    }
+
+    @Test
+    void queryTest() {
+        Member member = memberRepository.findByName("브라운")
+                .orElseThrow();
+        reservationRepository.findAllForTest(member);
     }
 
 //    @Test
