@@ -7,7 +7,7 @@ import roomescape.waiting.WaitingRankingResponse;
 public record MemberReservationResponse(long id, String theme, LocalDate date
         , String time, String status) {
 
-    public static final String WAITING_STATUS_MESSAGE = "%d번째 예약대기";
+    private static final String WAITING_STATUS_MESSAGE = "%d번째 예약대기";
 
     public MemberReservationResponse(Reservation reservation) {
         this(

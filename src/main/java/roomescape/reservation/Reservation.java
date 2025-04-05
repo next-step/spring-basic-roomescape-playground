@@ -45,9 +45,6 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reservation")
-    private List<ForStudy> forStudies;
-
     protected Reservation() {
     }
 
@@ -101,10 +98,6 @@ public class Reservation {
 
     public String getThemeValue() {
         return theme.getName();
-    }
-
-    public List<ForStudy> getForStudies() {
-        return forStudies;
     }
 
     public Member getMember() {
