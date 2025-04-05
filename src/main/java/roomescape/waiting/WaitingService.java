@@ -1,8 +1,6 @@
 package roomescape.waiting;
 
 import java.util.List;
-import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.RoomescapeBadRequestException;
@@ -50,7 +48,7 @@ public class WaitingService {
                 .orElseThrow(
                         () -> new RoomescapeNotFoundException("예약이 존재하지 않습니다. 대기 대신 예약을 해주세요."));
 
-        if (reservation.isMadeByAdmin()) {
+        if (member.isAdmin()) {
             return reservation;
         }
         if (reservation.isOwner(member)) {

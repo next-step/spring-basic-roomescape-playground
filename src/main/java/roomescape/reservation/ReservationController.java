@@ -43,14 +43,11 @@ public class ReservationController {
         return ResponseEntity.ok(results.addWaitings(memberWaitings));
     }
 
-    // fixme: 중복 예약 허용 x
     @PostMapping("/reservations")
     public ResponseEntity create(@AuthMember Member member
             , @RequestBody ReservationRequest reservationRequest) {
-        Role role = member.getRole();
-        boolean isAdmin = role.isAdmin();
         String name = reservationRequest.name();
-        if (name == null || name.isEmpty() || !isAdmin) {
+        if (name == null || name.isEmpty() || !member.isAdmin()) {
             reservationRequest = reservationRequest.update(member.getName());
         }
 

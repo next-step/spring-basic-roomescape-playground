@@ -104,8 +104,4 @@ public class Reservation {
         return this.member.getId()
                 .equals(member.getId());
     }
-
-    public boolean isMadeByAdmin() {
-        return this.member == null;
-    }
 }
