@@ -30,8 +30,8 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(ReservationRequest reservationRequest, Member member) {
         validatedRequest(reservationRequest);
-        Theme theme = getTheme(reservationRequest);
-        ReservationTime reservationTime = getReservationTime(reservationRequest);
+        Theme theme = getTheme(reservationRequest.theme());
+        ReservationTime reservationTime = getReservationTime(reservationRequest.time());
 
         if (member.isAdmin()) {
             Reservation reservation = reservationRepository
@@ -41,7 +41,6 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository
                 .save(reservationRequest.toReservationWithMember(theme, reservationTime, member));
-
         return new ReservationResponse(reservation);
     }
 
@@ -52,14 +51,14 @@ public class ReservationService {
         }
     }
 
-    private ReservationTime getReservationTime(ReservationRequest reservationRequest) {
+    private ReservationTime getReservationTime(long timeId) {
         return reservationTimeRepository
-                .findById(reservationRequest.time())
+                .findById(timeId)
                 .orElseThrow(() -> new RoomescapeNotFoundException("예약 시간을 찾을 수 없습니다."));
     }
 
-    private Theme getTheme(ReservationRequest reservationRequest) {
-        return themeRepository.findById(reservationRequest.theme())
+    private Theme getTheme(long themeId) {
+        return themeRepository.findById(themeId)
                 .orElseThrow(() -> new RoomescapeNotFoundException("테마를 찾을 수 없습니다."));
     }
 
@@ -71,7 +70,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         reservationRepository.deleteById(id);
     }
 
