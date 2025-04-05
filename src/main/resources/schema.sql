@@ -24,8 +24,3 @@ VALUES (1, '', '2024-03-01', 1, 1),
 INSERT INTO reservation (name, date, reservation_time_id, theme_id)
 VALUES ('브라운', '2024-03-01', 1, 2);
 
-INSERT INTO for_study (content, reservation_id)
-VALUES ('데이터1', 1),
-       ('데이터2', 1),
-       ('데이터2', 2),
-       ('데이터3', 2);

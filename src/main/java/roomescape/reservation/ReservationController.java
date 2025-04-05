@@ -54,18 +54,10 @@ public class ReservationController {
             reservationRequest = reservationRequest.update(member.getName());
         }
 
-        ReservationResponse result = create(member, reservationRequest, isAdmin);
+        ReservationResponse result = reservationService.create(reservationRequest, member);
 
         return ResponseEntity.created(URI.create("/reservations/" + result.id()))
                 .body(result);
-    }
-
-    private ReservationResponse create(Member member, ReservationRequest reservationRequest,
-                                       boolean isAdmin) {
-        if (isAdmin) {
-            return reservationService.create(reservationRequest);
-        }
-        return reservationService.saveWithMember(reservationRequest, member);
     }
 
     @DeleteMapping("/reservations/{id}")

@@ -32,8 +32,9 @@ class ReservationServiceTest {
         void 이름으로_예약을_생성한다() {
             ReservationRequest request = new ReservationRequest(
                     "사용자1", LocalDate.parse("2025-04-10"), 1L, 1L);
+            Member member = memberRepository.findByEmail("admin@email.com").orElseThrow();
 
-            ReservationResponse response = reservationService.create(request);
+            ReservationResponse response = reservationService.create(request, member);
             Reservation saved = reservationRepository.findByDateAndReservationTime_IdAndTheme_Id(
                     LocalDate.parse("2025-04-10"), 1L, 1L).orElseThrow();
 
@@ -46,7 +47,7 @@ class ReservationServiceTest {
             ReservationRequest request = new ReservationRequest(member.getName()
                     , LocalDate.parse("2025-04-11"), 2L, 2L);
 
-            ReservationResponse response = reservationService.saveWithMember(request, member);
+            ReservationResponse response = reservationService.create(request, member);
 
             Reservation saved = reservationRepository.findByDateAndReservationTime_IdAndTheme_Id(
                     LocalDate.parse("2025-04-11"), 2L, 2L
@@ -57,6 +58,7 @@ class ReservationServiceTest {
 
         @Test
         void 중복_예약을하면_예외를_던진다() {
+            Member member = memberRepository.findByEmail("brown@email.com").orElseThrow();
             Reservation reservation = reservationRepository.findById(1L).orElseThrow();
             ReservationRequest request = new ReservationRequest(
                     "중복맨", reservation.getDate(),
@@ -64,7 +66,7 @@ class ReservationServiceTest {
                     reservation.getTime().getId()
             );
 
-            assertThatThrownBy(() -> reservationService.create(request))
+            assertThatThrownBy(() -> reservationService.create(request, member))
                     .isInstanceOf(RoomescapeBadRequestException.class)
                     .hasMessageContaining("이미 예약 된 방입니다.");
         }

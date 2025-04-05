@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.RoomescapeBadRequestException;
 import roomescape.global.exception.RoomescapeNotFoundException;
 import roomescape.member.Member;
+import roomescape.member.Role;
 import roomescape.reservationTime.ReservationTimeRepository;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
@@ -27,28 +28,24 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(ReservationRequest reservationRequest) {
+    public ReservationResponse create(ReservationRequest reservationRequest, Member member) {
         validatedRequest(reservationRequest);
         Theme theme = getTheme(reservationRequest);
         ReservationTime reservationTime = getReservationTime(reservationRequest);
 
-        Reservation reservation = reservationRepository
-                .save(reservationRequest.toReservation(theme, reservationTime));
-        return new ReservationResponse(reservation);
-    }
-
-    public ReservationResponse saveWithMember(ReservationRequest reservationRequest,
-                                              Member member) {
-        validatedRequest(reservationRequest);
-        Theme theme = getTheme(reservationRequest);
-        ReservationTime reservationTime = getReservationTime(reservationRequest);
+        if (member.isAdmin()) {
+            Reservation reservation = reservationRepository
+                    .save(reservationRequest.toReservation(theme, reservationTime));
+            return new ReservationResponse(reservation);
+        }
 
         Reservation reservation = reservationRepository
                 .save(reservationRequest.toReservationWithMember(theme, reservationTime, member));
+
         return new ReservationResponse(reservation);
     }
 
-    private void validatedRequest(ReservationRequest reservationRequest) {
+    private  void validatedRequest(ReservationRequest reservationRequest) {
         if (reservationRepository.existsByDateAndTheme_IdAndReservationTime_Id(
                 reservationRequest.date(), reservationRequest.theme(), reservationRequest.time())) {
             throw new RoomescapeBadRequestException("이미 예약 된 방입니다.");

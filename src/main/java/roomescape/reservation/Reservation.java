@@ -18,12 +18,8 @@ import roomescape.reservation.study.ForStudy;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 
-/*
-todo : 예약 대기 , 취소 , 대기 목록 조회 , 중복 예약 방지, 취소하면 하나 씩 줄어들게
- */
 @Entity
 @NamedEntityGraph(name = "Reservation.reservationTime", attributeNodes = @NamedAttributeNode("reservationTime"))
-@NamedEntityGraph(name = "Reservation.forStudies", attributeNodes = @NamedAttributeNode("forStudies"))
 public class Reservation {
 
     @Id
