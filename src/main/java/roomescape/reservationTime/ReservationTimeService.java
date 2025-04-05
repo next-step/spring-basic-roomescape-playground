@@ -20,7 +20,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<AvailableTime> getAvailableTime(LocalDate date, Long themeId) {
+    public List<AvailableTime> getAvailableTime(LocalDate date, long themeId) {
         List<Reservation> reservations = reservationRepository.findByDateAndTheme_Id(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
@@ -61,7 +61,7 @@ public class ReservationTimeService {
         return reservationTimeRepository.save(reservationTime);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         reservationTimeRepository.deleteById(id);
     }
 }

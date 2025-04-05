@@ -1,4 +1,4 @@
 package roomescape.reservationTime;
 
-public record AvailableTime(Long timeId, String time, boolean booked) {
+public record AvailableTime(long timeId, String time, boolean booked) {
 }

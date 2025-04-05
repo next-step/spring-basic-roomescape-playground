@@ -24,7 +24,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     boolean existsByDateAndTheme_IdAndReservationTime_Id(LocalDate date, long themeId, long reservationId);
 
-    @EntityGraph(value = "Reservation.forStudies", type = EntityGraph.EntityGraphType.FETCH)
-    @Query("select r from Reservation r")
-    List<Reservation> findAllWithForStudyByEntityGraph();
+//    @EntityGraph(value = "Reservation.forStudies", type = EntityGraph.EntityGraphType.FETCH)
+//    @Query("select r from Reservation r")
+//    List<Reservation> findAllWithForStudyByEntityGraph();
 }
