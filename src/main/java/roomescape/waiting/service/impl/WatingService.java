@@ -17,13 +17,13 @@ import roomescape.waiting.service.WaitingService;
 
 @Service
 @Transactional
-public class WaitingServiceImpl implements WaitingService {
+public class WatingService implements WaitingService {
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final WaitingRepository waitingRepository;
 
-    public WaitingServiceImpl(WaitingRepository waitingRepository, MemberRepository memberRepository,
-                              ReservationRepository reservationRepository) {
+    public WatingService(WaitingRepository waitingRepository, MemberRepository memberRepository,
+                         ReservationRepository reservationRepository) {
         this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.reservationRepository = reservationRepository;

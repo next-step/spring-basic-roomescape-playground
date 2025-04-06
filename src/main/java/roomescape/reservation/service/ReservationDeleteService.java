@@ -10,6 +10,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.waiting.domain.Waiting;
 import roomescape.waiting.repository.WaitingRepository;
+import roomescape.waiting.service.WaitingService;
 
 @Service
 @Transactional
