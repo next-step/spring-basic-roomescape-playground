@@ -9,10 +9,6 @@ import roomescape.reservationTime.ReservationTime;
 public record ReservationRequest(@NotNull String name, @NotNull LocalDate date, long theme,
                                  long time) {
 
-    public Reservation toReservation(Theme theme, ReservationTime reservationTime) {
-        return new Reservation(name, date, reservationTime, theme);
-    }
-
     public Reservation toReservationWithMember(Theme theme, ReservationTime reservationTime,
                                                Member member) {
         return new Reservation(member, name, date, reservationTime, theme);

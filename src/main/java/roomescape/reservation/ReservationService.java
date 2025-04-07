@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.global.exception.RoomescapeBadRequestException;
 import roomescape.global.exception.RoomescapeNotFoundException;
+import roomescape.global.exception.RoomescapeServerError;
 import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.member.Role;
 import roomescape.reservationTime.ReservationTimeRepository;
 import roomescape.theme.Theme;
@@ -19,13 +21,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ThemeRepository themeRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Transactional
@@ -35,8 +40,10 @@ public class ReservationService {
         ReservationTime reservationTime = getReservationTime(reservationRequest.time());
 
         if (member.isAdmin()) {
+            Member adminMember = memberRepository.findByName("임시사용자")
+                    .orElseThrow(() -> new RoomescapeServerError());
             Reservation reservation = reservationRepository
-                    .save(reservationRequest.toReservation(theme, reservationTime));
+                    .save(reservationRequest.toReservationWithMember(theme, reservationTime, adminMember));
             return new ReservationResponse(reservation);
         }
 
