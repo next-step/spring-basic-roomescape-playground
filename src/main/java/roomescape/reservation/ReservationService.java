@@ -45,7 +45,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NoSuchElementException("Theme not found"));
         Time foundTime = timeRepository.findById(request.getTime())
                 .orElseThrow(() -> new NoSuchElementException("Time not found"));
-        Reservation reservation = new Reservation(member.getName(), request.getDate(), foundTime, foundTheme);
+        Reservation reservation = new Reservation(member.getName(), request.getDate(), foundTime, foundTheme, member);
         Reservation saved = reservationRepository.save(reservation);
         return toReservationResponse(saved);
     }
