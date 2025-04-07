@@ -27,12 +27,12 @@ CREATE TABLE IF NOT EXISTS member
 
 CREATE TABLE IF NOT EXISTS reservation
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    `date`     DATE NOT NULL,
-    name     VARCHAR(255) NOT NULL,
+    id         BIGINT       NOT NULL AUTO_INCREMENT,
+    `date`     DATE         NOT NULL,
+    name       VARCHAR(255) NOT NULL,
     member_id  BIGINT,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    time_id    BIGINT,
+    theme_id   BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
