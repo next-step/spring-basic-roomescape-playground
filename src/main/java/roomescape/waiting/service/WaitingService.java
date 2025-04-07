@@ -38,7 +38,7 @@ public class WaitingService {
         Waiting waiting = waitingRequest.toWaiting(loginMember.id(), loginMember.name(), time, theme);
 
         validateIsAlreadyReserved(waiting);
-        validateDuplicateWaiting(waiting);
+        validateUniqueWaiting(waiting);
         Waiting savedWaiting = waitingRepository.save(waiting);
 
         Long waitingNumber = waitingRepository.findWaitingNumberByMemberId(loginMember.id());
@@ -61,7 +61,7 @@ public class WaitingService {
         }
     }
 
-    private void validateDuplicateWaiting(Waiting waiting) {
+    private void validateUniqueWaiting(Waiting waiting) {
         if (reservationRepository.existsByMemberIdAndDateAndTimeAndTheme(waiting.getMemberId(), waiting.getDate(), waiting.getTime(), waiting.getTheme())) {
             throw new BadRequestException(ExceptionMessage.RESERVATION_ALREADY_EXISTS.getMessage());
         }
