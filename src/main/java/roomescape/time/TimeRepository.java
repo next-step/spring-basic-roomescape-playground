@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TimeRepository extends JpaRepository<Time, Long> {
+    Long findByValue(String value);
 }

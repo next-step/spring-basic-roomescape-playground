@@ -26,10 +26,10 @@ public class AdminReservationController {
 
     @PostMapping("/admin/reservations")
     public ResponseEntity<ReservationResponse> createAdminReservation(@Valid @RequestBody AdminReservationRequest request, LoginMember loginMember) {
-        ReservationResponse reservation = createService.saveAdminReservation(request, loginMember);
+        ReservationResponse response = createService.saveAdminReservation(request, loginMember);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
-                .body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + response.getId()))
+                .body(response);
     }
 
     @GetMapping("/admin/reservations")

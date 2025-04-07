@@ -26,7 +26,20 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
             "WHERE w.member.id = :memberId")
     List<RankedWaiting> findRankedWaitingsByMemberId(@Param("memberId") Long memberId);
 
+    @Query("SELECT new roomescape.waiting.domain.RankedWaiting(" +
+            "    w, " +
+            "    CAST((SELECT COUNT(w2) " +
+            "     FROM Waiting w2 " +
+            "     WHERE w2.theme = w.theme " +
+            "       AND w2.date = w.date " +
+            "       AND w2.time = w.time " +
+            "       AND w2.id < w.id) AS LONG)) " +
+            "FROM Waiting w")
+    List<RankedWaiting> findAllRankedWaitings();
+
     Optional<Waiting> findTopByReservationOrderByCreatedDateTime(Reservation reservation);
 
     boolean existsByMemberEmailAndDateAndTimeAndThemeId(String email, String date, String time, Long themeId);
+
+    List<Waiting> findByReservationId(Long id);
 }

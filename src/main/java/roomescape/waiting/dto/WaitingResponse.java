@@ -1,24 +1,22 @@
 package roomescape.waiting.dto;
 
 public class WaitingResponse {
-    private Long id;
-    private String name;
-    private String email;
+    private Long waitingId;
     private Long theme;
     private String date;
     private String time;
     private int waitingNumber;
 
-    public WaitingResponse(Long id, Long theme, String date, String time, int waitingNumber) {
-        this.id = id;
+    public WaitingResponse(Long waitingId, Long theme, String date, String time, int waitingNumber) {
+        this.waitingId = waitingId;
         this.theme = theme;
         this.date = date;
         this.time = time;
         this.waitingNumber = waitingNumber;
     }
 
-    public Long getId() {
-        return id;
+    public Long getWaitingId() {
+        return waitingId;
     }
 
     public Long getTheme() {

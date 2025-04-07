@@ -34,23 +34,21 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponse>> showMyReservations(LoginMember loginMember) {
         List<ReservationResponse> reservationResponses = findService.findReservations(loginMember);
 
-        return ResponseEntity.ok()
-                .body(reservationResponses);
+        return ResponseEntity.ok().body(reservationResponses);
     }
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createUserReservation(@Valid @RequestBody ReservationRequest request, LoginMember loginMember) {
-        ReservationResponse reservationResponse = createService.saveUserReservation(request, loginMember);
+        ReservationResponse response = createService.saveUserReservation(request, loginMember);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.getId()))
-                .body(reservationResponse);
+        return ResponseEntity.created(URI.create("/reservations/" + response.getId()))
+                .body(response);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, LoginMember loginMember) {
         deleteService.deleteReservation(id, loginMember);
 
-        return ResponseEntity.noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 }

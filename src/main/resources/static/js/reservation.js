@@ -24,12 +24,13 @@ function render(data) {
     const row = tableBody.insertRow();
 
     row.insertCell(0).textContent = item.id;
-    row.insertCell(1).textContent = item.name;
-    row.insertCell(2).textContent = item.email;
-    row.insertCell(3).textContent = item.theme;
-    row.insertCell(4).textContent = item.date;
-    row.insertCell(5).textContent = item.time;
-    row.insertCell(6).textContent = item.status;
+    row.insertCell(1).textContent = item.waitingId;
+    row.insertCell(2).textContent = item.name;
+    row.insertCell(3).textContent = item.email;
+    row.insertCell(4).textContent = item.theme;
+    row.insertCell(5).textContent = item.date;
+    row.insertCell(6).textContent = item.time;
+    row.insertCell(7).textContent = item.status;
 
     const actionCell = row.insertCell(row.cells.length);
     actionCell.appendChild(createActionButton('삭제', 'btn-danger', deleteRow));
@@ -94,7 +95,7 @@ function addInputRow() {
   const timeDropdown = createSelect(timesOptions, "시간 선택", 'time-select', 'value');
   const themeDropdown = createSelect(themesOptions, "테마 선택", 'theme-select', 'name');
 
-  const cellFieldsToCreate = ['', nameInput, emailInput, themeDropdown, dateInput, timeDropdown, ''];
+  const cellFieldsToCreate = ['', '', nameInput, emailInput, themeDropdown, dateInput, timeDropdown, ''];
 
   cellFieldsToCreate.forEach((field, index) => {
     const cell = row.insertCell(index);
@@ -159,10 +160,16 @@ function saveRow(event) {
 function deleteRow(event) {
   const row = event.target.closest('tr');
   const reservationId = row.cells[0].textContent;
+  const waitingId = row.cells[1].textContent;
 
-  requestDelete(reservationId)
-      .then(() => row.remove())
-      .catch(error => console.error('Error:', error));
+  if (waitingId && waitingId.trim() !== '') {
+    requestDeleteWaiting(waitingId).then(() => window.location.reload());
+  } else {
+    requestDelete(reservationId)
+        .then(() => row.remove())
+        .catch(error => console.error('Error:', error));
+  }
+
 }
 
 function requestCreate(reservation) {
@@ -185,6 +192,17 @@ function requestDelete(id) {
   };
 
   return fetch(`/reservations/${id}`, requestOptions)
+      .then(response => {
+        if (response.status !== 204) throw new Error('Delete failed');
+      });
+}
+
+function requestDeleteWaiting(id) {
+  const requestOptions = {
+    method: 'DELETE',
+  };
+
+  return fetch(`/waitings/${id}`, requestOptions)
       .then(response => {
         if (response.status !== 204) throw new Error('Delete failed');
       });

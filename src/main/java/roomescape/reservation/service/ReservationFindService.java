@@ -51,7 +51,7 @@ public class ReservationFindService {
 
     private List<ReservationResponse> findAllWaitings() {
         return waitingRepository.findAll().stream()
-                .map(waiting -> ReservationResponse.from(waiting.getReservation(), Status.WAIT))
+                .map(waiting -> ReservationResponse.from(waiting.getReservation(), waiting, Status.WAIT))
                 .toList();
     }
 
