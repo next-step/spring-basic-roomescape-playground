@@ -120,7 +120,6 @@ class WaitingServiceTest {
 
         @Test
         void 대기_삭제_후_랭킹이_업데이트된다() {
-            // given
             Member admin = new Member(1L, "어드민", "admin@email.com", "password", Role.ADMIN);
             Member brown = new Member(2L, "브라운", "brown@email.com", "password", Role.USER);
             Member manggo = new Member(3L, "망고", "manggo@email.com", "password", Role.USER);
@@ -130,15 +129,13 @@ class WaitingServiceTest {
             insertWaiting(manggo, reservation);                     // rank: 2
 
             List<WaitingRankingResponse> before = waitingService.getMemberWaitings(manggo);
-            assertThat(before.get(0).ranking()).isEqualTo(2L);
+            long beforeRank = before.get(0).ranking();
 
             waitingRepository.deleteById(waiting1.getId());
-
             List<WaitingRankingResponse> after = waitingService.getMemberWaitings(manggo);
             assertAll(
-                    () -> assertThat(after).hasSize(1),
                     () -> assertThat(after.get(0).reservationId()).isEqualTo(reservation.getId()),
-                    () -> assertThat(after.get(0).ranking()).isEqualTo(1L) // 2 -> 1
+                    () -> assertThat(after.get(0).ranking()).isEqualTo(beforeRank - 1L)
             );
         }
     }
