@@ -11,7 +11,7 @@ public enum Status {
         this.description = description;
     }
 
-    public String getStatus(long rank) {
+    public String getDescriptionWith(long rank) {
         if (this == WAITING) {
             return rank + description;
         }

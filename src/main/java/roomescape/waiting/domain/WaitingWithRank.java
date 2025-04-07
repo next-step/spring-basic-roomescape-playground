@@ -34,6 +34,6 @@ public class WaitingWithRank {
     }
 
     public String getRankStatus() {
-        return Status.WAITING.getStatus(rank);
+        return Status.WAITING.getDescriptionWith(rank);
     }
 }
