@@ -16,6 +16,7 @@ import roomescape.time.domain.Time;
 import roomescape.time.repository.TimeRepository;
 import roomescape.waiting.domain.Waiting;
 import roomescape.waiting.domain.WaitingWithRank;
+import roomescape.waiting.domain.Waitings;
 import roomescape.waiting.repository.WaitingRepository;
 
 import java.util.List;
@@ -87,8 +88,8 @@ public class ReservationService {
     }
 
     private WaitingWithRank toWaitingWithRank(Waiting waiting) {
-        List<Waiting> waitingsOnCondition = waitingRepository.findAllByDateAndTimeAndTheme(waiting.getDate(), waiting.getTime(), waiting.getTheme());
-        return new WaitingWithRank(waiting, waiting.calculateRank(waitingsOnCondition));
+        Waitings waitings = new Waitings(waitingRepository.findAllByDateAndTimeAndTheme(waiting.getDate(), waiting.getTime(), waiting.getTheme()));
+        return new WaitingWithRank(waiting, waitings.calculateRank(waiting));
     }
 
     @Transactional

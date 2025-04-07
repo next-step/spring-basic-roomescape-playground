@@ -14,12 +14,9 @@ import roomescape.time.domain.Time;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Entity
-public class Waiting {
-
-    private static final int BASE_RANK = 1;
+public class Waiting implements Comparable<Waiting> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,14 +54,13 @@ public class Waiting {
         return new Reservation(memberId, name, date, time, theme);
     }
 
-    public long calculateRank(List<Waiting> waitings) {
-        return waitings.stream()
-                .filter(this::isLaterThan)
-                .count() + BASE_RANK;
+    public boolean isBefore(Waiting target) {
+        return this.compareTo(target) < 0;
     }
 
-    private boolean isLaterThan(Waiting waiting) {
-        return waiting.getId() < this.id;
+    @Override
+    public int compareTo(Waiting other) {
+        return Long.compare(this.id, other.id);
     }
 
     public Long getId() {
