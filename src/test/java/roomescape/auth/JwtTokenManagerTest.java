@@ -19,7 +19,10 @@ class JwtTokenManagerTest {
 
     @Test
     void 시크릿_키_길이가_충분하지_않은경우_예외가_발생한다() {
-        assertThatThrownBy(() -> new JwtTokenManager("short"))
+        // given
+        String shortSecretKey = "short";
+        // when & then
+        assertThatThrownBy(() -> new JwtTokenManager(shortSecretKey))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
     }
@@ -61,8 +64,8 @@ class JwtTokenManagerTest {
     }
 
     private JwtTokenManager createJwtTokenManager() {
-        String testSecretKey = "test-secret-keyyyyyyyyyyyyyyyyyyyyy";
-        return new JwtTokenManager(testSecretKey);
+        String longSecretKey = "test-secret-keyyyyyyyyyyyyyyyyyyyyy";
+        return new JwtTokenManager(longSecretKey);
     }
 
     private String createExpiredToken(Member member) {
