@@ -1,5 +1,7 @@
 package roomescape.reservation;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,9 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.Waiting;
+import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.WaitingWithRank;
 
 @Service
 public class ReservationService {
@@ -19,13 +24,16 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository,
-                              ThemeRepository themeRepository, TimeRepository timeRepository) {
+                              ThemeRepository themeRepository, TimeRepository timeRepository,
+                              WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse saveForAdmin(ReservationRequest request) {
@@ -64,10 +72,20 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<MyReservationResponse> findByMemberId(Long memberId) {
-        return reservationRepository.findByMemberId(memberId)
+        List<MyReservationResponse> myReservationResponses = reservationRepository.findByMemberId(memberId)
                 .stream()
                 .map(this::toMyReservationResponse)
                 .toList();
+
+        List<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(memberId)
+                .stream()
+                .map(this::toMyWaitingResponse)
+                .toList();
+
+        List<MyReservationResponse> combined = new ArrayList<>();
+        combined.addAll(myReservationResponses);
+        combined.addAll(waitings);
+        return combined;
     }
 
     private MyReservationResponse toMyReservationResponse(Reservation reservation) {
@@ -78,4 +96,14 @@ public class ReservationService {
         return new ReservationResponse(reservation);
     }
 
+    private MyReservationResponse toMyWaitingResponse(WaitingWithRank waitingWithRank) {
+        Waiting waiting = waitingWithRank.waiting();
+        return new MyReservationResponse(
+                waiting.getId(),
+                waiting.getTheme().getName(),
+                waiting.getDate(),
+                LocalTime.parse(waiting.getTime().getValue()),
+                (waitingWithRank.rank() + 1) + "번째 예약대기"
+        );
+    }
 }

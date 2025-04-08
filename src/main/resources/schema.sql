@@ -27,9 +27,22 @@ CREATE TABLE member
 
 CREATE TABLE reservation
 (
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    date      VARCHAR(255) NOT NULL,
+    name      VARCHAR(255) NOT NULL,
+    time_id   BIGINT,
+    theme_id  BIGINT,
+    member_id BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (member_id) REFERENCES member (id)
+);
+
+CREATE TABLE waitings
+(
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     date     VARCHAR(255) NOT NULL,
-    name     VARCHAR(255) NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,
     member_id BIGINT,

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 
 public record MyReservationResponse(
-        Long reservationId,
+        Long id,
         String theme,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         String date,
