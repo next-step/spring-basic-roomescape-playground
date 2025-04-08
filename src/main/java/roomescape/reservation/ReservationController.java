@@ -33,8 +33,8 @@ public class ReservationController {
     ) {
 
         ReservationResponse reservation = Optional.ofNullable(reservationRequest.getName())
-                .map(name -> reservationService.save(reservationRequest))
-                .orElseGet(() -> reservationService.save(reservationRequest, loginMember));
+                .map(name -> reservationService.saveForAdmin(reservationRequest))
+                .orElseGet(() -> reservationService.saveForUser(reservationRequest, loginMember));
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }

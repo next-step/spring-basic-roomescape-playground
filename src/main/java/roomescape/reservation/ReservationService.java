@@ -28,13 +28,13 @@ public class ReservationService {
         this.timeRepository = timeRepository;
     }
 
-    public ReservationResponse save(ReservationRequest request) {
+    public ReservationResponse saveForAdmin(ReservationRequest request) {
         Member foundMember = memberRepository.findByName(request.getName())
                 .orElseThrow(() -> new NoSuchElementException("Member not found"));
         return saveReservationWithMember(request, foundMember);
     }
 
-    public ReservationResponse save(ReservationRequest request, LoginMember loginMember) {
+    public ReservationResponse saveForUser(ReservationRequest request, LoginMember loginMember) {
         Member foundMember = memberRepository.findById(loginMember.id())
                 .orElseThrow(() -> new NoSuchElementException("Member not found"));
         return saveReservationWithMember(request, foundMember);
