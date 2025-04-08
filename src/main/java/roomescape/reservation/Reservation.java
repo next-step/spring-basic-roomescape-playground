@@ -35,7 +35,6 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    // Member 연관 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -86,5 +85,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }

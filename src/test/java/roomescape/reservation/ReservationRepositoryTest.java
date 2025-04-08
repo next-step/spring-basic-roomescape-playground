@@ -48,7 +48,7 @@ class ReservationRepositoryTest {
         // then
         assertAll(
                 () -> assertThat(reservations).isNotEmpty(),
-                () -> assertThat(reservations.get(0).getName()).isEqualTo("name"),
+                () -> assertThat(reservations.get(0).getMember().getName()).isEqualTo("member"),
                 () -> assertThat(reservations.get(0).getDate()).isEqualTo("2023-10-10"),
                 () -> assertThat(reservations.get(0).getTheme().getName()).isEqualTo("theme")
         );

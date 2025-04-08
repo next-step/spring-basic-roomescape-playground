@@ -62,6 +62,18 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<MyReservationResponse> findByMemberId(Long memberId) {
+        return reservationRepository.findByMemberId(memberId)
+                .stream()
+                .map(this::toMyReservationResponse)
+                .toList();
+    }
+
+    private MyReservationResponse toMyReservationResponse(Reservation reservation) {
+        return new MyReservationResponse(reservation);
+    }
+
     private ReservationResponse toReservationResponse(Reservation reservation) {
         return new ReservationResponse(reservation);
     }
