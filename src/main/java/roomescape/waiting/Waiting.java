@@ -44,6 +44,10 @@ public class Waiting {
         this.member = member;
     }
 
+    public boolean isNotSameMember(Long memberId) {
+        return !this.member.getId().equals(memberId);
+    }
+
     public Long getId() {
         return id;
     }

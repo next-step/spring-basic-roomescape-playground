@@ -45,4 +45,13 @@ public class WaitingService {
         Long rank = waitingRepository.countByThemeAndDateAndTimeAndIdLessThanEqual(findTheme, date, findTime, id);
         return new WaitingResponse(id, rank);
     }
+
+    public void deleteWaiting(Long waitingId, Long memberId) {
+        Waiting waiting = waitingRepository.findById(waitingId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 대기열이 존재하지 않습니다."));
+        if (waiting.isNotSameMember(memberId)) {
+            throw new IllegalArgumentException("해당 대기열을 삭제할 권한이 없습니다.");
+        }
+        waitingRepository.delete(waiting);
+    }
 }
