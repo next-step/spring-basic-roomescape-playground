@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -42,7 +43,8 @@ public class ReservationService {
             Member adminMember = memberRepository.findByName("임시사용자")
                     .orElseThrow(() -> new RoomescapeServerError());
             Reservation reservation = reservationRepository
-                    .save(reservationRequest.toReservationWithMember(theme, reservationTime, adminMember));
+                    .save(reservationRequest.toReservationWithMember(theme, reservationTime,
+                            adminMember));
             return new ReservationResponse(reservation);
         }
 
@@ -51,18 +53,23 @@ public class ReservationService {
         return new ReservationResponse(reservation);
     }
 
-    private  void validatedRequest(ReservationRequest reservationRequest) {
+    private void validatedRequest(ReservationRequest reservationRequest) {
         if (reservationRepository.existsByDateAndTheme_IdAndReservationTime_Id(
                 reservationRequest.date(), reservationRequest.theme(), reservationRequest.time())) {
             throw new RoomescapeBadRequestException("이미 예약 된 방입니다.");
         }
         ReservationTime time = reservationTimeRepository.findById(reservationRequest.time())
                 .orElseThrow(() -> new RoomescapeBadRequestException("해당 시간이 존재하지 않습니다."));
+        validatedTime(reservationRequest.date(), time);
+    }
 
+    private void validatedTime(LocalDate date, ReservationTime time) {
+        if (date.isAfter(LocalDate.now())) {
+            return;
+        }
         if (time.isBefore(LocalTime.now())) {
             throw new RoomescapeBadRequestException("현재 시각보다 이전 시간에 예약할 수 없습니다.");
         }
-
     }
 
     private ReservationTime getReservationTime(long timeId) {
