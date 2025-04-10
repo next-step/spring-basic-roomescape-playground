@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,12 +9,10 @@ import roomescape.global.exception.RoomescapeNotFoundException;
 import roomescape.global.exception.RoomescapeServerError;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
-import roomescape.member.Role;
 import roomescape.reservationTime.ReservationTimeRepository;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 import roomescape.theme.ThemeRepository;
-import roomescape.waiting.WaitingRankingResponse;
 
 @Service
 public class ReservationService {
@@ -57,6 +56,13 @@ public class ReservationService {
                 reservationRequest.date(), reservationRequest.theme(), reservationRequest.time())) {
             throw new RoomescapeBadRequestException("이미 예약 된 방입니다.");
         }
+        ReservationTime time = reservationTimeRepository.findById(reservationRequest.time())
+                .orElseThrow(() -> new RoomescapeBadRequestException("해당 시간이 존재하지 않습니다."));
+
+        if (time.isBefore(LocalTime.now())) {
+            throw new RoomescapeBadRequestException("현재 시각보다 이전 시간에 예약할 수 없습니다.");
+        }
+
     }
 
     private ReservationTime getReservationTime(long timeId) {
