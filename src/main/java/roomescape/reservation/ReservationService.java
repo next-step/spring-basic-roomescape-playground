@@ -14,19 +14,23 @@ import roomescape.reservationTime.ReservationTimeRepository;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 import roomescape.theme.ThemeRepository;
+import roomescape.waiting.WaitingRankingResponse;
+import roomescape.waiting.WaitingService;
 
 @Service
 public class ReservationService {
 
+    private final WaitingService waitingService;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
+    public ReservationService(WaitingService waitingService, ReservationRepository reservationRepository,
                               ThemeRepository themeRepository,
                               ReservationTimeRepository reservationTimeRepository,
                               MemberRepository memberRepository) {
+        this.waitingService = waitingService;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -81,6 +85,13 @@ public class ReservationService {
     private Theme getTheme(long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new RoomescapeNotFoundException("테마를 찾을 수 없습니다."));
+    }
+
+    public MemberReservationResponses getMemberReservationsAndWaitings(long memberId) {
+        MemberReservationResponses results = new MemberReservationResponses(getMemberReservations(memberId));
+        List<WaitingRankingResponse> memberWaitings = waitingService.getMemberWaitings(memberId);
+
+        return results.addWaitings(memberWaitings);
     }
 
     public List<MemberReservationResponse> getMemberReservations(long memberId) {

@@ -57,9 +57,9 @@ public class WaitingService {
         return reservation;
     }
 
-    public List<WaitingRankingResponse> getMemberWaitings(Member member) {
+    public List<WaitingRankingResponse> getMemberWaitings(long memberId) {
         List<WaitingRanking> waitingRankings = waitingRepository.findWaitingRankingByMemberId(
-                member.getId());
+                memberId);
 
         return waitingRankings.stream()
                 .map(waitingRanking -> new WaitingRankingResponse(waitingRanking.getWaiting(),

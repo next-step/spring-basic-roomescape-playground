@@ -98,8 +98,8 @@ class WaitingServiceTest {
             insertWaiting(manggo, reservation2);
             insertWaiting(brown, reservation2);
 
-            List<WaitingRankingResponse> brownWaitings = waitingService.getMemberWaitings(brown);
-            List<WaitingRankingResponse> manggoWaitings = waitingService.getMemberWaitings(manggo);
+            List<WaitingRankingResponse> brownWaitings = waitingService.getMemberWaitings(brown.getId());
+            List<WaitingRankingResponse> manggoWaitings = waitingService.getMemberWaitings(manggo.getId());
 
             assertAll(
                     () -> assertThat(brownWaitings).hasSize(2),
@@ -128,11 +128,11 @@ class WaitingServiceTest {
             Waiting waiting1 = insertWaiting(brown, reservation);   // rank: 1
             insertWaiting(manggo, reservation);                     // rank: 2
 
-            List<WaitingRankingResponse> before = waitingService.getMemberWaitings(manggo);
+            List<WaitingRankingResponse> before = waitingService.getMemberWaitings(manggo.getId());
             long beforeRank = before.get(0).ranking();
 
             waitingRepository.deleteById(waiting1.getId());
-            List<WaitingRankingResponse> after = waitingService.getMemberWaitings(manggo);
+            List<WaitingRankingResponse> after = waitingService.getMemberWaitings(manggo.getId());
             assertAll(
                     () -> assertThat(after.get(0).reservationId()).isEqualTo(reservation.getId()),
                     () -> assertThat(after.get(0).ranking()).isEqualTo(beforeRank - 1L)

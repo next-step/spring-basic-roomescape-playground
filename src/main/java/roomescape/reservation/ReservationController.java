@@ -20,12 +20,9 @@ import roomescape.waiting.WaitingService;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final WaitingService waitingService;
 
-    public ReservationController(ReservationService reservationService,
-                                 WaitingService waitingService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.waitingService = waitingService;
     }
 
     @GetMapping("/reservations")
@@ -36,11 +33,9 @@ public class ReservationController {
     @GetMapping("/reservations-mine")
     public ResponseEntity<MemberReservationResponses> getMemberReservations(
             @AuthMember Member member) {
-        MemberReservationResponses results = new MemberReservationResponses(
-                reservationService.getMemberReservations(member.getId()));
-        List<WaitingRankingResponse> memberWaitings = waitingService.getMemberWaitings(member);
+        MemberReservationResponses results = reservationService.getMemberReservationsAndWaitings(member.getId());
 
-        return ResponseEntity.ok(results.addWaitings(memberWaitings));
+        return ResponseEntity.ok(results);
     }
 
     @PostMapping("/reservations")
