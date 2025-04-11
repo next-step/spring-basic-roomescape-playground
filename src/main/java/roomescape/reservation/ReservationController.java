@@ -41,11 +41,6 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(@AuthMember Member member
             , @RequestBody ReservationRequest reservationRequest) {
-        String name = reservationRequest.name();
-        if (name == null || name.isEmpty() || !member.isAdmin()) {
-            reservationRequest = reservationRequest.update(member.getName());
-        }
-
         ReservationResponse result = reservationService.create(reservationRequest, member);
  
         return ResponseEntity.created(URI.create("/reservations/" + result.id()))

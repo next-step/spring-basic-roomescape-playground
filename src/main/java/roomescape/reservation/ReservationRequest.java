@@ -11,10 +11,6 @@ public record ReservationRequest(@NotNull String name, @NotNull LocalDate date, 
 
     public Reservation toReservationWithMember(Theme theme, ReservationTime reservationTime,
                                                Member member) {
-        return new Reservation(member, name, date, reservationTime, theme);
-    }
-
-    public ReservationRequest update(String name) {
-        return new ReservationRequest(name, this.date, this.theme, this.time);
+        return new Reservation(member, member.getName(), date, reservationTime, theme);
     }
 }
