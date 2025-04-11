@@ -1,10 +1,10 @@
 let isEditing = false;
 const API_ENDPOINT = '/times';
-const cellFields = ['id', 'value'];
+const cellFields = ['id', 'timeValue'];
 const createCellFields = ['', createInput()];
 function createBody(inputs) {
   return {
-    value: inputs[0].value,
+    timeValue: inputs[0].value,
   };
 }
 

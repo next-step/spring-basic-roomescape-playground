@@ -58,6 +58,10 @@ public class ReservationTimeService {
             throw new RoomescapeBadRequestException("잘못된 예약 시간 정보입니다.");
         }
 
+        if (reservationTimeRepository.existsByTimeValue(reservationTime.getTimeValue())) {
+            throw new RoomescapeBadRequestException("이미 존재하는 예약 시간입니다.");
+        }
+
         return reservationTimeRepository.save(reservationTime);
     }
 
