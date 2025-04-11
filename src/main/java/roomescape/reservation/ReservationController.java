@@ -39,7 +39,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@AuthMember Member member
+    public ResponseEntity<ReservationResponse> create(@AuthMember Member member
             , @RequestBody ReservationRequest reservationRequest) {
         String name = reservationRequest.name();
         if (name == null || name.isEmpty() || !member.isAdmin()) {
