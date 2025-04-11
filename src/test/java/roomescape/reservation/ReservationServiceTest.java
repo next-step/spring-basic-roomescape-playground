@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import net.bytebuddy.asm.Advice.Local;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +34,12 @@ class ReservationServiceTest {
         @Test
         void 이름으로_예약을_생성한다() {
             ReservationRequest request = new ReservationRequest(
-                    "사용자1", LocalDate.parse("2025-04-10"), 1L, 1L);
+                    "사용자1", LocalDate.parse("2025-05-10"), 1L, 1L);
             Member member = memberRepository.findByEmail("admin@email.com").orElseThrow();
 
             ReservationResponse response = reservationService.create(request, member);
             Reservation saved = reservationRepository.findByDateAndReservationTime_IdAndTheme_Id(
-                    LocalDate.parse("2025-04-10"), 1L, 1L).orElseThrow();
+                    LocalDate.parse("2025-05-10"), 1L, 1L).orElseThrow();
 
             assertThat(response.name()).isEqualTo(saved.getName());
         }
@@ -47,12 +48,12 @@ class ReservationServiceTest {
         void 멤버로_예약을_생성한다() {
             Member member = memberRepository.findByEmail("brown@email.com").orElseThrow();
             ReservationRequest request = new ReservationRequest(member.getName()
-                    , LocalDate.parse("2025-04-11"), 2L, 2L);
+                    , LocalDate.parse("2025-05-11"), 2L, 2L);
 
             ReservationResponse response = reservationService.create(request, member);
 
             Reservation saved = reservationRepository.findByDateAndReservationTime_IdAndTheme_Id(
-                    LocalDate.parse("2025-04-11"), 2L, 2L
+                    LocalDate.parse("2025-05-11"), 2L, 2L
             ).orElseThrow();
 
             assertThat(saved.getMember().getId()).isEqualTo(member.getId());

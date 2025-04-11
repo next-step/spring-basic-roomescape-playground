@@ -76,7 +76,7 @@ public class MissionStepTest {
         String token = getToken(email);
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", "2025-05-01");
         params.put("time", "1");
         params.put("theme", "3");
 
