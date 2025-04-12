@@ -28,21 +28,20 @@ public class WaitingService {
     }
 
     public WaitingResponse createWaiting(WaitingRequest waitingRequest, Long memberId) {
-        Long themeId = waitingRequest.theme();
-        Long timeId = waitingRequest.time();
+        Long themeId = waitingRequest.themeId();
+        Long timeId = waitingRequest.timeId();
         String date = waitingRequest.date();
 
-        Theme findTheme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+        Theme findTheme = themeRepository.getById(themeId);
         Time findTime = timeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 시간이 존재하지 않습니다."));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
 
         Waiting waiting = new Waiting(findTheme, date, findTime, member);
-        Waiting savedWaiting = waitingRepository.save(waiting);
+        waitingRepository.save(waiting);
         Long id = waiting.getId();
-        Long rank = waitingRepository.countByThemeAndDateAndTimeAndIdLessThanEqual(findTheme, date, findTime, id);
+        Long rank = waitingRepository.countByConditions(findTheme, date, findTime, id);
         return new WaitingResponse(id, rank);
     }
 
