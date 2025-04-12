@@ -13,7 +13,7 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
-@Table(name = "waitings")
+@Table(name = "waiting")
 public class Waiting {
 
     @Id

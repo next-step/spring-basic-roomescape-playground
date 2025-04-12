@@ -39,7 +39,7 @@ CREATE TABLE reservation
     FOREIGN KEY (member_id) REFERENCES member (id)
 );
 
-CREATE TABLE waitings
+CREATE TABLE waiting
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     date     VARCHAR(255) NOT NULL,
