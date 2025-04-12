@@ -1,6 +1,8 @@
 package roomescape.member;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -27,28 +29,33 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
     }
 
+    public Member findById(long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, getMemberRowMapper(), id);
+    }
+
     public Member findByEmailAndPassword(String email, String password) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
+                getMemberRowMapper(),
                 email, password
+        );
+    }
+
+    @NotNull
+    private static RowMapper<Member> getMemberRowMapper() {
+        return (rs, rowNum) -> new Member(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("role")
         );
     }
 
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
+                getMemberRowMapper(),
                 name
         );
     }
