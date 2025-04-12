@@ -27,7 +27,7 @@ public class ThemeController {
 
     @GetMapping("/themes")
     public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeRepository.findAllByDeletedFalse());
+        return ResponseEntity.ok(themeRepository.findAllByIsDeletedFalse());
     }
 
     @DeleteMapping("/themes/{id}")

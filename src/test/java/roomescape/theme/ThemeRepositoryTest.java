@@ -30,7 +30,7 @@ class ThemeRepositoryTest {
         themeRepository.save(deletedTheme);
 
         // when
-        List<Theme> themes = themeRepository.findAllByDeletedFalse();
+        List<Theme> themes = themeRepository.findAllByIsDeletedFalse();
 
         // then
         assertThat(themes).containsExactly(theme1, theme2)

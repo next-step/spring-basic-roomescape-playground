@@ -22,7 +22,7 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public List<ReservationResponse> list() {
+    public List<ReservationResponse> getList() {
         return reservationService.findAll();
     }
 
@@ -46,7 +46,7 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations-mine")
-    public List<MyReservationResponse> myReservations(LoginMember loginMember) {
+    public List<MyReservationResponse> getMyReservations(LoginMember loginMember) {
         return reservationService.findByMemberId(loginMember.getId());
     }
 }
