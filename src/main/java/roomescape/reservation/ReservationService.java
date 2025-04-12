@@ -55,7 +55,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NoSuchElementException("Time not found"));
         Reservation reservation = new Reservation(member.getName(), request.getDate(), foundTime, foundTheme, member);
         Reservation saved = reservationRepository.save(reservation);
-        return toReservationResponse(saved);
+        return new ReservationResponse(saved);
     }
 
     public void deleteById(Long id) {
@@ -66,7 +66,7 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAllWithThemeAndTime()
                 .stream()
-                .map(this::toReservationResponse)
+                .map(ReservationResponse::new)
                 .toList();
     }
 
@@ -90,10 +90,6 @@ public class ReservationService {
 
     private MyReservationResponse toMyReservationResponse(Reservation reservation) {
         return new MyReservationResponse(reservation);
-    }
-
-    private ReservationResponse toReservationResponse(Reservation reservation) {
-        return new ReservationResponse(reservation);
     }
 
     private MyReservationResponse toMyWaitingResponse(WaitingWithRank waitingWithRank) {
