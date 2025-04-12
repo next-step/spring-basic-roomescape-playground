@@ -1,8 +1,8 @@
 package roomescape.waiting;
 
 public record WaitingRequest(
-        Long theme,
+        Long themeId,
         String date,
-        Long time
+        Long timeId
 ) {
 }

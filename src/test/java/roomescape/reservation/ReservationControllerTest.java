@@ -44,8 +44,8 @@ class ReservationControllerTest {
         // given
         Map<String, String> body = Map.of(
                 "date", "2025-03-01",
-                "time", "1",
-                "theme", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

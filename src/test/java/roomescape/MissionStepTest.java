@@ -62,8 +62,8 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
-        params.put("time", "1");
-        params.put("theme", "1");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -134,8 +134,8 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
-        params.put("time", "1");
-        params.put("theme", "1");
+        params.put("timeId", "1");
+        params.put("themeId", "1");
 
         // 예약 대기 생성
         WaitingResponse waiting = RestAssured.given().log().all()

@@ -49,9 +49,9 @@ public class ReservationService {
     }
 
     private ReservationResponse saveReservationWithMember(ReservationRequest request, Member member) {
-        Theme foundTheme = themeRepository.findById(request.getTheme())
+        Theme foundTheme = themeRepository.findById(request.getThemeId())
                 .orElseThrow(() -> new NoSuchElementException("Theme not found"));
-        Time foundTime = timeRepository.findById(request.getTime())
+        Time foundTime = timeRepository.findById(request.getTimeId())
                 .orElseThrow(() -> new NoSuchElementException("Time not found"));
         Reservation reservation = new Reservation(member.getName(), request.getDate(), foundTime, foundTheme, member);
         Reservation saved = reservationRepository.save(reservation);
@@ -74,7 +74,7 @@ public class ReservationService {
     public List<MyReservationResponse> findByMemberId(Long memberId) {
         List<MyReservationResponse> myReservationResponses = reservationRepository.findByMemberId(memberId)
                 .stream()
-                .map(this::toMyReservationResponse)
+                .map(MyReservationResponse::new)
                 .toList();
 
         List<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(memberId)
@@ -86,10 +86,6 @@ public class ReservationService {
         combined.addAll(myReservationResponses);
         combined.addAll(waitings);
         return combined;
-    }
-
-    private MyReservationResponse toMyReservationResponse(Reservation reservation) {
-        return new MyReservationResponse(reservation);
     }
 
     private MyReservationResponse toMyWaitingResponse(WaitingWithRank waitingWithRank) {

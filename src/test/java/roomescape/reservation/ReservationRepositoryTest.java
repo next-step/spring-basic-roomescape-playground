@@ -31,7 +31,7 @@ class ReservationRepositoryTest {
     void given_save_reservation_when_findAll_then_return_list_contain_savedReservation() {
         //given
         Time time = new Time("10:00");
-        Theme theme = new  Theme("theme", "description");
+        Theme theme = new  Theme("themeId", "description");
         Member member = new Member("member", "password", "email", Role.ADMIN);
         Reservation reservation = new Reservation(member.getName(), "2023-10-10", time, theme, member);
 
@@ -50,7 +50,7 @@ class ReservationRepositoryTest {
                 () -> assertThat(reservations).isNotEmpty(),
                 () -> assertThat(reservations.get(0).getMember().getName()).isEqualTo("member"),
                 () -> assertThat(reservations.get(0).getDate()).isEqualTo("2023-10-10"),
-                () -> assertThat(reservations.get(0).getTheme().getName()).isEqualTo("theme")
+                () -> assertThat(reservations.get(0).getTheme().getName()).isEqualTo("themeId")
         );
 
     }
