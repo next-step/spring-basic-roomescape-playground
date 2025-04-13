@@ -25,8 +25,12 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation() {
+    protected Reservation() {
 
+    }
+
+    public static Reservation of(String name, String date, Time time, Theme theme) {
+        return new Reservation(name, date, time, theme);
     }
 
     public Long getId() {
