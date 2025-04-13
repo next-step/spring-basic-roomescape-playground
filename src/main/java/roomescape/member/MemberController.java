@@ -35,15 +35,11 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public CheckResponse loginCheck(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                Member member = memberService.loginCheck(cookie.getValue());
-                return new CheckResponse(member.getName());
-            }
+    public CheckResponse loginCheck(LoginMember loginMember) {
+        if (loginMember.getId() == null) {
+            throw new IllegalArgumentException();
         }
-        return null;
+        return new CheckResponse(loginMember.getName());
     }
 
     @PostMapping("/logout")
