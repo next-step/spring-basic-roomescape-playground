@@ -58,8 +58,23 @@ public class ReservationService {
         return new ReservationResponse(saved);
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+        Reservation findReservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Reservation not found"));
+        reservationRepository.delete(findReservation);
+
+        Theme theme = findReservation.getTheme();
+        String date = findReservation.getDate();
+        Time time = findReservation.getTime();
+
+        waitingRepository.findFirstByThemeAndTimeAndDateOrderById(theme, time, date)
+                .ifPresent(waiting -> {
+                    Reservation reservation = new Reservation(waiting.getMember().getName(), waiting.getDate(),
+                            waiting.getTime(), waiting.getTheme(), waiting.getMember());
+                    reservationRepository.save(reservation);
+                    waitingRepository.delete(waiting);
+                });
     }
 
     @Transactional(readOnly = true)
