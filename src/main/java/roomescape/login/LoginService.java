@@ -1,26 +1,41 @@
 package roomescape.login;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberResponse;
+import roomescape.member.MemberService;
 
 @Service
 public class LoginService {
 
-    private final MemberDao memberDao;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final MemberService memberService;
+    private final JwtTokenService jwtTokenService;
 
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
-        this.jwtTokenProvider = jwtTokenProvider;
+    public LoginService(MemberService memberService, JwtTokenService jwtTokenService) {
+        this.memberService = memberService;
+        this.jwtTokenService = jwtTokenService;
     }
 
     public String loginAndGetToken(LoginRequest loginRequest) {
-        // 1. 멤버 조회
-        final Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(),
+        MemberResponse member = memberService.findByEmailAndPassword(loginRequest.getEmail(),
                                                                            loginRequest.getPassword());
-        // 2. 토큰 생성
-        return jwtTokenProvider.getAccessToken(member);
+        return jwtTokenService.getAccessToken(member.getId(), member.getName(), member.getRole());
+    }
+
+    public String getMemberName(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
+        Long memberId = jwtTokenService.getMemberId(token);
+        MemberResponse member = memberService.findById(memberId);
+        return member.getName();
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 
 }
