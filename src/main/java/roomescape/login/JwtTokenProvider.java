@@ -2,8 +2,10 @@ package roomescape.login;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 
+@Component
 public class JwtTokenProvider {
 
     public String getAccessToken(Member member) {
