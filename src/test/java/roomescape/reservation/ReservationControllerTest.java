@@ -40,12 +40,12 @@ class ReservationControllerTest {
     @DisplayName("예약 생성")
     @Test
     void given_token_body_when_create_reservations_then_success() {
-        String token = jwtProvider.generateToken(new MemberResponse(1L, "어드민", "admin@email.com", Role.ADMIN));
+        String token = generateToken();
         // given
         Map<String, String> body = Map.of(
                 "date", "2025-03-01",
-                "timeId", "1",
-                "themeId", "1"
+                "time", "1",
+                "theme", "1"
         );
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -60,15 +60,24 @@ class ReservationControllerTest {
 
     }
 
+    private String generateToken() {
+        return jwtProvider.generateToken(new MemberResponse(1L, "어드민", "admin@email.com", Role.ADMIN));
+    }
+
     @Test
     @DisplayName("예약 ID 삭제")
     void writeHereTestName() {
         // given
-        Long reservationId = 4L;
+        long reservationId = 3L;
+        String token = generateToken();
         // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().delete("/reservations/" + reservationId)
-                .then().log().all()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/reservations/" + reservationId)
+                .then()
+                .log().all()
                 .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(204);

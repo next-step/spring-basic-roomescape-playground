@@ -62,8 +62,8 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        params.put("time", "1");
+        params.put("theme", "1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -103,7 +103,7 @@ public class MissionStepTest {
                 .cookie("token", brownToken)
                 .get("/admin")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
 
         String adminToken = generateToke("admin@email.com", "password");
 
