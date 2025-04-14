@@ -18,9 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.auth.client.jwt.JwtProvider;
+import roomescape.reservation.MemberReservationResponse;
 import roomescape.reservation.ReservationResponse;
-import roomescape.reservation.ReservationService;
-import roomescape.reservationTime.ReservationTimeService;
+import roomescape.waiting.WaitingRankingResponse;
+import roomescape.waiting.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,9 +76,9 @@ public class MissionStepTest {
         String token = getToken(email);
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", "2025-05-01");
         params.put("time", "1");
-        params.put("theme", "1");
+        params.put("theme", "3");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -88,7 +89,7 @@ public class MissionStepTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(201);
-        assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
+        assertThat(response.as(ReservationResponse.class).name()).isEqualTo("임시사용자");
 
         params.put("name", "브라운");
 
@@ -100,8 +101,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(adminResponse.statusCode()).isEqualTo(201);
-        assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
+        assertThat(adminResponse.statusCode()).isEqualTo(400);
     }
 
     @Test
@@ -132,5 +132,61 @@ public class MissionStepTest {
         String role = (String) result.get("role");
 
         return jwtProvider.generateToken(id, email, role);
+    }
+
+    @Test
+    void 오단계() {
+        String email = "admin@email.com";
+        String token = getToken(email);
+
+        List<MemberReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", token)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList("responses", MemberReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
+    }
+
+    @Test
+    void 육단계() {
+        String brownEmail = "brown@email.com";
+        String brownToken = getToken(brownEmail);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 예약 대기 생성
+        WaitingRankingResponse waiting = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingRankingResponse.class);
+
+        // 내 예약 목록 조회
+        List<MemberReservationResponse> memberReservations = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList("responses", MemberReservationResponse.class);
+
+        // 예약 대기 상태 확인
+        String status = memberReservations.stream()
+                .filter(memberReservation -> memberReservation.id() == waiting.reservationId())
+                .filter(memberReservation -> !memberReservation.status().equals("예약"))
+                .findFirst()
+                .map(it -> it.status())
+                .orElse(null);
+
+        assertThat(status).isEqualTo("1번째 예약대기");
     }
 }

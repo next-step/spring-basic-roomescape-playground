@@ -23,7 +23,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times")
-    public List<ReservationTime> list() {
+    public List<ReservationTimeResponse> list() {
         return reservationTimeService.findAll();
     }
 

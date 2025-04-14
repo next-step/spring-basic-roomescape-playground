@@ -13,13 +13,13 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.member.Member;
 import roomescape.reservation.study.ForStudy;
 import roomescape.theme.Theme;
 import roomescape.reservationTime.ReservationTime;
 
 @Entity
 @NamedEntityGraph(name = "Reservation.reservationTime", attributeNodes = @NamedAttributeNode("reservationTime"))
-@NamedEntityGraph(name = "Reservation.forStudies", attributeNodes = @NamedAttributeNode("forStudies"))
 public class Reservation {
 
     @Id
@@ -38,8 +38,8 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     private Theme theme;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reservation")
-    private List<ForStudy> forStudies;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
 
     protected Reservation() {
     }
@@ -54,6 +54,14 @@ public class Reservation {
     }
 
     public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this.name = name;
+        this.date = date;
+        this.reservationTime = reservationTime;
+        this.theme = theme;
+    }
+
+    public Reservation(Member member, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this.member = member;
         this.name = name;
         this.date = date;
         this.reservationTime = reservationTime;
@@ -88,7 +96,12 @@ public class Reservation {
         return theme.getName();
     }
 
-    public List<ForStudy> getForStudies() {
-        return forStudies;
+    public Member getMember() {
+        return member;
+    }
+
+    public boolean isOwner(Member member) {
+        return this.member.getId()
+                .equals(member.getId());
     }
 }

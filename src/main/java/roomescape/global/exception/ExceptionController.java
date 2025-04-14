@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,5 +37,10 @@ public class ExceptionController {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(errors);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleParsing(HttpMessageNotReadableException exception) {
+        return ResponseEntity.badRequest().body("요청 본문 형식이 잘못되었습니다.");
     }
 }

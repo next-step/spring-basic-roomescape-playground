@@ -12,6 +12,9 @@ import java.net.URI;
 import java.util.List;
 import roomescape.auth.AuthMember;
 import roomescape.member.Member;
+import roomescape.member.Role;
+import roomescape.waiting.WaitingRankingResponse;
+import roomescape.waiting.WaitingService;
 
 @RestController
 public class ReservationController {
@@ -27,15 +30,19 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
-    @PostMapping("/reservations")
-    public ResponseEntity create(@AuthMember Member member
-            , @RequestBody ReservationRequest reservationRequest) {
-        String name = reservationRequest.name();
-        if (name == null || name.isEmpty()) {
-            reservationRequest = reservationRequest.update(member.getName());
-        }
-        ReservationResponse result = reservationService.save(reservationRequest);
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<MemberReservationResponses> getMemberReservations(
+            @AuthMember Member member) {
+        MemberReservationResponses results = reservationService.getMemberReservationsAndWaitings(member.getId());
 
+        return ResponseEntity.ok(results);
+    }
+
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> create(@AuthMember Member member
+            , @RequestBody ReservationRequest reservationRequest) {
+        ReservationResponse result = reservationService.create(reservationRequest, member);
+ 
         return ResponseEntity.created(URI.create("/reservations/" + result.id()))
                 .body(result);
     }

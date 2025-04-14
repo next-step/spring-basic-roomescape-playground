@@ -20,7 +20,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<AvailableTime> getAvailableTime(LocalDate date, Long themeId) {
+    public List<AvailableTime> getAvailableTime(LocalDate date, long themeId) {
         List<Reservation> reservations = reservationRepository.findByDateAndTheme_Id(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
@@ -32,6 +32,7 @@ public class ReservationTimeService {
     private AvailableTime toAvailableTime(ReservationTime reservationTime
             , List<Reservation> reservations) {
         boolean isBooked = isTimeBooked(reservationTime, reservations);
+
         return new AvailableTime(
                 reservationTime.getId(),
                 reservationTime.getTimeValue().toString(),
@@ -44,8 +45,12 @@ public class ReservationTimeService {
                 .anyMatch(reservation -> reservationTime.isSame(reservation.getTime()));
     }
 
-    public List<ReservationTime> findAll() {
-        return reservationTimeRepository.findAll();
+
+    public List<ReservationTimeResponse> findAll() {
+        return reservationTimeRepository.findAll()
+                .stream()
+                .map(ReservationTimeResponse::new)
+                .toList();
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
@@ -53,10 +58,14 @@ public class ReservationTimeService {
             throw new RoomescapeBadRequestException("잘못된 예약 시간 정보입니다.");
         }
 
+        if (reservationTimeRepository.existsByTimeValue(reservationTime.getTimeValue())) {
+            throw new RoomescapeBadRequestException("이미 존재하는 예약 시간입니다.");
+        }
+
         return reservationTimeRepository.save(reservationTime);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         reservationTimeRepository.deleteById(id);
     }
 }

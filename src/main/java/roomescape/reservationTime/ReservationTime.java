@@ -30,16 +30,21 @@ public class ReservationTime {
         this.timeValue = LocalTime.parse(timeValue);
     }
 
-    public boolean isSame(ReservationTime reservationTime) {
-        return this.id
-                .equals(reservationTime.id);
-    }
-
     public Long getId() {
         return id;
     }
 
     public LocalTime getTimeValue() {
         return timeValue;
+    }
+
+
+    public boolean isSame(ReservationTime reservationTime) {
+        return this.id
+                .equals(reservationTime.getId());
+    }
+
+    public boolean isBefore(LocalTime localTime) {
+        return this.timeValue.isBefore(localTime);
     }
 }
