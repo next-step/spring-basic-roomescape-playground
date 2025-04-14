@@ -59,9 +59,10 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteById(Long id) {
-        Reservation findReservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Reservation not found"));
+    public void deleteById(Long id, LoginMember loginMember) {
+        // 삭제를 요청한 사람과 예약 정보의 소유자가 아닐 경우 예외 수정 -> 어떤 예외?
+        Reservation findReservation = reservationRepository.findByIdAndMemberId(id, loginMember.id())
+                .orElseThrow(() -> new SecurityException("Unauthorized access"));
         reservationRepository.delete(findReservation);
 
         Theme theme = findReservation.getTheme();

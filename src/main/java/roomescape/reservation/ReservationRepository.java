@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import roomescape.member.Member;
@@ -19,4 +20,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByMemberId(Long memberId);
 
     boolean existsByMemberAndThemeAndDateAndTime(Member member, Theme theme, String date, Time time);
+
+    Optional<Reservation> findByIdAndMemberId(Long id, Long memberId);
 }

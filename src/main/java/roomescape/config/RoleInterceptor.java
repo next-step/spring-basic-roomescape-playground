@@ -31,7 +31,7 @@ public class RoleInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        throw new RuntimeException("권한 없음");
+        throw new SecurityException("권한 없음");
     }
 
 }
