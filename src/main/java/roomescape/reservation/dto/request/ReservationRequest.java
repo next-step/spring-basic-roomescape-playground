@@ -1,5 +1,6 @@
 package roomescape.reservation.dto.request;
 
+import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.reservation.domain.Reservation;
@@ -43,12 +44,8 @@ public class ReservationRequest {
         }
     }
 
-    public ReservationRequest createWith(String name) {
-        return new ReservationRequest(name, this.date, this.theme, this.time);
-    }
-
-    public boolean isInvalidName() {
-        return this.name == null || this.name.isBlank();
+    public Reservation toReservation(LoginMember loginMember, Time time, Theme theme) {
+        return new Reservation(loginMember, name, date, time, theme);
     }
 
     public String getName() {
@@ -65,9 +62,5 @@ public class ReservationRequest {
 
     public Long getTime() {
         return time;
-    }
-
-    public Reservation toReservation(Time time, Theme theme) {
-        return new Reservation(name, date, time, theme);
     }
 }

@@ -1,52 +1,61 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.dto.LoginMember;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.dto.response.MyReservationResponse;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.repository.TimeRepository;
+import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.domain.WaitingWithRank;
+import roomescape.waiting.domain.Waitings;
+import roomescape.waiting.repository.WaitingRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
+    public List<ReservationResponse> findAll() {
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
+
+    @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        reservationRequest = updateRequestIfNameIsInvalid(reservationRequest, loginMember);
-        Time time = findTime(reservationRequest.getTime());
-        Theme theme = findTheme(reservationRequest.getTheme());
-        Reservation reservation = reservationRequest.toReservation(time, theme);
+        Reservation reservation = createReservation(reservationRequest, loginMember);
+        validateDuplicateReservation(reservation);
         Reservation reservationWithId = reservationRepository.save(reservation);
         return new ReservationResponse(reservationWithId);
     }
 
-    private ReservationRequest updateRequestIfNameIsInvalid(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.isInvalidName()) {
-            reservationRequest = createReservationRequestWithName(reservationRequest, loginMember);
-        }
-        return reservationRequest;
-    }
-
-    private ReservationRequest createReservationRequestWithName(ReservationRequest reservationRequest, LoginMember loginMember) {
-        String name = loginMember.name();
-        return reservationRequest.createWith(name);
+    private Reservation createReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
+        Time time = findTime(reservationRequest.getTime());
+        Theme theme = findTheme(reservationRequest.getTheme());
+        return reservationRequest.toReservation(loginMember, time, theme);
     }
 
     private Time findTime(long timeId) {
@@ -59,13 +68,44 @@ public class ReservationService {
                 .orElseThrow(() -> new BadRequestException(ExceptionMessage.INVALID_THEME.getMessage()));
     }
 
-    public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+    private void validateDuplicateReservation(Reservation reservation) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservation.getTime(), reservation.getTheme())) {
+            throw new BadRequestException(ExceptionMessage.RESERVATION_ALREADY_EXISTS.getMessage());
+        }
     }
 
-    public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponse::new)
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        List<Reservation> reservations = reservationRepository.findAllByMemberId(loginMember.id());
+        List<Waiting> waitings = waitingRepository.findAllByMemberId(loginMember.id());
+        List<WaitingWithRank> waitingWithRanks = waitings.stream()
+                .map(this::toWaitingWithRank)
                 .toList();
+
+        return Stream.concat(
+                        reservations.stream().map(MyReservationResponse::new),
+                        waitingWithRanks.stream().map(MyReservationResponse::new))
+                .toList();
+    }
+
+    private WaitingWithRank toWaitingWithRank(Waiting waiting) {
+        Waitings waitings = new Waitings(waitingRepository.findAllByDateAndTimeAndTheme(waiting.getDate(), waiting.getTime(), waiting.getTheme()));
+        return new WaitingWithRank(waiting, waitings.calculateRank(waiting));
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        reservationRepository.findById(id)
+                .ifPresent(reservation -> {
+                    reservationRepository.deleteById(id);
+                    saveFirstWaitingAsReservation(reservation);
+                });
+    }
+
+    private void saveFirstWaitingAsReservation(Reservation reservation) {
+        waitingRepository.findFirstWaitingByDateAndTimeAndTheme(reservation.getDate(), reservation.getTime(), reservation.getTheme())
+                .ifPresent(waiting -> {
+                    reservationRepository.save(waiting.toReservation());
+                    waitingRepository.delete(waiting);
+                });
     }
 }

@@ -1,4 +1,4 @@
-package roomescape.reservation.domain;
+package roomescape.waiting.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,22 +8,21 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import roomescape.auth.dto.LoginMember;
+import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
-import roomescape.waiting.domain.Status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-public class Reservation {
+public class Waiting implements Comparable<Waiting> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private Long memberId;
 
     @Column(nullable = false)
@@ -40,30 +39,10 @@ public class Reservation {
     @JoinColumn(name = "theme_id", nullable = false)
     private Theme theme;
 
-    protected Reservation() {
+    protected Waiting() {
     }
 
-    public Reservation(LoginMember loginMember, String name, LocalDate date, Time time, Theme theme) {
-        this(date, time, theme);
-        if (isInvalidName(name)) {
-            this.memberId = loginMember.id();
-            this.name = loginMember.name();
-            return;
-        }
-        this.name = name;
-    }
-
-    public Reservation(LocalDate date, Time time, Theme theme) {
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    private boolean isInvalidName(final String name) {
-        return name == null || name.isBlank();
-    }
-
-    public Reservation(long memberId, String name, LocalDate date, Time time, Theme theme) {
+    public Waiting(long memberId, String name, LocalDate date, Time time, Theme theme) {
         this.memberId = memberId;
         this.name = name;
         this.date = date;
@@ -71,8 +50,25 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation toReservation() {
+        return new Reservation(memberId, name, date, time, theme);
+    }
+
+    public boolean isBefore(Waiting target) {
+        return this.compareTo(target) < 0;
+    }
+
+    @Override
+    public int compareTo(Waiting other) {
+        return Long.compare(this.id, other.id);
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public Long getMemberId() {
+        return memberId;
     }
 
     public String getName() {
@@ -91,15 +87,11 @@ public class Reservation {
         return theme;
     }
 
-    public String getThemeName() {
-        return theme.getName();
-    }
-
     public LocalTime getTimeValue() {
         return time.getValue();
     }
 
-    public String getRankStatus() {
-        return Status.CONFIRMED.getDescription();
+    public String getThemeName() {
+        return theme.getName();
     }
 }

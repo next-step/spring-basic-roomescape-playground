@@ -2,11 +2,7 @@ package roomescape.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.WeakKeyException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ExceptionMessage;
 import roomescape.exception.UnAuthorizedException;
@@ -19,15 +15,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.auth.JwtTokenManager.ACCESS_TOKEN_EXP;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class JwtTokenManagerTest {
-
-    @Autowired
-    private JwtTokenManager jwtTokenManager;
 
     @Test
     void 시크릿_키_길이가_충분하지_않은경우_예외가_발생한다() {
-        assertThatThrownBy(() -> new JwtTokenManager("short"))
+        // given
+        String shortSecretKey = "short";
+        // when & then
+        assertThatThrownBy(() -> new JwtTokenManager(shortSecretKey))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining(ExceptionMessage.INVALID_SECRET_KEY.getMessage());
     }
@@ -36,6 +31,7 @@ class JwtTokenManagerTest {
     void 액세스_토큰을_파싱할_수_있다() {
         // given
         Member member = new Member(1L, "멤버", "member@email.com", Role.USER);
+        JwtTokenManager jwtTokenManager = createJwtTokenManager();
         String accessToken = jwtTokenManager.createAccessToken(member);
         // when
         long resultOfParseToken = jwtTokenManager.parseToken(accessToken);
@@ -47,6 +43,7 @@ class JwtTokenManagerTest {
     void 만료된_토큰을_파싱하면_예외를_반환한다() {
         // given
         Member member = new Member(1L, "멤버", "member@email.com", Role.USER);
+        JwtTokenManager jwtTokenManager = createJwtTokenManager();
         String token = createExpiredToken(member);
         // when & then
         assertThatThrownBy(() -> jwtTokenManager.parseToken(token))
@@ -58,6 +55,7 @@ class JwtTokenManagerTest {
     void 잘못된_서명_토큰을_파싱하면_예외를_반환한다() {
         // given
         Member member = new Member(1L, "멤버", "member@email.com", Role.USER);
+        JwtTokenManager jwtTokenManager = createJwtTokenManager();
         String invalidToken = createInvalidToken(member);
         // when & then
         assertThatThrownBy(() -> jwtTokenManager.parseToken(invalidToken))
@@ -65,7 +63,13 @@ class JwtTokenManagerTest {
                 .hasMessage(ExceptionMessage.INVALID_TOKEN.getMessage());
     }
 
+    private JwtTokenManager createJwtTokenManager() {
+        String longSecretKey = "test-secret-keyyyyyyyyyyyyyyyyyyyyy";
+        return new JwtTokenManager(longSecretKey);
+    }
+
     private String createExpiredToken(Member member) {
+        JwtTokenManager jwtTokenManager = createJwtTokenManager();
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() - ACCESS_TOKEN_EXP);
 
