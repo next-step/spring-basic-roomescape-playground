@@ -27,11 +27,11 @@ public class Reservation {
     @Column(name = "date", nullable = false)
     private String date;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
     private Time time;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
     private Theme theme;
 

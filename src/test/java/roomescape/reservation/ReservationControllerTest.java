@@ -82,4 +82,23 @@ class ReservationControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(204);
     }
+
+    @DisplayName("본인이 아닌 예약 삭제 시도 예외")
+    @Test
+    void testMethodNameHere() {
+        //given
+        long reservationId = 100L;
+        String token = generateToken();
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/reservations/" + reservationId)
+                .then()
+                .log().all()
+                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(403);
+    }
 }
