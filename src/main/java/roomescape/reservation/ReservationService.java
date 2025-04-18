@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.LoginMember;
@@ -43,16 +44,16 @@ public class ReservationService {
     }
 
     public ReservationResponse saveForUser(ReservationRequest request, LoginMember loginMember) {
-        Member foundMember = memberRepository.findById(loginMember.id())
+        Member foundMember = Optional.ofNullable(request.getName())
+                .map(memberRepository::findByName)
+                .orElseGet(() -> memberRepository.findById(loginMember.id()))
                 .orElseThrow(() -> new NoSuchElementException("Member not found"));
         return saveReservationWithMember(request, foundMember);
     }
 
     private ReservationResponse saveReservationWithMember(ReservationRequest request, Member member) {
-        Theme foundTheme = themeRepository.findById(request.getThemeId())
-                .orElseThrow(() -> new NoSuchElementException("Theme not found"));
-        Time foundTime = timeRepository.findById(request.getTimeId())
-                .orElseThrow(() -> new NoSuchElementException("Time not found"));
+        Theme foundTheme = themeRepository.getById(request.getThemeId());
+        Time foundTime = timeRepository.getById(request.getTimeId());
         Reservation reservation = new Reservation(member.getName(), request.getDate(), foundTime, foundTheme, member);
         Reservation saved = reservationRepository.save(reservation);
         return new ReservationResponse(saved);
@@ -60,7 +61,6 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id, LoginMember loginMember) {
-        // 삭제를 요청한 사람과 예약 정보의 소유자가 아닐 경우 예외 수정 -> 어떤 예외?
         Reservation findReservation = reservationRepository.findByIdAndMemberId(id, loginMember.id())
                 .orElseThrow(() -> new SecurityException("Unauthorized access"));
         reservationRepository.delete(findReservation);
@@ -76,6 +76,11 @@ public class ReservationService {
                     reservationRepository.save(reservation);
                     waitingRepository.delete(waiting);
                 });
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        reservationRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
