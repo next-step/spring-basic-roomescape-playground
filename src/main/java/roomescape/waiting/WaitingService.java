@@ -23,7 +23,9 @@ public class WaitingService {
             WaitingRepository waitingRepository,
             ThemeRepository themeRepository,
             TimeRepository timeRepository,
-            MemberRepository memberRepository, ReservationRepository reservationRepository) {
+            MemberRepository memberRepository,
+            ReservationRepository reservationRepository
+    ) {
         this.waitingRepository = waitingRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
@@ -38,10 +40,8 @@ public class WaitingService {
         String date = waitingRequest.date();
 
         Theme findTheme = themeRepository.getById(themeId);
-        Time findTime = timeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 시간이 존재하지 않습니다."));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
+        Time findTime = timeRepository.getById(timeId);
+        Member member = memberRepository.getById(memberId);
 
         if (waitingRepository.existsByThemeAndDateAndTimeAndMember(findTheme, date, findTime, member)) {
             throw new IllegalArgumentException("이미 대기열에 등록되어 있습니다.");
