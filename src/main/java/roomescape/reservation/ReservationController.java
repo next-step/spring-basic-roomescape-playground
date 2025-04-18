@@ -2,7 +2,6 @@ package roomescape.reservation;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,16 +26,22 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> create(
+    public ResponseEntity<ReservationResponse> createForUser(
             @RequestBody ReservationRequest reservationRequest,
             LoginMember loginMember
     ) {
+        ReservationResponse reservationResponse = reservationService.saveForUser(reservationRequest, loginMember);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.getId()))
+                .body(reservationResponse);
+    }
 
-        ReservationResponse reservation = Optional.ofNullable(reservationRequest.getName())
-                .map(name -> reservationService.saveForAdmin(reservationRequest))
-                .orElseGet(() -> reservationService.saveForUser(reservationRequest, loginMember));
-
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    @PostMapping("/admin/reservations")
+    public ResponseEntity<ReservationResponse> createForAdmin(
+            @RequestBody ReservationRequest reservationRequest
+    ) {
+        ReservationResponse reservationResponse = reservationService.saveForAdmin(reservationRequest);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.getId()))
+                .body(reservationResponse);
     }
 
     @DeleteMapping("/reservations/{id}")
@@ -46,7 +51,13 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations-mine")
-    public List<MyReservationResponse> getMyReservations(LoginMember loginMember) {
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
         return reservationService.findByMemberId(loginMember.getId());
+    }
+
+    @DeleteMapping("/admin/reservations/{id}")
+    public ResponseEntity<Void> deleteByAdmin(@PathVariable Long id) {
+        reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
