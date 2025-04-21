@@ -29,7 +29,7 @@ public class ExceptionController {
     @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<String> handleRuntimeException(RuntimeException e) {
         e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

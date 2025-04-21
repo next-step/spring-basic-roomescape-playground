@@ -22,7 +22,7 @@ public class Theme {
 
     @ColumnDefault("false")
     @Column(name = "deleted", nullable = false)
-    private boolean deleted;
+    private boolean isDeleted;
 
     protected Theme() {
     }
@@ -31,7 +31,7 @@ public class Theme {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.deleted = false;
+        this.isDeleted = false;
     }
 
     public Theme(String name, String description) {
@@ -39,7 +39,7 @@ public class Theme {
     }
 
     public void markAsDeleted() {
-        this.deleted = true;
+        this.isDeleted = true;
     }
 
     public Long getId() {

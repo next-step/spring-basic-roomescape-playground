@@ -1,10 +1,22 @@
 package roomescape.reservation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ReservationRequest {
+    @JsonProperty("name")
     private String name;
+
+    @JsonProperty("date")
     private String date;
-    private Long theme;
-    private Long time;
+
+    @JsonProperty("theme")
+    private Long themeId;
+
+    @JsonProperty("time")
+    private Long timeId;
+
+    public ReservationRequest() {
+    }
 
     public String getName() {
         return name;
@@ -14,11 +26,11 @@ public class ReservationRequest {
         return date;
     }
 
-    public Long getTheme() {
-        return theme;
+    public Long getThemeId() {
+        return themeId;
     }
 
-    public Long getTime() {
-        return time;
+    public Long getTimeId() {
+        return timeId;
     }
 }

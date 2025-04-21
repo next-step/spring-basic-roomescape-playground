@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.member.Member;
+import roomescape.member.enums.Role;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -29,11 +31,13 @@ class ReservationRepositoryTest {
     void given_save_reservation_when_findAll_then_return_list_contain_savedReservation() {
         //given
         Time time = new Time("10:00");
-        Theme theme = new  Theme("theme", "description");
-        Reservation reservation = new Reservation("name", "2023-10-10", time, theme);
+        Theme theme = new  Theme("themeId", "description");
+        Member member = new Member("member", "password", "email", Role.ADMIN);
+        Reservation reservation = new Reservation(member.getName(), "2023-10-10", time, theme, member);
 
         entityManager.persist(time);
         entityManager.persist(theme);
+        entityManager.persist(member);
         entityManager.persist(reservation);
         entityManager.flush();
         entityManager.clear();
@@ -44,10 +48,11 @@ class ReservationRepositoryTest {
         // then
         assertAll(
                 () -> assertThat(reservations).isNotEmpty(),
-                () -> assertThat(reservations.get(0).getName()).isEqualTo("name"),
+                () -> assertThat(reservations.get(0).getMember().getName()).isEqualTo("member"),
                 () -> assertThat(reservations.get(0).getDate()).isEqualTo("2023-10-10"),
-                () -> assertThat(reservations.get(0).getTheme().getName()).isEqualTo("theme")
+                () -> assertThat(reservations.get(0).getTheme().getName()).isEqualTo("themeId")
         );
 
     }
+
 }

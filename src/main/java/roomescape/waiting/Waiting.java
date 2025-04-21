@@ -1,6 +1,5 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -8,23 +7,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
-public class Reservation {
+@Table(name = "waiting")
+public class Waiting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theme_id")
+    private Theme theme;
 
-    @Column(name = "date", nullable = false)
     private String date;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,31 +31,29 @@ public class Reservation {
     private Time time;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "theme_id")
-    private Theme theme;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    protected Reservation() {
-
+    protected Waiting() {
     }
 
-    public Reservation(String name, String date, Time time, Theme theme, Member member) {
-        this.name = name;
+    public Waiting(Theme theme, String date, Time time, Member member) {
+        this.theme = theme;
         this.date = date;
         this.time = time;
-        this.theme = theme;
         this.member = member;
+    }
+
+    public boolean isNotSameMember(Long memberId) {
+        return !this.member.getId().equals(memberId);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Theme getTheme() {
+        return theme;
     }
 
     public String getDate() {
@@ -65,10 +62,6 @@ public class Reservation {
 
     public Time getTime() {
         return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
     }
 
     public Member getMember() {
