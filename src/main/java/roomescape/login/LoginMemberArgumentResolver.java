@@ -2,6 +2,7 @@ package roomescape.login;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -10,6 +11,7 @@ import roomescape.member.Member;
 import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
 
+@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private MemberService memberService;
@@ -28,11 +30,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public MemberResponse resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+    public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Long memberId = loginService.getMemberId(request.getCookies());
 
-        return memberService.findById(memberId);
+        MemberResponse memberResponse = memberService.findById(memberId);
+        return new Member(memberResponse.getId(), memberResponse.getName(), memberResponse.getEmail(), memberResponse.getRole());
     }
 }
