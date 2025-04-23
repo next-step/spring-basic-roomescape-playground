@@ -29,6 +29,11 @@ public class LoginService {
         return member.getName();
     }
 
+    public Long getMemberId(Cookie[] cookies) {
+        String token = extractTokenFromCookie(cookies);
+        return jwtTokenService.getMemberId(token);
+    }
+
     private String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
