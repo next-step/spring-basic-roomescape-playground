@@ -25,7 +25,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         return loginService.getMemberId(request.getCookies())
             .map(memberId -> {
                 MemberResponse member = memberService.findById(memberId);
-                if (!"ADMIN".equals(member.getRole())) {
+                if (!member.isAdmin()) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return false;
                 }
