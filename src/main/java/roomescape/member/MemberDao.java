@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -28,7 +29,7 @@ public class MemberDao {
     }
 
     public Member findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.queryForObject(
+        List<Member> members = jdbcTemplate.query(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
@@ -38,6 +39,11 @@ public class MemberDao {
                 ),
                 email, password
         );
+
+        if (members.isEmpty()) {
+            return null;
+        }
+        return members.get(0);
     }
 
     public Member findByName(String name) {
@@ -54,7 +60,7 @@ public class MemberDao {
     }
 
     public Member findById(Long id) {
-        return jdbcTemplate.queryForObject(
+        List<Member> members = jdbcTemplate.query(
             "SELECT id, name, email, role FROM member WHERE id = ?",
             (rs, rowNum) -> new Member(
                 rs.getLong("id"),
@@ -64,5 +70,10 @@ public class MemberDao {
             ),
             id
         );
+
+        if (members.isEmpty()) {
+            return null;
+        }
+        return members.get(0);
     }
 }
