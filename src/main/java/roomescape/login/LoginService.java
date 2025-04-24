@@ -1,6 +1,7 @@
 package roomescape.login;
 
 import jakarta.servlet.http.Cookie;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
@@ -29,9 +30,10 @@ public class LoginService {
         return member.getName();
     }
 
-    public Long getMemberId(Cookie[] cookies) {
+    public Optional<Long> getMemberId(Cookie[] cookies) {
         String token = extractTokenFromCookie(cookies);
-        return jwtTokenService.getMemberId(token);
+        Long memberId = jwtTokenService.getMemberId(token);
+        return Optional.ofNullable(memberId);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

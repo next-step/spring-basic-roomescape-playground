@@ -2,6 +2,7 @@ package roomescape.common;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.login.LoginService;
@@ -21,17 +22,18 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        Long memberId = loginService.getMemberId(request.getCookies());
-        if (memberId == null) {
-            response.setStatus(401);
-            return false;
-        }
-
-        MemberResponse member = memberService.findById(memberId);
-        if (!member.getRole().equals("ADMIN")) {
-            response.setStatus(401);
-            return false;
-        }
-        return true;
+        return loginService.getMemberId(request.getCookies())
+            .map(memberId -> {
+                MemberResponse member = memberService.findById(memberId);
+                if (!"ADMIN".equals(member.getRole())) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return false;
+                }
+                return true;
+            })
+            .orElseGet(() -> {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return false;
+            });
     }
 }
