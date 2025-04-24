@@ -14,8 +14,8 @@ import roomescape.member.MemberService;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private MemberService memberService;
-    private LoginService loginService;
+    private final MemberService memberService;
+    private final LoginService loginService;
 
     public LoginMemberArgumentResolver(MemberService memberService, LoginService loginService) {
         this.memberService = memberService;
