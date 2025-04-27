@@ -27,8 +27,13 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             }
         }
 
-        if (member == null || !member.getRole().equals("ADMIN")) {
-            response.setStatus(401);
+        if (member == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+
+        if (!member.getRole().equals("ADMIN")) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
 
