@@ -14,14 +14,8 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.getName() == null) {
-            reservationRequest = new ReservationRequest(
-                    loginMember.getName(),
-                    reservationRequest.getDate(),
-                    reservationRequest.getTheme(),
-                    reservationRequest.getTime()
-            );
-        }
+        reservationRequest = reservationRequest.withUserName(loginMember.getName());
+
         Reservation reservation = reservationDao.save(reservationRequest);
 
         return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
