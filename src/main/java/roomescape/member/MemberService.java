@@ -20,23 +20,18 @@ public class MemberService {
     }
 
     public String login(LoginRequest loginRequest) {
-        Member findMember = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
-
-        if (findMember == null) {
-            throw new IllegalArgumentException("Invalid email or password");
-        }
+        Member findMember = memberDao
+                .findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
 
         return tokenProvider.createToken(findMember);
     }
 
     public Member loginCheck(String token) {
         Long memberId = tokenProvider.parse(token);
-        Member findMember = memberDao.findById(memberId);
 
-        if (findMember == null) {
-            throw new IllegalArgumentException("Invalid email or password");
-        }
 
-        return findMember;
+        return memberDao.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
     }
 }
