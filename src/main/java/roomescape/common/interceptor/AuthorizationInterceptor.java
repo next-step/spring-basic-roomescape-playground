@@ -5,16 +5,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.member.AuthService;
 import roomescape.member.Member;
-import roomescape.member.MemberService;
 
 @Component
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
+    private final AuthService authService;
 
-    public AuthorizationInterceptor(MemberService memberService) {
-        this.memberService = memberService;
+    public AuthorizationInterceptor(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         Member member = null;
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
-                member = memberService.loginCheck(cookie.getValue());
+                member = authService.loginCheck(cookie.getValue());
             }
         }
 
