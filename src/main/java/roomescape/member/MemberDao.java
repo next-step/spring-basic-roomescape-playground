@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -42,21 +41,20 @@ public class MemberDao {
         );
     }
 
-    @NotNull
-    private static RowMapper<Member> getMemberRowMapper() {
-        return (rs, rowNum) -> new Member(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("email"),
-                rs.getString("role")
-        );
-    }
-
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
                 getMemberRowMapper(),
                 name
+        );
+    }
+
+    private RowMapper<Member> getMemberRowMapper() {
+        return (rs, rowNum) -> new Member(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("role")
         );
     }
 }
