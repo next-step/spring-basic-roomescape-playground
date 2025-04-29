@@ -33,7 +33,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Long memberId = loginService.getMemberId(request.getCookies())
+        String token =loginService.extractTokenFromCookie(request.getCookies());
+        Long memberId = loginService.getMemberId(token)
             .orElseThrow(() -> new IllegalStateException("로그인 정보가 없습니다."));
 
         MemberResponse memberResponse = memberService.findById(memberId);

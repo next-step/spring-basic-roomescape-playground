@@ -36,8 +36,8 @@ public class LoginController {
     @GetMapping("/check")
     public LoginResponse check(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String memberName = loginService.getMemberName(cookies);
-
+        String token = loginService.extractTokenFromCookie(cookies);
+        String memberName = loginService.getMemberName(token);
         return new LoginResponse(memberName);
     }
 

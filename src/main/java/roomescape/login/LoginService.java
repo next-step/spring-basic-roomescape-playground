@@ -23,20 +23,18 @@ public class LoginService {
         return jwtTokenService.getAccessToken(member.getId(), member.getName(), member.getRole());
     }
 
-    public String getMemberName(Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
+    public String getMemberName(String token) {
         Long memberId = jwtTokenService.getMemberId(token);
         MemberResponse member = memberService.findById(memberId);
         return member.getName();
     }
 
-    public Optional<Long> getMemberId(Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
+    public Optional<Long> getMemberId(String token) {
         Long memberId = jwtTokenService.getMemberId(token);
         return Optional.ofNullable(memberId);
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
+    public String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();

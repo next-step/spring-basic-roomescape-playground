@@ -22,7 +22,8 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        return loginService.getMemberId(request.getCookies())
+        String token = loginService.extractTokenFromCookie(request.getCookies());
+        return loginService.getMemberId(token)
             .map(memberId -> {
                 MemberResponse member = memberService.findById(memberId);
                 if (!member.isAdmin()) {
