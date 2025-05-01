@@ -23,18 +23,20 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = loginService.extractTokenFromCookie(request.getCookies());
-        return loginService.getMemberId(token)
-            .map(memberId -> {
-                MemberResponse member = memberService.findById(memberId);
-                if (!member.isAdmin()) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    return false;
-                }
-                return true;
-            })
-            .orElseGet(() -> {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return false;
-            });
+        Optional<Long> optionalMemberId = loginService.getMemberId(token);
+
+        if (optionalMemberId.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+
+        Long memberId = optionalMemberId.get();
+        MemberResponse member = memberService.findById(memberId);
+        if (!"ADMIN".equals(member.getRole())) {
+            response.setStatus(401);
+            return false;
+        }
+
+        return true;
     }
 }
