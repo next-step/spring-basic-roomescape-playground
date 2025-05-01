@@ -6,6 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
 
@@ -29,7 +30,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
@@ -40,7 +41,7 @@ public class MissionStepTest {
                 .cookie("token", token)
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
@@ -63,7 +64,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(201);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
 
         params.put("name", "브라운");
@@ -76,7 +77,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(adminResponse.statusCode()).isEqualTo(201);
+        assertThat(adminResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
@@ -88,7 +89,7 @@ public class MissionStepTest {
                 .cookie("token", brownToken)
                 .get("/admin")
                 .then().log().all()
-                .statusCode(403);
+                .statusCode(HttpStatus.FORBIDDEN.value());
 
         String adminToken = createToken("admin@email.com", "password");
 
@@ -96,7 +97,7 @@ public class MissionStepTest {
                 .cookie("token", adminToken)
                 .get("/admin")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(HttpStatus.OK.value());
     }
 
     private String createToken(String mail, String password) {
@@ -109,7 +110,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .extract();
 
         return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
