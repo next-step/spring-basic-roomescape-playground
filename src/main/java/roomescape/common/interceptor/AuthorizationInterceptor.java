@@ -32,7 +32,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (!member.getRole().equals("ADMIN")) {
+        if (member.isNotAdmin()) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
