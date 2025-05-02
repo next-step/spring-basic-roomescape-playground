@@ -36,7 +36,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Optional<String> tokenOptional = cookieTokenProvider.extractToken(request.getCookies());
 
         if (tokenOptional.isEmpty()) {
-            return null;
+            return LoginMember.ANONYMOUS;
         }
 
         Member member = authService.loginCheck(tokenOptional.get());

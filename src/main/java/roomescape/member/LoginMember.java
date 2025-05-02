@@ -7,11 +7,17 @@ public class LoginMember {
     private final String email;
     private final String role;
 
+    public static final LoginMember ANONYMOUS = new LoginMember(0L, "", "", "");
+
     public LoginMember(Long id, String name, String email, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.role = role;
+    }
+
+    public boolean isEmpty() {
+        return id == null || id == 0L;
     }
 
     public Long getId() {

@@ -41,7 +41,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public CheckResponse loginCheck(LoginMember loginMember) {
-        if (loginMember.getId() == null) {
+        if (loginMember.isEmpty()) {
             throw new IllegalArgumentException();
         }
         return new CheckResponse(loginMember.getName());
