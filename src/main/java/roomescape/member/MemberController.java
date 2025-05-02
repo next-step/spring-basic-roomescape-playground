@@ -33,6 +33,9 @@ public class MemberController {
     public void login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         String token = authService.login(loginRequest);
         Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(3600);
         response.addCookie(cookie);
     }
 
