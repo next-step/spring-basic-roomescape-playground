@@ -1,9 +1,12 @@
 package roomescape.member;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public class MemberDao {
@@ -27,29 +30,36 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                email, password
-        );
+    public Optional<Member> findById(long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        Member member = jdbcTemplate.queryForObject(sql, getMemberRowMapper(), id);
+        return Optional.ofNullable(member);
     }
 
-    public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        Member member = jdbcTemplate.queryForObject(
+                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
+                getMemberRowMapper(),
+                email, password
+        );
+        return Optional.ofNullable(member);
+    }
+
+    public Optional<Member> findByName(String name) {
+        Member member = jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
+                getMemberRowMapper(),
                 name
+        );
+        return Optional.ofNullable(member);
+    }
+
+    private RowMapper<Member> getMemberRowMapper() {
+        return (rs, rowNum) -> new Member(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("role")
         );
     }
 }
