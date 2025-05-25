@@ -8,18 +8,22 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
+    private final WaitingRepository waitingRepository;
     private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository, MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
         this.reservationRepository = reservationRepository;
+        this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
@@ -67,7 +71,7 @@ public class ReservationService {
         Member member = getMemberBy(memberId);
 
         List<Reservation> reservations = reservationRepository.findAllByMember(member);
-        return reservations.stream()
+        List<MyReservationResponse> myReservationResponses = new ArrayList<>(reservations.stream()
                 .map(r -> new MyReservationResponse(
                         r.getId(),
                         r.getTheme().getName(),
@@ -75,7 +79,11 @@ public class ReservationService {
                         r.getTime().getTime(),
                         "예약"
                 ))
-                .toList();
+                .toList());
+
+        List<MyReservationResponse> allByMemberId = waitingRepository.findAllByMemberId(member.getId());
+        myReservationResponses.addAll(allByMemberId);
+        return myReservationResponses;
     }
 
     private Member getMemberBy(Long memberId) {
