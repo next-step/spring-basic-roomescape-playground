@@ -71,4 +71,8 @@ public class WaitingRepository {
                 rs.getString("rank") + "번째 예약대기"
         ), memberId);
     }
+
+    public void delete(Long memberId, Long waitingId) {
+        waitingJpaRepository.deleteByMemberIdAndId(new MemberId(memberId), waitingId);
+    }
 }

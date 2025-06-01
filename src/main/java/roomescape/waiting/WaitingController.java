@@ -1,9 +1,7 @@
 package roomescape.waiting;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.member.LoginMember;
 
 import java.net.MalformedURLException;
@@ -27,5 +25,15 @@ public class WaitingController {
         return ResponseEntity
                 .created(URI.create("/"))
                 .body(new WaitingResponse(rank));
+    }
+
+    @DeleteMapping("/waitings/{waitingId}")
+    public ResponseEntity<WaitingResponse> cancel(LoginMember loginMember, @PathVariable("waitingId") Long waitingId) {
+
+        waitingService.cancel(loginMember.getId(), waitingId);
+
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }

@@ -25,4 +25,9 @@ public class WaitingService {
 
         return waitingRepository.findMyRank(memberId, waitingRequest.getDate(), waitingRequest.getTheme(), waitingRequest.getTime());
     }
+
+    @Transactional
+    public void cancel(Long memberId, Long waitingId) {
+        waitingRepository.delete(memberId, waitingId);
+    }
 }
