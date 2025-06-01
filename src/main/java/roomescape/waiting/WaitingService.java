@@ -21,6 +21,10 @@ public class WaitingService {
                 waitingRequest.getDate()
         );
 
+        if (waitingRepository.existWaiting(new MemberId(memberId), new ThemeId(waitingRequest.getTheme()), new TimeId(waitingRequest.getTime()))) {
+            throw new WaitingAlreadyExistException();
+        }
+
         waitingRepository.save(waiting);
 
         return waitingRepository.findMyRank(memberId, waitingRequest.getDate(), waitingRequest.getTheme(), waitingRequest.getTime());

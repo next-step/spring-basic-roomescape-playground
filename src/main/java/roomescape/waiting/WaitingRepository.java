@@ -75,4 +75,8 @@ public class WaitingRepository {
     public void delete(Long memberId, Long waitingId) {
         waitingJpaRepository.deleteByMemberIdAndId(new MemberId(memberId), waitingId);
     }
+
+    public boolean existWaiting(MemberId memberId, ThemeId themeId, TimeId timeId) {
+        return waitingJpaRepository.existsByMemberIdAndThemeIdAndTimeId(memberId, themeId, timeId);
+    }
 }
