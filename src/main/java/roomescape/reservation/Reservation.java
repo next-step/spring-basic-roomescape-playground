@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -17,6 +18,9 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
     private String date;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
@@ -24,32 +28,35 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
     private Theme theme;
+    private String status = "예약";
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Reservation(String name, String date, Time time, Theme theme) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
 
     public Reservation() {
 
     }
 
+    public Reservation(Long id, Member member, String date, Time time, Theme theme) {
+        this.id = id;
+        this.member= member;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
+    public Reservation(Member member, String date, Time time, Theme theme) {
+        this.member = member;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
+
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getMemberName() {
+        return member.getName();
     }
 
     public String getDate() {
@@ -62,5 +69,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

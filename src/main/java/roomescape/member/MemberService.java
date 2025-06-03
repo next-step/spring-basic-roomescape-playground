@@ -28,4 +28,9 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
+    public Member findByName(String name) {
+        return  memberRepository.findByName(name)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+    }
+
 }
