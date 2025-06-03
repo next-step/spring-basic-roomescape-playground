@@ -1,6 +1,8 @@
 package roomescape.reservation;
 
 
+import roomescape.waiting.WaitingResponse;
+
 public class MyReservationResponse {
 
     private Long id;
@@ -26,7 +28,17 @@ public class MyReservationResponse {
             reservation.getTheme().getName(),
             reservation.getDate(),
             reservation.getTime().getValue(),
-            reservation.getStatus()
+            "예약"
+        );
+    }
+
+    public static MyReservationResponse from(WaitingResponse waitingResponse) {
+        return new MyReservationResponse(
+            waitingResponse.getId(),
+            waitingResponse.getTheme(),
+            waitingResponse.getDate(),
+            waitingResponse.getTime(),
+            waitingResponse.getWaitingNumber() + "번째 예약대기"
         );
     }
 

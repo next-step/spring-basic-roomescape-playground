@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
@@ -8,6 +9,8 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingResponse;
+import roomescape.waiting.WaitingService;
 
 @Service
 public class ReservationService {
@@ -16,14 +19,16 @@ public class ReservationService {
     private TimeRepository timeRepository;
     private ThemeRepository themeRepository;
     private MemberService memberService;
+    private WaitingService waitingService;
 
     public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
                               ThemeRepository themeRepository
-        , MemberService memberService) {
+        , MemberService memberService, WaitingService waitingService) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberService = memberService;
+        this.waitingService = waitingService;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
@@ -60,8 +65,27 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findAllMine(Long memberId) {
-        return reservationRepository.findAllByMemberId(memberId).stream()
-            .map(MyReservationResponse::from)
-            .toList();
+        List<MyReservationResponse> allOfMyReservation = new ArrayList<>();
+
+        List<Reservation> allReservationByMemberId = findAllByMemberId(memberId);
+        allOfMyReservation.addAll(allReservationByMemberId.stream()
+                                      .map(MyReservationResponse::from)
+                                      .toList());
+
+        List<WaitingResponse> allWaitingByMemberId = waitingService.findAllByMemberId(memberId);
+        allOfMyReservation.addAll(allWaitingByMemberId.stream()
+                                      .map(MyReservationResponse::from)
+                                      .toList());
+
+        return allOfMyReservation;
     }
+
+    private List<Reservation> findAllByMemberId(Long memberId) {
+        return reservationRepository.findAllByMemberId(memberId);
+    }
+
+    public boolean existsByMemberAndDateAndTimeAndTheme(Member member, String date, Time time, Theme theme) {
+        return reservationRepository.existsByMemberAndDateAndTimeAndTheme(member, date, time, theme);
+    }
+
 }
