@@ -15,11 +15,11 @@ import roomescape.waiting.WaitingService;
 @Service
 public class ReservationService {
 
-    private ReservationRepository reservationRepository;
-    private TimeRepository timeRepository;
-    private ThemeRepository themeRepository;
-    private MemberService memberService;
-    private WaitingService waitingService;
+    private final ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
+    private final MemberService memberService;
+    private final WaitingService waitingService;
 
     public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
                               ThemeRepository themeRepository

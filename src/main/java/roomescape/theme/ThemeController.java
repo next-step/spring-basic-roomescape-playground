@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ThemeController {
 
-    private ThemeRepository themeRepository;
+    private final ThemeRepository themeRepository;
 
     public ThemeController(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
