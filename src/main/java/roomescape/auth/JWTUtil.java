@@ -4,30 +4,32 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 
 @Component
 public class JWTUtil {
+    private final Key key;
 
-    private static final String SECRET = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    private static final Key KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
+    public JWTUtil(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
-    public static String createToken(Member member) {
+    public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .signWith(KEY)
+                .signWith(key)
                 .compact();
     }
 
-    public static Claims parseToken(String token) {
+    public Claims parseToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(KEY)
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
-
 }
