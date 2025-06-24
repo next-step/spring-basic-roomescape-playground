@@ -30,12 +30,4 @@ public class JWTUtil {
                 .getBody();
     }
 
-    //테스트용
-    public static String createToken(String email, String password) {
-        if ("admin@email.com".equals(email) && "password".equals(password)) {
-            Member admin = new Member(1L, "어드민", email, "ADMIN");
-            return createToken(admin);
-        }
-        throw new IllegalArgumentException("Invalid credentials for test token creation.");
-    }
 }
