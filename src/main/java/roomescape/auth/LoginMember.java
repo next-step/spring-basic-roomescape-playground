@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 public class LoginMember {
+
     private Long id;
     private String name;
     private String email;
@@ -17,4 +18,5 @@ public class LoginMember {
     public String getName() { return name; }
     public String getEmail() { return email; }
     public String getRole() { return role; }
+
 }

@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
@@ -17,11 +18,12 @@ public class AuthService {
     }
 
     public String login(LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
-        if (member == null) {
+        try {
+            Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
+            return jwtTokenProvider.generateToken(member);
+        } catch (EmptyResultDataAccessException e) {
             throw new MemberNotFoundException();
         }
-        return jwtTokenProvider.generateToken(member);
     }
 
 }

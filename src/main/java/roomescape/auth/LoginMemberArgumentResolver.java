@@ -31,20 +31,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
+        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
         Long memberId = jwtTokenProvider.getMemberIdByToken(token);
         Member member = memberService.getMemberById(memberId);
 
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 
 }

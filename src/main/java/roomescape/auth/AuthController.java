@@ -3,9 +3,11 @@ package roomescape.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.MemberResponse;
 
 @RestController
 public class AuthController {
@@ -25,6 +27,16 @@ public class AuthController {
         cookie.setPath("/");
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<MemberResponse> checkLogin(LoginMember loginMember) {
+        MemberResponse response = new MemberResponse(
+                loginMember.getId(),
+                loginMember.getName(),
+                loginMember.getEmail()
+        );
+        return ResponseEntity.ok(response);
     }
 
 }
