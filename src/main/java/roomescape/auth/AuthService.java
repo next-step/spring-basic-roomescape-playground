@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.member.MemberResponse;
 
 @Service
 public class AuthService {
@@ -22,6 +23,16 @@ public class AuthService {
             throw new MemberNotFoundException();
         }
         return jwtTokenProvider.generateToken(member);
+    }
+
+    public MemberResponse checkLogin(String token) {
+        Long memberId = jwtTokenProvider.getMemberIdByToken(token);
+        Member member = memberDao.findById(memberId);
+        return new MemberResponse(
+                member.getId(),
+                member.getName(),
+                member.getEmail()
+        );
     }
 
 }
