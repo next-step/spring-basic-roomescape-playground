@@ -13,7 +13,6 @@ import java.util.Map;
 import roomescape.reservation.ReservationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.JWTUtil.createToken;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

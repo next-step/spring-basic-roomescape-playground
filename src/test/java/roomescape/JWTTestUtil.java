@@ -1,5 +1,6 @@
 package roomescape;
 
+import roomescape.auth.JWTUtil;
 import roomescape.member.Member;
 
 public class JWTTestUtil {

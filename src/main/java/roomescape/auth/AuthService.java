@@ -1,17 +1,15 @@
-package roomescape;
+package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.member.MemberRequest;
 import roomescape.member.MemberResponse;
 import jakarta.servlet.http.Cookie;
-import roomescape.JWTUtil;
 
 @Service
 public class AuthService {
