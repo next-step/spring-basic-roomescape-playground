@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 public class LoginRequest {
+
     private final String email;
     private final String password;
 
@@ -16,4 +17,5 @@ public class LoginRequest {
     public String getPassword() {
         return password;
     }
+
 }

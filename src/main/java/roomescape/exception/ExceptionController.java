@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ExceptionController {
+
     @ExceptionHandler(MemberNotFoundException.class)
     public ResponseEntity<String> handleMemberNotFoundException(MemberNotFoundException e) {
         System.out.println(e.getMessage());
@@ -22,4 +23,5 @@ public class ExceptionController {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
     }
+
 }
