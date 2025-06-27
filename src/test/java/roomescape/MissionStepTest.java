@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import roomescape.auth.JWTUtil;
 import roomescape.reservation.ReservationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MissionStepTest {
 
     @Autowired
-    private JWTTestUtil jwtTestUtil;
+    private JWTUtil jwtUtil;
+
 
     @Test
     void 일단계() {
@@ -43,7 +45,7 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        String token = jwtTestUtil.createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+        String token = jwtUtil.createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -77,7 +79,7 @@ public class MissionStepTest {
 
     @Test
     void 삼단계() {
-        String brownToken = jwtTestUtil.createToken("brown@email.com", "password");
+        String brownToken = jwtUtil.createToken("brown@email.com", "password");
 
         RestAssured.given().log().all()
                 .cookie("token", brownToken)
@@ -85,7 +87,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(401);
 
-        String adminToken = jwtTestUtil.createToken("admin@email.com", "password");
+        String adminToken = jwtUtil.createToken("admin@email.com", "password");
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)
