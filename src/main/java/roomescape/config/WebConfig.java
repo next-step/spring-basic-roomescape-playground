@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.config;
 
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.AdminAuthorizationInterceptor;
 import roomescape.auth.JWTUtil;
+import roomescape.auth.LoginInterceptor;
 import roomescape.auth.LoginMemberArgumentResolver;
 
 @Configuration
@@ -25,6 +26,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LoginInterceptor(jwtUtil))
+                .addPathPatterns("/**");
+
         registry.addInterceptor(new AdminAuthorizationInterceptor(jwtUtil))
                 .addPathPatterns("/admin/**");
     }
