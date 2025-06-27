@@ -34,7 +34,12 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
         if (reservationRequest.getName() == null) {
-            reservationRequest.setName(member.getName());
+            reservationRequest = new ReservationRequest(
+                    member.getName(),
+                    reservationRequest.getDate(),
+                    reservationRequest.getTheme(),
+                    reservationRequest.getTime()
+            );
         }
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
@@ -46,4 +51,5 @@ public class ReservationController {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
 }
