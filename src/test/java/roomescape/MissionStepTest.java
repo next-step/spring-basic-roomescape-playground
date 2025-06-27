@@ -8,6 +8,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -25,6 +26,12 @@ public class MissionStepTest {
 
     @Autowired
     MemberDao memberDao;
+
+    private final String secretKey;
+
+    public MissionStepTest(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     @Test
     void 일단계() {
@@ -90,7 +97,6 @@ public class MissionStepTest {
 
     private String createToken(String email, String password) {
         Member member = memberDao.findByEmailAndPassword(email, password);
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
