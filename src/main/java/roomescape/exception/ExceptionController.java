@@ -24,6 +24,14 @@ public class ExceptionController {
                 .body(e.getMessage());
     }
 
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<String> handleTokenNotFoundException(TokenNotFoundException e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleRuntimeException(Exception e) {
         System.out.println(e.getMessage());

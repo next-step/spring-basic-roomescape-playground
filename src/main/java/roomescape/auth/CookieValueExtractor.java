@@ -2,6 +2,7 @@ package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
+import roomescape.exception.TokenNotFoundException;
 
 @Component
 public class CookieValueExtractor {
@@ -12,7 +13,7 @@ public class CookieValueExtractor {
                 return cookie.getValue();
             }
         }
-        return "";
+        throw new TokenNotFoundException();
     }
 
 }
