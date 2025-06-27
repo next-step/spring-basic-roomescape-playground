@@ -2,7 +2,6 @@ package roomescape.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
@@ -15,7 +14,6 @@ public class JwtTokenProvider {
     public JwtTokenProvider(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
         this.secretKey = secretKey;
     }
-
 
     public String generateToken(Member member) {
         return Jwts.builder()
@@ -32,15 +30,6 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
-    }
-
-    public String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 
 }

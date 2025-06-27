@@ -11,16 +11,19 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CookieValueExtractor cookieValueExtractor;
 
-    public CheckAdminInterceptor(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+    public CheckAdminInterceptor(MemberService memberService, JwtTokenProvider jwtTokenProvider,
+                                 CookieValueExtractor cookieValueExtractor) {
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.cookieValueExtractor = cookieValueExtractor;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = request.getCookies();
-        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
+        String token = cookieValueExtractor.extractToken(cookies);
         Long memberId = jwtTokenProvider.getMemberIdByToken(token);
         Member member = memberService.getMemberById(memberId);
 

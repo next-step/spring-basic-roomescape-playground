@@ -14,10 +14,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CookieValueExtractor cookieValueExtractor;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+
+    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider,
+                                       CookieValueExtractor cookieValueExtractor) {
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.cookieValueExtractor = cookieValueExtractor;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         Cookie[] cookies = request.getCookies();
-        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
+        String token = cookieValueExtractor.extractToken(cookies);
         Long memberId = jwtTokenProvider.getMemberIdByToken(token);
         Member member = memberService.getMemberById(memberId);
 
