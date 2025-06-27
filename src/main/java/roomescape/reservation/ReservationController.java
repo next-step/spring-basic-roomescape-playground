@@ -29,7 +29,7 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
         if (reservationRequest.getName() == null) {
-            reservationRequest.setName(loginMember.getName());
+            reservationRequest.setName(loginMember.name());
         }
 
         ReservationResponse reservation = reservationService.save(reservationRequest);
