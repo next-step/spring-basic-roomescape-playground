@@ -1,9 +1,11 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
+import roomescape.exception.MemberNotFoundException;
 
 @Service
 public class MemberService {
+    
     private MemberDao memberDao;
 
     public MemberService(MemberDao memberDao) {
@@ -16,7 +18,11 @@ public class MemberService {
     }
 
     public Member getMemberById(Long id) {
-        return memberDao.findById(id);
+        Member member = memberDao.findById(id);
+        if(member == null) {
+            throw new MemberNotFoundException();
+        }
+        return member;
     }
 
 }

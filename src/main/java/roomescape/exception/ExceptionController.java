@@ -16,6 +16,14 @@ public class ExceptionController {
                 .body(e.getMessage());
     }
 
+    @ExceptionHandler(InvalidRoleException.class)
+    public ResponseEntity<String> handleInvalidRoleException(InvalidRoleException e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleRuntimeException(Exception e) {
         System.out.println(e.getMessage());
