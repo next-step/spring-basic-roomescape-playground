@@ -1,7 +1,6 @@
 package roomescape.reservation;
 
 import lombok.Getter;
-import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 

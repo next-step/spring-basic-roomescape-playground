@@ -1,6 +1,10 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.dto.LoginRequest;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 @Service
 public class MemberService {
@@ -31,5 +35,4 @@ public class MemberService {
         return memberDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다."));
     }
-
 }

@@ -1,15 +1,13 @@
-package roomescape.member;
+package roomescape.auth.dto;
 
+import lombok.Getter;
+
+@Getter
 public class LoginCheckResponse {
 
     private String name;
 
     public LoginCheckResponse(String name) {
         this.name = name;
-    }
-
-    // Getter 추가
-    public String getName() {
-        return name;
     }
 }

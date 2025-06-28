@@ -1,5 +1,8 @@
-package roomescape.member;
+package roomescape.auth.dto;
 
+import lombok.Getter;
+
+@Getter
 public class LoginMember { // 로그인한 사용자 정보를 담는 DTO
 
     private Long id;
@@ -12,22 +15,5 @@ public class LoginMember { // 로그인한 사용자 정보를 담는 DTO
         this.name = name;
         this.email = email;
         this.role = role;
-    }
-
-    // Getter
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getRole() {
-        return role;
     }
 }

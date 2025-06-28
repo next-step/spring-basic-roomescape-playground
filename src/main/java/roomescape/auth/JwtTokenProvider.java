@@ -1,8 +1,9 @@
-package roomescape.member;
+package roomescape.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import roomescape.member.Member;
 
 import javax.crypto.SecretKey;
 

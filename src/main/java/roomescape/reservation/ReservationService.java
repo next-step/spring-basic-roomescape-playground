@@ -1,9 +1,11 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-import roomescape.member.LoginMember;
+import roomescape.auth.dto.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeDao;
 import roomescape.time.Time;
