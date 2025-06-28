@@ -1,8 +1,11 @@
 package roomescape.reservation;
 
+import lombok.Getter;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+@Getter
 public class Reservation {
     private Long id;
     private String name;
@@ -23,29 +26,5 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Reservation() {
-
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public Time getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
     }
 }
