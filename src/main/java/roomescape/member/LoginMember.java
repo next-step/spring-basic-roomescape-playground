@@ -1,6 +1,5 @@
 package roomescape.member;
 
-@Getter
 public class LoginMember { // 로그인한 사용자 정보를 담는 DTO
 
     private Long id;
