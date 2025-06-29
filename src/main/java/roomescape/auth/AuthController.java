@@ -32,9 +32,9 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(LoginMember loginMember) {
         MemberResponse response = new MemberResponse(
-                loginMember.getId(),
-                loginMember.getName(),
-                loginMember.getEmail()
+                loginMember.id(),
+                loginMember.name(),
+                loginMember.email()
         );
         return ResponseEntity.ok(response);
     }

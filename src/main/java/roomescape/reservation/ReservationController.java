@@ -28,22 +28,22 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember member) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
+        if (reservationRequest.date() == null
+                || reservationRequest.theme() == null
+                || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (reservationRequest.getName() == null) {
+        if (reservationRequest.name() == null) {
             reservationRequest = new ReservationRequest(
-                    member.getName(),
-                    reservationRequest.getDate(),
-                    reservationRequest.getTheme(),
-                    reservationRequest.getTime()
+                    member.name(),
+                    reservationRequest.date(),
+                    reservationRequest.theme(),
+                    reservationRequest.time()
             );
         }
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
