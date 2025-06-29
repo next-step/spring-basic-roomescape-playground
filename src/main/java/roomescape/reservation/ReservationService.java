@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 public class ReservationService {
 
-    private ReservationDao reservationDao;
+    private final ReservationDao reservationDao;
     private final MemberDao memberDao;
     private final ThemeDao themeDao;
     private final TimeDao timeDao;
@@ -42,10 +42,10 @@ public class ReservationService {
                     .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자 정보를 찾을 수 없습니다."));
         }
 
-        Theme theme = themeDao.findById(request.getThemeId())
+        Theme theme = themeDao.findById(request.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        Time time = timeDao.findById(request.getTimeId())
+        Time time = timeDao.findById(request.getTime())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
 
 

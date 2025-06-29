@@ -48,8 +48,8 @@ public class ReservationDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, time_id, theme_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate());
+            ps.setString(1, reservation.getDate());
+            ps.setString(2, reservation.getName());
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
             return ps;
