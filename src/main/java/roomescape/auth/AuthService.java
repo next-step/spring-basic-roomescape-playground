@@ -38,9 +38,8 @@ public class AuthService {
         Claims claims = jwtUtil.parseToken(token);
 
         String email = claims.get("email", String.class);
-        String password = claims.get("password", String.class);
 
-        return memberDao.findByEmailAndPassword(email, password);
+        return memberDao.findByEmail(email);
     }
 
     public void logout(HttpServletResponse response) {

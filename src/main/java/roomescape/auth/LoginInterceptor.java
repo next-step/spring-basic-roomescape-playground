@@ -5,6 +5,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.exception.UnauthorizedException;
 import roomescape.member.LoginMember;
 
 public class LoginInterceptor implements HandlerInterceptor {
@@ -20,6 +21,9 @@ public class LoginInterceptor implements HandlerInterceptor {
         String token = extractTokenFromCookies(request.getCookies());
 
         if (token == null) {
+            if (request.getRequestURI().startsWith("/reservations")) {
+                throw new UnauthorizedException("로그인이 필요합니다.");
+            }
             return true;
         }
 
