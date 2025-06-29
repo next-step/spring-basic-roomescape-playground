@@ -14,10 +14,6 @@ public class ReservationRequest {
         this.time = time;
     }
 
-    public ReservationRequest() {
-
-    }
-
     public String getName() {
         return name;
     }
