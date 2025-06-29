@@ -2,6 +2,8 @@ package roomescape.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 
@@ -10,7 +12,15 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtTokenProvider {
 
-    private final SecretKey secretKey = Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes());
+    private SecretKey secretKey;
+
+    @Value("${roomescape.jwt.secret}")
+    private String secret;
+
+    @PostConstruct
+    public void init() {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String createToken(Member member) {
         return Jwts.builder()
