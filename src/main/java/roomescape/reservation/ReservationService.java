@@ -12,10 +12,23 @@ public class ReservationService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    public ReservationResponse save(ReservationRequest request, String name) {
+        ReservationRequest requestWithName = new ReservationRequest(
+                request.getDate(),
+                request.getTheme(),
+                request.getTime(),
+                name
+        );
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        Reservation reservation = reservationDao.save(requestWithName);
+
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue()
+        );
     }
 
     public void deleteById(Long id) {
