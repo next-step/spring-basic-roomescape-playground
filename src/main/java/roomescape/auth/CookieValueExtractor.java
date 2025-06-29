@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import roomescape.exception.TokenNotFoundException;
 
@@ -8,12 +9,11 @@ import roomescape.exception.TokenNotFoundException;
 public class CookieValueExtractor {
 
     public String extractToken(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        throw new TokenNotFoundException();
+        return Arrays.stream(cookies)
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(TokenNotFoundException::new);
     }
 
 }
