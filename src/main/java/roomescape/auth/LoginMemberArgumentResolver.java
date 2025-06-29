@@ -9,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.dto.LoginMember;
+import roomescape.auth.exception.UnauthenticatedException;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 
@@ -36,7 +37,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null) {
-            return null; // 또는 예외 처리
+            throw new UnauthenticatedException("요청 정보를 찾을 수 없습니다.");
         }
 
         Cookie[] cookies = request.getCookies();
@@ -60,7 +61,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
         } catch (Exception e) {
             // 토큰이 유효하지 않은 경우 등
-            return null;
+            throw new UnauthenticatedException("유효하지 않은 토큰입니다.", e);
         }
     }
 }
