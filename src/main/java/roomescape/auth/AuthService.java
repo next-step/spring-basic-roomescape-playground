@@ -1,15 +1,14 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.member.MemberRequest;
-import roomescape.member.MemberResponse;
-import jakarta.servlet.http.Cookie;
 
 @Service
 public class AuthService {
@@ -32,15 +31,13 @@ public class AuthService {
 
     public Member checkLogin(HttpServletRequest request) {
         String token = extractTokenFromCookie(request.getCookies());
-        if (token == null || token.isEmpty()) return null;
-
-        try {
-            Claims claims = jwtUtil.parseToken(token);
-            Member member = memberDao.findByEmailAndPassword(claims.get("name", String.class), "password"); // 임시 대체
-            return new Member(member.getId(), member.getName(), member.getEmail(), member.getRole());
-        } catch (Exception e) {
-            return null;
+        if (token == null || token.isEmpty()) {
+            throw new UnauthorizedException("로그인이 필요합니다.");
         }
+
+        Claims claims = jwtUtil.parseToken(token);
+        Member member = memberDao.findByEmailAndPassword(claims.get("name", String.class), "password"); // 임시 대체
+        return new Member(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public void logout(HttpServletResponse response) {
@@ -49,7 +46,9 @@ public class AuthService {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) return null;
+        if (cookies == null) {
+            return null;
+        }
         for (Cookie cookie : cookies) {
             if ("token".equals(cookie.getName())) {
                 return cookie.getValue();
