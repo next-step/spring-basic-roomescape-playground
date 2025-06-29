@@ -36,8 +36,11 @@ public class AuthService {
         }
 
         Claims claims = jwtUtil.parseToken(token);
-        Member member = memberDao.findByEmailAndPassword(claims.get("name", String.class), "password"); // 임시 대체
-        return new Member(member.getId(), member.getName(), member.getEmail(), member.getRole());
+
+        String email = claims.get("email", String.class);
+        String password = claims.get("password", String.class);
+
+        return memberDao.findByEmailAndPassword(email, password);
     }
 
     public void logout(HttpServletResponse response) {

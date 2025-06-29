@@ -23,17 +23,14 @@ public class LoginInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        try {
-            Claims claims = jwtUtil.parseToken(token);
-            LoginMember loginMember = new LoginMember(
-                    Long.valueOf(claims.getSubject()),
-                    claims.get("name", String.class),
-                    null,
-                    claims.get("role", String.class)
-            );
-            request.setAttribute("loginMember", loginMember);
-        } catch (Exception e) {
-        }
+        Claims claims = jwtUtil.parseToken(token);
+        LoginMember loginMember = new LoginMember(
+                Long.valueOf(claims.getSubject()),
+                claims.get("name", String.class),
+                null,
+                claims.get("role", String.class)
+        );
+        request.setAttribute("loginMember", loginMember);
 
         return true;
     }

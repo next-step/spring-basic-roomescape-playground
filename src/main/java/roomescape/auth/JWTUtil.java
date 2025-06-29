@@ -25,6 +25,8 @@ public class JWTUtil {
         return Jwts.builder()
                 .setSubject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
+                .claim("email", member.getEmail())
+                .claim("password", member.getPassword())
                 .claim("role", member.getRole())
                 .signWith(key)
                 .compact();
