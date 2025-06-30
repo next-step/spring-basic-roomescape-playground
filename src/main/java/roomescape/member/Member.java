@@ -1,5 +1,12 @@
 package roomescape.member;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 public class Member {
 
     private Long id;
@@ -38,11 +45,9 @@ public class Member {
         return password;
     }
 
-    public String getRole() {
-        return role.name();
-    }
+    public Role getRole() { return role; }
 
     public boolean isAdmin() {
-        return role.name().equals("ADMIN");
+        return role.equals(Role.ADMIN);
     }
 }

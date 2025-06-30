@@ -20,7 +20,7 @@ public class MemberDao {
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
-            ps.setString(4, member.getRole());
+            ps.setObject(4, member.getRole());
             return ps;
         }, keyHolder);
 
