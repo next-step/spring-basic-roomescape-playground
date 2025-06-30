@@ -3,6 +3,8 @@ package roomescape.member;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginRequest;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 
 @Service
 public class MemberService {
@@ -17,11 +19,11 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
-    public Member authenticate(LoginRequest loginRequest) {
+    public Member authenticate(String email, String password) {
         try {
-            return memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
+            return memberDao.findByEmailAndPassword(email, password);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 잘못되었습니다");
+            throw new RoomEscapeException(ErrorCode.INVALID_LOGIN);
         }
     }
 
