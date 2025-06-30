@@ -20,11 +20,15 @@ public class JwtProvider {
     }
 
     public String createToken(Member member) {
+
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + jwtProperties.getExpirationMs());
+
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes()))
                 .compact();
         return accessToken;
     }
