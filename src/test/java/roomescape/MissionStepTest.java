@@ -15,7 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.HashMap;
 import java.util.Map;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.reservation.ReservationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MissionStepTest {
 
     @Autowired
-    MemberDao memberDao;
+    MemberRepository memberRepository;
 
     private final String secretKey;
 
@@ -96,7 +96,7 @@ public class MissionStepTest {
     }
 
     private String createToken(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password);
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())

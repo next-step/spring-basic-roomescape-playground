@@ -1,24 +1,26 @@
 package roomescape.member;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import roomescape.exception.MemberNotFoundException;
 
 @Service
+@Transactional
 public class MemberService {
     
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member getMemberById(Long id) {
-        Member member = memberDao.findById(id);
+        Member member = memberRepository.findById(id);
         if(member == null) {
             throw new MemberNotFoundException();
         }
