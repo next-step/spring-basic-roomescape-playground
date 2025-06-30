@@ -9,11 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.AuthService;
-import roomescape.auth.JwtProvider;
 import roomescape.auth.LoginRequest;
-import roomescape.auth.TokenResponse;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
 import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
@@ -31,7 +27,7 @@ public class MissionStepTest {
     @Test
     void 일단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
+        params.put("email", "admn@email.com");
         params.put("password", "password");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
