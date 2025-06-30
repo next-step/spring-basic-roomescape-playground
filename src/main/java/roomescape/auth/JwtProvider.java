@@ -9,7 +9,6 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
 import roomescape.member.Member;
 
-import javax.sql.DataSource;
 import java.util.Date;
 
 @Component

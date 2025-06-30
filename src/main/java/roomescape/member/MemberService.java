@@ -2,7 +2,6 @@ package roomescape.member;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import roomescape.auth.LoginRequest;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
 
