@@ -1,22 +1,38 @@
 package roomescape.auth;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.member.Member;
+
+import javax.sql.DataSource;
+import java.util.Date;
 
 @Component
 public class JwtProvider {
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey;
+
+    private final JwtProperties jwtProperties;
+
+    public JwtProvider(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
 
     public Long extractMemberId(String token) {
-        return Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
+        try {
+            return Long.valueOf(Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes()))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody().getSubject());
+        } catch (ExpiredJwtException e) {
+            throw new RoomEscapeException(ErrorCode.EXPIRED_TOKEN);
+        } catch (SignatureException e) {
+            throw new RoomEscapeException(ErrorCode.INVALID_TOKEN_SIGNATURE);
+        }
     }
 
     public String createToken(Member member) {
