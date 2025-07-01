@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,18 +15,28 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.reservation.ReservationResponse;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
 public class MissionStepTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private TimeRepository timeRepository;
 
     private final String secretKey;
 
@@ -122,6 +133,17 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    void 사단계() {
+        Time time = new Time("10:00");
+        entityManager.persist(time);
+        entityManager.flush();
+
+        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
+
+        assertThat(persistTime.getTimeValue()).isEqualTo(time.getTimeValue());
     }
 
 }

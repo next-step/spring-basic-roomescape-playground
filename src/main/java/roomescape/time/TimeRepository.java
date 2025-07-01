@@ -1,6 +1,7 @@
 package roomescape.time;
 
 import jakarta.persistence.EntityManager;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,6 +22,10 @@ public class TimeRepository {
     public List<Time> findAll() {
         String jpql = "SELECT t FROM Time t WHERE t.deleted = false";
         return em.createQuery(jpql, Time.class).getResultList();
+    }
+
+    public Optional<Time> findById(Long Id) {
+        return Optional.ofNullable(em.find(Time.class, Id));
     }
 
     public Time save(Time time) {

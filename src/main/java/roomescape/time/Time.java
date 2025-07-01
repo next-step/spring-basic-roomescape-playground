@@ -10,16 +10,16 @@ public class Time {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String value;
+    private String timeValue;
     private Boolean deleted = false;
 
     public Time(Long id, String value) {
         this.id = id;
-        this.value = value;
+        this.timeValue = value;
     }
 
-    public Time(String value) {
-        this.value = value;
+    public Time(String timeValue) {
+        this.timeValue = timeValue;
     }
 
     public Time() {}
@@ -28,7 +28,7 @@ public class Time {
         return id;
     }
 
-    public String getValue() {
-        return value;
+    public String getTimeValue() {
+        return timeValue;
     }
 }
