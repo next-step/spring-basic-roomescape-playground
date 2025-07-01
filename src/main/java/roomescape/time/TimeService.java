@@ -3,30 +3,35 @@ package roomescape.time;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
+import roomescape.reservation.ReservationRepository;
 
 import java.util.List;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
 
 @Service
 @Transactional
 public class TimeService {
 
     private final TimeRepository timeRepository;
-    private final ReservationDao reservationDao;
+    private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public TimeService(TimeRepository timeRepository, ReservationDao reservationDao) {
+    public TimeService(TimeRepository timeRepository, ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
-        this.reservationDao = reservationDao;
+        this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
+        Theme theme = themeRepository.findById(themeId);
+        List<Reservation> reservations = reservationRepository.findByDateAndTheme(date, theme);
         List<Time> times = timeRepository.findAll();
 
         return times.stream()
                 .map(time -> new AvailableTime(
                         time.getId(),
-                        time.getValue(),
+                        time.getTimeValue(),
                         reservations.stream()
                                 .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
                 ))

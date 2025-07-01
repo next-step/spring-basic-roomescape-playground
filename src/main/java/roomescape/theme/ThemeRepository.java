@@ -21,6 +21,10 @@ public class ThemeRepository {
         return em.createQuery(jpql, Theme.class).getResultList();
     }
 
+    public Theme findById(Long id) {
+        return em.find(Theme.class, id);
+    }
+
     public Theme save(Theme theme) {
         em.persist(theme);
         return theme;
