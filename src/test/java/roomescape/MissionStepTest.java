@@ -16,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.reservation.ReservationResponse;
@@ -107,7 +108,8 @@ public class MissionStepTest {
     }
 
     private String createToken(String email, String password) {
-        Member member = memberRepository.findByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(MemberNotFoundException::new);
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())

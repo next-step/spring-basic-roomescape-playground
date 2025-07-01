@@ -1,6 +1,7 @@
 package roomescape.theme;
 
 import jakarta.persistence.EntityManager;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,8 +22,8 @@ public class ThemeRepository {
         return em.createQuery(jpql, Theme.class).getResultList();
     }
 
-    public Theme findById(Long id) {
-        return em.find(Theme.class, id);
+    public Optional<Theme> findById(Long id) {
+        return Optional.ofNullable(em.find(Theme.class, id));
     }
 
     public Theme save(Theme theme) {

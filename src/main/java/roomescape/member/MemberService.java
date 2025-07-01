@@ -20,11 +20,7 @@ public class MemberService {
     }
 
     public Member getMemberById(Long id) {
-        Member member = memberRepository.findById(id);
-        if(member == null) {
-            throw new MemberNotFoundException();
-        }
-        return member;
+        return memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
     }
 
 }

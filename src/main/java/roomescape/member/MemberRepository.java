@@ -2,6 +2,7 @@ package roomescape.member;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,39 +16,27 @@ public class MemberRepository {
 
     public Member save(Member member) {
         em.persist(member);
-        em.flush();
         return member;
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
         String jpql = "SELECT m FROM Member m WHERE m.email = :email AND m.password = :password";
 
         try {
-            return em.createQuery(jpql, Member.class)
+            Member member = em.createQuery(jpql, Member.class)
                     .setParameter("email", email)
                     .setParameter("password", password)
                     .getSingleResult();
+            return Optional.of(member);
         } catch (NoResultException e) {
-            return null;
+            return Optional.empty();
         }
+
 
     }
 
-    public Member findByName(String name) {
-        String jpql = "SELECT m FROM Member m WHERE m.name = :name";
-
-        try {
-            return em.createQuery(jpql, Member.class)
-                    .setParameter("name", name)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-
-    }
-
-    public Member findById(Long id) {
-        return em.find(Member.class, id);
+    public Optional<Member> findById(Long id) {
+        return Optional.ofNullable(em.find(Member.class, id));
     }
 
 }

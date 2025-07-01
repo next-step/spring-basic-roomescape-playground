@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import roomescape.exception.ThemeNotFoundException;
+import roomescape.exception.TimeNotFoundException;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -12,7 +14,7 @@ import roomescape.time.TimeRepository;
 @Service
 @Transactional
 public class ReservationService {
-    private ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
@@ -24,8 +26,10 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Time time = timeRepository.findById(reservationRequest.time()).get();
-        Theme theme = themeRepository.findById(reservationRequest.theme());
+        Time time = timeRepository.findById(reservationRequest.time())
+                .orElseThrow(TimeNotFoundException::new);
+        Theme theme = themeRepository.findById(reservationRequest.theme())
+                .orElseThrow(ThemeNotFoundException::new);
         Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), time, theme);
 
         Reservation savedReservation = reservationRepository.save(reservation);

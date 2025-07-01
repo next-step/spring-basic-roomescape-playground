@@ -17,10 +17,8 @@ public class AuthService {
     }
 
     public String login(LoginRequest loginRequest) {
-        Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
-        if (member == null) {
-            throw new MemberNotFoundException();
-        }
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword())
+                .orElseThrow(MemberNotFoundException::new);
         return jwtTokenProvider.generateToken(member);
     }
 

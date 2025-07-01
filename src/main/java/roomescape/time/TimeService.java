@@ -2,6 +2,7 @@ package roomescape.time;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import roomescape.exception.ThemeNotFoundException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 
@@ -24,7 +25,8 @@ public class TimeService {
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        Theme theme = themeRepository.findById(themeId);
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(ThemeNotFoundException::new);
         List<Reservation> reservations = reservationRepository.findByDateAndTheme(date, theme);
         List<Time> times = timeRepository.findAll();
 
