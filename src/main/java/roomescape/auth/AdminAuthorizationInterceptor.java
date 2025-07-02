@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.member.MemberResponse;
 import roomescape.util.TokenExtractor;
 
@@ -22,8 +24,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
         MemberResponse memberResponse = authService.findMemberByToken(token);
 
         if (memberResponse == null || !memberResponse.getRole().equals("ADMIN")) {
-            response.setStatus(401);
-            return false;
+            throw new RoomEscapeException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
         return true;
     }
