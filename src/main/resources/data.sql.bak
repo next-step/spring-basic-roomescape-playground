@@ -1,0 +1,9 @@
+INSERT INTO member (name, email, password, role) VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN');
+INSERT INTO member (name, email, password, role) VALUES ('클로이', 'chloe@email.com', 'password', 'USER');
+
+INSERT INTO theme (name, description, thumbnail) VALUES ('공포', '매우 무서운 테마', 'https://i.imgur.com/1.jpg');
+INSERT INTO theme (name, description, thumbnail) VALUES ('코믹', '매우 웃긴 테마', 'https://i.imgur.com/2.jpg');
+
+INSERT INTO time (time) VALUES ('10:00');
+INSERT INTO time (time) VALUES ('13:00');
+INSERT INTO time (time) VALUES ('15:00');
