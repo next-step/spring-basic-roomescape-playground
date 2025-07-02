@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import jakarta.transaction.Transactional;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
 @Service
 @Transactional
@@ -22,14 +24,16 @@ public class ReservationService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
                               ThemeRepository themeRepository, MemberRepository memberRepository,
-                              MemberRepository memberRepository1) {
+                              MemberRepository memberRepository1, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository1;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
@@ -60,7 +64,7 @@ public class ReservationService {
 
     public List<MyReservationResponse> findByMember(LoginMember loginMember) {
         Member member = memberRepository.findById(loginMember.id()).orElseThrow(MemberNotFoundException::new);
-        return reservationRepository.findByMember(member).stream()
+        List<MyReservationResponse> reservationList = reservationRepository.findByMember(member).stream()
                 .map(it -> new MyReservationResponse(
                         it.getId(),
                         it.getTheme().getName(),
@@ -68,6 +72,18 @@ public class ReservationService {
                         it.getTime().getValue(),
                         "예약"))
                 .toList();
+
+        List<MyReservationResponse> watingList = waitingRepository
+                .findWaitingsWithRankByMemberId(loginMember.id()).stream()
+                .map(it -> new MyReservationResponse(
+                        it.getWaiting().getId(),
+                        it.getWaiting().getTheme().getName(),
+                        it.getWaiting().getDate(),
+                        it.getWaiting().getTime().getValue(),
+                        it.getRank() + 1 + "번째 예약대기"))
+                .toList();
+
+        return Stream.concat(reservationList.stream(), watingList.stream()).toList();
     }
 
     public void deleteById(Long id) {
