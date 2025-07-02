@@ -19,6 +19,10 @@ public class MemberDao {
         return member;
     }
 
+    public Member findById(Long id) {
+        return em.find(Member.class, id);
+    }
+
     public Member findByEmailAndPassword(String email, String password) {
         try {
             return em.createQuery(

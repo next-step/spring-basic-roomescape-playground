@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -32,6 +33,10 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
         this.id = id;
         this.name = name;
@@ -40,11 +45,19 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
-        this.name = name;
+    public Reservation(String date, String name, Theme theme, Time time) {
         this.date = date;
-        this.time = time;
+        this.name = name;
         this.theme = theme;
+        this.time  = time;
+    }
+
+    public Reservation(String date, Member member, Theme theme, Time time) {
+        this.date   = date;
+        this.member = member;
+        this.name   = member.getName();
+        this.theme  = theme;
+        this.time   = time;
     }
 
     public Reservation() {

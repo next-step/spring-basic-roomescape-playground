@@ -4,8 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.theme.Theme;
-import roomescape.time.Time;
 
 import java.util.List;
 
@@ -21,17 +19,6 @@ public class ReservationDao {
                         "SELECT r FROM Reservation r JOIN FETCH r.time JOIN FETCH r.theme",
                         Reservation.class)
                 .getResultList();
-    }
-
-    @Transactional
-    public Reservation save(Reservation reservation) {
-
-        Time time = em.find(Time.class, reservation.getTime().getId());
-        Theme theme = em.find(Theme.class, reservation.getTheme().getId());
-        reservation = new Reservation(reservation.getDate(), reservation.getName(), time, theme);
-
-        em.persist(reservation);
-        return reservation;
     }
 
     @Transactional
@@ -63,6 +50,16 @@ public class ReservationDao {
                         Reservation.class)
                 .setParameter("date", date)
                 .setParameter("themeId", themeId)
+                .getResultList();
+    }
+
+    public List<Reservation> findByMemberId(Long memberId) {
+        return em.createQuery(
+                        "SELECT r FROM Reservation r " +
+                                " JOIN FETCH r.theme t " +
+                                " JOIN FETCH r.time ti " +
+                                " WHERE r.member.id = :memberId", Reservation.class)
+                .setParameter("memberId", memberId)
                 .getResultList();
     }
 
