@@ -7,6 +7,9 @@ public class MyReservationResponse {
     private String date;
     private String time;
     private String status;
+    private long id;
+
+    public MyReservationResponse() { }
 
     public MyReservationResponse(Long reservationId, String theme, String date, String time) {
         this.reservationId = reservationId;
@@ -16,9 +19,27 @@ public class MyReservationResponse {
         this.status = "예약";
     }
 
+    public MyReservationResponse(Long reservationId, String theme, String date, String time, String status) {
+        this.reservationId = reservationId;
+        this.theme = theme;
+        this.date = date;
+        this.time = time;
+        this.status = status;
+    }
+
     public Long getReservationId() { return reservationId; }
     public String getTheme()         { return theme; }
     public String getDate()          { return date; }
     public String getTime()          { return time; }
     public String getStatus()        { return status; }
+
+    public Long getId() {
+        return reservationId;
+    }
+
+    public void setReservationId(Long reservationId) { this.reservationId = reservationId; }
+    public void setTheme(String theme)               { this.theme = theme; }
+    public void setDate(String date)                 { this.date = date; }
+    public void setTime(String time)                 { this.time = time; }
+    public void setStatus(String status)             { this.status = status; }
 }
