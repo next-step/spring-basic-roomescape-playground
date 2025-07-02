@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 
 import java.util.List;
@@ -20,13 +21,11 @@ public class ReservationRepository {
         return em.createQuery(jpql, Reservation.class).getResultList();
     }
 
-    public Reservation save(Reservation reservation) {
-        em.persist(reservation);
-        return reservation;
-    }
-
-    public void deleteById(Long id) {
-        em.remove(em.find(Reservation.class, id));
+    public List<Reservation> findByMember(Member member) {
+        String jpql = "SELECT r FROM Reservation r WHERE r.member = :member";
+        return em.createQuery(jpql, Reservation.class)
+                .setParameter("member", member)
+                .getResultList();
     }
 
     public List<Reservation> findByDateAndTheme(String date, Theme theme) {
@@ -35,6 +34,15 @@ public class ReservationRepository {
                 .setParameter("date", date)
                 .setParameter("theme", theme)
                 .getResultList();
+    }
+
+    public Reservation save(Reservation reservation) {
+        em.persist(reservation);
+        return reservation;
+    }
+
+    public void deleteById(Long id) {
+        em.remove(em.find(Reservation.class, id));
     }
 
 }

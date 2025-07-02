@@ -7,6 +7,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.MyReservationResponse;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
@@ -145,7 +147,21 @@ public class MissionStepTest {
 
         Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
-        assertThat(persistTime.getTimeValue()).isEqualTo(time.getTimeValue());
+        assertThat(persistTime.getValue()).isEqualTo(time.getValue());
+    }
+
+    @Test
+    void 오단계() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 
 }

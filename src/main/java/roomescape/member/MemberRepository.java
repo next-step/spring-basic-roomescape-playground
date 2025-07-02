@@ -39,4 +39,15 @@ public class MemberRepository {
         return Optional.ofNullable(em.find(Member.class, id));
     }
 
+    public Optional<Member> findByName(String name) {
+        String jpql = "SELECT m FROM Member m WHERE m.name = :name";
+        try {
+            Member member = em.createQuery(jpql, Member.class)
+                    .setParameter("name", name)
+                    .getSingleResult();
+            return Optional.of(member);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
 }

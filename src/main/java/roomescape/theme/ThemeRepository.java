@@ -2,9 +2,6 @@ package roomescape.theme;
 
 import jakarta.persistence.EntityManager;
 import java.util.Optional;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

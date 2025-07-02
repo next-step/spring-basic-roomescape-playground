@@ -33,7 +33,7 @@ public class TimeService {
         return times.stream()
                 .map(time -> new AvailableTime(
                         time.getId(),
-                        time.getTimeValue(),
+                        time.getValue(),
                         reservations.stream()
                                 .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
                 ))
