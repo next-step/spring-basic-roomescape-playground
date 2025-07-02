@@ -1,84 +1,85 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.dto.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.theme.Theme;
-import roomescape.theme.ThemeDao;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
-import roomescape.time.TimeDao;
+import roomescape.time.TimeRepository;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
-    private final MemberDao memberDao;
-    private final ThemeDao themeDao;
-    private final TimeDao timeDao;
+    private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
+    private final ThemeRepository themeRepository;
+    private final TimeRepository timeRepository;
 
-    public ReservationService(ReservationDao reservationDao, MemberDao memberDao,
-                              ThemeDao themeDao, TimeDao timeDao) {
-        this.reservationDao = reservationDao;
-        this.memberDao = memberDao;
-        this.themeDao = themeDao;
-        this.timeDao = timeDao;
+    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository,
+                              ThemeRepository themeRepository, TimeRepository timeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
+        this.themeRepository = themeRepository;
+        this.timeRepository = timeRepository;
     }
 
+    @Transactional
     public ReservationResponse create(ReservationRequest request, LoginMember loginMember) {
-        Member member;
-        if (request.getName() != null && !request.getName().isBlank()) {
-            member = memberDao.findByName(request.getName())
-                    .orElseThrow(() -> new IllegalArgumentException("예약자 이름에 해당하는 멤버가 없습니다."));
-        } else {
-            if (loginMember == null) {
-                throw new IllegalArgumentException("로그인이 필요합니다.");
-            }
-            member = memberDao.findById(loginMember.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자 정보를 찾을 수 없습니다."));
+        if (loginMember == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
         }
+        Member member = memberRepository.findById(loginMember.getId())
+                .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자 정보를 찾을 수 없습니다."));
 
-        Theme theme = themeDao.findById(request.getTheme())
+        Theme theme = themeRepository.findById(request.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        Time time = timeDao.findById(request.getTime())
+        Time time = timeRepository.findById(request.getTime())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
 
+        LocalDate date = LocalDate.parse(request.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
 
         Reservation reservationToSave = new Reservation(
-                member.getName(),
-                request.getDate(),
+                date,
                 time,
-                theme
+                theme,
+                member
         );
 
-        Reservation savedReservation = reservationDao.save(reservationToSave);
+        Reservation savedReservation = reservationRepository.save(reservationToSave);
 
         return new ReservationResponse(
                 savedReservation.getId(),
-                savedReservation.getName(), // 저장된 엔티티에서 이름 가져오기
+                savedReservation.getMember().getName(),
                 savedReservation.getTheme().getName(),
-                savedReservation.getDate(),
-                savedReservation.getTime().getValue()
+                savedReservation.getDate().toString(),
+                savedReservation.getTime().getTime()
         );
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(
                         it.getId(),
-                        it.getName(), // Member 객체에서 이름 가져오기
+                        it.getMember().getName(),
                         it.getTheme().getName(),
-                        it.getDate(),
-                        it.getTime().getValue()
+                        it.getDate().toString(),
+                        it.getTime().getTime()
                 ))
                 .toList();
     }
