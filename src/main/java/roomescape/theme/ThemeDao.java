@@ -1,41 +1,34 @@
 package roomescape.theme;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@Transactional(readOnly = true)
 public class ThemeDao {
-    private JdbcTemplate jdbcTemplate;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    @PersistenceContext
+    private EntityManager em;
 
     public List<Theme> findAll() {
-        return jdbcTemplate.query("SELECT * FROM theme where deleted = false", (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description")
-        ));
+        return em.createQuery("SELECT t FROM Theme t WHERE t.deleted = false", Theme.class)
+                .getResultList();
     }
 
+    @Transactional
     public Theme save(Theme theme) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement("INSERT INTO theme(name, description) VALUES (?, ?)", new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            return ps;
-        }, keyHolder);
-
-        return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription());
+        em.persist(theme);
+        return theme;
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        jdbcTemplate.update("UPDATE theme SET deleted = true WHERE id = ?", id);
-    }
-}
+        Theme theme = em.find(Theme.class, id);
+        if (theme != null) {
+            theme.setDeleted(true);
+        }
+    }}

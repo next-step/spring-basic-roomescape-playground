@@ -3,6 +3,8 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
 
 @Service
 public class ReservationService {
@@ -13,21 +15,22 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest request, String name) {
-        ReservationRequest requestWithName = new ReservationRequest(
+
+        Reservation toSave = new Reservation(
                 request.getDate(),
-                request.getTheme(),
-                request.getTime(),
-                name
+                name,
+                new Time(request.getTime()),
+                new Theme(request.getTheme())
         );
 
-        Reservation reservation = reservationDao.save(requestWithName);
+        Reservation saved = reservationDao.save(toSave);
 
         return new ReservationResponse(
-                reservation.getId(),
-                reservation.getName(),
-                reservation.getTheme().getName(),
-                reservation.getDate(),
-                reservation.getTime().getValue()
+                saved.getId(),
+                saved.getName(),
+                saved.getTheme().getName(),
+                saved.getDate(),
+                saved.getTime().getValue()
         );
     }
 

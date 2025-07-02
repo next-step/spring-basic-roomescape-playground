@@ -1,9 +1,23 @@
 package roomescape.theme;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Theme {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String description;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 
     public Theme() {
     }
@@ -19,6 +33,10 @@ public class Theme {
         this.description = description;
     }
 
+    public Theme(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
@@ -29,5 +47,9 @@ public class Theme {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }
