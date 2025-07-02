@@ -16,8 +16,4 @@ public class AvailableTime {
         this.time = time;
         this.booked = booked;
     }
-
-    public boolean isBooked() {
-        return booked;
-    }
 }
