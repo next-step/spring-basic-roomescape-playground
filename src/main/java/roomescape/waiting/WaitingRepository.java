@@ -51,4 +51,5 @@ public class WaitingRepository {
     public void deleteById(Long id) {
         em.remove(em.find(Waiting.class, id));
     }
+
 }

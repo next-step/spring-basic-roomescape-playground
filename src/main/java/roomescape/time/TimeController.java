@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 public class TimeController {
+
     private final TimeService timeService;
 
     public TimeController(TimeService timeService) {
@@ -45,4 +46,5 @@ public class TimeController {
     public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date, @RequestParam Long themeId) {
         return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
     }
+
 }

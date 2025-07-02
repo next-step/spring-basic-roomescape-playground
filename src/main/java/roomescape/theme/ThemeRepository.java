@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public class ThemeRepository {
+
     private final EntityManager em;
 
     public ThemeRepository(EntityManager em) {
@@ -34,4 +35,5 @@ public class ThemeRepository {
                 .setParameter("id", id)
                 .executeUpdate();
     }
+
 }

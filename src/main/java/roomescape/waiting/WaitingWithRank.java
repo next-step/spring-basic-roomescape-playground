@@ -16,4 +16,5 @@ public class WaitingWithRank {
     public Long getRank() {
         return rank;
     }
+
 }

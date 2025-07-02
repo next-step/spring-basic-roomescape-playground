@@ -35,4 +35,5 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new CheckAdminInterceptor(memberService, jwtTokenProvider, cookieValueExtractor))
                 .addPathPatterns("/admin/**");
     }
+
 }

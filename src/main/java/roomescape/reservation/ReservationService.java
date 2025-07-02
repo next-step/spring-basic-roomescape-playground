@@ -20,6 +20,7 @@ import roomescape.waiting.WaitingRepository;
 @Service
 @Transactional
 public class ReservationService {
+
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;

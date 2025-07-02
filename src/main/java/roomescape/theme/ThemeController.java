@@ -36,4 +36,5 @@ public class ThemeController {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
 }

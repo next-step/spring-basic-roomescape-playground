@@ -54,4 +54,5 @@ public class WaitingService {
     public void deleteById(Long id) {
         waitingRepository.deleteById(id);
     }
+
 }
