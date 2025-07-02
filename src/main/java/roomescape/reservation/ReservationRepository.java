@@ -4,6 +4,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +29,6 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAll() {
-        // N+1 문제를 피하기 위해 fetch join 사용
         return entityManager.createQuery(
                         "SELECT r FROM Reservation r " +
                                 "JOIN FETCH r.time " +
@@ -53,6 +54,18 @@ public class ReservationRepository {
                                 "WHERE r.member.id = :memberId", Reservation.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
+    }
+
+    public boolean existsByThemeAndDateAndTimeAndMember_Id(Theme theme, LocalDate date, Time time, Long memberId) {
+        Long count = entityManager.createQuery(
+                        "SELECT COUNT(r) FROM Reservation r " +
+                                "WHERE r.theme = :theme AND r.date = :date AND r.time = :time AND r.member.id = :memberId", Long.class)
+                .setParameter("theme", theme)
+                .setParameter("date", date)
+                .setParameter("time", time)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+        return count > 0;
     }
 
     @Transactional

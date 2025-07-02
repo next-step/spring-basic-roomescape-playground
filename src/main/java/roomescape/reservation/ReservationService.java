@@ -13,22 +13,26 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final WaitingRepository waitingRepository;
     private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository,
+    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository, MemberRepository memberRepository,
                               ThemeRepository themeRepository, TimeRepository timeRepository) {
         this.reservationRepository = reservationRepository;
+        this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
@@ -50,13 +54,7 @@ public class ReservationService {
 
         LocalDate date = LocalDate.parse(request.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
 
-        Reservation reservationToSave = new Reservation(
-                date,
-                time,
-                theme,
-                member
-        );
-
+        Reservation reservationToSave = new Reservation(date, time, theme, member);
         Reservation savedReservation = reservationRepository.save(reservationToSave);
 
         return new ReservationResponse(
@@ -73,9 +71,13 @@ public class ReservationService {
         if (loginMember == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
-        return reservationRepository.findByMemberId(loginMember.getId()).stream()
-                .map(MyReservationResponse::from)
-                .toList();
+        Stream<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.getId()).stream()
+                .map(MyReservationResponse::from);
+
+        Stream<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId()).stream()
+                .map(MyReservationResponse::from);
+
+        return Stream.concat(reservations, waitings).toList();
     }
 
     @Transactional
