@@ -28,8 +28,8 @@ public class WaitingService {
     @Transactional
     public WaitingResponse createWaiting(WaitingRequest req, LoginMember loginMember) {
         Member member = memberDao.findById(loginMember.id());
-        Theme theme   = em.getReference(Theme.class, req.getTheme());
-        Time time    = em.getReference(Time.class, req.getTime());
+        Theme theme = em.getReference(Theme.class, req.getTheme());
+        Time time = em.getReference(Time.class, req.getTime());
 
         Waiting w = new Waiting(req.getDate(), member, theme, time);
         waitingDao.save(w);
@@ -42,7 +42,7 @@ public class WaitingService {
                 .orElse(0L);
 
         String status = myRank + "번째 예약대기";
-        return new WaitingResponse(w.getId(), theme.getName(), req.getDate(), time.getValue(), status);
+        return new WaitingResponse(w.getId(), theme.getName(), req.getDate(), time.getValue(), status, myRank+1);
     }
 
     @Transactional
