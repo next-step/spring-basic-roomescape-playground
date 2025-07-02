@@ -45,6 +45,16 @@ public class ReservationRepository {
                 .getResultList();
     }
 
+    public List<Reservation> findByMemberId(Long memberId) {
+        return entityManager.createQuery(
+                        "SELECT r FROM Reservation r " +
+                                "JOIN FETCH r.time " +
+                                "JOIN FETCH r.theme " +
+                                "WHERE r.member.id = :memberId", Reservation.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
     @Transactional
     public void deleteById(Long id) {
         findById(id).ifPresent(entityManager::remove);

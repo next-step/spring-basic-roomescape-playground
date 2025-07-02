@@ -1,13 +1,9 @@
 package roomescape.reservation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.auth.dto.LoginMember;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 
@@ -24,21 +20,25 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public List<ReservationResponse> list() {
-        return reservationService.findAll();
+    public ResponseEntity<List<ReservationResponse>> list() {
+        return ResponseEntity.ok(reservationService.findAll());
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
-        ReservationResponse reservation = reservationService.create(reservationRequest, loginMember);
-
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
-                .body(reservation);
+    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request, LoginMember loginMember) {
+        ReservationResponse reservation = reservationService.create(request, loginMember);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> findMyReservations(LoginMember loginMember) {
+        List<MyReservationResponse> myReservations = reservationService.findMyReservations(loginMember);
+        return ResponseEntity.ok(myReservations);
     }
 }

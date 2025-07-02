@@ -3,8 +3,10 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.dto.LoginMember;
+import roomescape.auth.exception.UnauthenticatedException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.theme.Theme;
@@ -64,6 +66,16 @@ public class ReservationService {
                 savedReservation.getDate().toString(),
                 savedReservation.getTime().getTime()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        if (loginMember == null) {
+            throw new UnauthenticatedException("로그인이 필요합니다.");
+        }
+        return reservationRepository.findByMemberId(loginMember.getId()).stream()
+                .map(MyReservationResponse::from)
+                .toList();
     }
 
     @Transactional
