@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import roomescape.auth.LoginMember;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.MemberNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.exception.TimeNotFoundException;
@@ -45,6 +46,10 @@ public class ReservationService {
         Member member = memberRepository.findByName(reservationRequest.name())
                 .orElseThrow(MemberNotFoundException::new);
         Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), member, time, theme);
+
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeAndTime(reservationRequest.date(), theme, time);
+        if(!reservations.isEmpty())
+            throw new DuplicateReservationException();
 
         Reservation savedReservation = reservationRepository.save(reservation);
 

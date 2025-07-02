@@ -6,6 +6,7 @@ import roomescape.member.Member;
 import roomescape.theme.Theme;
 
 import java.util.List;
+import roomescape.time.Time;
 
 @Repository
 public class ReservationRepository {
@@ -36,6 +37,16 @@ public class ReservationRepository {
                 .getResultList();
     }
 
+    public List<Reservation> findByDateAndThemeAndTime(String date, Theme theme, Time time) {
+        String jpql = "SELECT r FROM Reservation r WHERE r.date = :date AND r.theme = :theme AND r.time = :time";
+
+        return em.createQuery(jpql, Reservation.class)
+                .setParameter("date", date)
+                .setParameter("theme", theme)
+                .setParameter("time", time)
+                .getResultList();
+    }
+
     public Reservation save(Reservation reservation) {
         em.persist(reservation);
         return reservation;
@@ -44,5 +55,7 @@ public class ReservationRepository {
     public void deleteById(Long id) {
         em.remove(em.find(Reservation.class, id));
     }
+
+
 
 }
