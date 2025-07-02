@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TimeDao {
@@ -37,5 +38,13 @@ public class TimeDao {
 
     public void deleteById(Long id) {
         jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ?", id);
+    }
+
+    public Optional<Time> findById(Long id) {
+        return jdbcTemplate.query("SELECT * FROM time WHERE id = ? AND deleted = false",
+                (rs, rowNum) -> new Time(
+                        rs.getLong("id"),
+                        rs.getString("time_value")
+                ), id).stream().findFirst();
     }
 }
