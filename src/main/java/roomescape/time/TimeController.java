@@ -8,7 +8,6 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping
 public class TimeController {
 
     private TimeService timeService;
@@ -26,6 +25,12 @@ public class TimeController {
     public ResponseEntity<Time> create(@RequestBody TimeRequest request) {
         Time newTime = timeService.save(new Time(request.getTime()));
         return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
+    }
+
+    @GetMapping("/times/{id}")
+    public ResponseEntity<Time> findTimeById(@PathVariable Long id) {
+        Time time = timeService.findById(id);
+        return ResponseEntity.ok(time);
     }
 
     @DeleteMapping("/times/{id}")

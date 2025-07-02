@@ -8,6 +8,7 @@ import roomescape.member.dto.MemberResponse;
 import java.net.URI;
 
 @RestController
+@RequestMapping("/members")
 public class MemberController {
 
     private final MemberService memberService;
@@ -16,9 +17,15 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/members")
+    @PostMapping
     public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberResponse> findMemberById(@PathVariable Long id) {
+        MemberResponse member = memberService.findMemberResponseById(id);
+        return ResponseEntity.ok(member);
     }
 }

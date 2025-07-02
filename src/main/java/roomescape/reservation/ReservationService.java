@@ -97,4 +97,18 @@ public class ReservationService {
                 ))
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public ReservationResponse findResponseById(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getMember().getName(),
+                reservation.getTheme().getName(),
+                reservation.getDate().toString(),
+                reservation.getTime().getTime()
+        );
+    }
 }

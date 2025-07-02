@@ -42,6 +42,12 @@ public class TimeService {
         return timeRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public Time findById(Long id) {
+        return timeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+    }
+
     @Transactional
     public Time save(Time time) {
         return timeRepository.save(time);

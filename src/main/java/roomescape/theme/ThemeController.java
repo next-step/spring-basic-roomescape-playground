@@ -18,7 +18,6 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
-        // 서비스 계층을 통해 비즈니스 로직 처리
         Theme newTheme = themeService.create(theme);
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
     }
@@ -27,6 +26,12 @@ public class ThemeController {
     public ResponseEntity<List<Theme>> list() {
         List<Theme> themes = themeService.findAll();
         return ResponseEntity.ok(themes);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Theme> findThemeById(@PathVariable Long id) {
+        Theme theme = themeService.findById(id);
+        return ResponseEntity.ok(theme);
     }
 
     @DeleteMapping("/{id}")
