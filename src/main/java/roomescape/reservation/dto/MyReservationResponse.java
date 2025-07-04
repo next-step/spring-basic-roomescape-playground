@@ -1,6 +1,7 @@
 package roomescape.reservation.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import roomescape.reservation.Reservation;
 import roomescape.waiting.dto.WaitingWithRank;
@@ -8,26 +9,15 @@ import roomescape.waiting.dto.WaitingWithRank;
 import java.time.format.DateTimeFormatter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@AllArgsConstructor
 public class MyReservationResponse {
 
-    @Getter
     private final Long reservationId;
-    @Getter
     private final String theme;
-    @Getter
     private final String date;
-    @Getter
     private final String time;
-    @Getter
     private final String status;
-
-    public MyReservationResponse(Long reservationId, String theme, String date, String time, String status) {
-        this.reservationId = reservationId;
-        this.theme = theme;
-        this.date = date;
-        this.time = time;
-        this.status = status;
-    }
 
     public static MyReservationResponse from(Reservation reservation) {
         return new MyReservationResponse(

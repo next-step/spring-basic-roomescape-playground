@@ -1,16 +1,14 @@
 package roomescape.time.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class TimeRequest {
+
     private String time;
-
-    private TimeRequest() {
-    }
-
-    public TimeRequest(String time) {
-        this.time = time;
-    }
-
-    public String getTime() {
-        return time;
-    }
 }

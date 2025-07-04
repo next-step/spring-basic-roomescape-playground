@@ -1,18 +1,17 @@
 package roomescape.waiting.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomescape.waiting.Waiting;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class WaitingResponse {
 
-    @Getter
     private Long id;
-
-    private WaitingResponse() {}
-
-    public WaitingResponse(Long id) {
-        this.id = id;
-    }
 
     public static WaitingResponse from(Waiting waiting) {
         return new WaitingResponse(waiting.getId());

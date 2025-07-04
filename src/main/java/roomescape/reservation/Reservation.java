@@ -1,7 +1,10 @@
 package roomescape.reservation;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
@@ -10,37 +13,28 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private Long id;
-    @Getter
+
     private LocalDate date;
-    @Getter
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
     private Time time;
-    @Getter
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
     private Theme theme;
-    @Getter
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    protected Reservation() {
-    }
-
-    public Reservation(Long id, LocalDate date, Time time, Theme theme, Member member) {
-        this.id = id;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-        this.member = member;
-    }
 
     public Reservation(LocalDate date, Time time, Theme theme, Member member) {
         this.date = date;

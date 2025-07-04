@@ -1,7 +1,9 @@
 package roomescape.waiting;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
@@ -10,33 +12,27 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Waiting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    @Getter
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
-    @Getter
     private Theme theme;
 
-    @Getter
     private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
-    @Getter
     private Time time;
-
-    protected Waiting() {
-    }
 
     public Waiting(Member member, Theme theme, LocalDate date, Time time) {
         this.member = member;

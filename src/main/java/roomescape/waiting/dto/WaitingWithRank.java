@@ -1,17 +1,13 @@
 package roomescape.waiting.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import roomescape.waiting.Waiting;
 
+@Getter
+@AllArgsConstructor
 public class WaitingWithRank {
 
-    @Getter
     private final Waiting waiting;
-    @Getter
     private final Long rank;
-
-    public WaitingWithRank(Waiting waiting, Long rank) {
-        this.waiting = waiting;
-        this.rank = rank;
-    }
 }

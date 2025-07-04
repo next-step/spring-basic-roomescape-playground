@@ -1,17 +1,13 @@
 package roomescape.member.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class MemberResponse {
 
     private Long id;
     private String name;
     private String email;
-
-    public MemberResponse(Long id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-    }
 }

@@ -4,33 +4,28 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Theme {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Getter
+
     private String name;
-    @Getter
+
     private String description;
-    @Getter
+
     private String thumbnail;
-
-    public Theme() {
-    }
-
-    public Theme(Long id, String name, String description, String thumbnail) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
-    }
 
     public Theme(String name, String description, String thumbnail) {
         this.name = name;
