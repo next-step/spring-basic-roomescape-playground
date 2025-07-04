@@ -40,9 +40,9 @@ public class WaitingService {
         }
         Member member = memberRepository.findById(loginMember.getId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
-        Theme theme = themeRepository.findById(request.getThemeId())
+        Theme theme = themeRepository.findById(request.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-        Time time = timeRepository.findById(request.getTimeId())
+        Time time = timeRepository.findById(request.getTime())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
 
         validateNoDuplicate(theme, request.getDate(), time, member.getId());
