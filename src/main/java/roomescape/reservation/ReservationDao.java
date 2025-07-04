@@ -1,7 +1,6 @@
 package roomescape.reservation;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,8 +10,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ReservationDao {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
+
+    public ReservationDao(EntityManager em) {
+        this.em = em;
+    }
 
     public List<Reservation> findAll() {
         return em.createQuery(

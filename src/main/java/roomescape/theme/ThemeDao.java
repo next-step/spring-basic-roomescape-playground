@@ -1,7 +1,6 @@
 package roomescape.theme;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,8 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ThemeDao {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
+
+    public ThemeDao(EntityManager em) {
+        this.em = em;
+    }
 
     public List<Theme> findAll() {
         return em.createQuery("SELECT t FROM Theme t WHERE t.deleted = false", Theme.class)

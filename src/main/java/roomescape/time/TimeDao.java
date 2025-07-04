@@ -1,7 +1,6 @@
 package roomescape.time;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,8 +10,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class TimeDao {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
+
+    public TimeDao(EntityManager em) {
+        this.em = em;
+    }
 
     public List<Time> findAll() {
         return em.createQuery("SELECT t FROM Time t WHERE t.deleted = false", Time.class)

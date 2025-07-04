@@ -2,7 +2,6 @@ package roomescape.member;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,8 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberDao {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
+
+    public MemberDao(EntityManager em) {
+        this.em = em;
+    }
 
     @Transactional
     public Member save(Member member) {

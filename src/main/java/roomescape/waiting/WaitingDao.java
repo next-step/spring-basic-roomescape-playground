@@ -1,7 +1,6 @@
 package roomescape.waiting;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,8 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class WaitingDao {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
+
+    public WaitingDao(EntityManager em) {
+        this.em = em;
+    }
 
     @Transactional
     public Waiting save(Waiting waiting) {
