@@ -37,6 +37,18 @@ public class MemberRepository {
         }
     }
 
+    public Optional<Member> findByName(String name) {
+        try {
+            return Optional.ofNullable(
+                    entityManager.createQuery("SELECT m FROM Member m WHERE m.name = :name", Member.class)
+                            .setParameter("name", name)
+                            .getSingleResult()
+            );
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
+
     public List<Member> findAll() {
         return entityManager.createQuery("SELECT m FROM Member m", Member.class)
                 .getResultList();

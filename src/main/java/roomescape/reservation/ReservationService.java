@@ -41,20 +41,32 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(ReservationRequest request, LoginMember loginMember) {
         if (loginMember == null) {
-            throw new IllegalArgumentException("로그인이 필요합니다.");
+            throw new UnauthenticatedException("로그인이 필요합니다.");
         }
-        Member member = memberRepository.findById(loginMember.getId())
+
+        Member reservationHolder;
+
+        Member loggedInUser = memberRepository.findById(loginMember.getId())
                 .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자 정보를 찾을 수 없습니다."));
+
+        if ("ADMIN".equals(loggedInUser.getRole())) {
+            if (request.getName() != null && !request.getName().isBlank()) {
+                reservationHolder = memberRepository.findByName(request.getName())
+                        .orElseThrow(() -> new IllegalArgumentException("예약 대상 사용자를 찾을 수 없습니다."));
+            } else {
+                reservationHolder = loggedInUser;
+            }
+        } else {
+            reservationHolder = loggedInUser;
+        }
 
         Theme theme = themeRepository.findById(request.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
         Time time = timeRepository.findById(request.getTime())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
-
         LocalDate date = LocalDate.parse(request.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
 
-        Reservation reservationToSave = new Reservation(date, time, theme, member);
+        Reservation reservationToSave = new Reservation(date, time, theme, reservationHolder);
         Reservation savedReservation = reservationRepository.save(reservationToSave);
 
         return new ReservationResponse(

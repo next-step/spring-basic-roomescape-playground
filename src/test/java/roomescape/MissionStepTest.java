@@ -69,29 +69,29 @@ public class MissionStepTest {
         assertThat(response.statusCode()).isEqualTo(201);
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
 
-//        params.put("name", "브라운");
-//
-//        ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
-//                .body(params)
-//                .cookie("token", token)
-//                .contentType(ContentType.JSON)
-//                .post("/reservations")
-//                .then().log().all()
-//                .extract();
-//
-//        assertThat(adminResponse.statusCode()).isEqualTo(201);
-//        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+        params.put("name", "브라운");
+
+        ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        assertThat(adminResponse.statusCode()).isEqualTo(201);
+        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
     @Test
     void 삼단계() {
-//        String brownToken = createToken("brown@email.com", "password");
-//
-//        RestAssured.given().log().all()
-//                .cookie("token", brownToken)
-//                .get("/admin")
-//                .then().log().all()
-//                .statusCode(401);
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
 
         String adminToken = createToken("admin@email.com", "password");
 
@@ -122,8 +122,8 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        params.put("time", "1");
+        params.put("theme", "1");
 
         // 예약 대기 생성
         WaitingResponse waiting = RestAssured.given().log().all()
@@ -147,7 +147,7 @@ public class MissionStepTest {
 
         // 예약 대기 상태 확인
         String status = myReservations.stream()
-                .filter(it -> it.getId() == waiting.getId())
+                .filter(it -> it.getReservationId() == waiting.getId())
                 .filter(it -> !it.getStatus().equals("예약"))
                 .findFirst()
                 .map(it -> it.getStatus())
