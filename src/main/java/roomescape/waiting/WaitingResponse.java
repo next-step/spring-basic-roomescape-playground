@@ -9,7 +9,7 @@ public record WaitingResponse(
         Long waitingNumber
 ) {
 
-    public static WaitingResponse from(Waiting waiting) {
+    public static WaitingResponse from(Waiting waiting, Long waitingNumber) {
         return new WaitingResponse(
                 waiting.getId(),
                 waiting.getName(),
