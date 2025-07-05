@@ -58,15 +58,28 @@ public class ReservationRepository {
                 .getResultList();
     }
 
-    public boolean existsByMemberIdAndThemeIdAndDateAndTimeId(Long memberId, Long themeId, String date, Long timeId) {
+    public boolean existsThemeIdAndDateAndTimeId(Long themeId, String date, Long timeId) {
         return entityManager.createQuery("""
                             SELECT COUNT(r) > 0 FROM Reservation r
-                            WHERE r.member.id = :memberId
-                              AND r.theme.id = :themeId
+                              Where r.theme.id = :themeId
                               AND r.date = :date
                               AND r.time.id = :timeId
                         """, Boolean.class)
-                .setParameter("memberId", memberId)
+                .setParameter("themeId", themeId)
+                .setParameter("date", date)
+                .setParameter("timeId", timeId)
+                .getSingleResult();
+    }
+
+    public boolean existsMemberIdAndThemeIdAndDateAndTimeId(Long memberId, Long themeId, String date, Long timeId) {
+        return entityManager.createQuery("""
+                            SELECT COUNT(r) > 0 FROM Reservation r
+                              Where r.member.id = :memberId
+                              And r.theme.id = :themeId
+                              AND r.date = :date
+                              AND r.time.id = :timeId
+                        """, Boolean.class)
+                .setParameter("memberId",memberId)
                 .setParameter("themeId", themeId)
                 .setParameter("date", date)
                 .setParameter("timeId", timeId)
