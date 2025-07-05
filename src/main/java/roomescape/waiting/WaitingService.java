@@ -2,6 +2,7 @@ package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import roomescape.auth.LoginMember;
 import roomescape.exception.RoomEscapeException;
 import roomescape.member.MemberRepository;
@@ -32,21 +33,13 @@ public class WaitingService {
     }
 
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
-        if (waitingRequest.name() == null || waitingRequest.name().isBlank()) {
-            waitingRequest = new WaitingRequest(loginMember.name(), waitingRequest.date(), waitingRequest.themeId(), waitingRequest.timeId());
-        }
-
+        waitingRequest = fillMissingNameWithLoginMember(waitingRequest, loginMember);
         validateDuplicatedReservationAndWaiting(waitingRequest, loginMember);
 
-        Waiting waiting = new Waiting(waitingRequest.name(),
-                waitingRequest.date(),
-                timeRepository.findById(waitingRequest.timeId()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
-                themeRepository.findById(waitingRequest.themeId()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
-                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
-
+        Waiting waiting = toWaiting(waitingRequest, loginMember);
         Waiting savedWaiting = waitingRepository.save(waiting);
-
-        return WaitingResponse.from(savedWaiting);
+        Long waitingNumber = waitingRepository.getWaitingRank(waiting);
+        return WaitingResponse.from(savedWaiting, waitingNumber);
     }
 
     public List<WaitingResponse> findWaitingWithRankByMember(LoginMember loginMember) {
@@ -59,15 +52,31 @@ public class WaitingService {
         waitingRepository.deleteById(id);
     }
 
+    private Waiting toWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
+        Waiting waiting = new Waiting(waitingRequest.name(),
+                waitingRequest.date(),
+                timeRepository.findById(waitingRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
+                themeRepository.findById(waitingRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
+                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
+        return waiting;
+    }
+
+    private static WaitingRequest fillMissingNameWithLoginMember(WaitingRequest waitingRequest, LoginMember loginMember) {
+        if (!StringUtils.hasText(waitingRequest.name())) {
+            waitingRequest = waitingRequest.withDefaultName(loginMember.name());
+        }
+        return waitingRequest;
+    }
+
     private void validateDuplicatedReservationAndWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
-        boolean alreadyReserved = reservationRepository.existsByMemberIdAndThemeIdAndDateAndTimeId(
-                loginMember.id(), waitingRequest.themeId(), waitingRequest.date(), waitingRequest.timeId());
+        boolean alreadyReserved = reservationRepository.existsMemberIdAndThemeIdAndDateAndTimeId(
+                loginMember.id(), waitingRequest.theme(), waitingRequest.date(), waitingRequest.time());
         if (alreadyReserved) {
             throw new RoomEscapeException(DUPLICATE_RESERVATION);
         }
 
         boolean alreadyWaiting = waitingRepository.existsByMemberIdAndThemeIdAndDateAndTimeId(
-                loginMember.id(), waitingRequest.themeId(), waitingRequest.date(), waitingRequest.timeId());
+                loginMember.id(), waitingRequest.theme(), waitingRequest.date(), waitingRequest.time());
         if (alreadyWaiting) {
             throw new RoomEscapeException(DUPLICATE_WAITING);
         }

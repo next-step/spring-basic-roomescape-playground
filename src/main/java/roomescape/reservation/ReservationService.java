@@ -1,7 +1,9 @@
 package roomescape.reservation;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import roomescape.auth.LoginMember;
 import roomescape.exception.RoomEscapeException;
 import roomescape.member.MemberRepository;
@@ -29,20 +31,12 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.getName() == null || reservationRequest.getName().isBlank()) {
-            reservationRequest = new ReservationRequest(loginMember.name(), reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime());
-        }
-
+        reservationRequest = fillMissingNameWithLoginMember(reservationRequest, loginMember);
         validateDuplicatedReservation(reservationRequest, loginMember);
 
-        Reservation reservation = new Reservation(reservationRequest.getName(),
-                reservationRequest.getDate(),
-                timeRepository.findById(reservationRequest.getTime()).orElseThrow(()->new RoomEscapeException(TIME_NOT_FOUND)),
-                themeRepository.findById(reservationRequest.getTheme()).orElseThrow(()->new RoomEscapeException(THEME_NOT_FOUND)),
-                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
-
-        reservationRepository.save(reservation);
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getTime());
+        Reservation reservation = toReservation(reservationRequest, loginMember);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return ReservationResponse.from(savedReservation);
     }
 
     public void deleteById(Long id) {
@@ -51,7 +45,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
+                .map(ReservationResponse::from)
                 .toList();
     }
 
@@ -61,14 +55,28 @@ public class ReservationService {
                 .toList();
     }
 
+    private Reservation toReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
+        return new Reservation(reservationRequest.name(),
+                reservationRequest.date(),
+                timeRepository.findById(reservationRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
+                themeRepository.findById(reservationRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
+                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
+    }
+
     private void validateDuplicatedReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
-        boolean alreadyReserved = reservationRepository.existsByMemberIdAndThemeIdAndDateAndTimeId(
-                loginMember.id(),
-                reservationRequest.getTheme(),
-                reservationRequest.getDate(),
-                reservationRequest.getTime());
+        boolean alreadyReserved = reservationRepository.existsThemeIdAndDateAndTimeId(
+                reservationRequest.theme(),
+                reservationRequest.date(),
+                reservationRequest.time());
         if (alreadyReserved) {
             throw new RoomEscapeException(DUPLICATE_RESERVATION);
         }
+    }
+
+    private static ReservationRequest fillMissingNameWithLoginMember(ReservationRequest reservationRequest, LoginMember loginMember) {
+        if (!StringUtils.hasText(reservationRequest.name())) {
+            reservationRequest = reservationRequest.withDefaultName(loginMember.name());
+        }
+        return reservationRequest;
     }
 }
