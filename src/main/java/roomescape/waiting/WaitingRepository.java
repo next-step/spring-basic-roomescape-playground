@@ -36,7 +36,7 @@ public class WaitingRepository {
         String jpql = """
                 SELECT new roomescape.waiting.WaitingWithRank(
                     w,
-                    (SELECT COUNT(w2) *1L
+                    (SELECT COUNT(w2) + 1
                      FROM Waiting w2
                      WHERE w2.theme = w.theme
                        AND w2.date = w.date
@@ -73,6 +73,21 @@ public class WaitingRepository {
                 .setParameter("themeId", themeId)
                 .setParameter("date", date)
                 .setParameter("timeId", timeId)
+                .getSingleResult();
+    }
+
+    public Long getWaitingRank(Waiting waiting) {
+        return entityManager.createQuery("""
+                            SELECT COUNT(w) + 1 FROM Waiting w
+                            WHERE w.theme = :theme
+                              AND w.date = :date
+                              AND w.time = :time
+                              AND w.id < :id
+                        """, Long.class)
+                .setParameter("theme", waiting.getTheme())
+                .setParameter("date", waiting.getDate())
+                .setParameter("time", waiting.getTime())
+                .setParameter("id", waiting.getId())
                 .getSingleResult();
     }
 }
