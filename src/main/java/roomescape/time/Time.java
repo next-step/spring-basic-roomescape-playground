@@ -9,7 +9,7 @@ public class Time {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "time_value")
+    @Column(name = "time_value", nullable = false)
     private String value;
     private Boolean deleted;
 
