@@ -20,19 +20,7 @@ public class WaitingRepository {
         return waiting;
     }
 
-    public List<Waiting> findByMemberId(Long memberId) {
-        return entityManager.createQuery("""
-                        SELECT w FROM Waiting w
-                        JOIN FETCH w.theme t
-                        JOIN FETCH w.time ti
-                        WHERE w.member.id =:memberId
-                        """, Waiting.class
-                ).setParameter("memberId", memberId)
-                .getResultList();
-    }
-
     public List<WaitingWithRank> findWaitingWithRankByMemberId(Long memberId) {
-
         String jpql = """
                 SELECT new roomescape.waiting.WaitingWithRank(
                     w,
