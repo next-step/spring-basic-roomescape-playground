@@ -18,19 +18,32 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAll() {
-        String jpql = "SELECT r FROM Reservation r";
-        return em.createQuery(jpql, Reservation.class).getResultList();
+        String jpql = "SELECT r FROM Reservation r " +
+                "JOIN FETCH r.member m " +
+                "JOIN FETCH r.theme th " +
+                "JOIN FETCH r.time t";
+
+        return em.createQuery(jpql, Reservation.class)
+                .getResultList();
     }
 
     public List<Reservation> findByMember(Member member) {
-        String jpql = "SELECT r FROM Reservation r WHERE r.member = :member";
+        String jpql = "SELECT r FROM Reservation r " +
+                "JOIN FETCH r.theme th " +
+                "JOIN FETCH r.time t " +
+                "WHERE r.member = :member";
+
         return em.createQuery(jpql, Reservation.class)
                 .setParameter("member", member)
                 .getResultList();
     }
 
     public List<Reservation> findByDateAndTheme(String date, Theme theme) {
-        String jpql = "SELECT r FROM Reservation r WHERE r.date = :date AND r.theme = :theme";
+        String jpql = "SELECT r FROM Reservation r " +
+                "JOIN FETCH r.member m " +
+                "JOIN FETCH r.time t " +
+                "WHERE r.date = :date AND r.theme = :theme";
+
         return em.createQuery(jpql, Reservation.class)
                 .setParameter("date", date)
                 .setParameter("theme", theme)
@@ -38,7 +51,10 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findByDateAndThemeAndTime(String date, Theme theme, Time time) {
-        String jpql = "SELECT r FROM Reservation r WHERE r.date = :date AND r.theme = :theme AND r.time = :time";
+        String jpql = "SELECT r FROM Reservation r " +
+                "JOIN FETCH r.member m " +
+                "JOIN FETCH r.theme th " +
+                "WHERE r.date = :date AND th = :theme AND r.time = :time";
 
         return em.createQuery(jpql, Reservation.class)
                 .setParameter("date", date)

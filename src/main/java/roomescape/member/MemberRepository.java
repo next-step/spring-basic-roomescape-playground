@@ -32,7 +32,6 @@ public class MemberRepository {
             return Optional.empty();
         }
 
-
     }
 
     public Optional<Member> findById(Long id) {

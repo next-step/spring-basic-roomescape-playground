@@ -26,7 +26,10 @@ public class WaitingRepository {
                 "       AND w2.time = w.time " +
                 "       AND w2.id < w.id)) " +
                 "FROM Waiting w " +
-                "WHERE w.member.id = :memberId";
+                "JOIN FETCH w.member m " +
+                "JOIN FETCH w.theme th " +
+                "JOIN FETCH w.time t " +
+                "WHERE m.id = :memberId";
 
         return em.createQuery(jpql, WaitingWithRank.class)
                 .setParameter("memberId", memberId)
@@ -34,7 +37,11 @@ public class WaitingRepository {
     }
 
     public List<Waiting> findWaitingByDateAndTimeAndTheme(String date, Time time, Theme theme) {
-        String jpql = "SELECT w FROM Waiting w WHERE w.date = :date AND w.time = :time AND w.theme = :theme";
+        String jpql = "SELECT w FROM Waiting w " +
+                "JOIN FETCH w.member m " +
+                "JOIN FETCH w.theme t " +
+                "JOIN FETCH w.time ti " +
+                "WHERE w.date = :date AND t = :theme AND ti = :time";
 
         return em.createQuery(jpql, Waiting.class)
                 .setParameter("date",date)
