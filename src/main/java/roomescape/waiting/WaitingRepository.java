@@ -63,11 +63,11 @@ public class WaitingRepository {
 
     public boolean existsByMemberIdAndThemeIdAndDateAndTimeId(Long memberId, Long themeId, String date, Long timeId) {
         return entityManager.createQuery("""
-                            SELECT COUNT(r) > 0 FROM Reservation r
-                            WHERE r.member.id = :memberId
-                              AND r.theme.id = :themeId
-                              AND r.date = :date
-                              AND r.time.id = :timeId
+                            SELECT COUNT(w) > 0 FROM Waiting w
+                            WHERE w.member.id = :memberId
+                              AND w.theme.id = :themeId
+                              AND w.date = :date
+                              AND w.time.id = :timeId
                         """, Boolean.class)
                 .setParameter("memberId", memberId)
                 .setParameter("themeId", themeId)
