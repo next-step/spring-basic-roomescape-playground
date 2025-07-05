@@ -86,7 +86,7 @@ public class MissionStepTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(201);
-        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+        assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
 
         Map<String, String> params2 = new HashMap<>();
         params2.put("date", "2024-03-03");
@@ -103,7 +103,7 @@ public class MissionStepTest {
                 .extract();
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
-        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+        assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
     }
 
     @Test
@@ -137,7 +137,7 @@ public class MissionStepTest {
 
         Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
-        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+        assertThat(persistTime.getValue()).isEqualTo(time.getValue());
     }
 
     @Test
@@ -162,8 +162,8 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        params.put("time", "1");
+        params.put("theme", "1");
 
         // 예약 대기 생성
         WaitingResponse waiting = RestAssured.given().log().all()
