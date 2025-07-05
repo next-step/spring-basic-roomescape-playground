@@ -1,13 +1,13 @@
 package roomescape.member;
 
-public class MemberRequest {
-    private String name;
-    private String email;
-    private String password;
+import org.springframework.util.StringUtils;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 
-    public String getName() {
-        return name;
-    }
+public record MemberRequest(
+        String name,
+        String email,
+        String password) {
 
     public MemberRequest {
         if (!StringUtils.hasText(name)) {
@@ -21,7 +21,7 @@ public class MemberRequest {
         }
     }
 
-    public String getPassword() {
-        return password;
+    public Member toEntity() {
+        return new Member(name, email, password, Role.USER);
     }
 }

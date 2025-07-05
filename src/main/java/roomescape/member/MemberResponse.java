@@ -1,31 +1,13 @@
 package roomescape.member;
 
-public class MemberResponse {
-    private Long id;
-    private String name;
-    private String email;
-    private String role;
+public record MemberResponse(
+        Long id,
+        String name,
+        String email,
+        Role role
+) {
 
-    public MemberResponse(Long id, String name, String email, String role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public String getEmail() {
-        return email;
+    public static MemberResponse from(Member member) {
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 }
