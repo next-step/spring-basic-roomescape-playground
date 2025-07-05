@@ -1,6 +1,6 @@
 package roomescape.member;
 
-import jakarta.persistence.NoResultException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ErrorCode;
@@ -24,7 +24,7 @@ public class MemberService {
     public Member authenticate(String email, String password) {
         try {
             return memberRepository.getByEmailAndPassword(email, password);
-        } catch (NoResultException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new RoomEscapeException(ErrorCode.INVALID_LOGIN);
         }
     }
