@@ -15,7 +15,10 @@ public enum ErrorCode {
     TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 시간 정보를 찾을 수 없습니다."),
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 테마 정보를 찾을 수 없습니다."),
     WAITING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 예약 대기 정보를 찾을 수 없습니다"),
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 예약 정보를 찾을 수 없습니다");
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 예약 정보를 찾을 수 없습니다"),
+    VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "입력값이 유효하지 않습니다."),
+    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다.");
+
 
     private final HttpStatus httpStatus;
     private final String message;
