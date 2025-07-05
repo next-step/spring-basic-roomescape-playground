@@ -28,7 +28,7 @@ public class MemberService {
         }
     }
 
-    public MemberResponse findById(Long memberId) {
+    public MemberResponse getById(Long memberId) {
         Member findMember = memberRepository.findById(memberId).orElseThrow(() ->new RoomEscapeException(ErrorCode.MEMBER_NOT_FOUND));
         return new MemberResponse(findMember.getId(), findMember.getName(), findMember.getEmail(), findMember.getRole());
     }
