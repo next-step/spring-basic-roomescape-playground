@@ -1,5 +1,6 @@
 package roomescape;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -11,13 +12,18 @@ import roomescape.time.TimeRepository;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-@Import(TimeRepository.class)
+//@Import(TimeRepository.class)
 public class JpaTest {
+
     @Autowired
     private TestEntityManager entityManager;
 
-    @Autowired
     private TimeRepository timeRepository;
+
+    @BeforeEach
+    void setUp() {
+        timeRepository = new TimeRepository(entityManager.getEntityManager());
+    }
 
     @Test
     void 사단계() {

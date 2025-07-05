@@ -11,8 +11,11 @@ import java.util.Optional;
 @Repository
 public class TimeRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public TimeRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Transactional
     public Time save(Time time) {
