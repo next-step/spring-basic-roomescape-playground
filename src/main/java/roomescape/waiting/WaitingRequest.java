@@ -1,5 +1,9 @@
 package roomescape.waiting;
 
+import org.springframework.util.StringUtils;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
+
 public record WaitingRequest(
         String name,
         String date,
