@@ -16,8 +16,9 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        validateDuplicateEmail(memberRequest);
+        Member member = memberRepository.save(memberRequest.toEntity());
+        return MemberResponse.from(member);
     }
 
     public Member authenticate(String email, String password) {
@@ -30,7 +31,13 @@ public class MemberService {
 
     public MemberResponse getById(Long memberId) {
         Member findMember = memberRepository.findById(memberId).orElseThrow(() ->new RoomEscapeException(ErrorCode.MEMBER_NOT_FOUND));
-        return new MemberResponse(findMember.getId(), findMember.getName(), findMember.getEmail(), findMember.getRole());
+        return MemberResponse.from(findMember);
+    }
+
+    private void validateDuplicateEmail(MemberRequest memberRequest) {
+        if (memberRepository.findByEmail(memberRequest.email()).isPresent()) {
+            throw new RoomEscapeException(ErrorCode.DUPLICATE_EMAIL);
+        }
     }
 
 }

@@ -29,4 +29,12 @@ public class MemberRepository {
         Member member = entityManager.find(Member.class, memberId);
         return Optional.ofNullable(member);
     }
+
+    public Optional<Member> findByEmail(String email) {
+        return entityManager.createQuery(
+                        "SELECT m FROM Member m WHERE m.email =:email", Member.class)
+                .setParameter("email", email)
+                .getResultStream()
+                .findFirst();
+    }
 }
