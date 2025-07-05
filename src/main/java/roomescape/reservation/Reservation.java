@@ -6,13 +6,22 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
+@Table(
+        name = "reservation",
+        indexes = {
+                @Index(name = "idx_res_date_theme", columnList = "date, theme_id"),
+                @Index(name = "idx_res_member",       columnList = "member_id")
+        }
+)
 public class Reservation {
 
     @Id
@@ -25,11 +34,11 @@ public class Reservation {
     @Column(nullable = false)
     private String date;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "time_id")
     private Time time;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
