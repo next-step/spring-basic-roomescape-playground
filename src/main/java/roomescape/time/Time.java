@@ -31,7 +31,7 @@ public class Time {
         return id;
     }
 
-    public String getTime() {
+    public String getValue() {
         return value;
     }
 
