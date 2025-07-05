@@ -15,9 +15,8 @@ public record WaitingResponse(
                 waiting.getName(),
                 waiting.getDate(),
                 waiting.getTheme().getName(),
-                waiting.getTime().getTime(),
-                null
-        );
+                waiting.getTime().getValue(),
+                waitingNumber);
     }
 
     public static WaitingResponse from(WaitingWithRank waitingWithRank) {
@@ -27,7 +26,7 @@ public record WaitingResponse(
                 waiting.getName(),
                 waiting.getDate(),
                 waiting.getTheme().getName(),
-                waiting.getTime().getTime(), waitingWithRank.getRank() + 1
+                waiting.getTime().getValue(), waitingWithRank.getRank()
         );
     }
 }

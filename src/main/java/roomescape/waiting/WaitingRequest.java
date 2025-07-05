@@ -7,8 +7,8 @@ import roomescape.exception.RoomEscapeException;
 public record WaitingRequest(
         String name,
         String date,
-        Long themeId,
-        Long timeId
+        Long theme,
+        Long time
 ) {
     public WaitingRequest {
         if (!StringUtils.hasText(date)) {
