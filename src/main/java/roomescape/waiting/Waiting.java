@@ -40,9 +40,7 @@ public class Waiting {
         this.theme = theme;
     }
 
-    public Waiting() {
-
-    }
+    protected Waiting() {}
 
     public Long getId() {
         return id;

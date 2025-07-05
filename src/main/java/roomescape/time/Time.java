@@ -24,7 +24,7 @@ public class Time {
         this.value = timeValue;
     }
 
-    public Time() {}
+    protected Time() {}
 
     public Long getId() {
         return id;

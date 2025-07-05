@@ -40,9 +40,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation() {
-
-    }
+    protected Reservation() {}
 
     public Long getId() {
         return id;
