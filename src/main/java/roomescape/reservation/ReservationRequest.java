@@ -13,16 +13,16 @@ public class ReservationRequest {
         this.time = time;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public Long getTheme() {
-        return theme;
+    public ReservationRequest {
+        if (!StringUtils.hasText(date)) {
+            throw new RoomEscapeException(ErrorCode.VALIDATION_ERROR, "날짜는 필수입니다.");
+        }
+        if (theme == null) {
+            throw new RoomEscapeException(ErrorCode.VALIDATION_ERROR, "테마는 필수입니다.");
+        }
+        if (time == null) {
+            throw new RoomEscapeException(ErrorCode.VALIDATION_ERROR, "시간은 필수입니다.");
+        }
     }
 
     public Long getTime() {

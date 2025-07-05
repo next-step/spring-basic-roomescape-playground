@@ -9,8 +9,16 @@ public class MemberRequest {
         return name;
     }
 
-    public String getEmail() {
-        return email;
+    public MemberRequest {
+        if (!StringUtils.hasText(name)) {
+            throw new RoomEscapeException(ErrorCode.VALIDATION_ERROR, "이름은 필수입니다");
+        }
+        if (!StringUtils.hasText(email) || !email.contains("@")) {
+            throw new RoomEscapeException(ErrorCode.VALIDATION_ERROR, "이메일 형식이 맞지 않습니다");
+        }
+        if (!StringUtils.hasText(password)) {
+            throw new RoomEscapeException(ErrorCode.VALIDATION_ERROR, "비밀번호는 필수입니다");
+        }
     }
 
     public String getPassword() {

@@ -24,7 +24,6 @@ public class WaitingController {
         if (
                 waitingRequest.date() == null
                         || waitingRequest.themeId() == null
-                        || waitingRequest.timeId() == null) {
             return ResponseEntity.badRequest().build();
         }
 
