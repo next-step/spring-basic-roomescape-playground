@@ -11,8 +11,11 @@ import java.util.Optional;
 @Repository
 public class ThemeRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public ThemeRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Transactional
     public Theme save(Theme theme) {

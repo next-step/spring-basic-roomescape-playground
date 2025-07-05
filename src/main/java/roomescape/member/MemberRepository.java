@@ -12,8 +12,11 @@ import java.util.Optional;
 @Repository
 public class MemberRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public MemberRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Transactional
     public Member save(Member member) {

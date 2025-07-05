@@ -14,8 +14,11 @@ import java.util.Optional;
 @Repository
 public class ReservationRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public ReservationRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Transactional
     public Reservation save(Reservation reservation) {

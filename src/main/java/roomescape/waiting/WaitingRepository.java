@@ -15,8 +15,11 @@ import java.util.Optional;
 @Repository
 public class WaitingRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public WaitingRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Transactional
     public Waiting save(Waiting waiting) {

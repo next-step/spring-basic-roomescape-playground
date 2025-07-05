@@ -12,7 +12,6 @@ import roomescape.time.TimeRepository;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-//@Import(TimeRepository.class)
 public class JpaTest {
 
     @Autowired
