@@ -7,6 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
 import roomescape.member.MemberResponse;
+import roomescape.member.Role;
 import roomescape.util.TokenExtractor;
 
 @Component
@@ -23,7 +24,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
         String token = TokenExtractor.extractTokenFromCookie(request);
         MemberResponse memberResponse = authService.findMemberByToken(token);
 
-        if (memberResponse == null || !memberResponse.getRole().equals("ADMIN")) {
+        if (memberResponse.role() != Role.ADMIN) {
             throw new RoomEscapeException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
         return true;
