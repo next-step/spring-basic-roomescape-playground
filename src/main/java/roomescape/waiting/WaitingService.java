@@ -17,13 +17,14 @@ public class WaitingService {
 
     private final WaitingDao waitingDao;
     private final MemberDao memberDao;
+    private final EntityManager em;
 
-    @PersistenceContext
-    private EntityManager em;
-
-    public WaitingService(WaitingDao waitingDao, MemberDao memberDao) {
+    public WaitingService(WaitingDao waitingDao,
+                          MemberDao memberDao,
+                          EntityManager em) {
         this.waitingDao = waitingDao;
         this.memberDao = memberDao;
+        this.em = em;
     }
 
     @Transactional

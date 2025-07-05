@@ -1,12 +1,10 @@
 package roomescape.reservation;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.member.Member;
@@ -24,16 +22,15 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final MemberDao memberDao;
     private final WaitingDao waitingDao;
-
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     public ReservationService(ReservationDao reservationDao,
                               WaitingDao waitingDao,
-                              MemberDao memberDao) {
+                              MemberDao memberDao, EntityManager em) {
         this.reservationDao = reservationDao;
-        this.waitingDao     = waitingDao;
-        this.memberDao      = memberDao;
+        this.waitingDao = waitingDao;
+        this.memberDao = memberDao;
+        this.em = em;
     }
 
     public List<ReservationResponse> findAll() {
@@ -77,7 +74,7 @@ public class ReservationService {
     public ReservationResponse saveUser(ReservationRequest req, LoginMember loginMember) {
         Member member = memberDao.findById(loginMember.id());
         Theme theme = em.getReference(Theme.class, req.getTheme());
-        Time  time  = em.getReference(Time.class,  req.getTime());
+        Time time = em.getReference(Time.class, req.getTime());
         Reservation r = new Reservation(req.getDate(), member, theme, time);
         em.persist(r);
         return new ReservationResponse(
@@ -89,7 +86,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponse saveAdmin(ReservationRequest req) {
         Theme theme = em.getReference(Theme.class, req.getTheme());
-        Time  time  = em.getReference(Time.class,  req.getTime());
+        Time time = em.getReference(Time.class, req.getTime());
         Reservation r = new Reservation(req.getDate(), req.getName(), theme, time);
         em.persist(r);
         return new ReservationResponse(
