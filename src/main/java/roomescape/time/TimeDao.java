@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-@Transactional(readOnly = true)
 public class TimeDao {
 
     private final EntityManager em;
@@ -21,13 +20,11 @@ public class TimeDao {
                 .getResultList();
     }
 
-    @Transactional
     public Time save(Time time) {
         em.persist(time);
         return time;
     }
 
-    @Transactional
     public void deleteById(Long id) {
         Time time = em.find(Time.class, id);
         if (time != null) {

@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-@Transactional(readOnly = true)
 public class ReservationDao {
 
     private final EntityManager em;
@@ -23,7 +22,6 @@ public class ReservationDao {
                 .getResultList();
     }
 
-    @Transactional
     public void deleteById(Long id) {
         Reservation r = em.find(Reservation.class, id);
         if (r != null) em.remove(r);

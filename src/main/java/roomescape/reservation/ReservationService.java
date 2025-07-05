@@ -18,9 +18,10 @@ import roomescape.waiting.WaitingDao;
 import roomescape.waiting.WaitingRank;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
-    private ReservationDao reservationDao;
+    private final ReservationDao reservationDao;
     private final MemberDao memberDao;
     private final WaitingDao waitingDao;
 
@@ -46,7 +47,6 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public List<MyReservationResponse> findMine(LoginMember loginMember) {
         Long memberId = loginMember.id();
 
@@ -97,6 +97,7 @@ public class ReservationService {
         );
     }
 
+    @Transactional
     public void deleteById(Long id) {
         reservationDao.deleteById(id);
     }

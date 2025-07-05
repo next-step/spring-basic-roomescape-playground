@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional(readOnly = true)
 public class WaitingDao {
 
     private final EntityManager em;
@@ -15,13 +14,11 @@ public class WaitingDao {
         this.em = em;
     }
 
-    @Transactional
     public Waiting save(Waiting waiting) {
         em.persist(waiting);
         return waiting;
     }
 
-    @Transactional
     public void deleteById(Long id) {
         Waiting w = em.find(Waiting.class, id);
         if (w != null) {

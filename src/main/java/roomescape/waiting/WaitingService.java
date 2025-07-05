@@ -12,6 +12,7 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Service
+@Transactional(readOnly = true)
 public class WaitingService {
 
     private final WaitingDao waitingDao;
