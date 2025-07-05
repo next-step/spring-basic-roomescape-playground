@@ -82,7 +82,7 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
-        params.put("time", "1");
+        params.put("time", "4");
         params.put("theme", "1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -96,10 +96,14 @@ public class MissionStepTest {
         assertThat(response.statusCode()).isEqualTo(201);
         assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
 
-        params.put("name", "브라운");
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("date", "2024-03-01");
+        params2.put("time", "5");
+        params2.put("theme", "1");
+        params2.put("name", "브라운");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(params2)
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
