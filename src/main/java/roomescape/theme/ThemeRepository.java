@@ -3,13 +3,13 @@ package roomescape.theme;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Transactional
 public class ThemeRepository {
 
     @PersistenceContext
@@ -32,6 +32,10 @@ public class ThemeRepository {
 
     public void deleteById(Long id) {
         Theme theme = entityManager.find(Theme.class, id);
+        if (theme == null) {
+            throw new RoomEscapeException(ErrorCode.THEME_NOT_FOUND);
+        }
         entityManager.remove(theme);
+        entityManager.flush();
     }
 }
