@@ -1,7 +1,11 @@
 package roomescape.time;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 
@@ -41,6 +45,12 @@ public class TimeService {
     }
 
     public void deleteById(Long id) {
-        timeRepository.deleteById(id);
+        try {
+            timeRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new RoomEscapeException(ErrorCode.TIME_NOT_FOUND);
+        } catch (DataIntegrityViolationException e) {
+            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT);
+        }
     }
 }

@@ -17,7 +17,8 @@ public enum ErrorCode {
     WAITING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 예약 대기 정보를 찾을 수 없습니다"),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 예약 정보를 찾을 수 없습니다"),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "입력값이 유효하지 않습니다."),
-    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다.");
+    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다."),
+    DELETE_CONFLICT(HttpStatus.CONFLICT, "다른 리소스에서 참조 중이라 삭제할 수 없습니다.");
 
 
     private final HttpStatus httpStatus;
