@@ -35,12 +35,15 @@ public class TimeService {
                 .toList();
     }
 
-    public List<Time> findAll() {
-        return timeRepository.findAll();
+    public List<TimeResponse> findAll() {
+        return timeRepository.findAll().stream()
+                .map(TimeResponse::from)
+                .toList();
     }
 
-    public Time save(Time time) {
-        return timeRepository.save(time);
+    public TimeResponse save(TimeRequest timeRequest) {
+        Time savedTime = timeRepository.save(timeRequest.toEntity());
+        return TimeResponse.from(savedTime);
     }
 
     public void deleteById(Long id) {
