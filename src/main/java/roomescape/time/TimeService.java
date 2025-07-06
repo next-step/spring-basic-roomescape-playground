@@ -20,32 +20,22 @@ public class TimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    @Transactional(readOnly = true)
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
         LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
 
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(localDate, themeId);
         List<Time> times = timeRepository.findAll();
 
-        return times.stream()
-                .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getTime(), // 3. time.getValue() 대신 time.getTime()을 사용합니다.
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
-                ))
-                .toList();
+        return times.stream().map(time -> new AvailableTime(time.getId(), time.getTime(),
+                reservations.stream().anyMatch(reservation -> reservation.getTimeId().equals(time.getId())))).toList();
     }
 
-    @Transactional(readOnly = true)
     public List<Time> findAll() {
         return timeRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
     public Time findById(Long id) {
-        return timeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+        return timeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
     }
 
     @Transactional

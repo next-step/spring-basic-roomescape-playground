@@ -38,13 +38,11 @@ public class MemberService {
         return jwtTokenProvider.createToken(member);
     }
 
-    @Transactional(readOnly = true)
     public Member findById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다."));
     }
 
-    @Transactional(readOnly = true)
     public MemberResponse findMemberResponseById(Long id) {
         Member member = findById(id);
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
