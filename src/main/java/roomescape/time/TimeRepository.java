@@ -2,8 +2,6 @@ package roomescape.time;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;

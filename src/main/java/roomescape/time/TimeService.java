@@ -53,6 +53,5 @@ public class TimeService {
         } catch (DataIntegrityViolationException e) {
             throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "시간이 다른 자원에서 사용중입니다.");
         }
-        timeRepository.deleteById(id);
     }
 }
