@@ -1,7 +1,6 @@
 package roomescape.time;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ErrorCode;
@@ -45,12 +44,12 @@ public class TimeService {
     }
 
     public void deleteById(Long id) {
+
         try {
-            timeRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new RoomEscapeException(ErrorCode.TIME_NOT_FOUND);
+            timeRepository.deleteById(id);;
         } catch (DataIntegrityViolationException e) {
-            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT);
+            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "시간이 다른 자원에서 사용중입니다.");
         }
+        timeRepository.deleteById(id);
     }
 }
