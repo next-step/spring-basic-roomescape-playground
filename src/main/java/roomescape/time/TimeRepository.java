@@ -2,7 +2,11 @@ package roomescape.time;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +34,10 @@ public class TimeRepository {
 
     public void deleteById(Long id) {
         Time time = entityManager.find(Time.class, id);
+        if (time == null) {
+            throw new RoomEscapeException(ErrorCode.TIME_NOT_FOUND);
+        }
         entityManager.remove(time);
+        entityManager.flush();
     }
 }
