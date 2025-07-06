@@ -2,7 +2,6 @@ package roomescape.member;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +53,15 @@ public class MemberRepository {
 
     public List<Member> findAll() {
         return entityManager.createQuery("SELECT m FROM Member m", Member.class)
+                .getResultList();
+    }
+
+    public List<Member> findAllByIdIn(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return entityManager.createQuery("SELECT m FROM Member m WHERE m.id IN :ids", Member.class)
+                .setParameter("ids", ids)
                 .getResultList();
     }
 }

@@ -1,7 +1,6 @@
 package roomescape.theme;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +29,15 @@ public class ThemeRepository {
 
     public List<Theme> findAll() {
         return entityManager.createQuery("SELECT t FROM Theme t", Theme.class)
+                .getResultList();
+    }
+
+    public List<Theme> findAllByIdIn(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return entityManager.createQuery("SELECT t FROM Theme t WHERE t.id IN :ids", Theme.class)
+                .setParameter("ids", ids)
                 .getResultList();
     }
 

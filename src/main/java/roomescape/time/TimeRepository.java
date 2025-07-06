@@ -1,7 +1,6 @@
 package roomescape.time;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +29,15 @@ public class TimeRepository {
 
     public List<Time> findAll() {
         return entityManager.createQuery("SELECT t FROM Time t", Time.class)
+                .getResultList();
+    }
+
+    public List<Time> findAllByIdIn(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return entityManager.createQuery("SELECT t FROM Time t WHERE t.id IN :ids", Time.class)
+                .setParameter("ids", ids)
                 .getResultList();
     }
 

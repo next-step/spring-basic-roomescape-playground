@@ -1,11 +1,8 @@
 package roomescape.reservation;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.theme.Theme;
-import roomescape.time.Time;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,40 +29,32 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAll() {
-        return entityManager.createQuery(
-                        "SELECT r FROM Reservation r " +
-                                "JOIN FETCH r.time " +
-                                "JOIN FETCH r.theme " +
-                                "JOIN FETCH r.member", Reservation.class)
-                .getResultList();
-    }
-
-    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        return entityManager.createQuery(
-                        "SELECT r FROM Reservation r " +
-                                "WHERE r.date = :date AND r.theme.id = :themeId", Reservation.class)
-                .setParameter("date", date)
-                .setParameter("themeId", themeId)
+        return entityManager.createQuery("SELECT r FROM Reservation r", Reservation.class)
                 .getResultList();
     }
 
     public List<Reservation> findByMemberId(Long memberId) {
         return entityManager.createQuery(
-                        "SELECT r FROM Reservation r " +
-                                "JOIN FETCH r.time " +
-                                "JOIN FETCH r.theme " +
-                                "WHERE r.member.id = :memberId", Reservation.class)
+                        "SELECT r FROM Reservation r WHERE r.member.id = :memberId", Reservation.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
 
-    public boolean existsByThemeAndDateAndTimeAndMember_Id(Theme theme, LocalDate date, Time time, Long memberId) {
-        Long count = entityManager.createQuery(
-                        "SELECT COUNT(r) FROM Reservation r " +
-                                "WHERE r.theme = :theme AND r.date = :date AND r.time = :time AND r.member.id = :memberId", Long.class)
-                .setParameter("theme", theme)
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        return entityManager.createQuery(
+                        "SELECT r FROM Reservation r WHERE r.date = :date AND r.themeId = :themeId", Reservation.class)
                 .setParameter("date", date)
-                .setParameter("time", time)
+                .setParameter("themeId", themeId)
+                .getResultList();
+    }
+
+    public boolean existsByThemeIdAndDateAndTimeIdAndMember_Id(Long themeId, LocalDate date, Long timeId, Long memberId) {
+        String jpql = "SELECT COUNT(w) FROM Waiting w " +
+                "WHERE w.themeId = :themeId AND w.date = :date AND w.timeId = :timeId AND w.member.id = :memberId";
+        Long count = entityManager.createQuery(jpql, Long.class)
+                .setParameter("themeId", themeId)
+                .setParameter("date", date)
+                .setParameter("timeId", timeId)
                 .setParameter("memberId", memberId)
                 .getSingleResult();
         return count > 0;
