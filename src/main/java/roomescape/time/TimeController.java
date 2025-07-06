@@ -21,18 +21,18 @@ public class TimeController {
     }
 
     @GetMapping("/times")
-    public List<Time> list() {
+    public List<TimeResponse> list() {
         return timeService.findAll();
     }
 
     @PostMapping("/times")
-    public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
+    public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest timeRequest) {
+        if (timeRequest.value() == null || timeRequest.value().isEmpty()) {
             throw new RuntimeException();
         }
 
-        Time newTime = timeService.save(time);
-        return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
+        TimeResponse response = timeService.save(timeRequest);
+        return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }
 
     @DeleteMapping("/times/{id}")
