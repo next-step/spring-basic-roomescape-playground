@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import roomescape.reservation.Reservation;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
 import roomescape.waiting.dto.WaitingWithRank;
 
 import java.time.format.DateTimeFormatter;
@@ -19,27 +21,23 @@ public class MyReservationResponse {
     private final String time;
     private final String status;
 
-    public static MyReservationResponse from(Reservation reservation) {
+    public static MyReservationResponse from(Reservation reservation, Theme theme, Time time) {
         return new MyReservationResponse(
                 reservation.getId(),
-                reservation.getTheme().getName(),
+                theme.getName(),
                 reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                reservation.getTime().getTime(),
+                time.getTime(),
                 "예약"
         );
     }
 
-    public static MyReservationResponse from(WaitingWithRank waitingWithRank) {
+    public static MyReservationResponse from(WaitingWithRank waitingWithRank, Theme theme, Time time) {
         return new MyReservationResponse(
                 waitingWithRank.getWaiting().getId(),
-                waitingWithRank.getWaiting().getTheme().getName(),
+                theme.getName(),
                 waitingWithRank.getWaiting().getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                waitingWithRank.getWaiting().getTime().getTime(),
+                time.getTime(),
                 (waitingWithRank.getRank() + 1) + "번째 예약대기"
         );
-    }
-
-    public Long getId() {
-        return reservationId;
     }
 }
