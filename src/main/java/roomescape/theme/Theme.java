@@ -20,9 +20,7 @@ public class Theme {
     private Long id;
 
     private String name;
-
     private String description;
-
     private String thumbnail;
 
     public Theme(String name, String description, String thumbnail) {

@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import roomescape.waiting.Waiting;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WaitingResponse {
 
     private Long id;
