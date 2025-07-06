@@ -9,10 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
-import static lombok.AccessLevel.PROTECTED;
-
 @Entity
 @Getter
 @AllArgsConstructor
@@ -36,18 +32,5 @@ public class Member {
 
     public boolean isAdmin() {
         return "ADMIN".equalsIgnoreCase(this.role);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Member member = (Member) o;
-        return Objects.equals(id, member.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }
