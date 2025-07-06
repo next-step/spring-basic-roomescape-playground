@@ -31,6 +31,6 @@ public class Member {
     }
 
     public boolean isAdmin() {
-        return "ADMIN".equalsIgnoreCase(this.role);
+        return "ADMIN".equals(this.role);
     }
 }
