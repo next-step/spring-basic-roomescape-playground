@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -33,18 +32,5 @@ public class Time {
 
     public String getTime() {
         return this.time.format(DateTimeFormatter.ofPattern("HH:mm"));
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Time time1 = (Time) o;
-        return Objects.equals(id, time1.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }
