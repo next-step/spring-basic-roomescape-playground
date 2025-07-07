@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.RoomEscapeException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static roomescape.exception.ErrorCode.*;
@@ -49,7 +50,7 @@ public class WaitingRepository {
         entityManager.remove(waiting);
     }
 
-    public boolean existsByMemberIdAndThemeIdAndDateAndTimeId(Long memberId, Long themeId, String date, Long timeId) {
+    public boolean existsByMemberIdAndThemeIdAndDateAndTimeId(Long memberId, Long themeId, LocalDate date, Long timeId) {
         return entityManager.createQuery("""
                             SELECT COUNT(w) > 0 FROM Waiting w
                             WHERE w.member.id = :memberId

@@ -1,17 +1,18 @@
 package roomescape.waiting;
 
-import org.springframework.util.StringUtils;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
 
+import java.time.LocalDate;
+
 public record WaitingRequest(
         String name,
-        String date,
+        LocalDate date,
         Long theme,
         Long time
 ) {
     public WaitingRequest {
-        if (!StringUtils.hasText(date)) {
+        if (date == null) {
             throw new RoomEscapeException(ErrorCode.VALIDATION_ERROR, "날짜는 필수입니다");
         }
         if (theme == null) {

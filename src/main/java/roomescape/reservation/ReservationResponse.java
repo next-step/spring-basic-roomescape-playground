@@ -1,10 +1,12 @@
 package roomescape.reservation;
 
+import java.time.LocalDate;
+
 public record ReservationResponse(
         Long id,
         String name,
         String theme,
-        String date,
+        LocalDate date,
         String time
 ) {
     public static ReservationResponse from(Reservation reservation) {

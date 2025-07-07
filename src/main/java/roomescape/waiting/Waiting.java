@@ -5,6 +5,8 @@ import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "date", "time_id", "member_id"}))
 public class Waiting {
@@ -17,7 +19,7 @@ public class Waiting {
     private String name;
 
     @Column(nullable = false)
-    private String date;
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
@@ -34,7 +36,7 @@ public class Waiting {
     protected Waiting() {
     }
 
-    public Waiting(Long id, String name, String date, Time time, Theme theme, Member member) {
+    public Waiting(Long id, String name, LocalDate date, Time time, Theme theme, Member member) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -43,7 +45,7 @@ public class Waiting {
         this.member = member;
     }
 
-    public Waiting(String name, String date, Time time, Theme theme, Member member) {
+    public Waiting(String name, LocalDate date, Time time, Theme theme, Member member) {
         this.name = name;
         this.date = date;
         this.time = time;
@@ -59,7 +61,7 @@ public class Waiting {
         return name;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

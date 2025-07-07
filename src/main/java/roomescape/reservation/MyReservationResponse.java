@@ -2,10 +2,12 @@ package roomescape.reservation;
 
 import roomescape.waiting.WaitingResponse;
 
+import java.time.LocalDate;
+
 public record MyReservationResponse(
         Long id,
         String theme,
-        String date,
+        LocalDate date,
         String time,
         String status
 ) {

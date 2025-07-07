@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -34,7 +35,7 @@ public class ReservationRepository {
         entityManager.remove(reservation);
     }
 
-    public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
 
         return entityManager.createQuery(""" 
                         SELECT r FROM Reservation r
@@ -59,7 +60,7 @@ public class ReservationRepository {
                 .getResultList();
     }
 
-    public boolean existsThemeIdAndDateAndTimeId(Long themeId, String date, Long timeId) {
+    public boolean existsThemeIdAndDateAndTimeId(Long themeId, LocalDate date, Long timeId) {
         return entityManager.createQuery("""
                             SELECT COUNT(r) > 0 FROM Reservation r
                               Where r.theme.id = :themeId
@@ -72,7 +73,7 @@ public class ReservationRepository {
                 .getSingleResult();
     }
 
-    public boolean existsMemberIdAndThemeIdAndDateAndTimeId(Long memberId, Long themeId, String date, Long timeId) {
+    public boolean existsMemberIdAndThemeIdAndDateAndTimeId(Long memberId, Long themeId, LocalDate date, Long timeId) {
         return entityManager.createQuery("""
                             SELECT COUNT(r) > 0 FROM Reservation r
                               Where r.member.id = :memberId

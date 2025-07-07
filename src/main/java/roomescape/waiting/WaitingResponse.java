@@ -1,9 +1,11 @@
 package roomescape.waiting;
 
+import java.time.LocalDate;
+
 public record WaitingResponse(
         Long id,
         String name,
-        String date,
+        LocalDate date,
         String theme,
         String time,
         Long waitingNumber

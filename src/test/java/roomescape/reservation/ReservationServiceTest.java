@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.exception.RoomEscapeException;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -19,7 +21,7 @@ class ReservationServiceTest {
     @Test
     void 예약이_정상_생성된다() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest(null, "2025-07-05", 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(null, LocalDate.parse("2025-07-05"), 1L, 1L);
         LoginMember loginMember = new LoginMember(1L, "석준", "email@email.com");
 
         //when
@@ -35,7 +37,7 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_시간_예약하면_예외를_던진다() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest(null, "2025-07-05", 1L, 999L);
+        ReservationRequest reservationRequest = new ReservationRequest(null, LocalDate.parse("2025-07-05"), 1L, 999L);
         LoginMember loginMember = new LoginMember(1L, "어드민", "admin@email.com");
 
         //then
@@ -47,7 +49,7 @@ class ReservationServiceTest {
     @Test
     void 존재하지_않는_테마_예약하면_예외를_던진다() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest(null, "2025-07-05", 999L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(null, LocalDate.parse("2025-07-05"), 999L, 1L);
         LoginMember loginMember = new LoginMember(1L, "어드민", "admin@email.com");
 
         //then
@@ -59,7 +61,7 @@ class ReservationServiceTest {
     @Test
     void 예약하려는_사용자를_찾을_수_없으면_예외를_던진다() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest(null, "2025-07-05", 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(null, LocalDate.parse("2025-07-05"), 1L, 1L);
         LoginMember loginMember = new LoginMember(999L, "어드민", "admin@email.com");
 
         //then
@@ -71,7 +73,7 @@ class ReservationServiceTest {
     @Test
     void 중복_예약을_하면_예외를_던진다() {
         //given
-        ReservationRequest reservationRequest = new ReservationRequest(null, "2025-07-05", 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(null, LocalDate.parse("2025-07-05"), 1L, 1L);
         LoginMember loginMember = new LoginMember(1L, "어드민", "admin@email.com");
 
         //when
