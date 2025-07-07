@@ -35,7 +35,22 @@ public class TimeRepository {
         if (time == null) {
             throw new RoomEscapeException(ErrorCode.TIME_NOT_FOUND);
         }
-        entityManager.remove(time);
+
+        boolean isReferenceInReservation = entityManager.createQuery(
+                        "SELECT COUNT(r) > 0 FROM Reservation r WHERE r.time.id = :timeId", Boolean.class
+                ).setParameter("timeId", id)
+                .getSingleResult();
+
+        boolean isReferenceInWaiting = entityManager.createQuery(
+                        "SELECT COUNT(w) > 0 FROM Waiting w WHERE w.time.id = :timeId", Boolean.class
+                ).setParameter("timeId", id)
+                .getSingleResult();
+
+        if (isReferenceInReservation || isReferenceInWaiting) {
+            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "시간이 다른 자원에서 사용중입니다.");
+        }
+
+        time.softDelete();
         entityManager.flush();
     }
 }

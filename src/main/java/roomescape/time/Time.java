@@ -11,6 +11,8 @@ public class Time {
 
     @Column(name = "time_value", nullable = false)
     private String value;
+
+    @Column(nullable = false)
     private Boolean deleted;
 
     public Time(Long id, String value) {
@@ -21,6 +23,11 @@ public class Time {
 
     public Time(String value) {
         this.value = value;
+        this.deleted = false;
+    }
+
+    public void softDelete() {
+        deleted = true;
     }
 
     public Time() {
