@@ -26,7 +26,7 @@ class MemberServiceTest {
         //then
         assertThatThrownBy(() -> memberService.authenticate(badEmail, badPassword))
                 .isInstanceOf(RoomEscapeException.class)
-                .hasMessage("이메일 또는 비밀번호가 잘못되었습니다.");
+                .hasMessage("이메일이 잘못되었습니다.");
     }
 
     @Test
@@ -67,5 +67,18 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.createMember(memberRequest2))
                 .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("이미 가입된 이메일입니다.");
+    }
+
+    @Test
+    @DisplayName("비밀번호가 틀리면 예외를 던진다")
+    void 비밀번호가_틀리면_예외를_던진다() {
+        //given
+        String goodEmail = "admin@email.com";
+        String badPassword = "badPassword";
+
+        //then
+        assertThatThrownBy(() -> memberService.authenticate(goodEmail, badPassword))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("비밀번호가 틀렸습니다.");
     }
 }
