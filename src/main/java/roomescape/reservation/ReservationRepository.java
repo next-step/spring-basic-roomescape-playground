@@ -40,7 +40,8 @@ public class ReservationRepository {
                         SELECT r FROM Reservation r
                         JOIN FETCH r.theme t
                         JOIN FETCH r.time ti
-                        WHERE r.date = :date AND r.theme.id = :themeId
+                        WHERE r.date = :date
+                        AND r.theme.id = :themeId
                         """, Reservation.class
                 ).setParameter("date", date)
                 .setParameter("themeId", themeId)

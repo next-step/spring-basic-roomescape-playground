@@ -6,6 +6,7 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"time_id", "theme_id", "date"}))
 public class Reservation {
 
     @Id
@@ -27,7 +28,7 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
