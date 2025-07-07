@@ -6,6 +6,7 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "date", "time_id", "member_id"}))
 public class Waiting {
 
     @Id
