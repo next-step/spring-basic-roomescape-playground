@@ -23,9 +23,13 @@ public class MemberService {
 
     public Member authenticate(String email, String password) {
         try {
-            return memberRepository.getByEmailAndPassword(email, password);
+            Member findMember = memberRepository.getByEmail(email);
+            if (!findMember.getPassword().equals(password)) {
+                throw new RoomEscapeException(ErrorCode.INVALID_LOGIN,"비밀번호가 틀렸습니다.");
+            }
+            return findMember;
         } catch (EmptyResultDataAccessException e) {
-            throw new RoomEscapeException(ErrorCode.INVALID_LOGIN);
+            throw new RoomEscapeException(ErrorCode.INVALID_LOGIN,"이메일이 잘못되었습니다.");
         }
     }
 

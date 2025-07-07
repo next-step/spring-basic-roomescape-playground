@@ -17,11 +17,10 @@ public class MemberRepository {
         return member;
     }
 
-    public Member getByEmailAndPassword(String email, String password) {
+    public Member getByEmail(String email) {
         return entityManager.createQuery(
-                        "SELECT m FROM Member m WHERE m.email = :email AND m.password = :password", Member.class)
+                        "SELECT m FROM Member m WHERE m.email = :email", Member.class)
                 .setParameter("email", email)
-                .setParameter("password", password)
                 .getSingleResult();
     }
 
