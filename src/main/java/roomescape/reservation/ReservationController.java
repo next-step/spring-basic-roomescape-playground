@@ -27,16 +27,35 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest,
-                                 @AuthenticatedMember LoginMember loginMember) {
-        String name = reservationRequest.getName() != null ? reservationRequest.getName() : loginMember.name();
-        ReservationResponse reservation = reservationService.save(reservationRequest, name);
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    public ResponseEntity<ReservationResponse> create(
+            @RequestBody ReservationRequest req,
+            @AuthenticatedMember LoginMember loginMember) {
+
+        ReservationResponse response;
+        if (req.getName() == null || req.getName().isBlank()) {
+            response = reservationService.saveUser(req, loginMember);
+        }
+        else {
+            response = reservationService.saveAdmin(req);
+        }
+
+        return ResponseEntity
+                .created(URI.create("/reservations/" + response.getId()))
+                .body(response);
     }
+
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> listMyReservation(
+            @AuthenticatedMember LoginMember loginMember) {
+
+        List<MyReservationResponse> mine = reservationService.findMine(loginMember);
+        return ResponseEntity.ok(mine);
     }
 }
