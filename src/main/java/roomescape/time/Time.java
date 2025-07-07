@@ -3,6 +3,7 @@ package roomescape.time;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "time", uniqueConstraints = @UniqueConstraint(columnNames = {"time_value", "deleted"}))
 public class Time {
 
     @Id
