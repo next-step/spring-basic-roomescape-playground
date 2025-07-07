@@ -1,7 +1,5 @@
 package roomescape.time;
 
-import io.restassured.internal.common.assertion.Assertion;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +16,7 @@ class TimeServiceTest {
     TimeService timeService;
 
     @Test
-    void 시간이_정사적으로_생성된다() {
+    void 시간이_정상적으로_생성된다() {
         //given
         TimeRequest timeRequest = new TimeRequest("11:11");
 
