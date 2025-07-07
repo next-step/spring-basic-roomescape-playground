@@ -8,12 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.LoginMember;
-import roomescape.waiting.WaitingResponse;
 import roomescape.waiting.WaitingService;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Stream;
 
 @RestController
 public class ReservationController {
@@ -45,19 +43,8 @@ public class ReservationController {
 
     @GetMapping("/reservations-mine")
     public ResponseEntity<List<MyReservationResponse>> findReservationsByMember(LoginMember loginMember) {
-        List<MyReservationResponse> reservationByMember = reservationService.findReservationByMember(loginMember);
-        List<WaitingResponse> waitingByMember = waitingService.findWaitingWithRankByMember(loginMember);
+        List<MyReservationResponse> myReservationsAndWaitings = reservationService.findMyReservationsAndWaitings(loginMember);
 
-        List<MyReservationResponse> waiting = waitingByMember.stream()
-                .map(MyReservationResponse::from)
-                .toList();
-
-        List<MyReservationResponse> all = Stream.concat(
-                        reservationByMember.stream(),
-                        waiting.stream())
-                .toList();
-
-
-        return ResponseEntity.ok().body(all);
+        return ResponseEntity.ok().body(myReservationsAndWaitings);
     }
 }

@@ -1,6 +1,5 @@
 package roomescape.reservation;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -9,8 +8,10 @@ import roomescape.exception.RoomEscapeException;
 import roomescape.member.MemberRepository;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingService;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static roomescape.exception.ErrorCode.*;
 
@@ -22,12 +23,14 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
+    private final WaitingService waitingService;
 
-    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, ThemeRepository themeRepository, TimeRepository timeRepository, WaitingService waitingService) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
+        this.waitingService = waitingService;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
@@ -53,6 +56,14 @@ public class ReservationService {
         return reservationRepository.findByMemberId(loginMember.id()).stream()
                 .map(MyReservationResponse::from)
                 .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservationsAndWaitings(LoginMember loginMember) {
+        Stream<MyReservationResponse> reservations = findReservationByMember(loginMember).stream();
+        Stream<MyReservationResponse> waitings = waitingService.findWaitingWithRankByMember(loginMember).stream()
+                .map(MyReservationResponse::from);
+
+        return Stream.concat(reservations, waitings).toList();
     }
 
     private Reservation toReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
