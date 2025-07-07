@@ -1,12 +1,12 @@
 package roomescape.waiting;
 
+import org.springframework.util.StringUtils;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
 
 import java.time.LocalDate;
 
 public record WaitingRequest(
-        String name,
         LocalDate date,
         Long theme,
         Long time
@@ -21,9 +21,5 @@ public record WaitingRequest(
         if (time == null) {
             throw new RoomEscapeException(ErrorCode.VALIDATION_ERROR, "테마는 필수입니다");
         }
-    }
-
-    public WaitingRequest withDefaultName(String defaultName) {
-        return new WaitingRequest(defaultName, date, theme, time);
     }
 }

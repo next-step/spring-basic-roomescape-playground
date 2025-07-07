@@ -33,7 +33,6 @@ public class WaitingService {
     }
 
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
-        waitingRequest = fillMissingNameWithLoginMember(waitingRequest, loginMember);
         validateDuplicatedReservationAndWaiting(waitingRequest, loginMember);
 
         Waiting waiting = toWaiting(waitingRequest, loginMember);
@@ -53,19 +52,12 @@ public class WaitingService {
     }
 
     private Waiting toWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
-        Waiting waiting = new Waiting(waitingRequest.name(),
+        Waiting waiting = new Waiting(loginMember.name(),
                 waitingRequest.date(),
                 timeRepository.findById(waitingRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
                 themeRepository.findById(waitingRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
                 memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
         return waiting;
-    }
-
-    private static WaitingRequest fillMissingNameWithLoginMember(WaitingRequest waitingRequest, LoginMember loginMember) {
-        if (!StringUtils.hasText(waitingRequest.name())) {
-            waitingRequest = waitingRequest.withDefaultName(loginMember.name());
-        }
-        return waitingRequest;
     }
 
     private void validateDuplicatedReservationAndWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {

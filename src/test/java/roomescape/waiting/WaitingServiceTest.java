@@ -25,7 +25,7 @@ class WaitingServiceTest {
     @Test
     void 에약대기가_정상적으로_작동한다() {
         //given
-        WaitingRequest request = new WaitingRequest(null, LocalDate.parse("2025-07-05"), 1L, 1L);
+        WaitingRequest request = new WaitingRequest(LocalDate.parse("2025-07-05"), 1L, 1L);
         LoginMember loginMember = new LoginMember(1L, "어드민", "admin@email.com");
 
         //when
@@ -42,8 +42,8 @@ class WaitingServiceTest {
     @Test
     void 중복_예약대기를하면_예외를_던진다() {
         //given
-        WaitingRequest request1 = new WaitingRequest(null, LocalDate.parse("2025-07-05"), 1L, 1L);
-        WaitingRequest request2 = new WaitingRequest(null, LocalDate.parse("2025-07-05"), 1L, 1L);
+        WaitingRequest request1 = new WaitingRequest(LocalDate.parse("2025-07-05"), 1L, 1L);
+        WaitingRequest request2 = new WaitingRequest(LocalDate.parse("2025-07-05"), 1L, 1L);
         LoginMember loginMember = new LoginMember(1L, "어드민", "admin@email.com");
 
         //when
@@ -58,7 +58,7 @@ class WaitingServiceTest {
     @Test
     void 예약_대기를_삭제한다() {
         //given
-        WaitingRequest request = new WaitingRequest(null, LocalDate.parse("2025-07-05"), 1L, 1L);
+        WaitingRequest request = new WaitingRequest(LocalDate.parse("2025-07-05"), 1L, 1L);
         LoginMember loginMember = new LoginMember(1L, "어드민", "admin@email.com");
 
         //when
@@ -73,7 +73,7 @@ class WaitingServiceTest {
     void 예약을_했으면_예약대기를_할_수_없다() {
         //given
         ReservationRequest reservationRequest = new ReservationRequest(null, LocalDate.parse("2025-07-05"), 1L, 1L);
-        WaitingRequest waitingRequest = new WaitingRequest(null, LocalDate.parse("2025-07-05"), 1L, 1L);
+        WaitingRequest waitingRequest = new WaitingRequest(LocalDate.parse("2025-07-05"), 1L, 1L);
         LoginMember loginMember = new LoginMember(1L, "어드민", "admin@email.com");
         reservationService.save(reservationRequest, loginMember);
 
