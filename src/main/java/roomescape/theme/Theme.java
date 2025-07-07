@@ -14,6 +14,8 @@ public class Theme {
 
     @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private boolean deleted;
 
     public Theme() {
@@ -30,6 +32,10 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.deleted = false;
+    }
+
+    public void softDelete() {
+        deleted = true;
     }
 
     public Long getId() {

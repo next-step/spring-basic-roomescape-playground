@@ -35,7 +35,22 @@ public class ThemeRepository {
         if (theme == null) {
             throw new RoomEscapeException(ErrorCode.THEME_NOT_FOUND);
         }
-        entityManager.remove(theme);
+
+        boolean isReferenceInReservation = entityManager.createQuery(
+                        "SELECT COUNT(r) > 0 FROM Reservation r WHERE r.time.id = :themeId", Boolean.class
+                ).setParameter("themeId", id)
+                .getSingleResult();
+
+        boolean isReferenceInWaiting = entityManager.createQuery(
+                        "SELECT COUNT(w) > 0 FROM Waiting w WHERE w.time.id = :themeId", Boolean.class
+                ).setParameter("themeId", id)
+                .getSingleResult();
+
+        if (isReferenceInReservation || isReferenceInWaiting) {
+            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "테마가 다른 자원에서 사용중입니다.");
+        }
+
+        theme.softDelete();
         entityManager.flush();
     }
 }

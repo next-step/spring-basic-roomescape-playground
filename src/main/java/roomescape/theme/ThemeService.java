@@ -1,10 +1,7 @@
 package roomescape.theme;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.exception.ErrorCode;
-import roomescape.exception.RoomEscapeException;
 
 import java.util.List;
 
@@ -30,10 +27,6 @@ public class ThemeService {
     }
 
     public void deleteById(Long id) {
-        try {
-            themeRepository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT,"테마가 다른 자원에서 사용중입니다.");
-        }
+        themeRepository.deleteById(id);
     }
 }
