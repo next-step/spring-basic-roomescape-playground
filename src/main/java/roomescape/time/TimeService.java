@@ -1,7 +1,10 @@
 package roomescape.time;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 
@@ -39,8 +42,13 @@ public class TimeService {
     }
 
     public TimeResponse save(TimeRequest timeRequest) {
-        Time savedTime = timeRepository.save(timeRequest.toEntity());
-        return TimeResponse.from(savedTime);
+
+        try {
+            Time savedTime = timeRepository.save(timeRequest.toEntity());
+            return TimeResponse.from(savedTime);
+        } catch (DataIntegrityViolationException e) {
+            throw new RoomEscapeException(ErrorCode.DUPLICATE_TIME, "이미 존재하는 시간입니다.");
+        }
     }
 
     public void deleteById(Long id) {
