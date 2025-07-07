@@ -1,10 +1,8 @@
 package roomescape.reservation;
 
 import jakarta.persistence.EntityManager;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class ReservationDao {
@@ -22,9 +20,11 @@ public class ReservationDao {
                 .getResultList();
     }
 
-    public void deleteById(Long id) {
-        Reservation r = em.find(Reservation.class, id);
-        if (r != null) em.remove(r);
+    public int deleteById(Long id) {
+        return em.createQuery(
+                        "DELETE FROM Reservation r WHERE r.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
