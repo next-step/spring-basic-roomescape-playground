@@ -1,8 +1,10 @@
 package roomescape.theme;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Where;
 
 @Entity
+@Where(clause = "deleted = false")
 public class Theme {
 
     @Id

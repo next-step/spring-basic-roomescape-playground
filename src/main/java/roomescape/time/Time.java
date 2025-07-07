@@ -1,9 +1,11 @@
 package roomescape.time;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Where;
 
 @Entity
-@Table(name = "time", uniqueConstraints = @UniqueConstraint(columnNames = {"time_value", "deleted"}))
+@Where(clause = "deleted = false")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"time_value", "deleted"}))
 public class Time {
 
     @Id
