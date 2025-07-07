@@ -27,6 +27,7 @@ public class TimeRepository {
 
     public Time save(Time time) {
         entityManager.persist(time);
+        entityManager.flush();
         return time;
     }
 
