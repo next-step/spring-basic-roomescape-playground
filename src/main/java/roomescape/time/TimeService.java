@@ -1,24 +1,34 @@
 package roomescape.time;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import roomescape.exception.ThemeNotFoundException;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
+import roomescape.reservation.ReservationRepository;
 
 import java.util.List;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
 
 @Service
+@Transactional
 public class TimeService {
-    private final TimeDao timeDao;
-    private final ReservationDao reservationDao;
 
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
+
+    public TimeService(TimeRepository timeRepository, ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(ThemeNotFoundException::new);
+        List<Reservation> reservations = reservationRepository.findByDateAndTheme(date, theme);
+        List<Time> times = timeRepository.findAll();
 
         return times.stream()
                 .map(time -> new AvailableTime(
@@ -31,14 +41,15 @@ public class TimeService {
     }
 
     public List<Time> findAll() {
-        return timeDao.findAll();
+        return timeRepository.findAll();
     }
 
     public Time save(Time time) {
-        return timeDao.save(time);
+        return timeRepository.save(time);
     }
 
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        timeRepository.deleteById(id);
     }
+
 }

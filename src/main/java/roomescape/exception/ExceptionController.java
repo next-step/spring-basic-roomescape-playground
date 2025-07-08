@@ -12,6 +12,22 @@ public class ExceptionController {
     public ResponseEntity<String> handleMemberNotFoundException(MemberNotFoundException e) {
         System.out.println(e.getMessage());
         return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(TimeNotFoundException.class)
+    public ResponseEntity<String> handleTimeNotFoundException(TimeNotFoundException e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(ThemeNotFoundException.class)
+    public ResponseEntity<String> handleThemeNotFoundException(ThemeNotFoundException e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
     }
@@ -20,7 +36,7 @@ public class ExceptionController {
     public ResponseEntity<String> handleInvalidRoleException(InvalidRoleException e) {
         System.out.println(e.getMessage());
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.FORBIDDEN)
                 .body(e.getMessage());
     }
 

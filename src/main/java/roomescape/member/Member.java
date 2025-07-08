@@ -1,12 +1,27 @@
 package roomescape.member;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Member {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
     private String password;
+    @Enumerated(EnumType.STRING)
     private Role role;
+
+    protected Member() {
+
+    }
 
     public Member(Long id, String name, String email, String role) {
         this.id = id;
@@ -20,6 +35,10 @@ public class Member {
         this.email = email;
         this.password = password;
         this.role = Role.from(role);
+    }
+
+    public boolean isAdmin() {
+        return role == Role.ADMIN;
     }
 
     public Long getId() {
@@ -38,11 +57,6 @@ public class Member {
         return password;
     }
 
-    public String getRole() {
-        return role.name();
-    }
+    public Role getRole() { return role; }
 
-    public boolean isAdmin() {
-        return role.name().equals("ADMIN");
-    }
 }

@@ -6,6 +6,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import jakarta.persistence.EntityManager;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,18 +16,31 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.MyReservationResponse;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
 public class MissionStepTest {
 
     @Autowired
-    MemberDao memberDao;
+    MemberRepository memberRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private TimeRepository timeRepository;
 
     private final String secretKey;
 
@@ -67,7 +82,7 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
-        params.put("time", "1");
+        params.put("time", "4");
         params.put("theme", "1");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -81,10 +96,14 @@ public class MissionStepTest {
         assertThat(response.statusCode()).isEqualTo(201);
         assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
 
-        params.put("name", "브라운");
+        Map<String, String> params2 = new HashMap<>();
+        params2.put("date", "2024-03-01");
+        params2.put("time", "5");
+        params2.put("theme", "1");
+        params2.put("name", "브라운");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(params2)
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
@@ -96,7 +115,8 @@ public class MissionStepTest {
     }
 
     private String createToken(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
+        Member member = memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(MemberNotFoundException::new);
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
@@ -122,6 +142,71 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    void 사단계() {
+        Time time = new Time("10:00");
+        entityManager.persist(time);
+        entityManager.flush();
+
+        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
+
+        assertThat(persistTime.getValue()).isEqualTo(time.getValue());
+    }
+
+    @Test
+    void 오단계() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
+    }
+
+    @Test
+    void 육단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 예약 대기 생성
+        WaitingResponse waiting = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        // 내 예약 목록 조회
+        List<MyReservationResponse> myReservations = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        // 예약 대기 상태 확인
+        String status = myReservations.stream()
+                .filter(it -> it.reservationId() == waiting.id())
+                .filter(it -> !it.status().equals("예약"))
+                .findFirst()
+                .map(it -> it.status())
+                .orElse(null);
+
+        assertThat(status).isEqualTo("1번째 예약대기");
     }
 
 }

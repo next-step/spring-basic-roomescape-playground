@@ -11,6 +11,7 @@ import java.net.URI;
 
 @RestController
 public class MemberController {
+
     private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
@@ -32,4 +33,5 @@ public class MemberController {
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
+
 }
