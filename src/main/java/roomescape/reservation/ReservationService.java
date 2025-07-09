@@ -12,7 +12,6 @@ import roomescape.member.MemberDao;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 import roomescape.waiting.Waiting;
-import roomescape.waiting.WaitingDao;
 import roomescape.waiting.WaitingRank;
 
 @Service

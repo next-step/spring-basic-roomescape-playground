@@ -1,7 +1,6 @@
 package roomescape.waiting;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,16 +14,16 @@ import roomescape.time.Time;
 @Transactional(readOnly = true)
 public class WaitingService {
 
-    private final WaitingDao waitingDao;
+    private final WaitingRepository waitingRepo;
     private final MemberDao memberDao;
     private final EntityManager em;
 
-    public WaitingService(WaitingDao waitingDao,
+    public WaitingService(WaitingRepository waitingRepo,
                           MemberDao memberDao,
                           EntityManager em) {
-        this.waitingDao = waitingDao;
-        this.memberDao = memberDao;
-        this.em = em;
+        this.waitingRepo = waitingRepo;
+        this.memberDao   = memberDao;
+        this.em          = em;
     }
 
     @Transactional
@@ -34,9 +33,9 @@ public class WaitingService {
         Time time = em.getReference(Time.class, req.getTime());
 
         Waiting w = new Waiting(req.getDate(), member, theme, time);
-        waitingDao.save(w);
+        waitingRepo.save(w);
 
-        List<WaitingRank> ranks = waitingDao.findWaitingRankByMemberId(loginMember.id());
+        List<WaitingRank> ranks = waitingRepo.findWaitingRankByMemberId(loginMember.id());
         long myRank = ranks.stream()
                 .filter(r -> r.waiting().getId().equals(w.getId()))
                 .mapToLong(WaitingRank::rank)
@@ -49,6 +48,6 @@ public class WaitingService {
 
     @Transactional
     public void cancelWaiting(Long waitingId) {
-        waitingDao.deleteById(waitingId);
+        waitingRepo.deleteById(waitingId);
     }
 }
