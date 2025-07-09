@@ -1,82 +1,52 @@
 package roomescape.waiting;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import roomescape.exception.RoomEscapeException;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static roomescape.exception.ErrorCode.*;
-
 @Repository
-public class WaitingRepository {
+public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    boolean existsByMemberIdAndThemeIdAndDateAndTimeId(Long memberId, Long themeId, LocalDate date, Long timeId);
+    boolean existsByTimeId(Long id);
+    boolean existsByThemeId(Long id);
 
-    public Waiting save(Waiting waiting) {
-        entityManager.persist(waiting);
-        return waiting;
-    }
+    @Query("""
+                SELECT COUNT(w) + 1 FROM Waiting w
+                WHERE w.theme = :theme
+                  AND w.date = :date
+                  AND w.time = :time
+                  AND w.id < :id
+                  AND w.time.deleted = false
+                  AND w.theme.deleted = false
+            """)
+    Long getWaitingRank(
+            @Param("theme") Theme theme,
+            @Param("date") LocalDate date,
+            @Param("time") Time time,
+            @Param("id") Long id
+    );
 
-    public List<WaitingWithRank> findWaitingWithRankByMemberId(Long memberId) {
-        String jpql = """
-                SELECT new roomescape.waiting.WaitingWithRank(
-                    w,
-                    (SELECT COUNT(w2) + 1
-                     FROM Waiting w2
-                     WHERE w2.theme = w.theme
-                       AND w2.date = w.date
-                       AND w2.time = w.time
-                       AND w2.id < w.id)
-                )
-                FROM Waiting w
-                WHERE w.member.id = :memberId
-                """;
-
-        return entityManager.createQuery(jpql, WaitingWithRank.class)
-                .setParameter("memberId", memberId)
-                .getResultList();
-
-    }
-
-    public void deleteById(Long id) {
-        Waiting waiting = entityManager.find(Waiting.class, id);
-        if (waiting == null) {
-            throw new RoomEscapeException(WAITING_NOT_FOUND);
-        }
-        entityManager.remove(waiting);
-    }
-
-    public boolean existsByMemberIdAndThemeIdAndDateAndTimeId(Long memberId, Long themeId, LocalDate date, Long timeId) {
-        return entityManager.createQuery("""
-                            SELECT COUNT(w) > 0 FROM Waiting w
-                            WHERE w.member.id = :memberId
-                              AND w.theme.id = :themeId
-                              AND w.date = :date
-                              AND w.time.id = :timeId
-                        """, Boolean.class)
-                .setParameter("memberId", memberId)
-                .setParameter("themeId", themeId)
-                .setParameter("date", date)
-                .setParameter("timeId", timeId)
-                .getSingleResult();
-    }
-
-    public Long getWaitingRank(Waiting waiting) {
-        return entityManager.createQuery("""
-                            SELECT COUNT(w) + 1 FROM Waiting w
-                            WHERE w.theme = :theme
-                              AND w.date = :date
-                              AND w.time = :time
-                              AND w.id < :id
-                        """, Long.class)
-                .setParameter("theme", waiting.getTheme())
-                .setParameter("date", waiting.getDate())
-                .setParameter("time", waiting.getTime())
-                .setParameter("id", waiting.getId())
-                .getSingleResult();
-    }
+    @Query("""
+            SELECT new roomescape.waiting.WaitingWithRank(
+                w,
+                (SELECT COUNT(w2) + 1
+                 FROM Waiting w2
+                 WHERE w2.theme = w.theme
+                   AND w2.date = w.date
+                   AND w2.time = w.time
+                   AND w2.id < w.id
+                   AND w2.theme.deleted = false
+                   AND w2.time.deleted = false)
+            )
+            FROM Waiting w
+            WHERE w.member.id = :memberId
+            """)
+    List<WaitingWithRank> findWaitingWithRankByMemberId(Long memberId);
 }
