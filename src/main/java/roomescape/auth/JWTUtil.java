@@ -8,16 +8,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 
 @Component
 public class JWTUtil {
 
     private final Key key;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepo;
 
-    public JWTUtil(@Value("${jwt.secret}") String secret, MemberDao memberDao) {
+    public JWTUtil(@Value("${jwt.secret}") String secret,  MemberRepository memberRepo) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
-        this.memberDao = memberDao;
+        this.memberRepo = memberRepo;
     }
 
     public String createToken(Member member) {
@@ -31,12 +32,10 @@ public class JWTUtil {
     }
 
     public String createToken(String email, String password) {
-        try {
-            Member member = memberDao.findByEmailAndPassword(email, password);
-            return createToken(member);
-        } catch (Exception e) {
-            throw new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다.");
-        }
+        Member member = memberRepo
+                .findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
+        return createToken(member);
     }
 
     public Claims parseToken(String token) {
