@@ -43,8 +43,11 @@ public class ReservationService {
     }
 
     public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+        Reservation findReservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new RoomEscapeException(RESERVATION_NOT_FOUND));
+        reservationRepository.delete(findReservation);
     }
+
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
@@ -52,14 +55,14 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<MyReservationResponse> findReservationByMember(LoginMember loginMember) {
+    public List<MyReservationResponse> findAllByMember(LoginMember loginMember) {
         return reservationRepository.findByMemberId(loginMember.id()).stream()
                 .map(MyReservationResponse::from)
                 .toList();
     }
 
     public List<MyReservationResponse> findMyReservationsAndWaitings(LoginMember loginMember) {
-        Stream<MyReservationResponse> reservations = findReservationByMember(loginMember).stream();
+        Stream<MyReservationResponse> reservations = findAllByMember(loginMember).stream();
         Stream<MyReservationResponse> waitings = waitingService.findWaitingWithRankByMember(loginMember).stream()
                 .map(MyReservationResponse::from);
 
@@ -75,7 +78,7 @@ public class ReservationService {
     }
 
     private void validateDuplicatedReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
-        boolean alreadyReserved = reservationRepository.existsThemeIdAndDateAndTimeId(
+        boolean alreadyReserved = reservationRepository.existsByThemeIdAndDateAndTimeId(
                 reservationRequest.theme(),
                 reservationRequest.date(),
                 reservationRequest.time());
