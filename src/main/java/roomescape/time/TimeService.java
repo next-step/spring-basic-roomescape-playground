@@ -1,26 +1,29 @@
 package roomescape.time;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.Reservation;
-
-import java.util.List;
+import roomescape.reservation.ReservationRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class TimeService {
 
     private final TimeRepository timeRepo;
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepo;
 
-    public TimeService(TimeRepository timeRepo,
-                       ReservationDao reservationDao) {
-        this.timeRepo      = timeRepo;
-        this.reservationDao = reservationDao;
+    public TimeService(
+            TimeRepository timeRepo,
+            ReservationRepository reservationRepo
+    ) {
+        this.timeRepo = timeRepo;
+        this.reservationRepo = reservationRepo;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
+        List<Reservation> reservations =
+                reservationRepo.findByDateAndThemeId(date, themeId);
         List<Time> times = timeRepo.findByDeletedFalse();
 
         return times.stream()
