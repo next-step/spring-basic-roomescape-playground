@@ -10,17 +10,19 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class TimeService {
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
 
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
+    private final TimeRepository timeRepo;
+    private final ReservationDao reservationDao;
+
+    public TimeService(TimeRepository timeRepo,
+                       ReservationDao reservationDao) {
+        this.timeRepo      = timeRepo;
         this.reservationDao = reservationDao;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
         List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+        List<Time> times = timeRepo.findByDeletedFalse();
 
         return times.stream()
                 .map(time -> new AvailableTime(
@@ -33,16 +35,16 @@ public class TimeService {
     }
 
     public List<Time> findAll() {
-        return timeDao.findAll();
+        return timeRepo.findByDeletedFalse();
     }
 
     @Transactional
     public Time save(Time time) {
-        return timeDao.save(time);
+        return timeRepo.save(time);
     }
 
     @Transactional
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        timeRepo.DeleteById(id);
     }
 }
