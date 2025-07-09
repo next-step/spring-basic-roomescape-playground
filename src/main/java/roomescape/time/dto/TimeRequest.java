@@ -1,4 +1,4 @@
-package roomescape.reservation.dto;
+package roomescape.time.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ReservationRequest {
+public class TimeRequest {
 
-    private String date;
-    private Long theme;
-    private Long time;
-    private String name;
+    private String time;
 }

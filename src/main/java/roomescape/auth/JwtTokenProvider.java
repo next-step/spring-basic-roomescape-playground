@@ -14,7 +14,7 @@ public class JwtTokenProvider {
 
     private SecretKey secretKey;
 
-    @Value("${roomescape.jwt.secret}")
+    @Value("${roomescape.auth.jwt.secret}")
     private String secret;
 
     @PostConstruct

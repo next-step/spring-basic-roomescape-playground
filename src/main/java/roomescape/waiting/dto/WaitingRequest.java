@@ -1,17 +1,18 @@
-package roomescape.reservation.dto;
+package roomescape.waiting.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ReservationRequest {
+public class WaitingRequest {
 
-    private String date;
+    private LocalDate date;
     private Long theme;
     private Long time;
-    private String name;
 }

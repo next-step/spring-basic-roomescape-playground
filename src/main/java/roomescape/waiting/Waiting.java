@@ -1,8 +1,7 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import roomescape.member.Member;
@@ -12,8 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class Reservation {
+public class Waiting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +25,7 @@ public class Reservation {
     private Long timeId;
     private LocalDate date;
 
-    public Reservation(Member member, Long themeId, Long timeId, LocalDate date) {
+    public Waiting(Member member, Long themeId, Long timeId, LocalDate date) {
         this.member = member;
         this.themeId = themeId;
         this.timeId = timeId;

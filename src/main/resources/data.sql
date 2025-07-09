@@ -1,13 +1,15 @@
-INSERT INTO member (id, name, email, password, role)
-VALUES (1, '어드민', 'admin@email.com', 'password', 'ADMIN'),
-       (2, '브라운', 'brown@email.com', 'password', 'USER');
+INSERT INTO member (name, email, password, role) VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN');
+INSERT INTO member (name, email, password, role) VALUES ('클로이', 'chloe@email.com', 'password', 'USER');
+INSERT INTO member (name, email, password, role) VALUES ('브라운', 'brown@email.com', 'password', 'USER');
 
-INSERT INTO theme (id, name, description, deleted)
-VALUES (1, '공포', '무서운 테마입니다.', false),
-       (2, '모험', '신나는 테마입니다.', false),
-       (3, '미스터리', '수수께끼를 풀어보세요.', false);
+INSERT INTO theme (name, description, thumbnail) VALUES ('공포', '매우 무서운 테마', 'https://i.imgur.com/1.jpg');
+INSERT INTO theme (name, description, thumbnail) VALUES ('코믹', '매우 웃긴 테마', 'https://i.imgur.com/2.jpg');
+INSERT INTO theme (name, description, thumbnail) VALUES ('어드벤처', '신나는 모험 테마', 'https://i.imgur.com/3.jpg');
 
-INSERT INTO time (id, time_value, deleted)
-VALUES (1, '10:00', false),
-       (2, '12:00', false),
-       (3, '14:00', false);
+INSERT INTO time (time) VALUES ('10:00');
+INSERT INTO time (time) VALUES ('13:00');
+INSERT INTO time (time) VALUES ('15:00');
+
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (1, '2024-03-01', 1, 1);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (1, '2024-03-01', 2, 2);
+INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (1, '2024-03-01', 3, 3);
