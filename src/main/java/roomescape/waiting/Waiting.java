@@ -8,7 +8,7 @@ import roomescape.member.Member;
 
 import java.time.LocalDate;
 
-@Entity
+@Entity @Table
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Waiting {
