@@ -1,9 +1,7 @@
 package roomescape.reservation;
 
-import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
@@ -13,7 +11,6 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
-import roomescape.waiting.Waiting;
 import roomescape.waiting.WaitingRank;
 import roomescape.waiting.WaitingRepository;
 
