@@ -6,30 +6,39 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class WaitingService {
 
     private final WaitingRepository waitingRepo;
-    private final MemberDao memberDao;
-    private final EntityManager em;
+    private final MemberRepository memberRepo;
+    private final ThemeRepository themeRepo;
+    private final TimeRepository timeRepo;
 
-    public WaitingService(WaitingRepository waitingRepo,
-                          MemberDao memberDao,
-                          EntityManager em) {
+    public WaitingService(
+            WaitingRepository waitingRepo,
+            MemberRepository  memberRepo,
+            ThemeRepository   themeRepo,
+            TimeRepository    timeRepo
+    ) {
         this.waitingRepo = waitingRepo;
-        this.memberDao   = memberDao;
-        this.em          = em;
+        this.memberRepo  = memberRepo;
+        this.themeRepo   = themeRepo;
+        this.timeRepo    = timeRepo;
     }
 
     @Transactional
     public WaitingResponse createWaiting(WaitingRequest req, LoginMember loginMember) {
-        Member member = memberDao.findById(loginMember.id());
-        Theme theme = em.getReference(Theme.class, req.getTheme());
-        Time time = em.getReference(Time.class, req.getTime());
+        Member member = memberRepo.findById(loginMember.id())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Theme theme = themeRepo.getReferenceById(req.getTheme());
+        Time  time  = timeRepo.getReferenceById(req.getTime());
 
         Waiting w = new Waiting(req.getDate(), member, theme, time);
         waitingRepo.save(w);
