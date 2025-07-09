@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 import roomescape.waiting.Waiting;

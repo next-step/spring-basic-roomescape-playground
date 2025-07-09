@@ -7,15 +7,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepo;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepo) {
+        this.memberRepo = memberRepo;
     }
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        memberRepo.findByEmail(memberRequest.getEmail())
+                .ifPresent(m -> { throw new IllegalArgumentException("존재하는 이메일입니다."); });
+
+        Member member = new Member(
+                memberRequest.getName(),
+                memberRequest.getEmail(),
+                memberRequest.getPassword(),
+                "USER"
+        );
+        Member saved = memberRepo.save(member);
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 }

@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
 import roomescape.member.MemberRequest;
 
 @Service

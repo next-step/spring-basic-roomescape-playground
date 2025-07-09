@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
 
 @Component
 public class JWTUtil {
