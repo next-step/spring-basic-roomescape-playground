@@ -71,22 +71,12 @@ public class ReservationService {
     public List<MyReservationResponse> findByMember(LoginMember loginMember) {
         Member member = memberRepository.findById(loginMember.id()).orElseThrow(MemberNotFoundException::new);
         List<MyReservationResponse> reservationList = reservationRepository.findByMember(member).stream()
-                .map(it -> new MyReservationResponse(
-                        it.getId(),
-                        it.getTheme().getName(),
-                        it.getDate(),
-                        it.getTime().getValue(),
-                        "예약"))
+                .map(MyReservationResponse::from)
                 .toList();
 
         List<MyReservationResponse> watingList = waitingRepository
                 .findWaitingsWithRankByMemberId(loginMember.id()).stream()
-                .map(it -> new MyReservationResponse(
-                        it.getWaiting().getId(),
-                        it.getWaiting().getTheme().getName(),
-                        it.getWaiting().getDate(),
-                        it.getWaiting().getTime().getValue(),
-                        it.getRank() + 1 + "번째 예약대기"))
+                .map(MyReservationResponse::from)
                 .toList();
 
         return Stream.concat(reservationList.stream(), watingList.stream()).toList();
