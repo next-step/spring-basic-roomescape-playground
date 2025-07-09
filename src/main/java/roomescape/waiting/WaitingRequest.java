@@ -1,6 +1,5 @@
 package roomescape.waiting;
 
-import org.springframework.util.StringUtils;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
 
