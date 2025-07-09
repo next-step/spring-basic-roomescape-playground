@@ -106,9 +106,9 @@ public class ReservationService {
                 waitings.stream().map(w -> w.getWaiting().getTimeId())
         ).distinct().toList();
 
-        Map<Long, Theme> themeMap = themeRepository.findAllByIdIn(themeIds).stream()
+        Map<Long, Theme> themeMap = themeRepository.findAllById(themeIds).stream()
                 .collect(Collectors.toMap(Theme::getId, Function.identity()));
-        Map<Long, Time> timeMap = timeRepository.findAllByIdIn(timeIds).stream()
+        Map<Long, Time> timeMap = timeRepository.findAllById(timeIds).stream()
                 .collect(Collectors.toMap(Time::getId, Function.identity()));
 
         Stream<MyReservationResponse> reservationResponses = reservations.stream()
@@ -126,11 +126,11 @@ public class ReservationService {
         List<Long> themeIds = reservations.stream().map(Reservation::getThemeId).distinct().toList();
         List<Long> timeIds = reservations.stream().map(Reservation::getTimeId).distinct().toList();
 
-        Map<Long, Member> memberMap = memberRepository.findAllByIdIn(memberIds).stream()
+        Map<Long, Member> memberMap = memberRepository.findAllById(memberIds).stream()
                 .collect(Collectors.toMap(Member::getId, Function.identity()));
-        Map<Long, Theme> themeMap = themeRepository.findAllByIdIn(themeIds).stream()
+        Map<Long, Theme> themeMap = themeRepository.findAllById(themeIds).stream()
                 .collect(Collectors.toMap(Theme::getId, Function.identity()));
-        Map<Long, Time> timeMap = timeRepository.findAllByIdIn(timeIds).stream()
+        Map<Long, Time> timeMap = timeRepository.findAllById(timeIds).stream()
                 .collect(Collectors.toMap(Time::getId, Function.identity()));
 
         return reservations.stream()
