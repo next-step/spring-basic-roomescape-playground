@@ -1,5 +1,6 @@
 package roomescape.time;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,9 @@ class TimeServiceTest {
 
     @Autowired
     TimeService timeService;
+
+    @Autowired
+    EntityManager entityManager;
 
     @Test
     void 시간이_정상적으로_생성된다() {
@@ -62,6 +66,7 @@ class TimeServiceTest {
         TimeRequest timeRequest2 = new TimeRequest("13:00");
         TimeResponse saved1 = timeService.save(timeRequest1);
         timeService.deleteById(saved1.id());
+        entityManager.flush();
 
         //when
         TimeResponse saved2 = timeService.save(timeRequest2);
