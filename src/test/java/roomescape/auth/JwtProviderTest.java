@@ -42,10 +42,9 @@ class JwtProviderTest {
 
     @Test
     @DisplayName("잘못된 서명이면 예외 발생")
-    void 잘못된_서명이면_예외_발생() throws InterruptedException {
+    void 잘못된_서명이면_예외_발생() {
         //given
         String badKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E?";
-        System.out.println("dddddd"+ badKey.getBytes().length);
         String token = Jwts.builder()
                 .setSubject("1")
                 .setIssuedAt(new Date())
@@ -59,4 +58,57 @@ class JwtProviderTest {
                 .hasMessage("토큰의 서명이 유효하지 않습니다.");
     }
 
+    @Test
+    @DisplayName("토큰의 subect가 잘못된 형식이면 예외를 던진다")
+    void 토큰의_subect가_잘못된_형식이면_예외를_던진다() {
+        //given
+        String badKey = jwtProperties.getSecret();
+        String token = Jwts.builder()
+                .setSubject("abc")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 60000))
+                .signWith(Keys.hmacShaKeyFor(badKey.getBytes()))
+                .compact();
+
+        //then
+        assertThatThrownBy(() -> jwtProvider.extractMemberId(token))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("토큰 subject가 숫자 형식이 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("member id의 값이 유효하지 않으면 예외를 던진다")
+    void member_id의_값이_유효하지_않으면_예외를_던진다() {
+        //given
+        String badKey = jwtProperties.getSecret();
+        String token = Jwts.builder()
+                .setSubject("0")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 60000))
+                .signWith(Keys.hmacShaKeyFor(badKey.getBytes()))
+                .compact();
+
+        //then
+        assertThatThrownBy(() -> jwtProvider.extractMemberId(token))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("유효하지 않은 id입니다.");
+    }
+
+    @Test
+    @DisplayName("subject가_null이면_예외를_던진다")
+    void subject가_null이면_예외를_던진다() {
+        //given
+        String badKey = jwtProperties.getSecret();
+        String token = Jwts.builder()
+                .setSubject(null)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 60000))
+                .signWith(Keys.hmacShaKeyFor(badKey.getBytes()))
+                .compact();
+
+        //then
+        assertThatThrownBy(() -> jwtProvider.extractMemberId(token))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("토큰 subject가 누락되어 있습니다.");
+    }
 }

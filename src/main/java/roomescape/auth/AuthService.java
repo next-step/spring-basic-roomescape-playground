@@ -22,8 +22,8 @@ public class AuthService {
         return new TokenResponse(token);
     }
 
-    public MemberResponse findMemberByToken(String token) {
+    public MemberResponse getMemberByToken(String token) {
         Long memberId = jwtProvider.extractMemberId(token);
-        return memberService.findById(memberId);
+        return memberService.getById(memberId);
     }
 }

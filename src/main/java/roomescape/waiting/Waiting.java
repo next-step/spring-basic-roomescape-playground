@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import jakarta.persistence.*;
 import roomescape.member.Member;
@@ -8,8 +8,8 @@ import roomescape.time.Time;
 import java.time.LocalDate;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"time_id", "theme_id", "date"}))
-public class Reservation {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "date", "time_id", "member_id"}))
+public class Waiting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,6 @@ public class Reservation {
     @JoinColumn(name = "time_id")
     private Time time;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
     private Theme theme;
@@ -34,8 +33,10 @@ public class Reservation {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    protected Waiting() {
+    }
 
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme, Member member) {
+    public Waiting(Long id, String name, LocalDate date, Time time, Theme theme, Member member) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -44,15 +45,12 @@ public class Reservation {
         this.member = member;
     }
 
-    public Reservation(String name, LocalDate date, Time time, Theme theme, Member member) {
+    public Waiting(String name, LocalDate date, Time time, Theme theme, Member member) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
-    }
-
-    protected Reservation() {
     }
 
     public Long getId() {
