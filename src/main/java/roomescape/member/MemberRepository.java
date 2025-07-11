@@ -16,7 +16,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     default Member getByEmailOrThrow(String email) {
         return findByEmail(email).orElseThrow(
-                () -> new RoomEscapeException(ErrorCode.INVALID_LOGIN, "이메일이 잘못되었습니다."));
+                () -> new RoomEscapeException(ErrorCode.INVALID_LOGIN));
     }
 
 }
