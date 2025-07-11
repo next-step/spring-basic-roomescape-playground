@@ -88,8 +88,7 @@ public class ReservationService {
     //사용자 예약 시
     @Transactional
     public ReservationResponse saveUser(ReservationRequest req, LoginMember loginMember) {
-        Member member = memberRepo.findById(loginMember.id())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Member member = memberRepo.findByIdOrThrow(loginMember.id());
 
         Theme theme = themeRepo.getReferenceById(req.getTheme());
         Time time   = timeRepo.getReferenceById(req.getTime());

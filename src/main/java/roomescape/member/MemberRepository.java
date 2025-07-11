@@ -10,4 +10,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmailAndPassword(String email, String password);
 
     boolean existsByEmail(String email);
+
+    default Member findByIdOrThrow(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. id=" + id));
+    }
 }

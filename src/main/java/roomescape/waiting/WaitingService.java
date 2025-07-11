@@ -34,8 +34,8 @@ public class WaitingService {
 
     @Transactional
     public WaitingResponse createWaiting(WaitingRequest req, LoginMember loginMember) {
-        Member member = memberRepo.findById(loginMember.id())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Member member = memberRepo.findByIdOrThrow(loginMember.id());
+
         Theme theme = themeRepo.getReferenceById(req.getTheme());
         Time  time  = timeRepo.getReferenceById(req.getTime());
 
