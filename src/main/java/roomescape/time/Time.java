@@ -1,36 +1,24 @@
 package roomescape.time;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Where;
 
 @Entity
-@Where(clause = "deleted = false")
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"time_value", "deleted"}))
 public class Time {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "time_value", nullable = false)
+    @Column(name = "time_value", nullable = false, unique = true)
     private String value;
-
-    @Column(nullable = false)
-    private Boolean deleted;
 
     public Time(Long id, String value) {
         this.id = id;
         this.value = value;
-        this.deleted = false;
     }
 
     public Time(String value) {
         this.value = value;
-        this.deleted = false;
-    }
-
-    public void softDelete() {
-        deleted = true;
     }
 
     public Time() {
@@ -45,7 +33,4 @@ public class Time {
         return value;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
-    }
 }

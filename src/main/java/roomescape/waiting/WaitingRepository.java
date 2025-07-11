@@ -23,8 +23,6 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
                   AND w.date = :date
                   AND w.time = :time
                   AND w.id < :id
-                  AND w.time.deleted = false
-                  AND w.theme.deleted = false
             """)
     Long getWaitingRank(
             @Param("theme") Theme theme,
@@ -41,9 +39,7 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
                  WHERE w2.theme = w.theme
                    AND w2.date = w.date
                    AND w2.time = w.time
-                   AND w2.id < w.id
-                   AND w2.theme.deleted = false
-                   AND w2.time.deleted = false)
+                   AND w2.id < w.id)
             )
             FROM Waiting w
             WHERE w.member.id = :memberId

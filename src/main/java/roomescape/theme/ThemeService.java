@@ -46,6 +46,6 @@ public class ThemeService {
         if (isExistInReservation || isExistInWaiting) {
             throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "해당 테마는 예약 또는 예약 대기 목록에 사용 중입니다.");
         }
-        theme.softDelete();
+        themeRepository.deleteById(id);
     }
 }

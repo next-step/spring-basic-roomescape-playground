@@ -67,6 +67,6 @@ public class TimeService {
         if (existsInReservation || existsInWaiting) {
             throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "해당 시간은 예약 또는 예약 대기 목록에 사용 중입니다.");
         }
-        time.softDelete();
+        timeRepository.deleteById(id);
     }
 }
