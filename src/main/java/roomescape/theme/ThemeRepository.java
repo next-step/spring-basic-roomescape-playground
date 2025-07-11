@@ -9,8 +9,4 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ThemeRepository extends JpaRepository<Theme, Long> {
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE Theme t SET t.deleted = true WHERE t.id = :id")
-    void deleteById(@Param("id") Long id);
 }

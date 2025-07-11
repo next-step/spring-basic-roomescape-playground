@@ -12,5 +12,5 @@ public interface TimeRepository extends JpaRepository<Time, Long> {
 
     @Modifying
     @Query("UPDATE Time t SET t.deleted = true WHERE t.id = :id")
-    void DeleteById(@Param("id") Long id);
+    void deleteById(@Param("id") Long id);
 }

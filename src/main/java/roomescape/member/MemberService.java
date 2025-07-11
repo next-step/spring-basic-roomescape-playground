@@ -15,9 +15,9 @@ public class MemberService {
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        memberRepo.findByEmail(memberRequest.getEmail())
-                .ifPresent(m -> { throw new IllegalArgumentException("존재하는 이메일입니다."); });
-
+        if (memberRepo.existsByEmail(memberRequest.getEmail())) {
+            throw new IllegalArgumentException("존재하는 이메일입니다.");
+        }
         Member member = new Member(
                 memberRequest.getName(),
                 memberRequest.getEmail(),

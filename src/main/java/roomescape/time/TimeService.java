@@ -47,6 +47,6 @@ public class TimeService {
 
     @Transactional
     public void deleteById(Long id) {
-        timeRepo.DeleteById(id);
+        timeRepo.deleteById(id);
     }
 }
