@@ -44,7 +44,7 @@ public class ThemeService {
         boolean isExistInWaiting =waitingRepository.existsByThemeId(theme.getId());
 
         if (isExistInReservation || isExistInWaiting) {
-            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "테마가 다른 자원에서 사용중입니다.");
+            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "해당 테마는 예약 또는 예약 대기 목록에 사용 중입니다.");
         }
         theme.softDelete();
     }

@@ -43,7 +43,7 @@ class TimeServiceTest {
         //then
         assertThatThrownBy(() -> timeService.deleteById(response.id()))
                 .isInstanceOf(RoomEscapeException.class)
-                .hasMessage("시간이 다른 자원에서 사용중입니다.");
+                .hasMessage("해당 시간은 예약 또는 예약 대기 목록에 사용 중입니다.");
     }
 
     @Test

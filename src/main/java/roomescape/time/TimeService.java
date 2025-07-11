@@ -65,7 +65,7 @@ public class TimeService {
         boolean existsInWaiting = waitingRepository.existsByTimeId(time.getId());
 
         if (existsInReservation || existsInWaiting) {
-            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "시간이 다른 자원에서 사용중입니다.");
+            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "해당 시간은 예약 또는 예약 대기 목록에 사용 중입니다.");
         }
         time.softDelete();
     }
