@@ -24,8 +24,8 @@ public class MemberService {
 
     public Member authenticate(String email, String password) {
         Member findMember = memberRepository.getByEmailOrThrow(email);
-        if (!findMember.getPassword().equals(password)) {
-            throw new RoomEscapeException(ErrorCode.INVALID_LOGIN, "비밀번호가 틀렸습니다.");
+        if (!findMember.isSamePassword(password)) {
+            throw new RoomEscapeException(ErrorCode.INVALID_LOGIN);
         }
         return findMember;
     }
