@@ -60,7 +60,7 @@ class TimeServiceTest {
     }
 
     @Test
-    void 소프트_삭제후_다시넣기_가능해야한다() {
+    void 삭제후_다시넣기_가능해야한다() {
         //given
         TimeRequest timeRequest1 = new TimeRequest("13:00");
         TimeRequest timeRequest2 = new TimeRequest("13:00");
