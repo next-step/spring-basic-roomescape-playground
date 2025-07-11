@@ -10,7 +10,7 @@ import roomescape.waiting.WaitingRepository;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
@@ -23,6 +23,7 @@ public class ThemeService {
         this.waitingRepository = waitingRepository;
     }
 
+    @Transactional
     public ThemeResponse save(ThemeRequest themeRequest) {
         Theme saveTheme = themeRepository.save(themeRequest.toEntity());
         return ThemeResponse.from(saveTheme);
@@ -34,6 +35,7 @@ public class ThemeService {
                 .toList();
     }
 
+    @Transactional
     public void deleteById(Long id) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new RoomEscapeException(ErrorCode.THEME_NOT_FOUND));

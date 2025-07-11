@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class TimeService {
     private final TimeRepository timeRepository;
     private final ReservationRepository reservationRepository;
@@ -45,6 +45,7 @@ public class TimeService {
                 .toList();
     }
 
+    @Transactional
     public TimeResponse save(TimeRequest timeRequest) {
 
         try {
@@ -55,6 +56,7 @@ public class TimeService {
         }
     }
 
+    @Transactional
     public void deleteById(Long id) {
         Time time = timeRepository.findById(id)
                 .orElseThrow(() -> new RoomEscapeException(ErrorCode.TIME_NOT_FOUND));

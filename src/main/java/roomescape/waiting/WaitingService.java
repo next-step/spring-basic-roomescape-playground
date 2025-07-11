@@ -14,7 +14,7 @@ import java.util.List;
 import static roomescape.exception.ErrorCode.*;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class WaitingService {
 
     private final WaitingRepository waitingRepository;
@@ -31,6 +31,7 @@ public class WaitingService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
         validateDuplicatedReservationAndWaiting(waitingRequest, loginMember);
 
@@ -47,6 +48,7 @@ public class WaitingService {
                 .toList();
     }
 
+    @Transactional
     public void deleteById(Long id) {
         Waiting waiting = waitingRepository.findById(id)
                 .orElseThrow(() -> new RoomEscapeException(WAITING_NOT_FOUND));

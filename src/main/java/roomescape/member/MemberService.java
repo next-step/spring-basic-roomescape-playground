@@ -6,7 +6,7 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -15,6 +15,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
+    @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
         validateDuplicateEmail(memberRequest);
         Member member = memberRepository.save(memberRequest.toEntity());
@@ -22,8 +23,7 @@ public class MemberService {
     }
 
     public Member authenticate(String email, String password) {
-        Member findMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RoomEscapeException(ErrorCode.INVALID_LOGIN, "이메일이 잘못되었습니다."));
+        Member findMember = memberRepository.getByEmailOrThrow(email);
         if (!findMember.getPassword().equals(password)) {
             throw new RoomEscapeException(ErrorCode.INVALID_LOGIN, "비밀번호가 틀렸습니다.");
         }

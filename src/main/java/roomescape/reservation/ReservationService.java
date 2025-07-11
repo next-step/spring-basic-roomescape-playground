@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import static roomescape.exception.ErrorCode.*;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -33,6 +33,7 @@ public class ReservationService {
         this.waitingService = waitingService;
     }
 
+    @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         reservationRequest = fillMissingNameWithLoginMember(reservationRequest, loginMember);
         validateDuplicatedReservation(reservationRequest, loginMember);
@@ -42,6 +43,7 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         Reservation findReservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new RoomEscapeException(RESERVATION_NOT_FOUND));
