@@ -35,7 +35,13 @@ public class WaitingService {
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
         validateDuplicatedReservationAndWaiting(waitingRequest, loginMember);
 
-        Waiting waiting = toWaiting(waitingRequest, loginMember);
+        Waiting waiting = waitingRequest.toEntity(
+                loginMember.name(),
+                waitingRequest.date(),
+                timeRepository.findById(waitingRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
+                themeRepository.findById(waitingRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
+                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
+
         Waiting savedWaiting = waitingRepository.save(waiting);
         Long waitingNumber = waitingRepository.getWaitingRank(
                 waiting.getTheme(), waiting.getDate(), waiting.getTime(), waiting.getId());
@@ -53,16 +59,6 @@ public class WaitingService {
         Waiting waiting = waitingRepository.findById(id)
                 .orElseThrow(() -> new RoomEscapeException(WAITING_NOT_FOUND));
         waitingRepository.delete(waiting);
-    }
-
-
-    private Waiting toWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
-        Waiting waiting = new Waiting(loginMember.name(),
-                waitingRequest.date(),
-                timeRepository.findById(waitingRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
-                themeRepository.findById(waitingRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
-                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
-        return waiting;
     }
 
     private void validateDuplicatedReservationAndWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
