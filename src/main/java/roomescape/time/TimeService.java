@@ -1,26 +1,30 @@
 package roomescape.time;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
-
-import java.util.List;
+import roomescape.reservation.ReservationRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class TimeService {
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
 
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
+    private final TimeRepository timeRepo;
+    private final ReservationRepository reservationRepo;
+
+    public TimeService(
+            TimeRepository timeRepo,
+            ReservationRepository reservationRepo
+    ) {
+        this.timeRepo = timeRepo;
+        this.reservationRepo = reservationRepo;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+        List<Reservation> reservations =
+                reservationRepo.findByDateAndThemeId(date, themeId);
+        List<Time> times = timeRepo.findByDeletedFalse();
 
         return times.stream()
                 .map(time -> new AvailableTime(
@@ -33,16 +37,16 @@ public class TimeService {
     }
 
     public List<Time> findAll() {
-        return timeDao.findAll();
+        return timeRepo.findByDeletedFalse();
     }
 
     @Transactional
     public Time save(Time time) {
-        return timeDao.save(time);
+        return timeRepo.save(time);
     }
 
     @Transactional
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        timeRepo.deleteById(id);
     }
 }

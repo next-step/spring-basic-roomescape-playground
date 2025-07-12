@@ -1,70 +1,86 @@
 package roomescape.reservation;
 
-import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
-import roomescape.waiting.Waiting;
-import roomescape.waiting.WaitingDao;
+import roomescape.time.TimeRepository;
 import roomescape.waiting.WaitingRank;
+import roomescape.waiting.WaitingRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
-    private final MemberDao memberDao;
-    private final WaitingDao waitingDao;
-    private final EntityManager em;
+    private final ReservationRepository reservationRepo;
+    private final WaitingRepository     waitingRepo;
+    private final MemberRepository      memberRepo;
+    private final ThemeRepository themeRepo;
+    private final TimeRepository timeRepo;
 
-    public ReservationService(ReservationDao reservationDao,
-                              WaitingDao waitingDao,
-                              MemberDao memberDao, EntityManager em) {
-        this.reservationDao = reservationDao;
-        this.waitingDao = waitingDao;
-        this.memberDao = memberDao;
-        this.em = em;
+    public ReservationService(
+            ReservationRepository reservationRepo,
+            WaitingRepository     waitingRepo,
+            MemberRepository      memberRepo,
+            ThemeRepository       themeRepo,
+            TimeRepository        timeRepo
+    ) {
+        this.reservationRepo = reservationRepo;
+        this.waitingRepo     = waitingRepo;
+        this.memberRepo      = memberRepo;
+        this.themeRepo       = themeRepo;
+        this.timeRepo        = timeRepo;
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepo.findAllWithFetch().stream()
                 .map(r -> new ReservationResponse(
                         r.getId(),
                         r.getName(),
                         r.getTheme().getName(),
                         r.getDate(),
-                        r.getTime().getValue()))
-                .collect(Collectors.toList());
+                        r.getTime().getValue()
+                ))
+                .toList();
     }
 
     public List<MyReservationResponse> findMine(LoginMember loginMember) {
         Long memberId = loginMember.id();
 
-        List<MyReservationResponse> reservations = reservationDao.findByMemberId(memberId).stream()
+        List<MyReservationResponse> confirmed = reservationRepo
+                .findByMemberId(memberId)
+                .stream()
                 .map(r -> new MyReservationResponse(
-                        r.getId(), r.getTheme().getName(), r.getDate(), r.getTime().getValue()))
+                        r.getId(),
+                        r.getTheme().getName(),
+                        r.getDate(),
+                        r.getTime().getValue()
+                ))
                 .toList();
 
-        List<WaitingRank> waitingRanks = waitingDao.findWaitingRankByMemberId(memberId);
+        List<WaitingRank> waitingRanks = waitingRepo.findWaitingRankByMemberId(memberId);
         List<MyReservationResponse> waitings = waitingRanks.stream()
                 .map(wr -> {
-                    Waiting w = wr.waiting();
+                    var w    = wr.waiting();
                     long rank = wr.rank() + 1;
-                    String status = rank + "번째 예약대기";
                     return new MyReservationResponse(
-                            w.getId(), w.getTheme().getName(), w.getDate(), w.getTime().getValue(), status);
+                            w.getId(),
+                            w.getTheme().getName(),
+                            w.getDate(),
+                            w.getTime().getValue(),
+                            rank + "번째 예약대기"
+                    );
                 })
                 .toList();
 
-        List<MyReservationResponse> all = new ArrayList<>();
-        all.addAll(reservations);
+        var all = new ArrayList<MyReservationResponse>();
+        all.addAll(confirmed);
         all.addAll(waitings);
         return all;
     }
@@ -72,11 +88,14 @@ public class ReservationService {
     //사용자 예약 시
     @Transactional
     public ReservationResponse saveUser(ReservationRequest req, LoginMember loginMember) {
-        Member member = memberDao.findById(loginMember.id());
-        Theme theme = em.getReference(Theme.class, req.getTheme());
-        Time time = em.getReference(Time.class, req.getTime());
+        Member member = memberRepo.findByIdOrThrow(loginMember.id());
+
+        Theme theme = themeRepo.getReferenceById(req.getTheme());
+        Time time   = timeRepo.getReferenceById(req.getTime());
+
         Reservation r = new Reservation(req.getDate(), member, theme, time);
-        em.persist(r);
+        reservationRepo.save(r);
+
         return new ReservationResponse(
                 r.getId(), member.getName(), theme.getName(), r.getDate(), time.getValue()
         );
@@ -85,10 +104,12 @@ public class ReservationService {
     //관리자가 예약 시
     @Transactional
     public ReservationResponse saveAdmin(ReservationRequest req) {
-        Theme theme = em.getReference(Theme.class, req.getTheme());
-        Time time = em.getReference(Time.class, req.getTime());
+        Theme theme = themeRepo.getReferenceById(req.getTheme());
+        Time time   = timeRepo.getReferenceById(req.getTime());
+
         Reservation r = new Reservation(req.getDate(), req.getName(), theme, time);
-        em.persist(r);
+        reservationRepo.save(r);
+
         return new ReservationResponse(
                 r.getId(), r.getName(), theme.getName(), r.getDate(), time.getValue()
         );
@@ -96,6 +117,6 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepo.deleteById(id);
     }
 }

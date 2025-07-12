@@ -7,22 +7,24 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.member.MemberRequest;
 
 @Service
 public class AuthService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepo;
     private final JWTUtil jwtUtil;
 
-    public AuthService(MemberDao memberDao, JWTUtil jwtUtil) {
-        this.memberDao = memberDao;
+    public AuthService(MemberRepository memberRepo, JWTUtil jwtUtil) {
+        this.memberRepo = memberRepo;
         this.jwtUtil = jwtUtil;
     }
 
     public Member login(MemberRequest request, HttpServletResponse response) {
-        Member member = memberDao.findByEmailAndPassword(request.getEmail(), request.getPassword());
+        Member member = memberRepo
+                .findByEmailAndPassword(request.getEmail(), request.getPassword())
+                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
         String token = jwtUtil.createToken(member);
         Cookie cookie = createLoginCookie(token);
         response.addCookie(cookie);
@@ -36,10 +38,11 @@ public class AuthService {
         }
 
         Claims claims = jwtUtil.parseToken(token);
-
         String email = claims.get("email", String.class);
 
-        return memberDao.findByEmail(email);
+        return memberRepo
+                .findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("존재하지 않는 회원입니다."));
     }
 
     public void logout(HttpServletResponse response) {

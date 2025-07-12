@@ -14,7 +14,8 @@ import java.util.List;
 
 @RestController
 public class TimeController {
-    private TimeService timeService;
+
+    private final TimeService timeService;
 
     public TimeController(TimeService timeService) {
         this.timeService = timeService;
