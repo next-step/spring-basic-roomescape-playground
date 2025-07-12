@@ -38,7 +38,12 @@ public class ReservationService {
         reservationRequest = fillMissingNameWithLoginMember(reservationRequest, loginMember);
         validateDuplicatedReservation(reservationRequest, loginMember);
 
-        Reservation reservation = toReservation(reservationRequest, loginMember);
+        Reservation reservation = reservationRequest.toEntity(reservationRequest.name(),
+                reservationRequest.date(),
+                timeRepository.findById(reservationRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
+                themeRepository.findById(reservationRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
+                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
+
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
@@ -69,14 +74,6 @@ public class ReservationService {
                 .map(MyReservationResponse::from);
 
         return Stream.concat(reservations, waitings).toList();
-    }
-
-    private Reservation toReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
-        return new Reservation(reservationRequest.name(),
-                reservationRequest.date(),
-                timeRepository.findById(reservationRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
-                themeRepository.findById(reservationRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
-                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
     }
 
     private void validateDuplicatedReservation(ReservationRequest reservationRequest, LoginMember loginMember) {
