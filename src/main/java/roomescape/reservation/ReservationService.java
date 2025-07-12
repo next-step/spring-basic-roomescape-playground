@@ -3,7 +3,6 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.dto.LoginMember;
-import roomescape.auth.exception.UnauthenticatedException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.reservation.dto.MyReservationResponse;
@@ -41,18 +40,12 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(ReservationRequest request, LoginMember loginMember) {
-        if (loginMember == null) {
-            throw new UnauthenticatedException("로그인이 필요합니다.");
-        }
-
         if (request.getTheme() == null) {
             throw new IllegalArgumentException("테마 ID는 필수입니다.");
         }
-
         if (request.getTime() == null) {
             throw new IllegalArgumentException("시간 ID는 필수입니다.");
         }
-
         if (request.getDate() == null) {
             throw new IllegalArgumentException("예약 날짜는 필수입니다.");
         }
@@ -64,20 +57,16 @@ public class ReservationService {
 
         Theme theme = themeRepository.findById(request.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
         Time time = timeRepository.findById(request.getTime())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+
         LocalDate date = LocalDate.parse(request.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
 
         Reservation reservationToSave = new Reservation(reservationHolder, theme, time, date);
         Reservation savedReservation = reservationRepository.save(reservationToSave);
 
-        return new ReservationResponse(
-                savedReservation.getId(),
-                savedReservation.getMember().getName(),
-                savedReservation.getTheme().getName(),
-                savedReservation.getDate().toString(),
-                savedReservation.getTime().getTime()
-        );
+        return ReservationResponse.from(savedReservation);
     }
 
     private Member determineReservationHolder(ReservationRequest request, Member loggedInUser) {
@@ -92,17 +81,14 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        if (loginMember == null) {
-            throw new UnauthenticatedException("로그인이 필요합니다.");
-        }
         List<Reservation> reservations = reservationRepository.findWithDetailsByMemberId(loginMember.getId());
-        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId()); // 이 메서드도 JOIN FETCH 적용 필요
+        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId());
 
         Stream<MyReservationResponse> reservationResponses = reservations.stream()
-                .map(r -> MyReservationResponse.from(r, r.getTheme(), r.getTime())); // DTO의 from 메서드도 수정 필요
+                .map(r -> MyReservationResponse.from(r, r.getTheme(), r.getTime()));
 
         Stream<MyReservationResponse> waitingResponses = waitings.stream()
-                .map(w -> MyReservationResponse.from(w, w.getWaiting().getTheme(), w.getWaiting().getTime())); // DTO의 from 메서드도 수정 필요
+                .map(w -> MyReservationResponse.from(w, w.getWaiting().getTheme(), w.getWaiting().getTime()));
 
         return Stream.concat(reservationResponses, waitingResponses).toList();
     }
@@ -111,13 +97,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findAllWithDetails();
 
         return reservations.stream()
-                .map(r -> new ReservationResponse(
-                        r.getId(),
-                        r.getMember().getName(),
-                        r.getTheme().getName(),
-                        r.getDate().toString(),
-                        r.getTime().getTime()
-                ))
+                .map(ReservationResponse::from)
                 .toList();
     }
 
@@ -125,13 +105,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
 
-        return new ReservationResponse(
-                reservation.getId(),
-                reservation.getMember().getName(),
-                reservation.getTheme().getName(),
-                reservation.getDate().toString(),
-                reservation.getTime().getTime()
-        );
+        return ReservationResponse.from(reservation);
     }
 
     @Transactional
