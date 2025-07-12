@@ -61,9 +61,6 @@ public class WaitingService {
 
     @Transactional
     public void delete(Long waitingId, LoginMember loginMember) {
-        if (loginMember == null) {
-            throw new UnauthenticatedException("로그인이 필요합니다.");
-        }
         Waiting waiting = waitingRepository.findById(waitingId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 대기입니다."));
 
