@@ -12,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import roomescape.member.Member;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
 
 import java.time.LocalDate;
 
@@ -29,14 +31,20 @@ public class Waiting {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private Long themeId;
-    private Long timeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theme_id")
+    private Theme theme;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "time_id")
+    private Time time;
+
     private LocalDate date;
 
-    public Waiting(Member member, Long themeId, Long timeId, LocalDate date) {
+    public Waiting(Member member, Theme theme, Time time, LocalDate date) {
         this.member = member;
-        this.themeId = themeId;
-        this.timeId = timeId;
+        this.theme = theme;
+        this.time = time;
         this.date = date;
     }
 }

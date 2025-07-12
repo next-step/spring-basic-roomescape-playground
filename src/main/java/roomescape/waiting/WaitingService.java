@@ -7,7 +7,9 @@ import roomescape.auth.exception.UnauthenticatedException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.reservation.ReservationRepository;
+import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.waiting.dto.WaitingRequest;
 import roomescape.waiting.dto.WaitingResponse;
@@ -33,24 +35,26 @@ public class WaitingService {
 
     @Transactional
     public WaitingResponse create(WaitingRequest request, LoginMember loginMember) {
-        if (loginMember == null) {
-            throw new UnauthenticatedException("로그인이 필요합니다.");
-        }
         Member member = memberRepository.findById(loginMember.getId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
 
-        validateNoDuplicate(request.getTheme(), request.getDate(), request.getTime(), member.getId());
+        Theme theme = themeRepository.findById(request.getTheme())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+        Time time = timeRepository.findById(request.getTime())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
 
-        Waiting waiting = new Waiting(member, request.getTheme(), request.getTime(), request.getDate());
+        validateNoDuplicate(theme, request.getDate(), time, member);
+
+        Waiting waiting = new Waiting(member, theme, time, request.getDate());
         Waiting savedWaiting = waitingRepository.save(waiting);
         return WaitingResponse.from(savedWaiting);
     }
 
-    private void validateNoDuplicate(Long themeId, LocalDate date, Long timeId, Long memberId) {
-        if (reservationRepository.existsByThemeIdAndDateAndTimeIdAndMember_Id(themeId, date, timeId, memberId)) {
+    private void validateNoDuplicate(Theme theme, LocalDate date, Time time, Member member) {
+        if (reservationRepository.existsByThemeAndDateAndTimeAndMember(theme, date, time, member)) {
             throw new IllegalArgumentException("이미 해당 시간에 예약이 존재합니다.");
         }
-        if (waitingRepository.existsByThemeIdAndDateAndTimeIdAndMember_Id(themeId, date, timeId, memberId)) {
+        if (waitingRepository.existsByThemeAndDateAndTimeAndMember(theme, date, time, member)) {
             throw new IllegalArgumentException("이미 해당 시간에 예약 대기 중입니다.");
         }
     }
