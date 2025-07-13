@@ -1,48 +1,8 @@
 package roomescape.theme;
 
-import jakarta.persistence.EntityManager;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
-public class ThemeRepository {
-
-    private final EntityManager entityManager;
-
-    public ThemeRepository(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
-    @Transactional
-    public Theme save(Theme theme) {
-        entityManager.persist(theme);
-        return theme;
-    }
-
-    public Optional<Theme> findById(Long id) {
-        Theme theme = entityManager.find(Theme.class, id);
-        return Optional.ofNullable(theme);
-    }
-
-    public List<Theme> findAll() {
-        return entityManager.createQuery("SELECT t FROM Theme t", Theme.class)
-                .getResultList();
-    }
-
-    public List<Theme> findAllByIdIn(List<Long> ids) {
-        if (ids == null || ids.isEmpty()) {
-            return List.of();
-        }
-        return entityManager.createQuery("SELECT t FROM Theme t WHERE t.id IN :ids", Theme.class)
-                .setParameter("ids", ids)
-                .getResultList();
-    }
-
-    @Transactional
-    public void deleteById(Long id) {
-        findById(id).ifPresent(entityManager::remove);
-    }
+public interface ThemeRepository extends JpaRepository<Theme, Long> {
 }
