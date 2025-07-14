@@ -40,7 +40,7 @@ class ThemeServiceTest {
         //when
         assertThatThrownBy(() -> themeService.deleteById(response.id()))
                 .isInstanceOf(RoomEscapeException.class)
-                .hasMessage("테마가 다른 자원에서 사용중입니다.");
+                .hasMessage("해당 테마는 예약 또는 예약 대기 목록에 사용 중입니다.");
     }
 
     @Test

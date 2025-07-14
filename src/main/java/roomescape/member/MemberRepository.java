@@ -1,39 +1,22 @@
 package roomescape.member;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.RoomEscapeException;
 
 import java.util.Optional;
 
 @Repository
-public class MemberRepository {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    Optional<Member> findByEmail(String email);
 
-    public Member save(Member member) {
-        entityManager.persist(member);
-        return member;
+    boolean existsByEmail(String email);
+
+    default Member getByEmailOrThrow(String email) {
+        return findByEmail(email).orElseThrow(
+                () -> new RoomEscapeException(ErrorCode.INVALID_LOGIN));
     }
 
-    public Member getByEmail(String email) {
-        return entityManager.createQuery(
-                        "SELECT m FROM Member m WHERE m.email = :email", Member.class)
-                .setParameter("email", email)
-                .getSingleResult();
-    }
-
-    public Optional<Member> findById(Long memberId) {
-        Member member = entityManager.find(Member.class, memberId);
-        return Optional.ofNullable(member);
-    }
-
-    public Optional<Member> findByEmail(String email) {
-        return entityManager.createQuery(
-                        "SELECT m FROM Member m WHERE m.email =:email", Member.class)
-                .setParameter("email", email)
-                .getResultStream()
-                .findFirst();
-    }
 }

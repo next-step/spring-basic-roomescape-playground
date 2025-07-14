@@ -7,19 +7,22 @@ import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
+import roomescape.waiting.WaitingRepository;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class TimeService {
-    private TimeRepository timeRepository;
-    private ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
+    private final WaitingRepository waitingRepository;
 
-    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
+    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository, WaitingRepository waitingRepository) {
         this.timeRepository = timeRepository;
         this.reservationRepository = reservationRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public List<AvailableTime> getAvailableTime(LocalDate date, Long themeId) {
@@ -42,6 +45,7 @@ public class TimeService {
                 .toList();
     }
 
+    @Transactional
     public TimeResponse save(TimeRequest timeRequest) {
 
         try {
@@ -52,7 +56,17 @@ public class TimeService {
         }
     }
 
+    @Transactional
     public void deleteById(Long id) {
+        Time time = timeRepository.findById(id)
+                .orElseThrow(() -> new RoomEscapeException(ErrorCode.TIME_NOT_FOUND));
+
+        boolean existsInReservation = reservationRepository.existsByTimeId(time.getId());
+        boolean existsInWaiting = waitingRepository.existsByTimeId(time.getId());
+
+        if (existsInReservation || existsInWaiting) {
+            throw new RoomEscapeException(ErrorCode.DELETE_CONFLICT, "해당 시간은 예약 또는 예약 대기 목록에 사용 중입니다.");
+        }
         timeRepository.deleteById(id);
     }
 }

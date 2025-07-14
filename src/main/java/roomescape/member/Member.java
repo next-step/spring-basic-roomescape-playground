@@ -36,6 +36,10 @@ public class Member {
         this.role = role;
     }
 
+    public boolean isSamePassword(String password) {
+        return this.password.equals(password);
+    }
+
     protected Member() {
     }
 

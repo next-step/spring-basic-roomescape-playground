@@ -2,7 +2,6 @@ package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import roomescape.auth.LoginMember;
 import roomescape.exception.RoomEscapeException;
 import roomescape.member.MemberRepository;
@@ -15,7 +14,7 @@ import java.util.List;
 import static roomescape.exception.ErrorCode.*;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class WaitingService {
 
     private final WaitingRepository waitingRepository;
@@ -32,12 +31,20 @@ public class WaitingService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
         validateDuplicatedReservationAndWaiting(waitingRequest, loginMember);
 
-        Waiting waiting = toWaiting(waitingRequest, loginMember);
+        Waiting waiting = waitingRequest.toEntity(
+                loginMember.name(),
+                waitingRequest.date(),
+                timeRepository.findById(waitingRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
+                themeRepository.findById(waitingRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
+                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
+
         Waiting savedWaiting = waitingRepository.save(waiting);
-        Long waitingNumber = waitingRepository.getWaitingRank(waiting);
+        Long waitingNumber = waitingRepository.getWaitingRank(
+                waiting.getTheme(), waiting.getDate(), waiting.getTime(), waiting.getId());
         return WaitingResponse.from(savedWaiting, waitingNumber);
     }
 
@@ -47,21 +54,15 @@ public class WaitingService {
                 .toList();
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        waitingRepository.deleteById(id);
-    }
-
-    private Waiting toWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
-        Waiting waiting = new Waiting(loginMember.name(),
-                waitingRequest.date(),
-                timeRepository.findById(waitingRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
-                themeRepository.findById(waitingRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
-                memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));
-        return waiting;
+        Waiting waiting = waitingRepository.findById(id)
+                .orElseThrow(() -> new RoomEscapeException(WAITING_NOT_FOUND));
+        waitingRepository.delete(waiting);
     }
 
     private void validateDuplicatedReservationAndWaiting(WaitingRequest waitingRequest, LoginMember loginMember) {
-        boolean alreadyReserved = reservationRepository.existsMemberIdAndThemeIdAndDateAndTimeId(
+        boolean alreadyReserved = reservationRepository.existsByMemberIdAndThemeIdAndDateAndTimeId(
                 loginMember.id(), waitingRequest.theme(), waitingRequest.date(), waitingRequest.time());
         if (alreadyReserved) {
             throw new RoomEscapeException(DUPLICATE_RESERVATION);

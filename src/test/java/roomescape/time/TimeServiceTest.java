@@ -1,5 +1,6 @@
 package roomescape.time;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,9 @@ class TimeServiceTest {
 
     @Autowired
     TimeService timeService;
+
+    @Autowired
+    EntityManager entityManager;
 
     @Test
     void 시간이_정상적으로_생성된다() {
@@ -39,7 +43,7 @@ class TimeServiceTest {
         //then
         assertThatThrownBy(() -> timeService.deleteById(response.id()))
                 .isInstanceOf(RoomEscapeException.class)
-                .hasMessage("시간이 다른 자원에서 사용중입니다.");
+                .hasMessage("해당 시간은 예약 또는 예약 대기 목록에 사용 중입니다.");
     }
 
     @Test
@@ -56,12 +60,13 @@ class TimeServiceTest {
     }
 
     @Test
-    void 소프트_삭제후_다시넣기_가능해야한다() {
+    void 삭제후_다시넣기_가능해야한다() {
         //given
         TimeRequest timeRequest1 = new TimeRequest("13:00");
         TimeRequest timeRequest2 = new TimeRequest("13:00");
         TimeResponse saved1 = timeService.save(timeRequest1);
         timeService.deleteById(saved1.id());
+        entityManager.flush();
 
         //when
         TimeResponse saved2 = timeService.save(timeRequest2);

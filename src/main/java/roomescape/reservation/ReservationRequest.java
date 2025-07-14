@@ -2,6 +2,9 @@ package roomescape.reservation;
 
 import roomescape.exception.ErrorCode;
 import roomescape.exception.RoomEscapeException;
+import roomescape.member.Member;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
 
 import java.time.LocalDate;
 
@@ -21,5 +24,9 @@ public record ReservationRequest(String name, LocalDate date, Long theme, Long t
 
     public ReservationRequest withDefaultName(String defaultName) {
         return new ReservationRequest(defaultName, date, theme, time);
+    }
+
+    public Reservation toEntity(String name, LocalDate date, Time time, Theme theme, Member member) {
+        return new Reservation(name, date, time, theme, member);
     }
 }

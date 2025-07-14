@@ -1,10 +1,8 @@
 package roomescape.theme;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Where;
 
 @Entity
-@Where(clause = "deleted = false")
 public class Theme {
 
     @Id
@@ -17,9 +15,6 @@ public class Theme {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private boolean deleted;
-
     public Theme() {
     }
 
@@ -27,18 +22,13 @@ public class Theme {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.deleted = false;
     }
 
     public Theme(String name, String description) {
         this.name = name;
         this.description = description;
-        this.deleted = false;
     }
 
-    public void softDelete() {
-        deleted = true;
-    }
 
     public Long getId() {
         return id;
@@ -52,7 +42,4 @@ public class Theme {
         return description;
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
 }
