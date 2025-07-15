@@ -26,7 +26,7 @@ public record WaitingRequest(
         }
     }
 
-    public Waiting toEntity(String name, LocalDate date, Time time, Theme theme, Member member) {
-        return new Waiting(name, date, time, theme, member);
+    public Waiting toEntity(String name, Time time, Theme theme, Member member) {
+        return new Waiting(name, this.date, time, theme, member);
     }
 }

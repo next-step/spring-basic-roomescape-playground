@@ -39,7 +39,6 @@ public class ReservationService {
         validateDuplicatedReservation(reservationRequest, loginMember);
 
         Reservation reservation = reservationRequest.toEntity(reservationRequest.name(),
-                reservationRequest.date(),
                 timeRepository.findById(reservationRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
                 themeRepository.findById(reservationRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
                 memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));

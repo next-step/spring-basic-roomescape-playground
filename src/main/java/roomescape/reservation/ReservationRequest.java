@@ -26,7 +26,7 @@ public record ReservationRequest(String name, LocalDate date, Long theme, Long t
         return new ReservationRequest(defaultName, date, theme, time);
     }
 
-    public Reservation toEntity(String name, LocalDate date, Time time, Theme theme, Member member) {
-        return new Reservation(name, date, time, theme, member);
+    public Reservation toEntity(String name, Time time, Theme theme, Member member) {
+        return new Reservation(name, this.date, time, theme, member);
     }
 }
