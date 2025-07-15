@@ -1,11 +1,16 @@
 package roomescape;
 
+import auth.JwtUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationResponse;
@@ -41,6 +46,39 @@ public class MissionStepTest {
                 .extract();
 
         return response.response().getCookie("token");
+    }
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.execute("DELETE FROM waiting");
+        jdbcTemplate.execute("DELETE FROM reservation");
+        jdbcTemplate.execute("DELETE FROM member");
+        jdbcTemplate.execute("DELETE FROM theme");
+        jdbcTemplate.execute("DELETE FROM time");
+
+        jdbcTemplate.execute("ALTER TABLE waiting ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE time ALTER COLUMN id RESTART WITH 1");
+
+        // Member (ID: 1=어드민, 2=브라운)
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN')");
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES ('브라운', 'brown@email.com', 'password', 'USER')");
+
+        // Theme (ID: 1)
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('공포 테마', '매우 무서운 테마입니다.', 'thumbnail.jpg')");
+
+        // Time (ID: 1)
+        jdbcTemplate.update("INSERT INTO time (time) VALUES ('10:00')");
+
+        // Reservation (어드민 계정으로 3개의 예약 생성 - 오단계 테스트용)
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2025-01-01', 1, 1, 1)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2025-01-02', 1, 1, 1)");
+        jdbcTemplate.update("INSERT INTO reservation (date, member_id, theme_id, time_id) VALUES ('2025-01-03', 1, 1, 1)");
     }
 
     @Test
@@ -154,5 +192,11 @@ public class MissionStepTest {
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 }

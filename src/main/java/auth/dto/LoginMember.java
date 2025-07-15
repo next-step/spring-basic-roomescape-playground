@@ -1,11 +1,11 @@
-package roomescape.auth.dto;
+package auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class LoginMember { // 로그인한 사용자 정보를 담는 DTO
+public class LoginMember {
 
     private Long id;
     private String name;

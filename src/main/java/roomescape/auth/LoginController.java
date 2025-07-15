@@ -1,5 +1,8 @@
 package roomescape.auth;
 
+import auth.JwtUtils;
+import auth.annotation.Login;
+import auth.dto.LoginMember;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -8,22 +11,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.LoginCheckResponse;
-import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.LoginRequest;
+import roomescape.member.Member;
 import roomescape.member.MemberService;
 
 @RestController
 public class LoginController {
 
     private final MemberService memberService;
+    private final JwtUtils jwtUtils;
 
-    public LoginController(MemberService memberService) {
+    public LoginController(MemberService memberService, JwtUtils jwtUtils) {
         this.memberService = memberService;
+        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        String token = memberService.login(request);
+        Member member = memberService.login(request);
+
+        String token = jwtUtils.createToken(String.valueOf(member.getId()), member.getName(), member.getEmail(), member.getRole());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);

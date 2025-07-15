@@ -1,5 +1,7 @@
 package roomescape.auth;
 
+import auth.JwtUtils;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,10 +14,10 @@ import java.util.Optional;
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public AdminInterceptor(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AdminInterceptor(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -29,7 +31,9 @@ public class AdminInterceptor implements HandlerInterceptor {
 
         try {
             String token = tokenCookie.get().getValue();
-            String role = jwtTokenProvider.getRole(token);
+            Claims claims = jwtUtils.getClaims(token);
+            String role = claims.get("role", String.class);
+
             if (!"ADMIN".equals(role)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return false;

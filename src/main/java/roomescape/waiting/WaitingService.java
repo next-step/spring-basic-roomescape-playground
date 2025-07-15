@@ -1,8 +1,9 @@
 package roomescape.waiting;
 
+import auth.annotation.Login;
+import auth.dto.LoginMember;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.dto.LoginMember;
 import roomescape.auth.exception.UnauthenticatedException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
@@ -34,7 +35,7 @@ public class WaitingService {
     }
 
     @Transactional
-    public WaitingResponse create(WaitingRequest request, LoginMember loginMember) {
+    public WaitingResponse create(WaitingRequest request, @Login LoginMember loginMember) {
         Member member = memberRepository.findById(loginMember.getId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
 
