@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AuthConfig {
 
-    @Value("${jwt.secret-key}")
+    @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
     @Bean
