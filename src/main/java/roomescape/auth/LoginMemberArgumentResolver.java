@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import auth.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -13,14 +14,14 @@ import roomescape.member.MemberService;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
     private final CookieValueExtractor cookieValueExtractor;
 
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider,
+    public LoginMemberArgumentResolver(MemberService memberService, JwtUtils jwtUtils,
                                        CookieValueExtractor cookieValueExtractor) {
         this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtils = jwtUtils;
         this.cookieValueExtractor = cookieValueExtractor;
     }
 
@@ -36,7 +37,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         Cookie[] cookies = request.getCookies();
         String token = cookieValueExtractor.extractToken(cookies);
-        Long memberId = jwtTokenProvider.getMemberIdByToken(token);
+        Long memberId = jwtUtils.getMemberIdByToken(token);
         Member member = memberService.getMemberById(memberId);
 
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());

@@ -1,17 +1,14 @@
-package roomescape.auth;
+package auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 
-@Component
-public class JwtTokenProvider {
+public class JwtUtils {
 
     private final String secretKey;
 
-    public JwtTokenProvider(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+    public JwtUtils(String secretKey) {
         this.secretKey = secretKey;
     }
 

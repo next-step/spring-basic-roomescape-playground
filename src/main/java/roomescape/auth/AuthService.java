@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import auth.JwtUtils;
 import org.springframework.stereotype.Service;
 import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
@@ -9,17 +10,17 @@ import roomescape.member.MemberRepository;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider  jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtils = jwtUtils;
     }
 
     public String login(LoginRequest loginRequest) {
         Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword())
                 .orElseThrow(MemberNotFoundException::new);
-        return jwtTokenProvider.generateToken(member);
+        return jwtUtils.generateToken(member);
     }
 
 }
