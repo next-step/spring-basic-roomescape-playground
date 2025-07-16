@@ -4,15 +4,16 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jwt.JwtUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.UnauthorizedException;
 
 public class LoginInterceptor implements HandlerInterceptor {
 
-    private final JWTUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
-    public LoginInterceptor(JWTUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public LoginInterceptor(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        Claims claims = jwtUtil.parseToken(token);
+        Claims claims = jwtUtils.parseToken(token);
         LoginMember loginMember = new LoginMember(
                 Long.valueOf(claims.getSubject()),
                 claims.get("name", String.class),

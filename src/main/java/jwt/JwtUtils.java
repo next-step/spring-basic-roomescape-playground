@@ -1,22 +1,19 @@
-package roomescape.auth;
+package jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 
-@Component
-public class JWTUtil {
+public class JwtUtils {
 
     private final Key key;
     private final MemberRepository memberRepo;
 
-    public JWTUtil(@Value("${jwt.secret}") String secret,  MemberRepository memberRepo) {
+    public JwtUtils(String secret, MemberRepository memberRepo) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.memberRepo = memberRepo;
     }

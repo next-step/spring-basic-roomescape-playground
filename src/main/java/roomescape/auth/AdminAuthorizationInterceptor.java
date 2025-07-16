@@ -4,15 +4,16 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jwt.JwtUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.UnauthorizedException;
 
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
-    private final JWTUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
-    public AdminAuthorizationInterceptor(JWTUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public AdminAuthorizationInterceptor(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
         for (Cookie cookie : cookies) {
             if ("token".equals(cookie.getName())) {
                 String token = cookie.getValue();
-                Claims claims = jwtUtil.parseToken(token);
+                Claims claims = jwtUtils.parseToken(token);
                 String role = claims.get("role", String.class);
                 if (!"ADMIN".equals(role)) {
                     throw new UnauthorizedException("관리자 권한이 필요합니다.");

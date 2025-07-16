@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jwt.JwtUtils;
 import org.springframework.stereotype.Service;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
@@ -14,18 +15,18 @@ import roomescape.member.MemberRequest;
 public class AuthService {
 
     private final MemberRepository memberRepo;
-    private final JWTUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
-    public AuthService(MemberRepository memberRepo, JWTUtil jwtUtil) {
+    public AuthService(MemberRepository memberRepo, JwtUtils jwtUtils) {
         this.memberRepo = memberRepo;
-        this.jwtUtil = jwtUtil;
+        this.jwtUtils = jwtUtils;
     }
 
     public Member login(MemberRequest request, HttpServletResponse response) {
         Member member = memberRepo
                 .findByEmailAndPassword(request.getEmail(), request.getPassword())
                 .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
-        String token = jwtUtil.createToken(member);
+        String token = jwtUtils.createToken(member);
         Cookie cookie = createLoginCookie(token);
         response.addCookie(cookie);
         return member;
@@ -37,7 +38,7 @@ public class AuthService {
             throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
-        Claims claims = jwtUtil.parseToken(token);
+        Claims claims = jwtUtils.parseToken(token);
         String email = claims.get("email", String.class);
 
         return memberRepo

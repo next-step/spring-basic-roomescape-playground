@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jwt.JwtUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -10,10 +11,10 @@ import roomescape.exception.UnauthorizedException;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JWTUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
-    public LoginMemberArgumentResolver(JWTUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
