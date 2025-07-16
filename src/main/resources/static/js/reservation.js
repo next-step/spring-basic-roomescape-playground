@@ -131,9 +131,9 @@ function saveRow(event) {
 
   const row = event.target.parentNode.parentNode;
   const nameInput = row.querySelector('input[type="text"]');
-  const themeSelect = row.querySelector('select');
+  const themeSelect = row.querySelector('#theme-select');
   const dateInput = row.querySelector('input[type="date"]');
-  const timeSelect = row.querySelector('select');
+  const timeSelect = row.querySelector('#time-select');
 
   const reservation = {
     name: nameInput.value,

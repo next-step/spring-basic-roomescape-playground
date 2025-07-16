@@ -5,8 +5,12 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Date;
 
 public class JwtUtils {
@@ -23,7 +27,7 @@ public class JwtUtils {
         claims.put("email", email);
         claims.put("role", role);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 3600);
+        Date validity = new Date(now.getTime() + 3600000);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -43,5 +47,17 @@ public class JwtUtils {
         } catch (JwtException | IllegalArgumentException e) {
             throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
         }
+    }
+
+    public String getTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        return Arrays.stream(cookies)
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(null);
     }
 }

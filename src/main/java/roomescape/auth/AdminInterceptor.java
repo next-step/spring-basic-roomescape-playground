@@ -2,14 +2,11 @@ package roomescape.auth;
 
 import auth.JwtUtils;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
@@ -21,16 +18,15 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Optional<Cookie> tokenCookie = findTokenCookie(request.getCookies());
+    public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
+        String token = jwtUtils.getTokenFromCookie(request);
 
-        if (tokenCookie.isEmpty()) {
+        if (token == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
 
         try {
-            String token = tokenCookie.get().getValue();
             Claims claims = jwtUtils.getClaims(token);
             String role = claims.get("role", String.class);
 
@@ -44,14 +40,5 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         return true;
-    }
-
-    private Optional<Cookie> findTokenCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return Optional.empty();
-        }
-        return Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
-                .findFirst();
     }
 }

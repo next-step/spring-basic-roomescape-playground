@@ -52,10 +52,7 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(LoginMember loginMember) {
-        if (loginMember == null) {
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<LoginCheckResponse> checkLogin(@Login LoginMember loginMember) {
         return ResponseEntity.ok(new LoginCheckResponse(loginMember.getName()));
     }
 }
