@@ -29,4 +29,12 @@ public class JwtUtils {
                 .getBody().getSubject());
     }
 
+    public String getRoleByToken(String token) {
+        return String.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().get("role", String.class));
+    }
+
 }

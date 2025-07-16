@@ -32,7 +32,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckAdminInterceptor(memberService, jwtUtils, cookieValueExtractor))
+        registry.addInterceptor(new CheckAdminInterceptor(jwtUtils, cookieValueExtractor))
                 .addPathPatterns("/admin/**");
     }
 
