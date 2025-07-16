@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -25,6 +26,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResult> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         ErrorResult errorResult = new ErrorResult("INVALID_FORMAT", "형식이 잘못되었습니다");
+        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResult> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        ErrorResult errorResult = new ErrorResult("DUPLICATE_VALUE", "중복된 값이 존재합니다");
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
 }
