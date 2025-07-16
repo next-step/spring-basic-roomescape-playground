@@ -5,12 +5,15 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import jakarta.persistence.EntityManager;
+import jwt.JwtProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.AuthService;
+import jwt.AuthService;
+import jwt.JwtProperties;
 import roomescape.auth.LoginRequest;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
@@ -28,6 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
 public class MissionStepTest {
+
+    @Autowired
+    private JwtProperties jwtProperties;
 
     @Autowired
     private EntityManager entityManager;
@@ -194,5 +200,16 @@ public class MissionStepTest {
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtProvider.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
+    }
+
+    @Test
+    void 팔단계() {
+        assertThat(jwtProperties.getSecret()).isNotBlank();
     }
 }

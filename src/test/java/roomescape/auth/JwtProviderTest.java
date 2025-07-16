@@ -2,6 +2,8 @@ package roomescape.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jwt.JwtProperties;
+import jwt.JwtProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,5 +112,43 @@ class JwtProviderTest {
         assertThatThrownBy(() -> jwtProvider.extractMemberId(token))
                 .isInstanceOf(RoomEscapeException.class)
                 .hasMessage("토큰 subject가 누락되어 있습니다.");
+    }
+
+    @Test
+    @DisplayName("권한정보가 null이면 예외를 던진다")
+    void 권한정보가_null이면_예외를_던진다() {
+        //given
+        String secret = jwtProperties.getSecret();
+        String token = Jwts.builder()
+                .setSubject("1")
+                .claim("role", null)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 60000))
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .compact();
+
+        //then
+        assertThatThrownBy(() -> jwtProvider.extractRole(token))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("권한 정보가 없습니다");
+    }
+
+    @Test
+    @DisplayName("유효하지않은 권한정보이면 예외를 던진다")
+    void 유효하지않은_권한정보이면_예외를_던진다() {
+        //given
+        String secret = jwtProperties.getSecret();
+        String token = Jwts.builder()
+                .setSubject("1")
+                .claim("role", "INVALID_ROLE")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 60000))
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .compact();
+
+        //then
+        assertThatThrownBy(() -> jwtProvider.extractRole(token))
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage("유효하지 않은 권한 정보입니다");
     }
 }
