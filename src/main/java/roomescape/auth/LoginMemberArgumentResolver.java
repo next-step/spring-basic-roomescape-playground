@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jwt.AuthService;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
