@@ -17,6 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import auth.JwtUtils;
 import roomescape.exception.MemberNotFoundException;
@@ -33,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
+@ActiveProfiles("test")
 public class MissionStepTest {
 
     @Autowired
@@ -215,6 +217,11 @@ public class MissionStepTest {
     void 칠단계() {
         Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
         assertThat(componentAnnotation).isNull();
+    }
+
+    @Test
+    void 팔단계() {
+        assertThat(secretKey).isNotBlank();
     }
 
 }
