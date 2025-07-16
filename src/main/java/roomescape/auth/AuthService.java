@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jwt.JwtUtils;
+import auth.JwtUtils;
 import org.springframework.stereotype.Service;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;

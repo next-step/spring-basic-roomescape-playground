@@ -1,9 +1,8 @@
-package roomescape.config;
+package auth;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import jwt.JwtUtils;
 import roomescape.member.MemberRepository;
 
 @Configuration

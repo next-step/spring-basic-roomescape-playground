@@ -14,7 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
-import jwt.JwtUtils;
+import auth.JwtUtils;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
