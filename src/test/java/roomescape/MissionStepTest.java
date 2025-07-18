@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -18,7 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MissionStepTest {
 
     @Test
-    void 일단계() {
+    @DisplayName("로그인 후 토큰 쿠키로 사용자 인증에 성공한다")
+    void loginAndVerifyWithCookieToken() {
         Map<String, String> params = new HashMap<>();
         params.put("email", "admin@email.com");
         params.put("password", "password");
@@ -34,5 +36,15 @@ public class MissionStepTest {
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
 
         assertThat(token).isNotBlank();
+
+        ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+
+        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
 }
