@@ -8,7 +8,7 @@ import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.member.Role;
 
-@Profile("prod")
+@Profile("!test")
 @Component
 @Transactional
 public class DataLoader implements CommandLineRunner {
