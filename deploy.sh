@@ -22,6 +22,8 @@ echo "Deploy new application"
 
 JAR_FILE=$(ls -t build/libs/*.jar | grep -v "\-plain.jar$" | head -n 1)
 
-nohup java -jar "$JAR_FILE" &
+LOG_PATH="/home/ubuntu/spring-basic-roomescape-playground/logs/server_log_$(date +%Y-%m-%d).txt"
+
+nohup java -jar "$JAR_FILE" >> "$LOG_PATH" 2>&1 &
 
 echo "Deployment complete"
