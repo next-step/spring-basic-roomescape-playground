@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 
-@Profile("default")
+@Profile("dev")
 @Component
 public class DataLoader implements CommandLineRunner {
 
