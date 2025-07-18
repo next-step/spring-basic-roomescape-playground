@@ -47,9 +47,12 @@ public class MissionStepTest {
     private TimeRepository timeRepository;
 
     private final String secretKey;
+    private final String issuer;
 
-    public MissionStepTest(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+    public MissionStepTest(@Value("${roomescape.auth.jwt.secret}") String secretKey,
+                           @Value("${roomescape.auth.jwt.issuer}") String issuer) {
         this.secretKey = secretKey;
+        this.issuer = issuer;
     }
 
     @Test
@@ -122,6 +125,7 @@ public class MissionStepTest {
         Member member = memberRepository.findByEmailAndPassword(email, password)
                 .orElseThrow(MemberNotFoundException::new);
         return Jwts.builder()
+                .setIssuer(issuer)
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())

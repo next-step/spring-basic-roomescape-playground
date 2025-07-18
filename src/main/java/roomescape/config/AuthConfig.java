@@ -9,8 +9,9 @@ import org.springframework.context.annotation.Configuration;
 public class AuthConfig {
 
     @Bean
-    public JwtUtils jwtUtils(@Value("${roomescape.auth.jwt.secret}") String seceretKey) {
-        return new JwtUtils(seceretKey);
+    public JwtUtils jwtUtils(@Value("${roomescape.auth.jwt.secret}") String seceretKey,
+                             @Value("${roomescape.auth.jwt.issuer}") String issuer) {
+        return new JwtUtils(seceretKey, issuer);
     }
 
 }
