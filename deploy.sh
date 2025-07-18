@@ -27,4 +27,6 @@ LOG_PATH="/home/ubuntu/spring-basic-roomescape-playground/logs/server_log_$(date
 
 nohup java -jar -spring.profiles.active=dev "$JAR_FILE" >> "$LOG_PATH" 2>&1 &
 
+find build/libs -type f -name "*.jar" -mtime +3 -delete
+
 echo "Deployment complete"
