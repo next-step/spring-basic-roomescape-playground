@@ -6,7 +6,7 @@ git pull
 
 echo "Gradle Build"
 chmod +x ./gradlew
-./gradlew build -x test
+./gradlew build
 
 CURRENT_PID=$(pgrep -f ".jar")
 
