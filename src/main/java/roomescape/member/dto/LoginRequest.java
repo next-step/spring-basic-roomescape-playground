@@ -1,7 +1,5 @@
 package roomescape.member.dto;
 
-import roomescape.member.domain.Member;
-
 public record LoginRequest(String email, String password) {
     public LoginRequest {
         validateRequiredFields(email, password);
