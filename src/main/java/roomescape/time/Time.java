@@ -10,7 +10,6 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @SQLDelete(sql = "UPDATE time SET deleted = true WHERE id = ?")
-@Where(clause = "deleted = false")
 public class Time {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
