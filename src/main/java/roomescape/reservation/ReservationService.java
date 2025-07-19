@@ -38,14 +38,21 @@ public class ReservationService {
         this.waitingRepository = waitingRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
+    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Time time = timeRepository.findById(reservationRequest.time())
                 .orElseThrow(TimeNotFoundException::new);
         Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(ThemeNotFoundException::new);
-        Member member = memberRepository.findByName(reservationRequest.name())
-                .orElseThrow(MemberNotFoundException::new);
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), member, time, theme);
+
+        Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(MemberNotFoundException::new);;
+        Reservation reservation = new Reservation(loginMember.name(), reservationRequest.date(), member, time, theme);
+
+        if(reservationRequest.name() != null) {
+            member = memberRepository.findByName(reservationRequest.name())
+                    .orElseThrow(MemberNotFoundException::new);
+            reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), member, time, theme);
+        }
 
         List<Reservation> reservations = reservationRepository.findByDateAndThemeAndTime(reservationRequest.date(), theme, time);
         if(!reservations.isEmpty())
