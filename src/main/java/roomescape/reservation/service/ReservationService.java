@@ -1,6 +1,10 @@
-package roomescape.reservation;
+package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 
 import java.util.List;
 

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.member.dao.MemberDao;
-import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.util.JwtTokenProvider;
 
 import java.util.HashMap;

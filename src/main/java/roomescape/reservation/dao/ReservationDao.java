@@ -1,11 +1,13 @@
-package roomescape.reservation;
+package roomescape.reservation.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.domain.Reservation;
 import roomescape.theme.Theme;
-import roomescape.time.Time;
+import roomescape.time.domain.Time;
 
 import java.sql.PreparedStatement;
 import java.util.List;
