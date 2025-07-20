@@ -20,6 +20,10 @@ public class DataLoader implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
+        if (memberRepo.count() > 0) {
+            return;
+        }
+
         memberRepo.save(new Member("어드민", "admin@email.com", "password", "ADMIN"));
         memberRepo.save(new Member("브라운", "brown@email.com", "password", "USER"));
     }
