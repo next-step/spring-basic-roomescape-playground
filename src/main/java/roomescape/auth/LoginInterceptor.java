@@ -26,13 +26,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        Member member = authService.checkLogin(token);
-        LoginMember loginMember = new LoginMember(
-                member.getId(),
-                member.getName(),
-                member.getEmail(),
-                member.getRole()
-        );
+        LoginMember loginMember = authService.getLoginMember(token);
         request.setAttribute("loginMember", loginMember);
 
         return true;

@@ -24,10 +24,16 @@ public class AuthService {
         return jwtService.createToken(member);
     }
 
-    public Member checkLogin(String token) {
+    public LoginMember getLoginMember(String token) {
         String email = jwtService.getEmail(token);
-        return memberRepo.findByEmail(email)
+        Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("존재하지 않는 회원입니다."));
+        return new LoginMember(
+                member.getId(),
+                member.getName(),
+                member.getEmail(),
+                member.getRole()
+        );
     }
 
     public void authorizeAdmin(String token) {

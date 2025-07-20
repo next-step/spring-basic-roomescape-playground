@@ -7,6 +7,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -28,14 +29,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = TokenExtractor.fromCookies(request);
-        Member member = authService.checkLogin(token);
+        LoginMember loginMember = (LoginMember) request.getAttribute("loginMember");
+        if (loginMember == null) {
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+        return loginMember;
 
-        return new LoginMember(
-                member.getId(),
-                member.getName(),
-                member.getEmail(),
-                member.getRole()
-        );
     }
 }
