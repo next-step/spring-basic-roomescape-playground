@@ -6,16 +6,13 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
-import roomescape.member.MemberRepository;
 
 public class JwtService {
 
     private final Key key;
-    private final MemberRepository memberRepo;
 
-    public JwtService(String secret, MemberRepository memberRepo) {
+    public JwtService(String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
-        this.memberRepo = memberRepo;
     }
 
     public String createToken(Member member) {
@@ -46,9 +43,5 @@ public class JwtService {
 
     public String getRole(String token) {
         return parseToken(token).get("role", String.class);
-    }
-
-    public long getUserId(String token) {
-        return Long.parseLong(parseToken(token).getSubject());
     }
 }

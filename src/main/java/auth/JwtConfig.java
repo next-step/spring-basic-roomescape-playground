@@ -16,7 +16,7 @@ public class JwtConfig {
     }
 
     @Bean
-    public JwtService jwtService(MemberRepository memberRepo) {
-        return new JwtService(properties.getSecret(), memberRepo);
+    public JwtService jwtService() {
+        return new JwtService(properties.getSecret());
     }
 }
