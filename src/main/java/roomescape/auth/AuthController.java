@@ -23,7 +23,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("")
+    @PostMapping()
     public void login(@RequestBody MemberRequest request,
                       HttpServletResponse response) {
         String token = authService.loginToken(request.getEmail(), request.getPassword());

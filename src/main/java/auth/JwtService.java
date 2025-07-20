@@ -28,14 +28,6 @@ public class JwtService {
                 .compact();
     }
 
-    /*테스트용*/
-    public String createToken(String email, String password) {
-        Member member = memberRepo
-                .findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
-        return createToken(member);
-    }
-
     public Claims parseToken(String token) {
         try {
             return Jwts.parserBuilder()
