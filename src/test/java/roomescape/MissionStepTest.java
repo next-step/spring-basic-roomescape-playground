@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.member.dao.MemberDao;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.util.JwtTokenProvider;
+import roomescape.global.util.JwtTokenProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -109,5 +109,25 @@ public class MissionStepTest {
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    @Test
+    @DisplayName("어드민 페이지 진입은 admin 권한이 있는 사람만 가능하다.")
+    void onlyAdminRoleCanAccessAdminPage() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 }
