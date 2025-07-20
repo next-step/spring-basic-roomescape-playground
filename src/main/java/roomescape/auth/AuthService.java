@@ -25,15 +25,13 @@ public class AuthService {
     }
 
     public Member checkLogin(String token) {
-        Claims claims = jwtService.parseToken(token);
-        String email = claims.get("email", String.class);
+        String email = jwtService.getEmail(token);
         return memberRepo.findByEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("존재하지 않는 회원입니다."));
     }
 
     public void authorizeAdmin(String token) {
-        Claims claims = jwtService.parseToken(token);
-        String role = claims.get("role", String.class);
+        String role = jwtService.getRole(token);
         if (!"ADMIN".equals(role)) {
             throw new UnauthorizedException("관리자 권한이 필요합니다.");
         }

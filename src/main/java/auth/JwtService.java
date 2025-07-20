@@ -39,4 +39,16 @@ public class JwtService {
             throw new UnauthorizedException("유효하지 않은 토큰입니다.");
         }
     }
+
+    public String getEmail(String token) {
+        return parseToken(token).get("email", String.class);
+    }
+
+    public String getRole(String token) {
+        return parseToken(token).get("role", String.class);
+    }
+
+    public long getUserId(String token) {
+        return Long.parseLong(parseToken(token).getSubject());
+    }
 }
