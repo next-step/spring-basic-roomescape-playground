@@ -1,18 +1,22 @@
 package auth;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import roomescape.member.MemberRepository;
 
 @Configuration
+@EnableConfigurationProperties(JwtProperties.class)
 public class JwtConfig {
 
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey;
+    private final JwtProperties properties;
+
+    public JwtConfig(JwtProperties props) {
+        this.properties = props;
+    }
 
     @Bean
     public JwtUtils jwtUtil(MemberRepository memberRepo) {
-        return new JwtUtils(secretKey, memberRepo);
+        return new JwtUtils(properties.getSecret(), memberRepo);
     }
 }
