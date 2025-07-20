@@ -1,19 +1,18 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import auth.JwtUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.UnauthorizedException;
+import roomescape.member.Member;
 
 public class LoginInterceptor implements HandlerInterceptor {
 
-    private final JwtUtils jwtUtils;
+    private final AuthService authService;
 
-    public LoginInterceptor(JwtUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
+    public LoginInterceptor(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -27,12 +26,12 @@ public class LoginInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        Claims claims = jwtUtils.parseToken(token);
+        Member member = authService.checkLogin(token);
         LoginMember loginMember = new LoginMember(
-                Long.valueOf(claims.getSubject()),
-                claims.get("name", String.class),
-                null,
-                claims.get("role", String.class)
+                member.getId(),
+                member.getName(),
+                member.getEmail(),
+                member.getRole()
         );
         request.setAttribute("loginMember", loginMember);
 

@@ -1,20 +1,20 @@
 package roomescape.auth;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import auth.JwtUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.exception.UnauthorizedException;
+import roomescape.member.Member;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtUtils jwtUtils;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(JwtUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
+    public LoginMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -28,12 +28,24 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        LoginMember loginMember = (LoginMember) request.getAttribute("loginMember");
+        String token = extractTokenFromCookies(request.getCookies());
+        Member member = authService.checkLogin(token);
 
-        if (loginMember == null) {
-            throw new UnauthorizedException("로그인이 필요합니다.");
+        return new LoginMember(
+                member.getId(),
+                member.getName(),
+                member.getEmail(),
+                member.getRole()
+        );
+    }
+
+    private String extractTokenFromCookies(Cookie[] cookies) {
+        if (cookies == null) return null;
+        for (Cookie cookie : cookies) {
+            if ("token".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
         }
-
-        return loginMember;
+        return null;
     }
 }

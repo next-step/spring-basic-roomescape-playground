@@ -8,12 +8,12 @@ import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 
-public class JwtUtils {
+public class JwtService {
 
     private final Key key;
     private final MemberRepository memberRepo;
 
-    public JwtUtils(String secret, MemberRepository memberRepo) {
+    public JwtService(String secret, MemberRepository memberRepo) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.memberRepo = memberRepo;
     }
