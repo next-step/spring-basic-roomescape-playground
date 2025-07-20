@@ -21,11 +21,13 @@ public class ExceptionController {
 
     @ExceptionHandler(UnauthenticatedException.class)
     public ResponseEntity<String> handleUnauthenticatedException(UnauthenticatedException e) {
+        log.error("인증되지 않은 요청입니다.", e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error("잘못된 요청: {}", e.getMessage(), e);
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
