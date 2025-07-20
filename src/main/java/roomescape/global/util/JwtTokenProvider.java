@@ -1,4 +1,4 @@
-package roomescape.util;
+package roomescape.global.util;
 
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
