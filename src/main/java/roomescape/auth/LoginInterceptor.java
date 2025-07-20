@@ -17,7 +17,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = extractTokenFromCookies(request.getCookies());
+        String token = TokenExtractor.fromCookies(request);
 
         if (token == null) {
             if (request.getRequestURI().startsWith("/reservations")) {
@@ -36,15 +36,5 @@ public class LoginInterceptor implements HandlerInterceptor {
         request.setAttribute("loginMember", loginMember);
 
         return true;
-    }
-
-    private String extractTokenFromCookies(Cookie[] cookies) {
-        if (cookies == null) return null;
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
     }
 }

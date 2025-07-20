@@ -19,7 +19,7 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
-        String token = extractTokenFromCookies(request.getCookies());
+        String token = TokenExtractor.fromCookies(request);
         try {
             authService.authorizeAdmin(token);
             return true;
@@ -27,17 +27,5 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
-    }
-
-    private String extractTokenFromCookies(Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
     }
 }

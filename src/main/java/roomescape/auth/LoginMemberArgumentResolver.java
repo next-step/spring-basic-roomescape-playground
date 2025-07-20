@@ -28,7 +28,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = extractTokenFromCookies(request.getCookies());
+        String token = TokenExtractor.fromCookies(request);
         Member member = authService.checkLogin(token);
 
         return new LoginMember(
@@ -37,15 +37,5 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 member.getEmail(),
                 member.getRole()
         );
-    }
-
-    private String extractTokenFromCookies(Cookie[] cookies) {
-        if (cookies == null) return null;
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
     }
 }
