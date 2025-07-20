@@ -1,16 +1,18 @@
 package roomescape.member.controller;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.member.domain.Member;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.LoginResponse;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.service.LoginService;
 import roomescape.member.service.MemberService;
-import roomescape.util.CookieUtil;
+import roomescape.global.util.CookieUtil;
 
 import java.net.URI;
 
@@ -42,10 +44,12 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> checkLogin(@CookieValue(name = "token", required = false) String token) {
+    public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
         // 1. Cookie에서 토큰 정보 추출 -> 멤버를 찾아 멤버 정보를 응답
-        LoginResponse response = loginService.getMemberFromToken(token);
-        return ResponseEntity.ok(response);
+        String token = CookieUtil.extractTokenFromCookies(request.getCookies());
+
+        Member member = loginService.getMemberFromToken(token);
+        return ResponseEntity.ok(LoginResponse.from(member));
     }
 
     @PostMapping("/logout")

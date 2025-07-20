@@ -44,9 +44,10 @@ public class MemberDao {
         ).stream().findFirst();
     }
 
-    public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE name = ?",
+    public Optional<Member> findByName(String name) {
+        String sql = "SELECT id, name, email, role FROM member WHERE name = ?";
+        return jdbcTemplate.query(
+                sql,
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
                         rs.getString("name"),
@@ -54,18 +55,20 @@ public class MemberDao {
                         rs.getString("role")
                 ),
                 name
-        );
+        ).stream().findFirst();
     }
 
     public Optional<Member> findById(Long id) {
         String sql = "SELECT id, name, email, role FROM member WHERE id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) ->
-                new Member(
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new Member(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("role")
-                ), id
+                ),
+                id
         ).stream().findFirst();
     }
 }

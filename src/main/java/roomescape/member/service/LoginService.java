@@ -3,8 +3,7 @@ package roomescape.member.service;
 import org.springframework.stereotype.Service;
 import roomescape.member.dao.MemberDao;
 import roomescape.member.domain.Member;
-import roomescape.member.dto.LoginResponse;
-import roomescape.util.JwtTokenProvider;
+import roomescape.global.util.JwtTokenProvider;
 
 @Service
 public class LoginService {
@@ -22,10 +21,9 @@ public class LoginService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public LoginResponse getMemberFromToken(String token) {
+    public Member getMemberFromToken(String token) {
         Long memberId = jwtTokenProvider.getMemberId(token);
-        Member member = memberDao.findById(memberId)
+        return memberDao.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        return LoginResponse.from(member);
     }
 }

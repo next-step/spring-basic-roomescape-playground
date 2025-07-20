@@ -18,4 +18,15 @@ public class MemberService {
         Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
+
+    public Member findById(Long id) {
+        return memberDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    }
+
+
+    public Member findByName(String name) {
+        return memberDao.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이름의 사용자가 없습니다."));
+    }
 }
