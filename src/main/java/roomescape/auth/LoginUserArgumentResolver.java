@@ -1,9 +1,8 @@
-package auth.ui;
+package roomescape.auth;
 
 import auth.JwtUtils;
 import auth.annotation.Login;
-import auth.dto.LoginMember;
-import io.jsonwebtoken.Claims;
+import roomescape.auth.dto.LoginMember;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
@@ -14,14 +13,18 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.exception.UnauthenticatedException;
+import roomescape.member.Member;
+import roomescape.member.MemberService;
 
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtUtils jwtUtils;
+    private final MemberService memberService;
 
-    public LoginUserArgumentResolver(JwtUtils jwtUtils) {
+    public LoginUserArgumentResolver(JwtUtils jwtUtils, MemberService memberService) {
         this.jwtUtils = jwtUtils;
+        this.memberService = memberService;
     }
 
     @Override
@@ -42,13 +45,10 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         }
 
         try {
-            Claims claims = jwtUtils.getClaims(token);
-            Long id = Long.parseLong(claims.getSubject());
-            String name = claims.get("name", String.class);
-            String email = claims.get("email", String.class);
-            String role = claims.get("role", String.class);
+            Long memberId = Long.parseLong(jwtUtils.getSubject(token));
+            Member member = memberService.findById(memberId);
 
-            return new LoginMember(id, name, email, role);
+            return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
         } catch (JwtException| IllegalArgumentException e) {
             throw new UnauthenticatedException("유효하지 않은 로그인 토큰입니다.", e);
         }

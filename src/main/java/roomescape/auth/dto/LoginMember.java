@@ -1,4 +1,4 @@
-package auth.dto;
+package roomescape.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,8 +1,7 @@
 package roomescape.reservation;
 
 import auth.annotation.Login;
-import auth.dto.LoginMember;
-import org.springframework.http.HttpStatus;
+import roomescape.auth.dto.LoginMember;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

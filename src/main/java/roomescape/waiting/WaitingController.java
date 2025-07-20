@@ -1,7 +1,7 @@
 package roomescape.waiting;
 
 import auth.annotation.Login;
-import auth.dto.LoginMember;
+import roomescape.auth.dto.LoginMember;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;

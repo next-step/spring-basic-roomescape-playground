@@ -1,6 +1,6 @@
 package roomescape.reservation;
 
-import auth.dto.LoginMember;
+import roomescape.auth.dto.LoginMember;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.Member;

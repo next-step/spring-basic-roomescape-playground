@@ -1,7 +1,7 @@
 package roomescape.waiting;
 
 import auth.annotation.Login;
-import auth.dto.LoginMember;
+import roomescape.auth.dto.LoginMember;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.exception.UnauthenticatedException;

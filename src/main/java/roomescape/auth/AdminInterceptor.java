@@ -1,7 +1,6 @@
 package roomescape.auth;
 
 import auth.JwtUtils;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
@@ -27,8 +26,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Claims claims = jwtUtils.getClaims(token);
-            String role = claims.get("role", String.class);
+            String role = jwtUtils.getRole(token);
 
             if (!"ADMIN".equals(role)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

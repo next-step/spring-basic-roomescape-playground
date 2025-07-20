@@ -21,10 +21,8 @@ public class JwtUtils {
         this.key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public String createToken(String id, String name, String email, String role) {
+    public String createToken(String id, String role) {
         Claims claims = Jwts.claims().setSubject(id);
-        claims.put("name", name);
-        claims.put("email", email);
         claims.put("role", role);
         Date now = new Date();
         Date validity = new Date(now.getTime() + 3600000);
@@ -37,7 +35,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public Claims getClaims(String token) {
+    private Claims getClaims(String token) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -47,6 +45,14 @@ public class JwtUtils {
         } catch (JwtException | IllegalArgumentException e) {
             throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
         }
+    }
+
+    public String getSubject(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    public String getRole(String token) {
+        return getClaims(token).get("role", String.class);
     }
 
     public String getTokenFromCookie(HttpServletRequest request) {

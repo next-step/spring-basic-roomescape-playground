@@ -2,7 +2,7 @@ package roomescape.auth;
 
 import auth.JwtUtils;
 import auth.annotation.Login;
-import auth.dto.LoginMember;
+import roomescape.auth.dto.LoginMember;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,7 @@ public class LoginController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         Member member = memberService.login(request);
 
-        String token = jwtUtils.createToken(String.valueOf(member.getId()), member.getName(), member.getEmail(), member.getRole());
+        String token = jwtUtils.createToken(String.valueOf(member.getId()), member.getRole());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
