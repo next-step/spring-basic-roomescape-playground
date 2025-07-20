@@ -28,6 +28,7 @@ public class JwtService {
                 .compact();
     }
 
+    /*테스트용*/
     public String createToken(String email, String password) {
         Member member = memberRepo
                 .findByEmailAndPassword(email, password)
