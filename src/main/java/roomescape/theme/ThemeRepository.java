@@ -1,39 +1,21 @@
 package roomescape.theme;
 
-import jakarta.persistence.EntityManager;
-import java.util.Optional;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
+import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-@Repository
-public class ThemeRepository {
+public interface ThemeRepository extends JpaRepository<Theme, Long> {
 
-    private final EntityManager em;
+    @NotNull
+    @Query("SELECT t FROM Theme t WHERE t.deleted = false")
+    List<Theme> findAll();
 
-    public ThemeRepository(EntityManager em) {
-        this.em = em;
-    }
-
-    public List<Theme> findAll() {
-        String jpql = "SELECT t FROM Theme t WHERE t.deleted = false";
-        return em.createQuery(jpql, Theme.class).getResultList();
-    }
-
-    public Optional<Theme> findById(Long id) {
-        return Optional.ofNullable(em.find(Theme.class, id));
-    }
-
-    public Theme save(Theme theme) {
-        em.persist(theme);
-        return theme;
-    }
-
-    public void deleteById(Long id) {
-        String jpql = "UPDATE Theme t SET t.deleted = true WHERE t.id = :id";
-        em.createQuery(jpql)
-                .setParameter("id", id)
-                .executeUpdate();
-    }
+    @NotNull
+    @Query("SELECT t FROM Theme t WHERE t.id = :id AND t.deleted = false")
+    Optional<Theme> findById(@NotNull @Param("id") Long id);
 
 }

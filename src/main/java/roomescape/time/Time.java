@@ -5,8 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
+@SQLDelete(sql = "UPDATE time SET deleted = true WHERE id = ?")
 public class Time {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

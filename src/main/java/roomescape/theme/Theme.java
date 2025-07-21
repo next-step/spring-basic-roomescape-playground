@@ -4,8 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
+@SQLDelete(sql = "UPDATE theme SET deleted = true WHERE id = ?")
 public class Theme {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,43 +1,20 @@
 package roomescape.time;
 
-import jakarta.persistence.EntityManager;
-import java.util.Optional;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-
-import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-@Repository
-public class TimeRepository {
+public interface TimeRepository extends JpaRepository<Time, Long> {
 
-    private final EntityManager em;
+    @NotNull
+    @Query("SELECT t FROM Time t WHERE t.deleted = false")
+    List<Time> findAll();
 
-    public TimeRepository(EntityManager em) {
-        this.em = em;
-    }
-
-    public List<Time> findAll() {
-        String jpql = "SELECT t FROM Time t WHERE t.deleted = false";
-        return em.createQuery(jpql, Time.class).getResultList();
-    }
-
-    public Optional<Time> findById(Long Id) {
-        return Optional.ofNullable(em.find(Time.class, Id));
-    }
-
-    public Time save(Time time) {
-        em.persist(time);
-        return time;
-    }
-
-    public void deleteById(Long id) {
-        String jpql = "UPDATE Time t SET deleted = true WHERE t.id = :id";
-        em.createQuery(jpql)
-                .setParameter("id", id)
-                .executeUpdate();
-    }
+    @NotNull
+    @Query("SELECT t FROM Time t WHERE t.id = :id AND t.deleted = false")
+    Optional<Time> findById(@NotNull @Param("id") Long id);
 
 }

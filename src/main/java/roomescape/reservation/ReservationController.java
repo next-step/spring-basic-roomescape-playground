@@ -38,15 +38,7 @@ public class ReservationController {
                 || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (reservationRequest.name() == null) {
-            reservationRequest = new ReservationRequest(
-                    member.name(),
-                    reservationRequest.date(),
-                    reservationRequest.theme(),
-                    reservationRequest.time()
-            );
-        }
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        ReservationResponse reservation = reservationService.save(reservationRequest, member);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }

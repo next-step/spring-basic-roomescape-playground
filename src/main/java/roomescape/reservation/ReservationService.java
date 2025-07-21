@@ -38,14 +38,21 @@ public class ReservationService {
         this.waitingRepository = waitingRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
+    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Time time = timeRepository.findById(reservationRequest.time())
                 .orElseThrow(TimeNotFoundException::new);
         Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(ThemeNotFoundException::new);
-        Member member = memberRepository.findByName(reservationRequest.name())
-                .orElseThrow(MemberNotFoundException::new);
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), member, time, theme);
+
+        Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(MemberNotFoundException::new);;
+        Reservation reservation = new Reservation(loginMember.name(), reservationRequest.date(), member, time, theme);
+
+        if(reservationRequest.name() != null) {
+            member = memberRepository.findByName(reservationRequest.name())
+                    .orElseThrow(MemberNotFoundException::new);
+            reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), member, time, theme);
+        }
 
         List<Reservation> reservations = reservationRepository.findByDateAndThemeAndTime(reservationRequest.date(), theme, time);
         if(!reservations.isEmpty())
@@ -71,22 +78,12 @@ public class ReservationService {
     public List<MyReservationResponse> findByMember(LoginMember loginMember) {
         Member member = memberRepository.findById(loginMember.id()).orElseThrow(MemberNotFoundException::new);
         List<MyReservationResponse> reservationList = reservationRepository.findByMember(member).stream()
-                .map(it -> new MyReservationResponse(
-                        it.getId(),
-                        it.getTheme().getName(),
-                        it.getDate(),
-                        it.getTime().getValue(),
-                        "예약"))
+                .map(MyReservationResponse::from)
                 .toList();
 
         List<MyReservationResponse> watingList = waitingRepository
                 .findWaitingsWithRankByMemberId(loginMember.id()).stream()
-                .map(it -> new MyReservationResponse(
-                        it.getWaiting().getId(),
-                        it.getWaiting().getTheme().getName(),
-                        it.getWaiting().getDate(),
-                        it.getWaiting().getTime().getValue(),
-                        it.getRank() + 1 + "번째 예약대기"))
+                .map(MyReservationResponse::from)
                 .toList();
 
         return Stream.concat(reservationList.stream(), watingList.stream()).toList();
