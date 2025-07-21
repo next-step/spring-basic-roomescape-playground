@@ -25,7 +25,7 @@ JAR_FILE=$(ls -t build/libs/*.jar | grep -v "\-plain.jar$" | head -n 1)
 
 LOG_PATH="/home/ubuntu/spring-basic-roomescape-playground/logs/server_log_$(date +%Y-%m-%d).txt"
 
-nohup java -jar -spring.profiles.active=dev "$JAR_FILE" >> "$LOG_PATH" 2>&1 &
+nohup java -jar --spring.profiles.active=dev "$JAR_FILE" >> "$LOG_PATH" 2>&1 &
 
 find build/libs -type f -name "*.jar" -mtime +3 -delete
 
