@@ -3,7 +3,7 @@ set -e
 
 echo "Start deployment"
 echo "Pull repository"
-git pull
+git pull origin main
 
 echo "Gradle Build"
 chmod +x ./gradlew
