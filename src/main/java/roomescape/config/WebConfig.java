@@ -1,5 +1,6 @@
 package roomescape.config;
 
+import auth.JwtUtilsV4;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -7,18 +8,17 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.CheckAdminInterceptor;
 import roomescape.auth.CookieValueExtractor;
-import auth.JwtUtils;
 import roomescape.auth.LoginMemberArgumentResolver;
 import roomescape.member.MemberService;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final JwtUtils jwtUtils;
+    private final JwtUtilsV4 jwtUtils;
     private final MemberService memberService;
     private final CookieValueExtractor cookieValueExtractor;
 
-    public WebConfig(JwtUtils jwtUtils, MemberService memberService,
+    public WebConfig(JwtUtilsV4 jwtUtils, MemberService memberService,
                      CookieValueExtractor cookieValueExtractor) {
         this.jwtUtils = jwtUtils;
         this.memberService = memberService;

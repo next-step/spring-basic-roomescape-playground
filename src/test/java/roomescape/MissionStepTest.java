@@ -1,5 +1,6 @@
 package roomescape;
 
+import auth.JwtUtilsV4;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
@@ -19,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import auth.JwtUtils;
 import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
@@ -219,7 +219,7 @@ public class MissionStepTest {
 
     @Test
     void 칠단계() {
-        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        Component componentAnnotation = JwtUtilsV4.class.getAnnotation(Component.class);
         assertThat(componentAnnotation).isNull();
     }
 

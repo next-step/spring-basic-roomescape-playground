@@ -1,6 +1,6 @@
 package roomescape.auth;
 
-import auth.JwtUtils;
+import auth.JwtUtilsV4;
 import org.springframework.stereotype.Service;
 import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
@@ -10,9 +10,9 @@ import roomescape.member.MemberRepository;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final JwtUtils jwtUtils;
+    private final JwtUtilsV4 jwtUtils;
 
-    public AuthService(MemberRepository memberRepository, JwtUtils jwtUtils) {
+    public AuthService(MemberRepository memberRepository, JwtUtilsV4 jwtUtils) {
         this.memberRepository = memberRepository;
         this.jwtUtils = jwtUtils;
     }
