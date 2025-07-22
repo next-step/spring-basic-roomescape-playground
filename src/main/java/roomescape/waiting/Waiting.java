@@ -8,7 +8,7 @@ import roomescape.time.Time;
 import java.time.LocalDate;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "date", "time_id", "member_id"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "date", "time_id"}))
 public class Waiting {
 
     @Id

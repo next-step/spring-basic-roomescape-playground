@@ -37,7 +37,6 @@ public class WaitingService {
 
         Waiting waiting = waitingRequest.toEntity(
                 loginMember.name(),
-                waitingRequest.date(),
                 timeRepository.findById(waitingRequest.time()).orElseThrow(() -> new RoomEscapeException(TIME_NOT_FOUND)),
                 themeRepository.findById(waitingRequest.theme()).orElseThrow(() -> new RoomEscapeException(THEME_NOT_FOUND)),
                 memberRepository.findById(loginMember.id()).orElseThrow(() -> new RoomEscapeException(MEMBER_NOT_FOUND)));

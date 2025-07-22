@@ -1,6 +1,8 @@
-package roomescape.auth;
+package jwt;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.LoginRequest;
+import roomescape.auth.TokenResponse;
 import roomescape.member.Member;
 import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
