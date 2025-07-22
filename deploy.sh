@@ -9,7 +9,7 @@ echo "Gradle Build"
 chmod +x ./gradlew
 ./gradlew build
 
-CURRENT_PID=$(pgrep -f ".jar")
+CURRENT_PID=$(pgrep -f "spring-basic-roomescape-playground.*\.jar")
 
 if [ -z "$CURRENT_PID" ]; then
     echo "No running application"
@@ -21,7 +21,7 @@ fi
 
 echo "Deploy new application"
 
-JAR_FILE=$(ls -t build/libs/*.jar | grep -v "\-plain.jar$" | head -n 1)
+JAR_FILE=$(ls build/libs/spring-basic-roomescape-playground*.jar | grep -v "\-plain.jar$" | head -n 1)
 
 LOG_PATH="/home/ubuntu/spring-basic-roomescape-playground/logs/server_log_$(date +%Y-%m-%d).txt"
 
