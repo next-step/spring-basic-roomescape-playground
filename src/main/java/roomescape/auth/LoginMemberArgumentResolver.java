@@ -1,26 +1,29 @@
 package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
+import auth.JwtUtilsV4;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.exception.InvalidTokenException;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtilsV4 jwtUtils;
     private final CookieValueExtractor cookieValueExtractor;
 
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider,
+    public LoginMemberArgumentResolver(MemberService memberService, JwtUtilsV4 jwtUtils,
                                        CookieValueExtractor cookieValueExtractor) {
         this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtils = jwtUtils;
         this.cookieValueExtractor = cookieValueExtractor;
     }
 
@@ -32,14 +35,23 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        try {
 
-        Cookie[] cookies = request.getCookies();
-        String token = cookieValueExtractor.extractToken(cookies);
-        Long memberId = jwtTokenProvider.getMemberIdByToken(token);
-        Member member = memberService.getMemberById(memberId);
+            HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+            String token = cookieValueExtractor.extractToken(request.getCookies());
+            if (token == null) {
+                throw new InvalidTokenException();
+            }
 
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+            Claims claims = jwtUtils.getClaims(token);
+            Long memberId = Long.valueOf(claims.getSubject());
+            Member member = memberService.getMemberById(memberId);
+
+            return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+
+        } catch (JwtException | NullPointerException | NumberFormatException e) {
+            throw new InvalidTokenException();
+        }
     }
 
 }

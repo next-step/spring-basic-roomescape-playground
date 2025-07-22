@@ -48,6 +48,14 @@ public class ExceptionController {
                 .body(e.getMessage());
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<String> handleInvalidTokenException(InvalidTokenException e) {
+        System.out.println(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleRuntimeException(Exception e) {
         System.out.println(e.getMessage());

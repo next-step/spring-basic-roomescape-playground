@@ -1,22 +1,22 @@
-package roomescape.auth;
+package auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 
-@Component
-public class JwtTokenProvider {
+public class JwtUtils {
 
     private final String secretKey;
+    private final String issuer;
 
-    public JwtTokenProvider(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+    public JwtUtils(String secretKey, String issuer) {
         this.secretKey = secretKey;
+        this.issuer = issuer;
     }
 
     public String generateToken(Member member) {
         return Jwts.builder()
+                .setIssuer(issuer)
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
@@ -27,9 +27,19 @@ public class JwtTokenProvider {
     public Long getMemberIdByToken(String token) {
         return Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .requireIssuer(issuer)
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
+    }
+
+    public String getRoleByToken(String token) {
+        return String.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .requireIssuer(issuer)
+                .build()
+                .parseClaimsJws(token)
+                .getBody().get("role", String.class));
     }
 
 }

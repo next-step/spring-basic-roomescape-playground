@@ -1,5 +1,6 @@
 package roomescape;
 
+import auth.JwtUtilsV4;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
@@ -12,10 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.MemberNotFoundException;
 import roomescape.member.Member;
@@ -31,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
+@ActiveProfiles("test")
 public class MissionStepTest {
 
     @Autowired
@@ -43,9 +47,12 @@ public class MissionStepTest {
     private TimeRepository timeRepository;
 
     private final String secretKey;
+    private final String issuer;
 
-    public MissionStepTest(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+    public MissionStepTest(@Value("${roomescape.auth.jwt.secret}") String secretKey,
+                           @Value("${roomescape.auth.jwt.issuer}") String issuer) {
         this.secretKey = secretKey;
+        this.issuer = issuer;
     }
 
     @Test
@@ -118,6 +125,7 @@ public class MissionStepTest {
         Member member = memberRepository.findByEmailAndPassword(email, password)
                 .orElseThrow(MemberNotFoundException::new);
         return Jwts.builder()
+                .setIssuer(issuer)
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
@@ -207,6 +215,17 @@ public class MissionStepTest {
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtilsV4.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
+    }
+
+    @Test
+    void 팔단계() {
+        assertThat(secretKey).isNotBlank();
     }
 
 }
