@@ -66,4 +66,21 @@ public class MemberDao {
             return Optional.empty();
         }
     }
+
+    public Optional<Member> findByName(String name) {
+        try {
+            Member member = jdbcTemplate.queryForObject(
+                    "SELECT id, name, email, role FROM member WHERE name = ?",
+                    (rs, rowNum) -> new Member(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("role")
+                    ), name
+            );
+            return Optional.ofNullable(member);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
 }

@@ -15,15 +15,6 @@ public class TimeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Time> findAll() {
-        return jdbcTemplate.query(
-                "SELECT * FROM time WHERE deleted = false",
-                (rs, rowNum) -> new Time(
-                        rs.getLong("id"),
-                        rs.getString("time_value"))
-        );
-    }
-
     public Time save(Time time) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         this.jdbcTemplate.update(connection -> {
@@ -34,6 +25,23 @@ public class TimeDao {
         }, keyHolder);
 
         return new Time(keyHolder.getKey().longValue(), time.getValue());
+    }
+
+    public List<Time> findAll() {
+        return jdbcTemplate.query(
+                "SELECT * FROM time WHERE deleted = false",
+                (rs, rowNum) -> new Time(
+                        rs.getLong("id"),
+                        rs.getString("time_value"))
+        );
+    }
+
+    public Time findById(Long id) {
+        return jdbcTemplate.queryForObject("SELECT * FROM time WHERE id = ? AND deleted = false",
+                (rs, rowNum) -> new Time(
+                        rs.getLong("id"),
+                        rs.getString("time_value")
+                ), id);
     }
 
     public void deleteById(Long id) {

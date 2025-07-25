@@ -27,7 +27,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Theme>> list() {
+    public ResponseEntity<List<Theme>> getAllTheme() {
         return ResponseEntity.ok(themeDao.findAll());
     }
 

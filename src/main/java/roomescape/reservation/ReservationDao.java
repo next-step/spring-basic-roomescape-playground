@@ -17,6 +17,27 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public Reservation save(Reservation reservation) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
+            ps.setString(1, reservation.getDate());
+            ps.setString(2, reservation.getName());
+            ps.setLong(3, reservation.getTheme().getId());
+            ps.setLong(4, reservation.getTime().getId());
+            return ps;
+        }, keyHolder);
+
+        return new Reservation(
+                keyHolder.getKey().longValue(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
+    }
+
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
@@ -39,39 +60,6 @@ public class ReservationDao {
                                 rs.getString("theme_name"),
                                 rs.getString("theme_description")
                         )));
-    }
-
-    public Reservation save(ReservationRequest reservationRequest) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, reservationRequest.date());
-            ps.setString(2, reservationRequest.name());
-            ps.setLong(3, reservationRequest.theme());
-            ps.setLong(4, reservationRequest.theme());
-            return ps;
-        }, keyHolder);
-
-        Time time = jdbcTemplate.queryForObject("SELECT * FROM time WHERE id = ?",
-                (rs, rowNum) -> new Time(rs.getLong("id"), rs.getString("time_value")),
-                reservationRequest.time());
-
-        Theme theme = jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
-                (rs, rowNum) -> new Theme(rs.getLong("id"), rs.getString("name"), rs.getString("description")),
-                reservationRequest.theme());
-
-        return new Reservation(
-                keyHolder.getKey().longValue(),
-                reservationRequest.name(),
-                reservationRequest.date(),
-                time,
-                theme
-        );
-    }
-
-    public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
     public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
@@ -122,5 +110,9 @@ public class ReservationDao {
                                 rs.getString("theme_name"),
                                 rs.getString("theme_description")
                         )));
+    }
+
+    public void deleteById(Long id) {
+        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 }

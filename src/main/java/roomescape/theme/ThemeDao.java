@@ -15,14 +15,6 @@ public class ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Theme> findAll() {
-        return jdbcTemplate.query("SELECT * FROM theme where deleted = false", (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description")
-        ));
-    }
-
     public Theme save(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -34,6 +26,23 @@ public class ThemeDao {
         }, keyHolder);
 
         return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription());
+    }
+
+    public List<Theme> findAll() {
+        return jdbcTemplate.query("SELECT * FROM theme where deleted = false", (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description")
+        ));
+    }
+
+    public Theme findById(Long id) {
+        return jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ? AND deleted = false",
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description")
+                ), id);
     }
 
     public void deleteById(Long id) {

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -69,4 +70,52 @@ public class MissionStepTest {
                 .getString("name"))
                 .isEqualTo("어드민");
     }
+
+    @Test
+    @DisplayName("로그인한 사용자의 예약이 정상적으로 이루어진다.")
+    void shouldReservation_whenLoginMemberInfo() {
+        String token = loginAndGetToken();
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(201);
+        assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
+    }
+
+    @Test
+    @DisplayName("예약을 위해 입력한 이름이 존재할 경우 입력한 이름으로 예약이 정상적으로 이루어진다.")
+    void shouldReservation_whenInputName() {
+        String token = loginAndGetToken();
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+        params.put("name", "브라운");
+
+        ExtractableResponse<Response> adminResponse = RestAssured
+                .given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        assertThat(adminResponse.statusCode()).isEqualTo(201);
+        assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
+    }
 }
+
