@@ -6,7 +6,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 public final class JwtTokenExtractor {
-
     private JwtTokenExtractor() {
     }
 
