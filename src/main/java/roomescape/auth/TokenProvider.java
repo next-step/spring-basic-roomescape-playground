@@ -25,7 +25,7 @@ public class TokenProvider {
             .compact();
     }
 
-    public Claims parseToken(String token){
+    public Claims parseToken(String token) {
         return Jwts.parserBuilder()
             .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
             .build()
