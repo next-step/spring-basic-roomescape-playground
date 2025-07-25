@@ -1,24 +1,18 @@
-package roomescape.auth;
+package auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
-import roomescape.member.MemberRepository;
 
-@Component
-public class JWTUtil {
+public class JwtService {
 
     private final Key key;
-    private final MemberRepository memberRepo;
 
-    public JWTUtil(@Value("${jwt.secret}") String secret,  MemberRepository memberRepo) {
+    public JwtService(String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
-        this.memberRepo = memberRepo;
     }
 
     public String createToken(Member member) {
@@ -31,13 +25,6 @@ public class JWTUtil {
                 .compact();
     }
 
-    public String createToken(String email, String password) {
-        Member member = memberRepo
-                .findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
-        return createToken(member);
-    }
-
     public Claims parseToken(String token) {
         try {
             return Jwts.parserBuilder()
@@ -48,5 +35,13 @@ public class JWTUtil {
         } catch (Exception e) {
             throw new UnauthorizedException("유효하지 않은 토큰입니다.");
         }
+    }
+
+    public String getEmail(String token) {
+        return parseToken(token).get("email", String.class);
+    }
+
+    public String getRole(String token) {
+        return parseToken(token).get("role", String.class);
     }
 }

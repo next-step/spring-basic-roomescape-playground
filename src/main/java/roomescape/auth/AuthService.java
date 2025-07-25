@@ -1,79 +1,45 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import auth.JwtService;
 import org.springframework.stereotype.Service;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
-import roomescape.member.MemberRequest;
 
 @Service
 public class AuthService {
 
     private final MemberRepository memberRepo;
-    private final JWTUtil jwtUtil;
+    private final JwtService jwtService;
 
-    public AuthService(MemberRepository memberRepo, JWTUtil jwtUtil) {
+    public AuthService(MemberRepository memberRepo, JwtService jwtService) {
         this.memberRepo = memberRepo;
-        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
     }
 
-    public Member login(MemberRequest request, HttpServletResponse response) {
-        Member member = memberRepo
-                .findByEmailAndPassword(request.getEmail(), request.getPassword())
+    public String loginToken(String email, String password) {
+        Member member = memberRepo.findByEmailAndPassword(email, password)
                 .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
-        String token = jwtUtil.createToken(member);
-        Cookie cookie = createLoginCookie(token);
-        response.addCookie(cookie);
-        return member;
+        return jwtService.createToken(member);
     }
 
-    public Member checkLogin(HttpServletRequest request) {
-        String token = extractTokenFromCookie(request.getCookies());
-        if (token == null || token.isEmpty()) {
-            throw new UnauthorizedException("로그인이 필요합니다.");
-        }
-
-        Claims claims = jwtUtil.parseToken(token);
-        String email = claims.get("email", String.class);
-
-        return memberRepo
-                .findByEmail(email)
+    public LoginMember getLoginMember(String token) {
+        String email = jwtService.getEmail(token);
+        Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("존재하지 않는 회원입니다."));
+        return new LoginMember(
+                member.getId(),
+                member.getName(),
+                member.getEmail(),
+                member.getRole()
+        );
     }
 
-    public void logout(HttpServletResponse response) {
-        Cookie cookie = createLogoutCookie();
-        response.addCookie(cookie);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
+    public void authorizeAdmin(String token) {
+        String role = jwtService.getRole(token);
+        if (!"ADMIN".equals(role)) {
+            throw new UnauthorizedException("관리자 권한이 필요합니다.");
         }
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
-    }
-
-    private Cookie createLoginCookie(String token) {
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        return cookie;
-    }
-
-    private Cookie createLogoutCookie() {
-        Cookie cookie = new Cookie("token", "");
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        return cookie;
     }
 }
