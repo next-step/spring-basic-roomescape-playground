@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.exception.AuthorizationException;
 import roomescape.member.Member;
 import roomescape.member.MemberResponse;
 
@@ -40,31 +41,16 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookies(cookies);
+        try {
+            Claims claims = TokenUtils.getClaimsFromCookies(request.getCookies(), tokenProvider);
+            Long id = Long.valueOf(claims.getSubject());
+            String name = claims.get("name", String.class);
+            String role = claims.get("role", String.class);
 
-        if (token == null || token.isBlank()) {
+            return ResponseEntity.ok(new MemberResponse(id, name, role));
+        } catch (AuthorizationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        Claims claims = tokenProvider.parseToken(token);
-        Long id = Long.valueOf(claims.getSubject());
-        String name = claims.get("name", String.class);
-        String role = claims.get("role", String.class);
-
-        return ResponseEntity.ok(new MemberResponse(id, name, role));
-    }
-
-    private String extractTokenFromCookies(Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
     }
 }
 
