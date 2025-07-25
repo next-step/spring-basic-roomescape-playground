@@ -45,8 +45,7 @@ public class ReservationService {
 
     private Member getMemberFromRequest(ReservationRequest reservationRequest, Member loginMember) {
         if (reservationRequest.name() != null) {
-            return memberService.findByName(reservationRequest.name())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            return memberService.findByName(reservationRequest.name());
         }
         return loginMember;
     }

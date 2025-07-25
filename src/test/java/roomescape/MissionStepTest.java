@@ -17,13 +17,12 @@ import roomescape.reservation.ReservationResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
-    private static final String TEST_EMAIL = "admin@email.com";
-    private static final String TEST_PASSWORD = "password";
+    private static final String PASSWORD = "password";
 
-    private String loginAndGetToken() {
+    private String loginAndGetToken(String email) {
         Map<String, String> params = new HashMap<>();
-        params.put("email", TEST_EMAIL);
-        params.put("password", TEST_PASSWORD);
+        params.put("email", email);
+        params.put("password", PASSWORD);
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
@@ -47,14 +46,14 @@ public class MissionStepTest {
     @Test
     @DisplayName("로그인이 정상적으로 이루어진다.")
     void shouldLogin_whenValidLoginData() {
-        String token = loginAndGetToken();
+        String token = loginAndGetToken("admin@email.com");
         assertThat(token).isNotBlank();
     }
 
     @Test
     @DisplayName("로그인 시 정상적으로 사용자 정보가 반환된다.")
     void shouldReturnUserInfo_whenLogin() {
-        String token = loginAndGetToken();
+        String token = loginAndGetToken("admin@email.com");
 
         ExtractableResponse<Response> checkResponse = RestAssured
                 .given().log().all()
@@ -65,16 +64,13 @@ public class MissionStepTest {
                 .statusCode(200)
                 .extract();
 
-        assertThat(checkResponse.body()
-                .jsonPath()
-                .getString("name"))
-                .isEqualTo("어드민");
+        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
 
     @Test
     @DisplayName("로그인한 사용자의 예약이 정상적으로 이루어진다.")
     void shouldReservation_whenLoginMemberInfo() {
-        String token = loginAndGetToken();
+        String token = loginAndGetToken("admin@email.com");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -97,7 +93,7 @@ public class MissionStepTest {
     @Test
     @DisplayName("예약을 위해 입력한 이름이 존재할 경우 입력한 이름으로 예약이 정상적으로 이루어진다.")
     void shouldReservation_whenInputName() {
-        String token = loginAndGetToken();
+        String token = loginAndGetToken("admin@email.com");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -117,5 +113,24 @@ public class MissionStepTest {
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
     }
-}
 
+    @Test
+    @DisplayName("어드민 권한을 가진 사용자만 어드민 페이지에 접근할 수 있다.")
+    void shouldApproachAdminPage_whenOnlyAdminRole() {
+        String brownToken = loginAndGetToken("brown@email.com");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = loginAndGetToken("admin@email.com");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+}

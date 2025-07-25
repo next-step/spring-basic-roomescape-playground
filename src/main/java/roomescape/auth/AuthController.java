@@ -7,14 +7,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.jwt.JwtCookieProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberResponse;
 
 @RestController
 @RequestMapping("/login")
 public class AuthController {
-    private static final String TOKEN_COOKIE_NAME = "token";
-
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -24,10 +23,7 @@ public class AuthController {
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
         String token = authService.createToken(loginRequest);
-        ResponseCookie cookie = ResponseCookie.from(TOKEN_COOKIE_NAME, token)
-                .httpOnly(true)
-                .path("/")
-                .build();
+        ResponseCookie cookie = JwtCookieProvider.loginCookie(token);
         return ResponseEntity.ok()
                 .header("Set-Cookie", cookie.toString())
                 .build();

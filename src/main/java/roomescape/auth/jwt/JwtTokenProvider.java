@@ -1,9 +1,8 @@
-package roomescape.auth;
+package roomescape.auth.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
     private static final String NAME_KEY = "name";
     private static final String ROLE_KEY = "role";
-    private static final String ROLE_PREFIX = "ROLE_";
 
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
@@ -25,11 +23,15 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(String.valueOf(id))
                 .claim(NAME_KEY, name)
-                .claim(ROLE_KEY, ROLE_PREFIX + role)
+                .claim(ROLE_KEY, role)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + validityInMilliseconds))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
+    }
+
+    public Long extractIdFromToken(String token) {
+        return Long.valueOf(parseClaims(token).getSubject());
     }
 
     public boolean validateToken(String token) {
@@ -44,25 +46,11 @@ public class JwtTokenProvider {
         }
     }
 
-    public Long extractIdFromToken(String token) {
-        validateToken(token);
-        return Long.valueOf(Jwts.parserBuilder()
+    public Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody().getSubject());
-    }
-
-    public String resolveToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return null;
+                .getBody();
     }
 }
