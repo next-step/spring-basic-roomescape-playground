@@ -36,19 +36,7 @@ public class AuthController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        Member member = authService.findMemberByToken(token);
+    public ResponseEntity<MemberResponse> checkLogin(@Login Member member) {
         return ResponseEntity.ok(new MemberResponse(member.getId(), member.getName(), member.getEmail()));
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(TOKEN_COOKIE_NAME)) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }

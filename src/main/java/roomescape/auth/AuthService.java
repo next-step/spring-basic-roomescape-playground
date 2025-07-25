@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.Member;
@@ -27,7 +28,8 @@ public class AuthService {
     }
 
     @Transactional
-    public Member findMemberByToken(String token) {
+    public Member findMemberByToken(HttpServletRequest request) {
+        String token = tokenProvider.resolveToken(request);
         validateTokenExpire(token);
         Long memberId = tokenProvider.extractIdFromToken(token);
         return memberDao.findById(memberId)
