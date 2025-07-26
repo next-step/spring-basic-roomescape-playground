@@ -36,7 +36,7 @@ public class AuthService {
         return memberService.findById(memberId);
     }
 
-    private void validateExpireToken(final String token) {
+    private void validateExpireToken(String token) {
         if (!tokenProvider.validateToken(token)) {
             throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
         }
