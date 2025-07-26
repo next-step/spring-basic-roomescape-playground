@@ -10,14 +10,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import roomescape.auth.configuration.LoginMember;
+import roomescape.auth.util.JwtUtil;
+import roomescape.member.Member;
+import roomescape.member.MemberRequest;
 
 @RestController
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final JwtUtil jwtUtil;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, JwtUtil jwtUtil) {
         this.reservationService = reservationService;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping("/reservations")
@@ -26,12 +32,18 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest) {
-        if (reservationRequest.getName() == null
-                || reservationRequest.getDate() == null
+    public ResponseEntity create(
+        @RequestBody ReservationRequest reservationRequest,
+        @LoginMember Member member
+    ) {
+        if (reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
                 || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
+        }
+
+        if (reservationRequest.getName() == null || reservationRequest.getName().isBlank()) {
+            reservationRequest.setName(member.getName());
         }
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
