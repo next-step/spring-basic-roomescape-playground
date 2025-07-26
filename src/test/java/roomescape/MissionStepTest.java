@@ -17,6 +17,22 @@ import roomescape.reservation.ReservationResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
+    private String createToken(String email, String password) {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/login")
+            .then().log().all()
+            .statusCode(200)
+            .extract();
+
+        return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+    }
+
     @Test
     void 일단계() {
         String token = createToken("admin@email.com", "password");
@@ -57,19 +73,22 @@ public class MissionStepTest {
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
-    private String createToken(String email, String password) {
-        Map<String, String> params = new HashMap<>();
-        params.put("email", email);
-        params.put("password", password);
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/login")
+        RestAssured.given().log().all()
+            .cookie("token", brownToken)
+            .get("/admin")
             .then().log().all()
-            .statusCode(200)
-            .extract();
+            .statusCode(401);
 
-        return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+            .cookie("token", adminToken)
+            .get("/admin")
+            .then().log().all()
+            .statusCode(200);
     }
 }

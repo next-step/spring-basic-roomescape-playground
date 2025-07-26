@@ -8,7 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.util.JwtUtil;
+import roomescape.util.JwtUtil;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
@@ -34,7 +34,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         MethodParameter parameter,
         ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest,
-        WebDataBinderFactory binderFactory) {
+        WebDataBinderFactory binderFactory
+    ) {
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();

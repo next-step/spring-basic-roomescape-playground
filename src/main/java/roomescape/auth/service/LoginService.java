@@ -2,7 +2,7 @@ package roomescape.auth.service;
 
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
-import roomescape.auth.util.JwtUtil;
+import roomescape.util.JwtUtil;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
