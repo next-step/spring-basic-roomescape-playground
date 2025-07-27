@@ -4,19 +4,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.global.CustomInterceptor;
+import roomescape.global.AdminAuthorizationInterceptor;
 import roomescape.global.LoginMemberArgumentResolver;
 
 import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    private final CustomInterceptor customInterceptor;
+    private final AdminAuthorizationInterceptor adminAuthorizationInterceptor;
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
 
-    public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver, CustomInterceptor customInterceptor) {
+    public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver, AdminAuthorizationInterceptor adminAuthorizationInterceptor) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
-        this.customInterceptor = customInterceptor;
+        this.adminAuthorizationInterceptor = adminAuthorizationInterceptor;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(customInterceptor)
+        registry.addInterceptor(adminAuthorizationInterceptor)
                 .addPathPatterns("/admin");
     }
 }

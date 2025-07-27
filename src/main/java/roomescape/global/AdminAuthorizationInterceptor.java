@@ -10,13 +10,13 @@ import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
 
 @Component
-public class CustomInterceptor implements HandlerInterceptor {
+public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     private static final String ADMIN_ROLE = "ADMIN";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
 
-    public CustomInterceptor(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
+    public AdminAuthorizationInterceptor(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.memberService = memberService;
     }
