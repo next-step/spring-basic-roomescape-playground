@@ -1,35 +1,33 @@
 package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
+import auth.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public AdminInterceptor(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AdminInterceptor(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Optional<Cookie> tokenCookie = findTokenCookie(request.getCookies());
+    public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
+        String token = jwtUtils.getTokenFromCookie(request);
 
-        if (tokenCookie.isEmpty()) {
+        if (token == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
 
         try {
-            String token = tokenCookie.get().getValue();
-            String role = jwtTokenProvider.getRole(token);
+            String role = jwtUtils.getRole(token);
+
             if (!"ADMIN".equals(role)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
@@ -40,14 +38,5 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         return true;
-    }
-
-    private Optional<Cookie> findTokenCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return Optional.empty();
-        }
-        return Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
-                .findFirst();
     }
 }

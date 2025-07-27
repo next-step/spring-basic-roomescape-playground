@@ -1,8 +1,8 @@
 package roomescape.reservation;
 
+import roomescape.auth.dto.LoginMember;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.dto.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.reservation.dto.MyReservationResponse;
@@ -80,9 +80,9 @@ public class ReservationService {
         return loggedInUser;
     }
 
-    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        List<Reservation> reservations = reservationRepository.findWithDetailsByMemberId(loginMember.getId());
-        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId());
+    public List<MyReservationResponse> findMyReservations(Long memberId) {
+        List<Reservation> reservations = reservationRepository.findWithDetailsByMemberId(memberId);
+        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(memberId);
 
         Stream<MyReservationResponse> reservationResponses = reservations.stream()
                 .map(r -> MyReservationResponse.from(r, r.getTheme(), r.getTime()));

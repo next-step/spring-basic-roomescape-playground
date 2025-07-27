@@ -2,7 +2,6 @@ package roomescape.member;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
@@ -11,11 +10,9 @@ import roomescape.member.dto.MemberResponse;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Transactional
@@ -27,7 +24,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public String login(LoginRequest request) {
+    public Member login(LoginRequest request) { // 반환 타입을 String(토큰)에서 Member로 변경
         Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
@@ -35,7 +32,7 @@ public class MemberService {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        return jwtTokenProvider.createToken(member);
+        return member;
     }
 
     public Member findById(Long id) {
