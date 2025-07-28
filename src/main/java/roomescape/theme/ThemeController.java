@@ -32,7 +32,7 @@ public class ThemeController {
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeRepository.softDeleteById(id);
+        themeRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -31,14 +31,12 @@ public class ReservationService {
         this.waitingService = waitingService;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
+    public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
         Time time = timeRepository.findById(reservationRequest.getTime())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간"));
 
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마"));
-
-        Member member = memberService.findByName(reservationRequest.getName());
 
         Reservation reservation = new Reservation(
             member,

@@ -29,7 +29,7 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    public Reservation() {
+    protected Reservation() {
 
     }
 

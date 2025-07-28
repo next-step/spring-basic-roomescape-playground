@@ -1,5 +1,6 @@
 package roomescape.time;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.Reservation;
@@ -34,10 +35,12 @@ public class TimeService {
         return timeRepository.findAllByDeletedFalse();
     }
 
+    @Transactional
     public Time save(Time time) {
         return timeRepository.save(time);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         timeRepository.softDeleteById(id);
     }

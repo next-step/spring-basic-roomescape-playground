@@ -29,13 +29,11 @@ public class WaitingService {
         this.memberRepository = memberRepository;
     }
 
-    public WaitingResponse create(WaitingRequest request) {
+    public WaitingResponse create(WaitingRequest request, Member member) {
         Time time = timeRepository.findById(request.getTime())
             .orElseThrow(() -> new IllegalArgumentException("시간 없음"));
         Theme theme = themeRepository.findById(request.getTheme())
             .orElseThrow(() -> new IllegalArgumentException("테마 없음"));
-        Member member = memberRepository.findByName(request.getName())
-            .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
 
         checkAvailabilityOfCreate(member, request.getDate(), time, theme);
 

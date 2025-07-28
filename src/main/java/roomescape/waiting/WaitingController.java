@@ -30,7 +30,7 @@ public class WaitingController {
             || request.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
-        WaitingResponse waiting = waitingService.create(request);
+        WaitingResponse waiting = waitingService.create(request, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(waiting);
     }
 
