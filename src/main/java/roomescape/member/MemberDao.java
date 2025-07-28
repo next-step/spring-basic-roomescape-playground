@@ -1,5 +1,7 @@
 package roomescape.member;
 
+import static roomescape.member.Role.USER;
+
 import java.sql.PreparedStatement;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,8 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class MemberDao {
-    private static final String DEFAULT_ROLE = "USER";
-
     private final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
@@ -30,7 +30,7 @@ public class MemberDao {
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), DEFAULT_ROLE);
+        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), USER);
     }
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
@@ -41,7 +41,7 @@ public class MemberDao {
                             rs.getLong("id"),
                             rs.getString("name"),
                             rs.getString("email"),
-                            rs.getString("role")
+                            Role.valueOf(rs.getString("role"))
                     ),
                     email, password);
             return Optional.ofNullable(member);
@@ -58,7 +58,7 @@ public class MemberDao {
                             rs.getLong("id"),
                             rs.getString("name"),
                             rs.getString("email"),
-                            rs.getString("role")
+                            Role.valueOf(rs.getString("role"))
                     ), id
             );
             return Optional.ofNullable(member);
@@ -75,7 +75,7 @@ public class MemberDao {
                             rs.getLong("id"),
                             rs.getString("name"),
                             rs.getString("email"),
-                            rs.getString("role")
+                            Role.valueOf(rs.getString("role"))
                     ), name
             );
             return Optional.ofNullable(member);
