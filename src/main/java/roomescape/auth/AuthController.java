@@ -26,7 +26,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("token", token)
             .httpOnly(true)
             .path("/")
-            .sameSite("Lax")
+            .sameSite("Strict")
             .build();
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
