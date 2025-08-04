@@ -10,13 +10,20 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.dto.LoginMember;
+import roomescape.auth.jwt.TokenProvider;
+import roomescape.member.Member;
 import roomescape.reservation.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class MissionStepTest {
+
+    @Autowired
+    private TokenProvider tokenProvider;
 
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
@@ -31,7 +38,10 @@ class MissionStepTest {
             .statusCode(200)
             .extract();
 
-        return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+        return response.headers().get("Set-Cookie")
+            .getValue()
+            .split(";")[0]
+            .split("=")[1];
     }
 
     @Test
@@ -109,5 +119,88 @@ class MissionStepTest {
             .get("/admin")
             .then().log().all()
             .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("잘못된 형식의 토큰일 때 401 Unauthorized 응답을 반환한다")
+    void Invalid_Token_Format_Return_401() {
+        String invalidToken = "not.JWT.Token";
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .cookie("token", invalidToken)
+            .when().get("/login/check")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(401);
+    }
+
+    @Test
+    @DisplayName("정상적인 토큰은 200 OK 응답을 반환한다")
+    void Valid_Token_Returns_200() {
+        String validToken = createToken("admin@email.com", "password");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .cookie("token", validToken)
+            .when().get("/login/check")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("서명이 위조된 토큰은 401 Unauthrized를 반환한다")
+    void Tampered_Token_Returns_401() {
+        String validToken = createToken("admin@email.com", "password");
+        String tamperedToken = validToken.substring(0,
+            validToken.lastIndexOf('.') + 1) + "invalidsignature";
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .cookie("token", tamperedToken)
+            .when().get("/login/check")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(401);
+    }
+
+    @Test
+    @DisplayName("구조만 맞고 base64 디코딩이 안 되는 토큰은 401을 반환한다")
+    void Invalid_Base64_Token_Returns_401() {
+        String invalidBase64Token = "aW52YWxpZC5iYXNlNjQhIT8=.cGF5bG9hZA==.c2lnbmF0dXJl!"; //base64 디코딩이 안되는 토큰
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .cookie("token", invalidBase64Token)
+            .when().get("/login/check")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(401);
+    }
+
+    @Test
+    @DisplayName("빈 토큰은 401 Unauthorized를 반환한다.")
+    void Empty_Token_Returns_401() {
+        ExtractableResponse response = RestAssured.given().log().all()
+            .cookie("token", "")
+            .when().get("/login/check")
+            .then().log().all()
+            .extract();
+
+        assertThat(response.statusCode()).isEqualTo(401);
+    }
+
+    @Test
+    @DisplayName("토큰 생성 후 파싱 시 로그인 정보가 추출된다")
+    void createAndParseToken() {
+        Member member = new Member(1L, "어드민", "admin@email.com", "ADMIN");
+
+        String token = tokenProvider.createToken(member);
+        LoginMember loginMember = tokenProvider.parseLoginMember(token);
+
+        assertThat(loginMember.id()).isEqualTo(member.getId());
+        assertThat(loginMember.name()).isEqualTo(member.getName());
+        assertThat(loginMember.role()).isEqualTo(member.getRole());
     }
 }

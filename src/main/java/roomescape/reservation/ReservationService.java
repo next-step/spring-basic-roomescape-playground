@@ -2,7 +2,7 @@ package roomescape.reservation;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.auth.LoginMember;
+import roomescape.auth.dto.LoginMember;
 
 @Service
 public class ReservationService {
@@ -24,7 +24,7 @@ public class ReservationService {
         String name = request.getName();
 
         if (name == null || name.isBlank()) {
-            name = member.getName();
+            name = member.name();
             request.setName(name);
         }
 

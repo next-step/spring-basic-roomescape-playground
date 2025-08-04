@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.auth.LoginMember;
+import roomescape.auth.dto.LoginMember;
 
 @RestController
 public class ReservationController {
@@ -35,7 +35,7 @@ public class ReservationController {
         }
 
         if (reservationRequest.getName() == null || reservationRequest.getName().isBlank()) {
-            reservationRequest.setName(member.getName());
+            reservationRequest.setName(member.name());
         }
 
         ReservationResponse reservation = reservationService.save(reservationRequest, member);

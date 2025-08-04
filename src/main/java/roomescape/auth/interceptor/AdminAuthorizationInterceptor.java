@@ -1,9 +1,11 @@
-package roomescape.auth;
+package roomescape.auth.interceptor;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.dto.LoginMember;
+import roomescape.auth.jwt.TokenExtractor;
+import roomescape.auth.jwt.TokenProvider;
 
 public class AdminAuthorizationInterceptor implements HandlerInterceptor {
 
@@ -16,15 +18,21 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
         Object handler) throws Exception {
-
         try {
-            Claims claims = TokenUtils.getClaimsFromCookies(request.getCookies(), tokenProvider);
-            String role = claims.get("role", String.class);
+            String token = TokenExtractor.extractToken(request);
 
-            if (!"ADMIN".equals(role)) {
+            if (token == null || token.isBlank()) {
                 return unauthorized(response);
             }
+
+            LoginMember member = tokenProvider.parseLoginMember(token);
+
+            if (!"ADMIN".equals(member.role())) {
+                return unauthorized(response);
+            }
+
             return true;
+
         } catch (Exception e) {
             return unauthorized(response);
         }

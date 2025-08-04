@@ -1,12 +1,15 @@
-package roomescape.auth;
+package roomescape.auth.resolver;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.auth.dto.LoginMember;
+import roomescape.auth.jwt.TokenExtractor;
+import roomescape.auth.jwt.TokenProvider;
+import roomescape.exception.AuthorizationException;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -24,14 +27,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Claims claims = TokenUtils.getClaimsFromCookies(request.getCookies(), tokenProvider);
+        String token = TokenExtractor.extractToken(request);
 
-        Long id = Long.valueOf(claims.getSubject());
-        String name = claims.get("name", String.class);
-        String email = claims.get("email", String.class);
-        String role = claims.get("role", String.class);
+        if (token == null || token.isBlank()) {
+            throw new AuthorizationException("인증 토큰이 존재하지 않습니다.");
+        }
 
-        return new LoginMember(id, name, email, role);
+        return tokenProvider.parseLoginMember(token);
     }
 }
