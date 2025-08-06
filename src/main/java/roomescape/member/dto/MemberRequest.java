@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.dto;
 
 public class MemberRequest {
     private String name;
