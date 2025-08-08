@@ -11,17 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.configuration.LoginMember;
 import roomescape.member.Member;
-import roomescape.util.JwtUtil;
 
 @RestController
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final JwtUtil jwtUtil;
 
-    public ReservationController(ReservationService reservationService, JwtUtil jwtUtil) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping("/reservations")
@@ -45,7 +42,8 @@ public class ReservationController {
         }
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
+            .body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")

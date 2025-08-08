@@ -1,10 +1,11 @@
 package roomescape.auth.service;
 
-import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
-import roomescape.util.JwtUtil;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.member.MemberInfo;
+import roomescape.auth.util.JwtPayload;
+import roomescape.auth.util.JwtUtil;
 
 
 @Service
@@ -23,9 +24,13 @@ public class LoginService {
         return jwtUtil.createToken(member);
     }
 
-    public Member check(String token) {
-        Claims claims = jwtUtil.parseToken(token);
-        String name = String.valueOf(claims.get("name"));
-        return memberDao.findByName(name);
+    public MemberInfo check(String token) {
+        JwtPayload payload = jwtUtil.parseToken(token);
+        Member member = memberDao.findByName(payload.name());
+
+        return new MemberInfo(
+            member.getName(),
+            member.getRole()
+        );
     }
 }

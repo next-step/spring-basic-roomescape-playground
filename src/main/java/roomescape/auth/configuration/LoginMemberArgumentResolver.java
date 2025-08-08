@@ -1,6 +1,5 @@
 package roomescape.auth.configuration;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -8,18 +7,17 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.util.JwtUtil;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberInfo;
+import roomescape.auth.util.JwtPayload;
+import roomescape.auth.util.JwtUtil;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberDao memberDao;
     private final JwtUtil jwtUtil;
 
 
-    public LoginMemberArgumentResolver(MemberDao memberDao, JwtUtil jwtUtil) {
-        this.memberDao = memberDao;
+    public LoginMemberArgumentResolver(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
@@ -47,9 +45,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             if ("token".equals(cookie.getName())) {
                 String token = cookie.getValue();
 
-                Claims claims = jwtUtil.parseToken(token);
-                String name = String.valueOf(claims.get("name"));
-                return memberDao.findByName(name);
+                JwtPayload jwtPayload = jwtUtil.parseToken(token);
+                return new MemberInfo(
+                    jwtPayload.name(),
+                    jwtPayload.role()
+                );
             }
         }
 

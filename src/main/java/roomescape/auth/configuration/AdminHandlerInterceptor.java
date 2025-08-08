@@ -1,11 +1,10 @@
 package roomescape.auth.configuration;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.util.JwtUtil;
+import roomescape.auth.util.JwtUtil;
 
 public class AdminHandlerInterceptor implements HandlerInterceptor {
 
@@ -57,8 +56,7 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
     }
 
     private boolean isAdmin(String token) {
-        Claims claims = jwtUtil.parseToken(token);
-        String role = String.valueOf(claims.get("role"));
+        String role = jwtUtil.parseToken(token).role();
         return ADMIN_ROLE.equals(role);
     }
 
