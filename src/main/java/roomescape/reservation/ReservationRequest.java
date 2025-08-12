@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 public class ReservationRequest {
+
     private String name;
     private String date;
     private Long theme;
@@ -20,5 +21,9 @@ public class ReservationRequest {
 
     public Long getTime() {
         return time;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
