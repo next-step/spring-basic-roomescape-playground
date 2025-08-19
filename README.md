@@ -195,18 +195,18 @@ public class MissionStepTest {
 ```
 ## 🚀 4단계 - JPA 전환
 ### 요구사항
-- [ ] JPA를 활용하여 데이터베이스에 접근하도록 수정하세요.
+- [x] JPA를 활용하여 데이터베이스에 접근하도록 수정하세요.
 ### 세부 요구사항
 #### gradle 의존성 추가
-- [ ] build.gradle 파일을 이용하여 다음 의존성을 대체하세요.
-  - [ ] as is: spring-boot-stater-jdbc
-  - [ ] to be: spring-boot-starter-data-jpa
+- [x] build.gradle 파일을 이용하여 다음 의존성을 대체하세요.
+  - [x] as is: spring-boot-stater-jdbc
+  - [x] to be: spring-boot-starter-data-jpa
 #### 엔티티 매핑
-- [ ] 다른 클래스를 의존하지 않는 클래스 먼저 엔티티 설정을 하세요.
-  - [ ] ex) Theme나 Time 등
+- [x] 다른 클래스를 의존하지 않는 클래스 먼저 엔티티 설정을 하세요.
+  - [x] ex) Theme나 Time 등
 #### 연관관계 매핑
-- [ ] 다른 클래스에 의존하는 클래스는 연관관계 매핑을 추가로 하세요.
-  - [ ] ex) Reservation은 Member나 Theme 등의 객체에 의존합니다.
+- [x] 다른 클래스에 의존하는 클래스는 연관관계 매핑을 추가로 하세요.
+  - [x] ex) Reservation은 Member나 Theme 등의 객체에 의존합니다.
 ### 요구사항 테스트
 ```java
 @DataJpaTest

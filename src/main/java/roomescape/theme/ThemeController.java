@@ -12,26 +12,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ThemeController {
-    private ThemeDao themeDao;
+    private final ThemeRepository themeRepository;
 
-    public ThemeController(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public ThemeController(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
-        Theme newTheme = themeDao.save(theme);
-        return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
+        Theme newTheme = themeRepository.save(new Theme(request.name(), request.description()));
+        return ResponseEntity.created(URI.create("/themes/" + newTheme.getId()))
+            .body(ThemeResponse.from(newTheme));
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeDao.findAll());
+    public ResponseEntity<List<ThemeResponse>> list() {
+        List<ThemeResponse> result = themeRepository.findAll().stream()
+            .map(ThemeResponse::from)
+            .toList();
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeDao.deleteById(id);
+        if (!themeRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        themeRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
