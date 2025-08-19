@@ -9,13 +9,20 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+    @Autowired
+    private TimeRepository timeRepository;
 
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
@@ -90,5 +97,14 @@ public class MissionStepTest {
             .get("/admin")
             .then().log().all()
             .statusCode(200);
+    }
+
+    @Test
+    void 사단계() {
+        Time saveTime = timeRepository.save(new Time("10:00"));
+        Time persistTime = timeRepository.findById(saveTime.getId()).orElse(null);
+
+        assertThat(persistTime).isNotNull();
+        assertThat(persistTime.getValue()).isEqualTo(saveTime.getValue());
     }
 }
