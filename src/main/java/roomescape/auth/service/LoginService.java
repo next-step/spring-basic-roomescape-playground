@@ -33,6 +33,7 @@ public class LoginService {
                 "not found Member with name: " + payload.name()));
 
         return new MemberInfo(
+            member.getId(),
             member.getName(),
             member.getRole()
         );

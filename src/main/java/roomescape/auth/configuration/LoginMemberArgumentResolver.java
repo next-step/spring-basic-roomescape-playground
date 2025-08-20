@@ -47,6 +47,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
                 JwtPayload jwtPayload = jwtUtil.parseToken(token);
                 return new MemberInfo(
+                    jwtPayload.id(),
                     jwtPayload.name(),
                     jwtPayload.role()
                 );

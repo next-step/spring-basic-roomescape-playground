@@ -34,7 +34,7 @@ public class LoginServiceTest {
     @Test
     @DisplayName("check 호출 시 MemberInfo 반환")
     void checkReturnsMemberInfo() {
-        JwtPayload payload = new JwtPayload("브라운", "ADMIN");
+        JwtPayload payload = new JwtPayload(1L, "브라운", "ADMIN");
         Member member = new Member(1L, "브라운", "brown@email.com", "ADMIN");
 
         Mockito.when(jwtUtil.parseToken("token")).thenReturn(payload);

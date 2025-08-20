@@ -36,6 +36,7 @@ public class JwtUtil {
     public JwtPayload parseToken(String token) {
         Claims claims = jwtParser.parseClaimsJws(token).getBody();
         return new JwtPayload(
+            Long.valueOf(claims.getSubject()),
             String.valueOf(claims.get("name")),
             String.valueOf(claims.get("role"))
         );
