@@ -7,6 +7,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.dto.LoginMember;
 import roomescape.auth.jwt.TokenProvider;
 import roomescape.member.Member;
+import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -202,5 +204,19 @@ class MissionStepTest {
         assertThat(loginMember.id()).isEqualTo(member.getId());
         assertThat(loginMember.name()).isEqualTo(member.getName());
         assertThat(loginMember.role()).isEqualTo(member.getRole());
+    }
+
+    @Test
+    void 오단계() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+            .cookie("token", adminToken)
+            .get("/reservations-mine")
+            .then().log().all()
+            .statusCode(200)
+            .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 }

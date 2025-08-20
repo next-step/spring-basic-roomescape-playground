@@ -25,8 +25,16 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> getMyReservations(LoginMember loginMember) {
+        List<MyReservationResponse> reservations = reservationService.findReservationsByMemberId(
+            loginMember.id());
+        return ResponseEntity.ok(reservations);
+    }
+
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest,
+    public ResponseEntity<ReservationResponse> create(
+        @RequestBody ReservationRequest reservationRequest,
         LoginMember member) {
         if (reservationRequest.getDate() == null
             || reservationRequest.getTheme() == null

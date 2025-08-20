@@ -233,9 +233,9 @@ public class JpaTest {
 
 ## 🚀 5단계 - 내 예약 목록 조회
 ### 요구사항
-- [ ] 내 예약 목록을 조회하는 API를 구현하세요.
+- [x] 내 예약 목록을 조회하는 API를 구현하세요.
 ### 내 예약 목록 기능
-- [ ] 아래의 request와 response 요구사항에 따라 기능을 구현하세요.
+- [x] 아래의 request와 response 요구사항에 따라 기능을 구현하세요.
 #### Request
 ```
 GET /reservations-mine HTTP/1.1
