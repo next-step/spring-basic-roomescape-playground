@@ -193,3 +193,164 @@ public class MissionStepTest {
     }
 }
 ```
+## 🚀 4단계 - JPA 전환
+### 요구사항
+- [x] JPA를 활용하여 데이터베이스에 접근하도록 수정하세요.
+### 세부 요구사항
+#### gradle 의존성 추가
+- [x] build.gradle 파일을 이용하여 다음 의존성을 대체하세요.
+  - [x] as is: spring-boot-stater-jdbc
+  - [x] to be: spring-boot-starter-data-jpa
+#### 엔티티 매핑
+- [x] 다른 클래스를 의존하지 않는 클래스 먼저 엔티티 설정을 하세요.
+  - [x] ex) Theme나 Time 등
+#### 연관관계 매핑
+- [x] 다른 클래스에 의존하는 클래스는 연관관계 매핑을 추가로 하세요.
+  - [x] ex) Reservation은 Member나 Theme 등의 객체에 의존합니다.
+### 요구사항 테스트
+```java
+@DataJpaTest
+public class JpaTest {
+  @Autowired
+  private TestEntityManager entityManager;
+
+  @Autowired
+  private TimeRepository timeRepository;
+
+  @Test
+  void 사단계() {
+    Time time = new Time("10:00");
+    entityManager.persist(time);
+    entityManager.flush();
+
+    Time persistTime = timeRepository.findById(time.getId()).orElse(null);
+
+    assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+  }
+}
+
+```
+
+## 🚀 5단계 - 내 예약 목록 조회
+### 요구사항
+- [x] 내 예약 목록을 조회하는 API를 구현하세요.
+### 내 예약 목록 기능
+- [x] 아래의 request와 response 요구사항에 따라 기능을 구현하세요.
+#### Request
+```
+GET /reservations-mine HTTP/1.1
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+```
+#### Response
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+    {
+        "reservationId": 1,
+        "theme": "테마1",
+        "date": "2024-03-01",
+        "time": "10:00",
+        "status": "예약"
+    },
+    {
+        "reservationId": 2,
+        "theme": "테마2",
+        "date": "2024-03-01",
+        "time": "12:00",
+        "status": "예약"
+    },
+    {
+        "reservationId": 3,
+        "theme": "테마3",
+        "date": "2024-03-01",
+        "time": "14:00",
+        "status": "예약"
+    }
+]
+
+```
+### 요구사항 테스트
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+public class MissionStepTest {
+  @Test
+  void 오단계() {
+    String adminToken = createToken("admin@email.com", "password");
+
+    List<MyReservationResponse> reservations = RestAssured.given().log().all()
+            .cookie("token", adminToken)
+            .get("/reservations-mine")
+            .then().log().all()
+            .statusCode(200)
+            .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+    assertThat(reservations).hasSize(3);
+  }
+}
+```
+
+## 🚀 6단계 - 예약 대기 기능
+### 요구사항
+- [x] 예약 대기 요청 기능을 구현하세요.
+- [x] 예약 대기 취소 기능도 함께 구현하세요.
+- [x] 내 예약 목록 조회 시 예약 대기 목록도 함께 포함하세요.
+- [x] 중복 예약이 불가능 하도록 구현하세요.
+
+> ⚠️ 심화 요구사항 - 내 예약 목록의 예약 대기 상태에 몇 번째 대기인지도 함께 표시하세요.
+#### 예약 대기 요청
+![img_1.png](img_1.png)
+#### 내 예약 목록에서 조회 & 예약 대기 취소
+![img_2.png](img_2.png)
+### 요구사항 테스트
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+public class MissionStepTest {
+  @Test
+  void 육단계() {
+    String brownToken = createToken("brown@email.com", "password");
+
+    Map<String, String> params = new HashMap<>();
+    params.put("date", "2024-03-01");
+    params.put("time", "1");
+    params.put("theme", "1");
+
+    // 예약 대기 생성
+    WaitingResponse waiting = RestAssured.given().log().all()
+            .body(params)
+            .cookie("token", brownToken)
+            .contentType(ContentType.JSON)
+            .post("/waitings")
+            .then().log().all()
+            .statusCode(201)
+            .extract().as(WaitingResponse.class);
+
+    // 내 예약 목록 조회
+    List<MyReservationResponse> myReservations = RestAssured.given().log().all()
+            .body(params)
+            .cookie("token", brownToken)
+            .contentType(ContentType.JSON)
+            .get("/reservations-mine")
+            .then().log().all()
+            .statusCode(200)
+            .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+    // 예약 대기 상태 확인
+    String status = myReservations.stream()
+            .filter(it -> it.getId() == waiting.getId())
+            .filter(it -> !it.getStatus().equals("예약"))
+            .findFirst()
+            .map(it -> it.getStatus())
+            .orElse(null);
+
+    assertThat(status).isEqualTo("1번째 예약대기");
+  }
+}
+
+
+```
+
