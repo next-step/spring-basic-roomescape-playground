@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +11,8 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.WaitingWithRank;
 
 @Service
 public class ReservationService {
@@ -17,14 +20,16 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
     private final MemberRepository memberRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
         ThemeRepository themeRepository, TimeRepository timeRepository,
-        MemberRepository memberRepository) {
+        MemberRepository memberRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
         this.memberRepository = memberRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     @Transactional
@@ -87,8 +92,19 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findReservationsByMemberId(Long memberId) {
-        return reservationRepository.findByMemberId(memberId).stream()
+        List<Reservation> reservations = reservationRepository.findByMemberId(memberId);
+
+        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(memberId);
+
+        List<MyReservationResponse> result = new ArrayList<>();
+        result.addAll(reservations.stream()
             .map(MyReservationResponse::from)
-            .toList();
+            .toList());
+
+        result.addAll(waitings.stream()
+            .map(waitingWithRank -> MyReservationResponse.from(waitingWithRank.getWaiting(),
+                waitingWithRank.getRank())).toList());
+
+        return result;
     }
 }

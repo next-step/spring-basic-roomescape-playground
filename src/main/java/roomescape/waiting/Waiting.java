@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,12 +12,15 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
-public class Reservation {
+public class Waiting {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String date;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theme_id")
+    private Theme theme;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -27,42 +30,28 @@ public class Reservation {
     @JoinColumn(name = "time_id")
     private Time time;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "theme_id")
-    private Theme theme;
+    private String date;
 
-    public Reservation(String name, String date, Time time, Theme theme) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+    protected Waiting() {
     }
 
-    public Reservation(String name, String date, Member member, Time time, Theme theme) {
-        this.name = name;
-        this.date = date;
+    public Waiting(Member member, Theme theme, Time time, String date) {
         this.member = member;
-        this.time = time;
         this.theme = theme;
+        this.date = date;
+        this.time = time;
     }
 
-    protected Reservation() {
+    public Waiting(Long id, Theme theme, Member member, String date, Time time) {
+        this.id = id;
+        this.theme = theme;
+        this.member = member;
+        this.date = date;
+        this.time = time;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public Time getTime() {
-        return time;
     }
 
     public Theme getTheme() {
@@ -71,5 +60,13 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public Time getTime() {
+        return time;
     }
 }
