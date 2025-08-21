@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 public class ReservationResponse {
+
     private Long id;
     private String name;
     private String theme;
@@ -13,6 +14,16 @@ public class ReservationResponse {
         this.theme = theme;
         this.date = date;
         this.time = time;
+    }
+
+    public static ReservationResponse from(Reservation reservation) {
+        return new ReservationResponse(
+            reservation.getId(),
+            reservation.getMember().getName(),
+            reservation.getTheme().getName(),
+            reservation.getDate(),
+            reservation.getTime().getValue()
+        );
     }
 
     public Long getId() {

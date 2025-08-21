@@ -24,7 +24,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(LoginMember.class)
-            && parameter.getParameterType().equals(Member.class);
+            && parameter.getParameterType().equals(MemberInfo.class);
     }
 
     @Override
@@ -47,6 +47,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
                 JwtPayload jwtPayload = jwtUtil.parseToken(token);
                 return new MemberInfo(
+                    jwtPayload.id(),
                     jwtPayload.name(),
                     jwtPayload.role()
                 );

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.configuration.LoginMember;
-import roomescape.member.Member;
+import roomescape.member.MemberInfo;
 
 @RestController
 public class ReservationController {
@@ -29,7 +29,7 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(
         @RequestBody ReservationRequest reservationRequest,
-        @LoginMember Member member
+        @LoginMember MemberInfo member
     ) {
         if (reservationRequest.getDate() == null
             || reservationRequest.getTheme() == null
@@ -38,9 +38,9 @@ public class ReservationController {
         }
 
         if (reservationRequest.getName() == null || reservationRequest.getName().isBlank()) {
-            reservationRequest.setName(member.getName());
+            reservationRequest.setName(member.name());
         }
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        ReservationResponse reservation = reservationService.save(member.id(), reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
             .body(reservation);
@@ -48,7 +48,14 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
-        reservationService.deleteById(id);
+        reservationService.cancel(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> findMyReservations(
+        @LoginMember MemberInfo member
+    ) {
+        return ResponseEntity.ok(reservationService.findMyReservations(member.id()));
     }
 }

@@ -1,5 +1,5 @@
 package roomescape.auth.util;
 
-public record JwtPayload(String name, String role) {
+public record JwtPayload(Long id, String name, String role) {
 
 }

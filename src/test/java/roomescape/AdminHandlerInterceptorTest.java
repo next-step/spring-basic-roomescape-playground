@@ -37,7 +37,7 @@ public class AdminHandlerInterceptorTest {
         Mockito.when(request.getCookies()).thenReturn(cookies);
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
-        Mockito.when(jwtUtil.parseToken("token")).thenReturn(new JwtPayload("유저", "USER"));
+        Mockito.when(jwtUtil.parseToken("token")).thenReturn(new JwtPayload(1L, "유저", "USER"));
 
         boolean result = interceptor.preHandle(request, response, new Object());
         assertThat(result).isFalse();
@@ -52,7 +52,7 @@ public class AdminHandlerInterceptorTest {
         Mockito.when(request.getCookies()).thenReturn(cookies);
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
-        Mockito.when(jwtUtil.parseToken("token")).thenReturn(new JwtPayload("브라운", "ADMIN"));
+        Mockito.when(jwtUtil.parseToken("token")).thenReturn(new JwtPayload(1L, "브라운", "ADMIN"));
 
         boolean result = interceptor.preHandle(request, response, new Object());
         assertThat(result).isTrue();

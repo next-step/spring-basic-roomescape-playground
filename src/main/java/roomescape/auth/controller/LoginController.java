@@ -1,5 +1,6 @@
 package roomescape.auth.controller;
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -26,7 +27,7 @@ public class LoginController {
     @PostMapping
     public ResponseEntity<Void> login(
         @RequestBody LoginRequest loginRequest
-    ) {
+    ) throws NotFoundException {
         String token = loginService.login(loginRequest.email(), loginRequest.password());
 
         ResponseCookie cookie = ResponseCookie.from("token", token)
@@ -42,7 +43,7 @@ public class LoginController {
     @GetMapping("/check")
     public ResponseEntity<LoginResponse> loginCheck(
         @CookieValue(value = "token", required = false) String token
-    ) {
+    ) throws NotFoundException {
         if (token == null || token.isBlank()) {
             return ResponseEntity.status(401).build();
         }

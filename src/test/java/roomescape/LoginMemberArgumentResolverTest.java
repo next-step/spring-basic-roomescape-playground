@@ -27,7 +27,7 @@ public class LoginMemberArgumentResolverTest {
         NativeWebRequest webRequest = Mockito.mock(NativeWebRequest.class);
         Mockito.when(webRequest.getNativeRequest()).thenReturn(req);
 
-        Mockito.when(jwtUtil.parseToken("token")).thenReturn(new JwtPayload("브라운", "ADMIN"));
+        Mockito.when(jwtUtil.parseToken("token")).thenReturn(new JwtPayload(1L, "브라운", "ADMIN"));
 
         Object result = resolver.resolveArgument(null, null, webRequest, null);
         assertThat(result).isInstanceOf(MemberInfo.class);
