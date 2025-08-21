@@ -1,6 +1,8 @@
 package roomescape.reservation;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,28 +34,37 @@ public class Reservation {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void setTheme(Theme theme) {
-        this.theme = theme;
-    }
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Reservation(String name, String date, Time time, Theme theme, Member member) {
+    public Reservation(String name, String date, Time time, Theme theme, Member member,
+        ReservationStatus status) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
+        this.status = status;
     }
 
     public Reservation() {
 
+    }
+
+    public boolean isOwnedBy(Long memberId) {
+        return this.member.getId().equals(memberId);
+    }
+
+    public boolean isReserved() {
+        return this.status == ReservationStatus.RESERVED;
+    }
+
+    public boolean isWaiting() {
+        return this.status == ReservationStatus.WAITING;
+    }
+
+    public void promoteToReserved() {
+        this.status = ReservationStatus.RESERVED;
     }
 
     public Long getId() {
@@ -80,4 +91,7 @@ public class Reservation {
         return member;
     }
 
+    public ReservationStatus getStatus() {
+        return status;
+    }
 }

@@ -12,6 +12,8 @@ import roomescape.time.TimeRepository;
 @Service
 public class ReservationService {
 
+    private static final int MAX_RESERVED_COUNT = 1;
+
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
@@ -30,53 +32,108 @@ public class ReservationService {
     }
 
     public ReservationResponse save(Long memberId, ReservationRequest reservationRequest) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(
-                () -> new IllegalArgumentException("not found member with id: " + memberId));
+        Member member = getMember(memberId);
+        Time time = getTime(reservationRequest.getTime());
+        Theme theme = getTheme(reservationRequest.getTheme());
 
-        Time time = timeRepository.findById(reservationRequest.getTime())
-            .orElseThrow(() -> new IllegalArgumentException(
-                "not found time with id: " + reservationRequest.getTime()));
+        validateDuplicateReservation(memberId, reservationRequest.getDate(), time, theme);
 
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
-            .orElseThrow(() -> new IllegalArgumentException(
-                "not found time with id: " + reservationRequest.getTheme()));
         Reservation reservation = new Reservation(
-            reservationRequest.getName(),
+            member.getName(),
             reservationRequest.getDate(),
             time,
             theme,
-            member
+            member,
+            determineReservationStatus(reservationRequest.getDate(), time, theme)
         );
 
-        reservationRepository.save(reservation);
-
-        return new ReservationResponse(
-            reservation.getId(),
-            reservationRequest.getName(),
-            reservation.getTheme().getName(),
-            reservation.getDate(),
-            reservation.getTime().getValue()
-        );
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return ReservationResponse.from(savedReservation);
     }
 
-    public void deleteById(Long id) {
+    public void cancel(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException(
+                "not found reservation with id:" + id));
+        boolean wasReserved = reservation.isReserved();
+
         reservationRepository.deleteById(id);
+
+        if (wasReserved) {
+            promoteWaitingToReserved(reservation);
+        }
     }
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-            .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(),
-                it.getDate(), it.getTime().getValue()))
-            .toList();
+            .map(it -> new ReservationResponse(
+                it.getId(),
+                it.getName(),
+                it.getTheme().getName(),
+                it.getDate(),
+                it.getTime().getValue()
+            )).toList();
     }
 
     public List<MyReservationResponse> findMyReservations(Long memberId) {
-        List<Reservation> reservations =
+        List<Reservation> myReservations =
             reservationRepository.findByMemberIdWithThemeAndTime(memberId);
 
-        return reservations.stream()
-            .map(MyReservationResponse::from)
+        return myReservations.stream()
+            .map(reservation -> {
+                Integer rank = reservation.isWaiting() ? calculateWaitingRank(reservation) : null;
+                return MyReservationResponse.from(reservation, rank);
+            })
             .toList();
+    }
+
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+            .orElseThrow(
+                () -> new IllegalArgumentException("not found member with id: " + memberId));
+    }
+
+    private Time getTime(Long timeId) {
+        return timeRepository.findById(timeId)
+            .orElseThrow(() -> new IllegalArgumentException("not found time with id: " + timeId));
+    }
+
+    private Theme getTheme(Long themeId) {
+        return themeRepository.findById(themeId)
+            .orElseThrow(() -> new IllegalArgumentException("not found theme with id: " + themeId));
+    }
+
+    private ReservationStatus determineReservationStatus(String date, Time time, Theme theme) {
+        long reservedCount =
+            reservationRepository.countByDateAndTimeAndThemeAndStatus(date, time, theme,
+                ReservationStatus.RESERVED);
+        return (reservedCount < MAX_RESERVED_COUNT) ? ReservationStatus.RESERVED
+            : ReservationStatus.WAITING;
+    }
+
+    private void validateDuplicateReservation(Long memberId, String date, Time time, Theme theme) {
+        if (reservationRepository.existsByMemberIdAndDateAndTimeAndTheme(memberId, date, time,
+            theme)) {
+            throw new IllegalArgumentException("Already reserved");
+        }
+    }
+
+    private Integer calculateWaitingRank(Reservation reservation) {
+        List<Reservation> waitings = reservationRepository.findByDateAndTimeAndThemeAndStatusOrderByIdAsc(
+            reservation.getDate(),
+            reservation.getTime(),
+            reservation.getTheme(),
+            ReservationStatus.WAITING
+        );
+        return waitings.indexOf(reservation) + 1;
+    }
+
+    private void promoteWaitingToReserved(Reservation cancelledReservation) {
+        reservationRepository.findFirstByDateAndTimeAndThemeAndStatus(
+            cancelledReservation.getDate(),
+            cancelledReservation.getTime(),
+            cancelledReservation.getTheme(),
+            ReservationStatus.WAITING
+        ).ifPresent(Reservation::promoteToReserved);
     }
 }

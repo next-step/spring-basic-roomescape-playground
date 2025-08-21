@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.configuration.LoginMember;
-import roomescape.member.Member;
 import roomescape.member.MemberInfo;
 
 @RestController
@@ -49,7 +48,7 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
-        reservationService.deleteById(id);
+        reservationService.cancel(id);
         return ResponseEntity.noContent().build();
     }
 
