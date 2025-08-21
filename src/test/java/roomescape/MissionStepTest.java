@@ -23,6 +23,7 @@ import roomescape.time.TimeRepository;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
     @Autowired
     private TimeRepository timeRepository;
 
@@ -115,11 +116,11 @@ public class MissionStepTest {
         String adminToken = createToken("admin@email.com", "password");
 
         List<MyReservationResponse> reservations = RestAssured.given().log().all()
-                .cookie("token", adminToken)
-                .get("/reservations-mine")
-                .then().log().all()
-                .statusCode(200)
-                .extract().jsonPath().getList(".", MyReservationResponse.class);
+            .cookie("token", adminToken)
+            .get("/reservations-mine")
+            .then().log().all()
+            .statusCode(200)
+            .extract().jsonPath().getList(".", MyReservationResponse.class);
 
         assertThat(reservations).hasSize(3);
     }
