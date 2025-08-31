@@ -15,6 +15,20 @@ public class MemberDao {
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+    public Optional<Member> findByEmail(String email) {
+        List<Member> results = jdbcTemplate.query(
+                "SELECT id, name, email, role FROM member WHERE email = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                ),
+                email
+        );
+        return results.stream().findFirst();
+    }
+
 
     public Optional<Member> findById(Long id) {
         List<Member> results = jdbcTemplate.query(

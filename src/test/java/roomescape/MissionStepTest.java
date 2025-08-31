@@ -35,39 +35,22 @@ public class MissionStepTest {
         String setCookie = loginResponse.header("Set-Cookie");
         return setCookie.split(";")[0].split("=")[1];
     }
-
     @Test
-    void 이단계() {
-        String token = createToken("admin@email.com", "password");
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "어드민");
-        params.put("date", "2024-03-01");
-        params.put("time", 1);
-        params.put("theme", 1);
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .body(params)
-                .cookie("token", token)
-                .contentType(ContentType.JSON)
-                .post("/reservations")
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
                 .then().log().all()
-                .extract();
+                .statusCode(401);
 
-        assertThat(response.statusCode()).isEqualTo(201);
-        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+        String adminToken = createToken("admin@email.com", "password");
 
-        params.put("name", "브라운");
-
-        ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
-                .body(params)
-                .cookie("token", token)
-                .contentType(ContentType.JSON)
-                .post("/reservations")
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
                 .then().log().all()
-                .extract();
-
-        assertThat(adminResponse.statusCode()).isEqualTo(201);
-        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+                .statusCode(200);
     }
 }
