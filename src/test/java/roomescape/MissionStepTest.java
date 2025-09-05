@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,22 +18,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
-    @Test
-    void 일단계() {
-        Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
+    private String createToken(String email, String password) {
+        Map<String, String> loginParams = new HashMap<>();
+        loginParams.put("email", email);
+        loginParams.put("password", password);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> loginResponse = RestAssured.given()
+                .log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
+                .body(loginParams)
+                .post("/login")
                 .then().log().all()
                 .statusCode(200)
                 .extract();
 
-        String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+        String setCookie = loginResponse.header("Set-Cookie");
+        return setCookie.split(";")[0].split("=")[1];
+    }
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
 
-        assertThat(token).isNotBlank();
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 }
