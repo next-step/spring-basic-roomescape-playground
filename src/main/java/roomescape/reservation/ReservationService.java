@@ -91,17 +91,18 @@ public class ReservationService {
             ))
             .collect(Collectors.toList());
 
-        waitings.forEach(
-                waitingWithRank -> {
-                    Waiting waiting = waitingWithRank.getWaiting();
-                    myReservationResponses.add(
-                            new MyReservationResponse(
-                                    waiting.getId(),
-                                    waiting.getTheme().getName(),
-                                    waiting.getDate(),
-                                    waiting.getTime().getTime(),
-                                    waitingWithRank.getRank() + "번째 예약대기"));
-                });
+List<MyReservationResponse> myReservationResponses = waitings.stream()
+    .map(waitingWithRank -> {
+        Waiting waiting = waitingWithRank.getWaiting();
+        return new MyReservationResponse(
+            waiting.getId(),
+            waiting.getTheme().getName(),
+            waiting.getDate(),
+            waiting.getTime().getTime(),
+            waitingWithRank.getRank() + "번째 예약대기"
+        );
+    })
+    .collect(Collectors.toList());
 
         return myReservationResponses;
     }
