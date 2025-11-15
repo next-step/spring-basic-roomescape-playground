@@ -12,7 +12,6 @@ import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.waiting.WaitingResponse;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -176,6 +175,43 @@ public class MissionStepTest {
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    @DisplayName("Waiting 생성 시 트랜잭션 커밋 시점에 INSERT 쿼리가 발생하는지 확인")
+    void createWaiting_shouldInsertQuery_atTransactionCommit() {
+        // SQL 로그 설정을 반드시 활성화 해야 함 (application-test.properties 등)
+        // spring.jpa.properties.hibernate.format_sql=true
+        // logging.level.org.hibernate.SQL=DEBUG
+        // logging.level.org.hibernate.type.descriptor.sql=TRACE
+
+        // 1. 사전 준비: 토큰 발급 및 요청 파라미터 준비
+        String token = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1"); // ID 1번 시간은 09:00라고 가정
+        params.put("theme", "1"); // ID 1번 테마라고 가정
+
+        System.out.println("\n--- [관찰 시작] /waitings 호출 시작 ---");
+
+        // 2. /waitings End-point 호출 (WaitingController.create -> WaitingService.create 실행)
+        RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201);
+
+        System.out.println("--- [관찰 끝] /waitings 응답 완료 ---\n");
+
+        // 3. 콘솔 로그 분석:
+        //    - HTTP 요청 시작 후, 먼저 3개의 SELECT (Member, Time, Theme 조회) 쿼리가 실행됩니다.
+        //    - HTTP 응답 코드(201)가 콘솔에 출력되기 직전에 INSERT 쿼리가 출력되는지 확인합니다.
+        //    - 이는 @Transactional이 적용된 WaitingService.create() 메서드의 트랜잭션이
+        //      컨트롤러에서 반환될 때 커밋되면서, 영속성 컨텍스트에 쌓여있던 Waiting 엔티티의
+        //      변경(INSERT) 내용이 데이터베이스에 Flush 되었음을 의미합니다.
     }
 }
 

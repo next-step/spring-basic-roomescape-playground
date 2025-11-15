@@ -2,6 +2,7 @@ package roomescape.waiting;
 
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
@@ -26,6 +27,7 @@ public class WaitingService {
         this.memberRepository = memberRepository;
     }
 
+    @Transactional
     public WaitingResponse create(WaitingRequest waitingRequest, LoginMember loginMember) {
 
         Member member = memberRepository.findById(loginMember.getId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));

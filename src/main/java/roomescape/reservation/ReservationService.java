@@ -2,7 +2,6 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
-
 import roomescape.member.Member;
 import roomescape.member.Role;
 import roomescape.theme.Theme;
@@ -12,7 +11,6 @@ import roomescape.time.ParticipationTimeRepository;
 import roomescape.waiting.Waiting;
 import roomescape.waiting.WaitingRepository;
 import roomescape.waiting.WaitingWithRank;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,14 +49,6 @@ public class ReservationService {
         }
         return request;
 
-    }
-
-    private ReservationRequest replaceNameIfEmpty(ReservationRequest request, LoginMember loginMember) {
-        String requestName = request.getName();
-        if (requestName == null || requestName.isBlank()) {
-            return new ReservationRequest(loginMember.getName(), request.getDate(), request.getTheme(), request.getTime());
-        }
-        return request;
     }
 
     public void deleteById(Long id) {
