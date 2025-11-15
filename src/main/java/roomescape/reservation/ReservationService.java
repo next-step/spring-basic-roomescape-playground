@@ -81,18 +81,15 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findByMemberId(loginMembmer.getId());
         List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMembmer.getId());
 
-        List<MyReservationResponse> myReservationResponses = new ArrayList<>();
-        reservations.forEach(
-                reservation -> myReservationResponses.add(
-                        new MyReservationResponse(
-                                reservation.getId(),
-                                reservation.getTheme().getName(),
-                                reservation.getDate(),
-                                reservation.getTime().getTime(),
-                                "예약"
-                        )
-                )
-        );
+        List<MyReservationResponse> myReservationResponses = reservations.stream()
+            .map(reservation -> new MyReservationResponse(
+                reservation.getId(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getTime(),
+                "예약"
+            ))
+            .collect(Collectors.toList());
 
         waitings.forEach(
                 waitingWithRank -> {
