@@ -21,19 +21,18 @@ public class TokenInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = request.getCookies();
 
-        if (cookies == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+        if (cookies != null) {
+            String token = Arrays.stream(cookies)
+                    .filter(cookie -> "token".equals(cookie.getName()))
+                    .map(Cookie::getValue)
+                    .findFirst()
+                    .orElse(null);
+
+            if (token != null && !token.isBlank()) {
+                LoginMember loginMember = authService.parseMemberInfo(token);
+                request.setAttribute("loginMember", loginMember);
+            }
         }
-
-        String token = Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-
-        LoginMember loginMember = authService.parseMemberInfo(token);
-        request.setAttribute("loginMember", loginMember);
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 }

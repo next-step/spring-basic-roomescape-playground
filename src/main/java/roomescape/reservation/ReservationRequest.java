@@ -21,11 +21,11 @@ public class ReservationRequest {
         return date;
     }
 
-    public Long getTheme() {
+    public Long getThemeId() {
         return theme;
     }
 
-    public Long getTime() {
+    public Long getTimeId() {
         return time;
     }
 }
