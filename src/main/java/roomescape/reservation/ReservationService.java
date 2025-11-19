@@ -12,8 +12,8 @@ import roomescape.waiting.Waiting;
 import roomescape.waiting.WaitingRepository;
 import roomescape.waiting.WaitingWithRank;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -71,28 +71,28 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findByMemberId(loginMembmer.getId());
         List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMembmer.getId());
 
-        List<MyReservationResponse> myReservationResponses = reservations.stream()
-            .map(reservation -> new MyReservationResponse(
-                reservation.getId(),
-                reservation.getTheme().getName(),
-                reservation.getDate(),
-                reservation.getTime().getTime(),
-                "예약"
-            ))
-            .collect(Collectors.toList());
+//        List<MyReservationResponse> myReservationResponses = reservations.stream()
+//            .map(reservation -> new MyReservationResponse(
+//                reservation.getId(),
+//                reservation.getTheme().getName(),
+//                reservation.getDate(),
+//                reservation.getTime().getTime(),
+//                "예약"
+//            ))
+//                .collect(Collectors.toList());
 
-List<MyReservationResponse> myReservationResponses = waitings.stream()
-    .map(waitingWithRank -> {
-        Waiting waiting = waitingWithRank.getWaiting();
-        return new MyReservationResponse(
-            waiting.getId(),
-            waiting.getTheme().getName(),
-            waiting.getDate(),
-            waiting.getTime().getTime(),
-            waitingWithRank.getRank() + "번째 예약대기"
-        );
-    })
-    .collect(Collectors.toList());
+        List<MyReservationResponse> myReservationResponses = waitings.stream()
+                .map(waitingWithRank -> {
+                    Waiting waiting = waitingWithRank.getWaiting();
+                    return new MyReservationResponse(
+                            waiting.getId(),
+                            waiting.getTheme().getName(),
+                            waiting.getDate(),
+                            waiting.getTime().getTime(),
+                            waitingWithRank.getRank() + "번째 예약대기"
+                    );
+                })
+                .collect(Collectors.toList());
 
         return myReservationResponses;
     }

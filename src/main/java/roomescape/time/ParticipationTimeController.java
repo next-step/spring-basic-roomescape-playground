@@ -1,7 +1,13 @@
 package roomescape.time;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
@@ -21,8 +27,9 @@ public class ParticipationTimeController {
 
     @PostMapping("/times")
     public ResponseEntity<ParticipationTime> create(@RequestBody ParticipationTime participationTime) {
-        if (participationTime.getTime() == null || participationTime.getTime().isEmpty()) {
-            throw new RuntimeException();
+
+        if (participationTime.getTime() == null || participationTime.getTime().isBlank()) {
+            throw new IllegalArgumentException("참여 시간은 필수 입력 항목이며 공백일 수 없습니다.");
         }
 
         ParticipationTime newParticipationTime = participationTimeService.save(participationTime);

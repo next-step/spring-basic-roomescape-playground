@@ -18,4 +18,9 @@ public interface ReservationRepository extends CrudRepository<Reservation, Long>
     Reservation save(Reservation reservation);
 
     List<Reservation> findAll();
+
+    boolean existsByParticipationTimeId(Long participationTimeId);
+
+    boolean existsByThemeId(Long themeId);
+
 }

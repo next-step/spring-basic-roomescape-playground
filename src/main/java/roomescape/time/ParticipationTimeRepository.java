@@ -13,4 +13,7 @@ public interface ParticipationTimeRepository extends CrudRepository<Participatio
     List<ParticipationTime> findAll();
 
 
+    Optional<ParticipationTime> findByTime(String time);
+
+
 }
