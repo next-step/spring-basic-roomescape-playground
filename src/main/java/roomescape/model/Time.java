@@ -1,4 +1,4 @@
-package roomescape.time;
+package roomescape.model;
 
 public class Time {
     private Long id;
@@ -13,9 +13,7 @@ public class Time {
         this.value = value;
     }
 
-    public Time() {
-
-    }
+    public Time() { }
 
     public Long getId() {
         return id;

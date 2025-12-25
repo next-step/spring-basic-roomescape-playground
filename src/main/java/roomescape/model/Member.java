@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.model;
 
 public class Member {
     private Long id;

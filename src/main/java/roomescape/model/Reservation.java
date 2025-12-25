@@ -1,7 +1,4 @@
-package roomescape.reservation;
-
-import roomescape.theme.Theme;
-import roomescape.time.Time;
+package roomescape.model;
 
 public class Reservation {
     private Long id;

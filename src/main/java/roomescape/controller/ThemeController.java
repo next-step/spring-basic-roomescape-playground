@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import roomescape.model.Theme;
+import roomescape.dao.ThemeDao;
 
 @RestController
 public class ThemeController {

@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.model;
 
 public class Theme {
     private Long id;
