@@ -17,6 +17,13 @@ public class MemberService {
 
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberDao.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
+
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
+
+    public MemberResponse findById(String id) {
+        Member member = memberDao.findById(id).orElseThrow(() -> new UnauthorizedException("유효하지 않은 토큰입니다."));
+
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 

@@ -18,6 +18,6 @@ public class AuthService {
     public String createToken(LoginRequest request) {
         Member member = memberService.authenticate(request.email(), request.password());
 
-        return jwtTokenProvider.createToken(member.getEmail());
+        return jwtTokenProvider.createToken(member);
     }
 }

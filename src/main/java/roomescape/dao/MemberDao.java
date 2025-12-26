@@ -45,16 +45,18 @@ public class MemberDao {
         return members.stream().findFirst();
     }
 
-    public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE name = ?",
+    public Optional<Member> findById(String id) {
+        List<Member> members = jdbcTemplate.query(
+                "SELECT id, name, email, role FROM member WHERE id = ?",
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("role")
                 ),
-                name
+                id
         );
+
+        return members.stream().findFirst();
     }
 }
