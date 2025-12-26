@@ -21,10 +21,8 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public MemberResponse findById(String id) {
-        Member member = memberDao.findById(id).orElseThrow(() -> new UnauthorizedException("유효하지 않은 토큰입니다."));
-
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    public Member findById(String id) {
+        return memberDao.findById(id).orElseThrow(() -> new UnauthorizedException("유효하지 않은 토큰입니다."));
     }
 
     public Member authenticate(String email, String password) {
