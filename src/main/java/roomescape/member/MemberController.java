@@ -9,16 +9,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.util.JwtUtil;
 
 import java.net.URI;
 
 @RestController
 public class MemberController {
+    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private MemberService memberService;
+    private MemberDao memberDao;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, MemberDao memberDao) {
         this.memberService = memberService;
+        this.memberDao = memberDao;
     }
 
     @PostMapping("/members")
@@ -29,7 +31,14 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        String accessToken = memberService.login(request);
+        Member member = memberDao.findByEmailAndPassword(request.getEmail(), request.getPassword());
+
+        String accessToken = Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .compact();
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
