@@ -32,8 +32,8 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .setIssuedAt(now)
-                .setExpiration(validity)
+//                .setIssuedAt(now)
+//                .setExpiration(validity)
                 .signWith(key)
                 .compact();
     }
