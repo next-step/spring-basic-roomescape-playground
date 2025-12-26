@@ -3,7 +3,6 @@ package roomescape.member;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,7 @@ import java.net.URI;
 public class MemberController {
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private MemberService memberService;
-    private MemberDao memberDao; // DAO 직접 사용
+    private MemberDao memberDao;
 
     public MemberController(MemberService memberService, MemberDao memberDao) {
         this.memberService = memberService;
@@ -50,40 +49,16 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        String token = extractToken(request.getCookies());
-
-        if (token == null) {
+    public ResponseEntity<MemberResponse> checkLogin(LoginMember loginMember) {
+        if (loginMember == null) {
             return ResponseEntity.status(401).build();
         }
 
-        try {
-            String subject = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
-
-            Member member = memberDao.findById(Long.valueOf(subject));
-
-            return ResponseEntity.ok(new MemberResponse(member.getId(), member.getName(), member.getEmail()));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).build();
-        }
-    }
-
-    private String extractToken(Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
-        }
-
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return null;
+        return ResponseEntity.ok(new MemberResponse(
+                loginMember.getId(),
+                loginMember.getName(),
+                loginMember.getEmail()
+        ));
     }
 
     @PostMapping("/logout")
