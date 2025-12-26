@@ -31,8 +31,13 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         String token = JwtTokenProvider.extractTokenFromCookies(request.getCookies());
+        LoginMember loginMember = parameter.getParameterAnnotation(LoginMember.class);
 
-        if (token == null) throw new UnauthorizedException("로그인이 필요합니다.");
+        if (token == null) {
+            if (loginMember.required()) throw new UnauthorizedException("로그인이 필요합니다.");
+
+            return null;
+        }
 
         String subject = jwtTokenProvider.getSubject(token);
 
