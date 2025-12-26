@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import roomescape.auth.AdminRoute;
 import roomescape.dto.AvailableTime;
 import roomescape.model.Time;
 import roomescape.service.TimeService;
@@ -28,6 +29,7 @@ public class TimeController {
         return timeService.findAll();
     }
 
+    @AdminRoute
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
         if (time.getValue() == null || time.getValue().isEmpty()) {
@@ -38,6 +40,7 @@ public class TimeController {
         return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
     }
 
+    @AdminRoute
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         timeService.deleteById(id);

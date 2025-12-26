@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import roomescape.auth.AdminRoute;
 import roomescape.auth.LoginMember;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
@@ -54,6 +55,7 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
+    @AdminRoute
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);
