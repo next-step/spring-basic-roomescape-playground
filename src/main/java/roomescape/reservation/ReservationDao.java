@@ -82,9 +82,8 @@ public class ReservationDao {
                         "ti.id AS time_id, ti.time_value AS time_value " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
-                        "JOIN time ti ON r.time_id = ti.id" +
+                        "JOIN time ti ON r.time_id = ti.id " +
                         "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
                 (rs, rowNum) -> new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
@@ -97,7 +96,8 @@ public class ReservationDao {
                                 rs.getLong("theme_id"),
                                 rs.getString("theme_name"),
                                 rs.getString("theme_description")
-                        )));
+                        )),
+                date, themeId);
     }
 
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
@@ -109,7 +109,6 @@ public class ReservationDao {
                         "JOIN theme t ON r.theme_id = t.id " +
                         "JOIN time ti ON r.time_id = ti.id " +
                         "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
                 (rs, rowNum) -> new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
@@ -122,6 +121,7 @@ public class ReservationDao {
                                 rs.getLong("theme_id"),
                                 rs.getString("theme_name"),
                                 rs.getString("theme_description")
-                        )));
+                        )),
+                date, themeId);
     }
 }

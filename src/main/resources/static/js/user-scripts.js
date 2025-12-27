@@ -22,7 +22,9 @@ document.getElementById('logout-btn').addEventListener('click', function () {
 });
 
 function updateUIBasedOnLogin() {
-  fetch('/login/check') // 로그인 상태 확인 API 호출
+  fetch('/login/check', {
+    credentials: 'include'
+  }) // 로그인 상태 확인 API 호출
       .then(response => {
         if (!response.ok) { // 요청이 실패하거나 로그인 상태가 아닌 경우
           throw new Error('Not logged in or other error');
@@ -66,16 +68,18 @@ function login() {
     headers: {
       'Content-Type': 'application/json'
     },
+    credentials: 'include',
     body: JSON.stringify({
       email: email,
       password: password
     })
   })
       .then(response => {
-        if (200 === !response.status) {
+        if (!response.ok) {
           alert('Login failed'); // 로그인 실패 시 경고창 표시
           throw new Error('Login failed');
         }
+        return response;
       })
       .then(() => {
         updateUIBasedOnLogin(); // UI 업데이트
