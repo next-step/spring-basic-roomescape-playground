@@ -47,6 +47,9 @@ public class LoginController {
             throw new NotFoundDataException("로그인이 필요합니다.");
         }
 
-        return ResponseEntity.ok(Map.of("name", loginMember.name()));
+        return ResponseEntity.ok(Map.of(
+                "name", loginMember.name(),
+                "role", loginMember.role()
+        ));
     }
 }

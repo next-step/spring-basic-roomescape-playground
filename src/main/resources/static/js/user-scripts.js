@@ -36,6 +36,11 @@ function updateUIBasedOnLogin() {
         document.getElementById('profile-name').textContent = data.name; // 프로필 이름 설정
         document.querySelector('.nav-item.dropdown').style.display = 'block'; // 드롭다운 메뉴 표시
         document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'none'; // 로그인 버튼 숨김
+
+        // ADMIN 권한이 있으면 Admin 메뉴 표시
+        if (data.role === 'ADMIN') {
+          document.getElementById('admin-menu').style.display = 'block';
+        }
       })
       .catch(error => {
         // 에러 처리 또는 로그아웃 상태일 때 UI 업데이트
