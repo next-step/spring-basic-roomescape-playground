@@ -47,6 +47,34 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/login/check")
+    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
+        String token = extractTokenFromCookie(request.getCookies());
+
+        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+        String name = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("name", String.class);
+
+        MemberResponse body = new MemberResponse(null, name, null);
+        return ResponseEntity.ok(body);
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null || cookies.length == 0) {
+            return "";
+        }
+        for (Cookie cookie : cookies) {
+            if ("token".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return "";
+    }
+
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", "");
