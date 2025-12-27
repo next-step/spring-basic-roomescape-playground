@@ -10,11 +10,11 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.util.JwtUtil;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private final MemberService memberService;
 
     public LoginMemberArgumentResolver(MemberService memberService) {
@@ -37,14 +37,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         }
 
         try {
-            String subject = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
+            Long memberId = JwtUtil.getMemberIdFromToken(token);
 
-            Member member = memberService.findMemberById(Long.valueOf(subject));
+            Member member = memberService.findById(memberId);
             return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
 
         } catch (Exception e) {

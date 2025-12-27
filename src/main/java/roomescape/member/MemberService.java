@@ -15,7 +15,7 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public Member findMemberById(Long id) {
+    public Member findById(Long id) {
         return memberDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
     }
