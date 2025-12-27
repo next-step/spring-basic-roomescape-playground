@@ -1,7 +1,6 @@
 package roomescape.member;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -43,31 +42,11 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<Map<String, String>> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-
-        if (token == null || token.isEmpty()) {
+    public ResponseEntity<Map<String, String>> checkLogin(LoginMember loginMember) {
+        if (loginMember == null) {
             throw new NotFoundDataException("로그인이 필요합니다.");
         }
 
-        Long memberId = JwtUtil.getMemberIdFromToken(token);
-        Member member = memberDao.findById(memberId);
-
-        return ResponseEntity.ok(Map.of("name", member.getName()));
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
-        }
-
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return null;
+        return ResponseEntity.ok(Map.of("name", loginMember.name()));
     }
 }
