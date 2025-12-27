@@ -7,6 +7,9 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import roomescape.member.MemberController;
+import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    @Autowired
+    private MemberController memberController;
 
     @Test
     void 일단계() {
@@ -38,7 +44,7 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+        String token = memberController.createTokenFromEmailAndPassword("admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");

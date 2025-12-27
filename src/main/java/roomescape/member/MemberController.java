@@ -16,7 +16,7 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private MemberService memberService;
-    private final String secretKey = "temporary-secret-key";
+    private final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -57,7 +57,7 @@ public class MemberController {
         return ResponseEntity.ok(body);
     }
 
-    private String createToken(Member member) {
+    public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
@@ -65,6 +65,13 @@ public class MemberController {
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
+    
+
+    public String createTokenFromEmailAndPassword(String email, String password) {
+        Member member = memberService.login(email, password);
+        return createToken(member);
+    }
+
 
     private String extractTokenFromCookie(Cookie[] cookies) {
         if (cookies == null || cookies.length == 0) {
