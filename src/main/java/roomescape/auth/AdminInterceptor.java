@@ -8,11 +8,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.member.Member;
+import roomescape.member.MemberService;
+import roomescape.util.JwtUtil;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private final MemberService memberService;
+
+    public AdminInterceptor(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -24,15 +31,11 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            Long memberId = JwtUtil.getMemberIdFromToken(token);
 
-            String role = claims.get("role", String.class);
+            Member member = memberService.findById(memberId);
 
-            if (!"ADMIN".equals(role)) {
+            if (!"ADMIN".equals(member.getRole())) {
                 response.setStatus(401);
                 return false;
             }
