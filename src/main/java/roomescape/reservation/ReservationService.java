@@ -10,8 +10,8 @@ import java.util.List;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
-    private MemberService memberService;
+    private final ReservationDao reservationDao;
+    private final MemberService memberService;
 
     public ReservationService(ReservationDao reservationDao, MemberService memberService) {
         this.reservationDao = reservationDao;
@@ -21,18 +21,15 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         String reservationName = determineReservationName(reservationRequest, loginMember);
 
-        ReservationRequest requestWithName = new ReservationRequest(
-                reservationName,
-                reservationRequest.getDate(),
-                reservationRequest.getTheme(),
-                reservationRequest.getTime()
-        );
+        ReservationRequest request = reservationRequest.getName() == null
+                ? new ReservationRequest(reservationName, reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime())
+                : reservationRequest;
 
-        Reservation reservation = reservationDao.save(requestWithName);
+        Reservation reservation = reservationDao.save(request);
 
         return new ReservationResponse(
                 reservation.getId(),
-                reservationName,
+                reservation.getName(),
                 reservation.getTheme().getName(),
                 reservation.getDate(),
                 reservation.getTime().getValue()

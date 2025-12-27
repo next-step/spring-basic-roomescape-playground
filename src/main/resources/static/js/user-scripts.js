@@ -81,8 +81,9 @@ function login() {
   })
       .then(response => {
         if (!response.ok) {
-          alert('Login failed'); // 로그인 실패 시 경고창 표시
-          throw new Error('Login failed');
+          return response.text().then(text => {
+            throw new Error(text);
+          });
         }
         return response;
       })
@@ -91,6 +92,7 @@ function login() {
         window.location.href = '/';
       })
       .catch(error => {
+        alert(error.message || '로그인에 실패했습니다.');
         console.error('Error during login:', error);
       });
 }
@@ -129,18 +131,21 @@ function register(event) {
   })
       .then(response => {
         if (!response.ok) {
-          alert('Signup request failed');
-          throw new Error('Signup request failed');
+          return response.text().then(text => {
+            throw new Error(text);
+          });
         }
         return response.json(); // 여기서 응답을 JSON 형태로 변환
       })
       .then(data => {
         // 성공적인 응답 처리
         console.log('Signup successful:', data);
+        alert('회원가입이 완료되었습니다!');
         window.location.href = '/login';
       })
       .catch(error => {
         // 에러 처리
+        alert(error.message || '회원가입에 실패했습니다.');
         console.error('Error during signup:', error);
       });
 
