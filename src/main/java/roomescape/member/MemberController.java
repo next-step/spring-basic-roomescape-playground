@@ -32,12 +32,7 @@ public class MemberController {
     public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         Member member = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
 
-        String accessToken = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
+        String accessToken = createToken(member);
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
@@ -60,6 +55,15 @@ public class MemberController {
 
         MemberResponse body = new MemberResponse(null, name, null);
         return ResponseEntity.ok(body);
+    }
+
+    private String createToken(Member member) {
+        return Jwts.builder()
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
