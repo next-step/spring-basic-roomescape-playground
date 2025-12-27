@@ -16,6 +16,7 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private MemberService memberService;
+    private final String secretKey = "temporary-secret-key";
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -31,7 +32,6 @@ public class MemberController {
     public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         Member member = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
 
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
@@ -51,7 +51,6 @@ public class MemberController {
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
         String token = extractTokenFromCookie(request.getCookies());
 
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         String name = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
