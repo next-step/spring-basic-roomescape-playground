@@ -3,19 +3,18 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import roomescape.exception.InvalidDataException;
 import roomescape.member.LoginMember;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
+import roomescape.member.MemberDao;
 
 import java.util.List;
 
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
-    private final MemberService memberService;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, MemberService memberService) {
+    public ReservationService(ReservationDao reservationDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
-        this.memberService = memberService;
+        this.memberDao = memberDao;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
@@ -39,7 +38,7 @@ public class ReservationService {
     private String determineReservationName(ReservationRequest request, LoginMember loginMember) {
 
         if (request.getName() != null && !request.getName().isBlank()) {
-            memberService.findByName(request.getName());
+            memberDao.findByName(request.getName());
             return request.getName();
         }
 
