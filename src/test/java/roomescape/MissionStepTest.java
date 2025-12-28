@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -66,8 +67,10 @@ public class MissionStepTest {
                                                             .then().log().all()
                                                             .extract();
 
-        assertThat(response.statusCode()).isEqualTo(201);
-        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+        assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(201);
+            softly.assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+        });
 
         reservationParams.put("name", "브라운");
 
@@ -79,8 +82,10 @@ public class MissionStepTest {
                                                                  .then().log().all()
                                                                  .extract();
 
-        assertThat(adminResponse.statusCode()).isEqualTo(201);
-        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+        assertSoftly(softly -> {
+            softly.assertThat(adminResponse.statusCode()).isEqualTo(201);
+            softly.assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+        });
     }
 
     @Test
