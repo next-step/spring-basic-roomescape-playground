@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -19,9 +18,11 @@ import java.util.Map;
 @RestController
 public class LoginController {
     private final MemberDao memberDao;
+    private final JwtUtil jwtUtil;
 
-    public LoginController(MemberDao memberDao) {
+    public LoginController(MemberDao memberDao, JwtUtil jwtUtil) {
         this.memberDao = memberDao;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/login")
@@ -34,7 +35,7 @@ public class LoginController {
             throw new NotFoundDataException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        String token = JwtUtil.generateToken(member);
+        String token = jwtUtil.generateToken(member);
 
         response.addCookie(CookieUtil.createTokenCookie(token));
 

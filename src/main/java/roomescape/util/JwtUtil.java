@@ -3,27 +3,32 @@ package roomescape.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 
 import javax.crypto.SecretKey;
 
+@Component
 public class JwtUtil {
+    private final SecretKey key;
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    public JwtUtil(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
 
-    public static String generateToken(Member member) {
+    public String generateToken(Member member) {
         return Jwts.builder()
                    .setSubject(member.getId().toString())
                    .claim("name", member.getName())
                    .claim("role", member.getRole())
-                   .signWith(KEY)
+                   .signWith(key)
                    .compact();
     }
 
-    public static Long getMemberIdFromToken(String token) {
+    public Long getMemberIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                            .setSigningKey(KEY)
+                            .setSigningKey(key)
                             .build()
                             .parseClaimsJws(token)
                             .getBody();

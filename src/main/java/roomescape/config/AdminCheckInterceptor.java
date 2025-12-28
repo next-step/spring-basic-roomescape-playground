@@ -14,9 +14,11 @@ import roomescape.util.JwtUtil;
 @Component
 public class AdminCheckInterceptor implements HandlerInterceptor {
     private final MemberService memberService;
+    private final JwtUtil jwtUtil;
 
-    public AdminCheckInterceptor(MemberService memberService) {
+    public AdminCheckInterceptor(MemberService memberService, JwtUtil jwtUtil) {
         this.memberService = memberService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Long memberId = JwtUtil.getMemberIdFromToken(token);
+            Long memberId = jwtUtil.getMemberIdFromToken(token);
             Member member = memberService.findById(memberId);
 
             if (!"ADMIN".equals(member.getRole())) {
