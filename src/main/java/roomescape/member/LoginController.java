@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.exception.NotFoundDataException;
+import roomescape.util.CookieUtil;
 import roomescape.util.JwtUtil;
 
 import java.util.Map;
@@ -35,10 +36,7 @@ public class LoginController {
 
         String token = JwtUtil.generateToken(member);
 
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        response.addCookie(CookieUtil.createTokenCookie(token));
 
         log.info("로그인 성공: memberId={}, email={}", member.getId(), member.getEmail());
         return ResponseEntity.ok().build();
