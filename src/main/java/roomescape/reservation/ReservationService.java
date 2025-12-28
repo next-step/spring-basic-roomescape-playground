@@ -1,7 +1,9 @@
 package roomescape.reservation;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.InvalidDataException;
+import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
 import roomescape.member.MemberDao;
 
@@ -38,8 +40,11 @@ public class ReservationService {
     private String determineReservationName(ReservationRequest request, LoginMember loginMember) {
 
         if (request.getName() != null && !request.getName().isBlank()) {
-            memberDao.findByName(request.getName());
-            return request.getName();
+            try {
+                memberDao.findByName(request.getName());
+            } catch (EmptyResultDataAccessException e) {
+                throw new NotFoundDataException("이름이 '" + request.getName() + "'인 회원이 존재하지 않습니다.");
+            }
         }
 
         if (loginMember != null) {
