@@ -1,41 +1,38 @@
 package roomescape.time;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
+@Transactional(readOnly = true)
 public class TimeDao {
-    private final JdbcTemplate jdbcTemplate;
 
-    public TimeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Transactional
+    public Time save(Time time) {
+        entityManager.persist(time);
+        return time;
     }
 
     public List<Time> findAll() {
-        return jdbcTemplate.query(
-                "SELECT * FROM time WHERE deleted = false",
-                (rs, rowNum) -> new Time(
-                        rs.getLong("id"),
-                        rs.getString("time_value")));
+        String jpql = "SELECT t FROM Time t WHERE t.deleted = false";
+        TypedQuery<Time> query = entityManager.createQuery(jpql, Time.class);
+        return query.getResultList();
     }
 
-    public Time save(Time time) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        this.jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO time(time_value) VALUES (?)", new String[]{"id"});
-            ps.setString(1, time.getValue());
-            return ps;
-        }, keyHolder);
-
-        return new Time(keyHolder.getKey().longValue(), time.getValue());
-    }
-
+    @Transactional
     public void deleteById(Long id) {
-        jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ?", id);
+        Time time = entityManager.find(Time.class, id);
+        if (time != null) {
+            time.setDeleted(true);
+            entityManager.merge(time);
+        }
     }
 }

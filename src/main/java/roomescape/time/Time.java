@@ -1,20 +1,31 @@
 package roomescape.time;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "time")
 public class Time {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "time_value", nullable = false, length = 20)
     private String value;
 
-    public Time(Long id, String value) {
-        this.id = id;
-        this.value = value;
+    @Column(nullable = false)
+    private Boolean deleted = false;
+
+    protected Time() {
     }
 
     public Time(String value) {
         this.value = value;
     }
 
-    public Time() {
-
+    public Time(Long id, String value) {
+        this.id = id;
+        this.value = value;
     }
 
     public Long getId() {
@@ -23,5 +34,13 @@ public class Time {
 
     public String getValue() {
         return value;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

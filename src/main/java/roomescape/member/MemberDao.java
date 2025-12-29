@@ -1,68 +1,60 @@
 package roomescape.member;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.NotFoundDataException;
 
 @Repository
+@Transactional(readOnly = true)
 public class MemberDao {
-    private JdbcTemplate jdbcTemplate;
 
-    public MemberDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
+    @Transactional
     public Member save(Member member) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, member.getName());
-            ps.setString(2, member.getEmail());
-            ps.setString(3, member.getPassword());
-            ps.setString(4, member.getRole());
-            return ps;
-        }, keyHolder);
-
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
+        entityManager.persist(member);
+        return member;
     }
 
     public Member findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                email, password
-        );
+        String jpql = "SELECT m FROM Member m WHERE m.email = :email AND m.password = :password";
+        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
+        query.setParameter("email", email);
+        query.setParameter("password", password);
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundDataException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
     }
 
     public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE name = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                name
-        );
+        String jpql = "SELECT m FROM Member m WHERE m.name = :name";
+        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
+        query.setParameter("name", name);
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundDataException("이름이 '" + name + "'인 회원이 존재하지 않습니다.");
+        }
     }
 
     public Member findById(Long id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE id = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                id
-        );
+        String jpql = "SELECT m FROM Member m WHERE m.id = :id";
+        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
+        query.setParameter("id", id);
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundDataException("ID " + id + "에 해당하는 회원이 존재하지 않습니다.");
+        }
     }
 }
