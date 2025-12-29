@@ -36,6 +36,10 @@ public class Time {
         return value;
     }
 
+    public String getTime() {
+        return value;
+    }
+
     public Boolean getDeleted() {
         return deleted;
     }

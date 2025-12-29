@@ -10,7 +10,7 @@ import roomescape.exception.NotFoundDataException;
 
 @Repository
 @Transactional(readOnly = true)
-public class MemberDao {
+public class MemberRepository {
 
     @PersistenceContext
     private EntityManager entityManager;

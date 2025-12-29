@@ -5,19 +5,19 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.InvalidDataException;
 import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
-    private final ReservationDao reservationDao;
-    private final MemberDao memberDao;
+    private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationDao reservationDao, MemberDao memberDao) {
-        this.reservationDao = reservationDao;
-        this.memberDao = memberDao;
+    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository) {
+        this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Transactional
@@ -28,7 +28,7 @@ public class ReservationService {
                 ? new ReservationRequest(reservationName, reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime())
                 : reservationRequest;
 
-        Reservation reservation = reservationDao.save(request);
+        Reservation reservation = reservationRepository.save(request);
 
         return new ReservationResponse(
                 reservation.getId(),
@@ -42,7 +42,7 @@ public class ReservationService {
     private String determineReservationName(ReservationRequest request, LoginMember loginMember) {
         if (request.getName() != null && !request.getName().isBlank()) {
             try {
-                memberDao.findByName(request.getName());
+                memberRepository.findByName(request.getName());
             } catch (NotFoundDataException e) {
                 throw e;
             }
@@ -58,12 +58,12 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                             .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
-                             .toList();
+        return reservationRepository.findAll().stream()
+                                    .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                                    .toList();
     }
 }

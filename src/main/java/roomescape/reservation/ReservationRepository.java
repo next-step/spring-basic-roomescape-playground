@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @Transactional(readOnly = true)
-public class ReservationDao {
+public class ReservationRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -49,17 +49,6 @@ public class ReservationDao {
         if (reservation != null) {
             entityManager.remove(reservation);
         }
-    }
-
-    public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
-        String jpql = "SELECT r FROM Reservation r " +
-                "JOIN FETCH r.time t " +
-                "JOIN FETCH r.theme th " +
-                "WHERE r.date = :date AND th.id = :themeId";
-        TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
-        query.setParameter("date", date);
-        query.setParameter("themeId", themeId);
-        return query.getResultList();
     }
 
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {

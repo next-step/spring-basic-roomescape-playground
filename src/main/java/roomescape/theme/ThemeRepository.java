@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 @Transactional(readOnly = true)
-public class ThemeDao {
+public class ThemeRepository {
 
     @PersistenceContext
     private EntityManager entityManager;

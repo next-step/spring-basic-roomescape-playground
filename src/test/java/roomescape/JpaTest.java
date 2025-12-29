@@ -1,37 +1,36 @@
 package roomescape;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import roomescape.time.Time;
-import roomescape.time.TimeDao;
-
+import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
+
 @DataJpaTest
-@Import(TimeDao.class)
+@Import(TimeRepository.class)
 public class JpaTest {
 
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
-    private TimeDao timeDao;
+    private TimeRepository timeRepository;
 
     @Test
     void 사단계() {
+        // Given
         Time time = new Time("10:00");
         entityManager.persist(time);
         entityManager.flush();
 
-        Time persistTime = timeDao.findAll().stream()
-                                  .filter(t -> t.getId().equals(time.getId()))
-                                  .findFirst()
-                                  .orElse(null);
+        // When
+        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
-        assertThat(persistTime).isNotNull();
-        assertThat(persistTime.getValue()).isEqualTo(time.getValue());
+        // Then
+        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
     }
 }

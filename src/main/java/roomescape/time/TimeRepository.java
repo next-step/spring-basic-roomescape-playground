@@ -7,10 +7,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional(readOnly = true)
-public class TimeDao {
+public class TimeRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -19,6 +20,11 @@ public class TimeDao {
     public Time save(Time time) {
         entityManager.persist(time);
         return time;
+    }
+
+    public Optional<Time> findById(Long id) {
+        Time time = entityManager.find(Time.class, id);
+        return Optional.ofNullable(time);
     }
 
     public List<Time> findAll() {

@@ -15,17 +15,17 @@ import java.util.Map;
 @Slf4j
 @RestController
 public class LoginController {
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
-    public LoginController(MemberDao memberDao, JwtUtil jwtUtil) {
-        this.memberDao = memberDao;
+    public LoginController(MemberRepository memberRepository, JwtUtil jwtUtil) {
+        this.memberRepository = memberRepository;
         this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        Member member = memberDao.findByEmailAndPassword(request.email(), request.password());
+        Member member = memberRepository.findByEmailAndPassword(request.email(), request.password());
 
         String token = jwtUtil.generateToken(member);
         response.addCookie(CookieUtil.createTokenCookie(token));
