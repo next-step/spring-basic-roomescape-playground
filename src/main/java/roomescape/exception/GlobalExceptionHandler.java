@@ -16,20 +16,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
         log.error("UnauthorizedException occurred:", e);
 
-        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
         log.error("BadRequestException occurred:", e);
 
-        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(Exception e) {
         log.error("Exception occurred:", e);
 
-        return new ResponseEntity<>(new ErrorResponse("내부 서버 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "내부 서버 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

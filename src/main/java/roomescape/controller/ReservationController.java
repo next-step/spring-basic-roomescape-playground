@@ -14,6 +14,7 @@ import roomescape.auth.AdminRoute;
 import roomescape.auth.LoginMember;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.model.Member;
 import roomescape.service.ReservationService;
 
@@ -38,7 +39,7 @@ public class ReservationController {
         if (request.date() == null
                 || request.theme() == null
                 || request.time() == null) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException("필수 값이 누락되었습니다.");
         }
 
         ReservationResponse reservation = reservationService.create(request, member);

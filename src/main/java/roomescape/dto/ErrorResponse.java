@@ -1,3 +1,6 @@
 package roomescape.dto;
 
-public record ErrorResponse(String message) { }
+public record ErrorResponse(
+        int status,
+        String message
+) { }
