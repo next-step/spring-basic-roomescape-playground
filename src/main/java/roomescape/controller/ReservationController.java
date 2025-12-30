@@ -43,14 +43,7 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        // request body에서 찾고 없으면 member
-        String name = Optional.ofNullable(request.name()).orElseGet(() -> member != null ? member.getName() : null);
-
-        if (name == null) return ResponseEntity.badRequest().build();
-
-        ReservationRequest finalizedRequest = new ReservationRequest(name, request.date(), request.theme(), request.time());
-
-        ReservationResponse reservation = reservationService.save(finalizedRequest);
+        ReservationResponse reservation = reservationService.create(request, member);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
