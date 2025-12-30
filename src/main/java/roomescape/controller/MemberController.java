@@ -30,8 +30,8 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
-        MemberResponse member = memberService.createMember(memberRequest);
+    public ResponseEntity<MemberResponse> create(@RequestBody MemberRequest request) {
+        MemberResponse member = memberService.create(request);
 
         return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
     }

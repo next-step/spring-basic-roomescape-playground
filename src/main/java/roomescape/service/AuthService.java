@@ -8,7 +8,7 @@ import roomescape.model.Member;
 @Service
 public class AuthService {
     private final MemberService memberService;
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AuthService(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
         this.jwtTokenProvider = jwtTokenProvider;

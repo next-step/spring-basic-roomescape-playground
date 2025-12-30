@@ -19,7 +19,6 @@ import roomescape.service.ReservationService;
 
 @RestController
 public class ReservationController {
-
     private final ReservationService reservationService;
 
     public ReservationController(ReservationService reservationService) {

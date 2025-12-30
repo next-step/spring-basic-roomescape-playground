@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,31 +14,34 @@ import java.net.URI;
 import java.util.List;
 import roomescape.auth.AdminRoute;
 import roomescape.dto.AvailableTime;
+import roomescape.dto.TimeRequest;
+import roomescape.dto.TimeResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.model.Time;
 import roomescape.service.TimeService;
 
 @RestController
 public class TimeController {
-    private TimeService timeService;
+    private final TimeService timeService;
 
     public TimeController(TimeService timeService) {
         this.timeService = timeService;
     }
 
     @GetMapping("/times")
-    public List<Time> list() {
+    public List<TimeResponse> list() {
         return timeService.findAll();
     }
 
     @AdminRoute
     @PostMapping("/times")
-    public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
-            throw new RuntimeException();
+    public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest request) {
+        if (!StringUtils.hasText(request.value())) {
+            throw new BadRequestException("필수 값이 누락되었습니다.");
         }
 
-        Time newTime = timeService.save(time);
-        return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
+        TimeResponse time = timeService.create(request);
+        return ResponseEntity.created(URI.create("/times/" + time.id())).body(time);
     }
 
     @AdminRoute

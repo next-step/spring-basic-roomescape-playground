@@ -2,6 +2,8 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.dao.TimeDao;
+import roomescape.dto.TimeRequest;
+import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
 import roomescape.dao.ReservationDao;
 
@@ -11,8 +13,8 @@ import roomescape.model.Time;
 
 @Service
 public class TimeService {
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
+    private final TimeDao timeDao;
+    private final ReservationDao reservationDao;
 
     public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
         this.timeDao = timeDao;
@@ -33,12 +35,14 @@ public class TimeService {
                 .toList();
     }
 
-    public List<Time> findAll() {
-        return timeDao.findAll();
+    public List<TimeResponse> findAll() {
+        return timeDao.findAll().stream().map((time) -> new TimeResponse(time.getId(), time.getValue())).toList();
     }
 
-    public Time save(Time time) {
-        return timeDao.save(time);
+    public TimeResponse create(TimeRequest request) {
+        Time time = timeDao.save(new Time(request.value()));
+
+        return new TimeResponse(time.getId(), time.getValue());
     }
 
     public void deleteById(Long id) {

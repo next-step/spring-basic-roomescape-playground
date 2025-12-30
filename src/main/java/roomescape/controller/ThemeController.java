@@ -11,33 +11,34 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 import java.util.List;
 import roomescape.auth.AdminRoute;
-import roomescape.model.Theme;
-import roomescape.dao.ThemeDao;
+import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeResponse;
+import roomescape.service.ThemeService;
 
 @RestController
 public class ThemeController {
-    private ThemeDao themeDao;
+    private final ThemeService themeService;
 
-    public ThemeController(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
     }
 
     @AdminRoute
     @PostMapping("/themes")
-    public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
-        Theme newTheme = themeDao.save(theme);
-        return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
+    public ResponseEntity<ThemeResponse> create(@RequestBody ThemeRequest request) {
+        ThemeResponse theme = themeService.create(request);
+        return ResponseEntity.created(URI.create("/themes/" + theme.id())).body(theme);
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeDao.findAll());
+    public ResponseEntity<List<ThemeResponse>> list() {
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @AdminRoute
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeDao.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
