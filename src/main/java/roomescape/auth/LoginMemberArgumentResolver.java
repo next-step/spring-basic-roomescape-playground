@@ -1,7 +1,6 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -10,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.LoginMember;
+import roomescape.util.JwtUtil;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -27,17 +27,13 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = JwtUtil.extractTokenFromCookies(request.getCookies());
 
         if (token.isEmpty()) {
             return null;
         }
 
-        var claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = JwtUtil.parseClaims(token, secretKey);
 
         Long id = Long.valueOf(claims.getSubject());
         String name = claims.get("name", String.class);
@@ -45,18 +41,4 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         return new LoginMember(id, name, null, role);
     }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null || cookies.length == 0) {
-            return "";
-        }
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return "";
-    }
 }
-
-
