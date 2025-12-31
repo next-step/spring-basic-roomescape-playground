@@ -177,22 +177,27 @@ function onWaitButtonClick() {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(reservationData)
     })
         .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
+          if (!response.ok) {
+            return response.text().then(text => {
+              throw new Error(text);
+            });
+          }
           return response.json();
         })
         .then(data => {
-          alert("대기 순서" + data.waitingNumber + "번째");
+          alert(`예약 대기가 완료되었습니다! (${data.status})`);
           window.location.href = "/";
         })
         .catch(error => {
-          alert("An error occurred while making the reservation.");
+          alert(error.message || "예약 대기 중 오류가 발생했습니다.");
           console.error(error);
         });
   } else {
-    alert("Please select a date, theme, and time before making a reservation.");
+    alert("날짜, 테마, 시간을 모두 선택해주세요.");
   }
 }
 

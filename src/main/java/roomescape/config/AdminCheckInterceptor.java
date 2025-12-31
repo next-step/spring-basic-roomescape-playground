@@ -8,17 +8,17 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.util.CookieUtil;
-import roomescape.util.JwtUtil;
+import roomescape.util.JwtTokenProvider;
 
 @Slf4j
 @Component
 public class AdminCheckInterceptor implements HandlerInterceptor {
     private final MemberService memberService;
-    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AdminCheckInterceptor(MemberService memberService, JwtUtil jwtUtil) {
+    public AdminCheckInterceptor(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
-        this.jwtUtil = jwtUtil;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Long memberId = jwtUtil.getMemberIdFromToken(token);
+            Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
             Member member = memberService.findById(memberId);
 
             if (!"ADMIN".equals(member.getRole())) {

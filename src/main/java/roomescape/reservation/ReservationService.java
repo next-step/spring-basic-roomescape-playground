@@ -11,7 +11,10 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingService;
+import roomescape.waiting.WaitingWithRank;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,15 +24,18 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final WaitingService waitingService;
 
     public ReservationService(ReservationRepository reservationRepository,
             MemberRepository memberRepository,
             TimeRepository timeRepository,
-            ThemeRepository themeRepository) {
+            ThemeRepository themeRepository,
+            WaitingService waitingService) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingService = waitingService;
     }
 
     @Transactional
@@ -41,6 +47,8 @@ public class ReservationService {
 
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
                                      .orElseThrow(() -> new NotFoundDataException("해당 테마를 찾을 수 없습니다."));
+
+        validateDuplicateReservation(member.getId(), reservationRequest.getDate(), time.getId(), theme.getId());
 
         Reservation reservation = new Reservation(
                 member.getName(),
@@ -59,6 +67,26 @@ public class ReservationService {
                 reservation.getDate(),
                 reservation.getTime().getValue()
         );
+    }
+
+    private void validateDuplicateReservation(Long memberId, String date, Long timeId, Long themeId) {
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+
+        boolean hasAnyReservation = reservations.stream()
+                .anyMatch(r -> r.getTime().getId().equals(timeId));
+
+        if (hasAnyReservation) {
+            throw new InvalidDataException("해당 시간은 이미 예약이 완료되었습니다.");
+        }
+
+        boolean hasMemberReservation = reservations.stream()
+                .anyMatch(r -> r.getMember() != null
+                        && r.getMember().getId().equals(memberId)
+                        && r.getTime().getId().equals(timeId));
+
+        if (hasMemberReservation) {
+            throw new InvalidDataException("이미 해당 시간에 예약이 존재합니다.");
+        }
     }
 
     private Member determineMember(ReservationRequest request, LoginMember loginMember) {
@@ -85,14 +113,31 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        return reservationRepository.findByMemberId(loginMember.id()).stream()
-                                    .map(reservation -> new MyReservationResponse(
-                                            reservation.getId(),
-                                            reservation.getTheme().getName(),
-                                            reservation.getDate(),
-                                            reservation.getTime().getValue(),
-                                            "예약"
-                                    ))
-                                    .toList();
+        List<MyReservationResponse> responses = new ArrayList<>();
+
+        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
+        for (Reservation reservation : reservations) {
+            responses.add(new MyReservationResponse(
+                    reservation.getId(),
+                    reservation.getTheme().getName(),
+                    reservation.getDate(),
+                    reservation.getTime().getValue(),
+                    "예약"
+            ));
+        }
+
+        List<WaitingWithRank> waitings = waitingService.findWaitingsWithRankByMemberId(loginMember.id());
+        for (WaitingWithRank waitingWithRank : waitings) {
+            long rank = waitingWithRank.getRank() + 1;
+            responses.add(new MyReservationResponse(
+                    waitingWithRank.getWaiting().getId(),
+                    waitingWithRank.getWaiting().getTheme().getName(),
+                    waitingWithRank.getWaiting().getDate(),
+                    waitingWithRank.getWaiting().getTime().getValue(),
+                    rank + "번째 예약대기"
+            ));
+        }
+
+        return responses;
     }
 }

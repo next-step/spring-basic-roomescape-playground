@@ -13,17 +13,17 @@ import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.util.CookieUtil;
-import roomescape.util.JwtUtil;
+import roomescape.util.JwtTokenProvider;
 
 @Slf4j
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberService memberService;
-    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtUtil jwtUtil) {
+    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
-        this.jwtUtil = jwtUtil;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         }
 
         try {
-            Long memberId = jwtUtil.getMemberIdFromToken(token);
+            Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
             Member member = memberService.findById(memberId);
 
             log.debug("로그인 사용자 인증 성공: memberId={}, uri={}", memberId, request.getRequestURI());
