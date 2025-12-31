@@ -6,7 +6,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.member.MemberController;
 import roomescape.reservation.ReservationResponse;
@@ -20,8 +19,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql(scripts = "/sql/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class MissionStepTest {
 
-    @Autowired
-    private MemberController memberController;
+    private final MemberController memberController;
+
+    public MissionStepTest(MemberController memberController) {
+        this.memberController = memberController;
+    }
 
     @Test
     void 일단계() {
