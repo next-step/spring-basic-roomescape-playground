@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,12 +28,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember member) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity create(@RequestBody @Valid ReservationRequest reservationRequest, LoginMember member) {
 
         String effectiveName = reservationRequest.getName() != null ? reservationRequest.getName() : member.getName();
         ReservationRequest requestWithName = new ReservationRequest(

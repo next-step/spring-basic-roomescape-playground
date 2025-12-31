@@ -1,9 +1,14 @@
 package roomescape.reservation;
 
+import jakarta.validation.constraints.NotNull;
+
 public class ReservationRequest {
     private String name;
+    @NotNull
     private String date;
+    @NotNull
     private Long theme;
+    @NotNull
     private Long time;
 
     public ReservationRequest() {
