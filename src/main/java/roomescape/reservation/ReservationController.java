@@ -27,10 +27,20 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/admin/reservations")
+    public List<ReservationResponse> adminList() {
+        return reservationService.findAll();
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody @Valid ReservationRequest reservationRequest, LoginMember member) {
 
-        String effectiveName = reservationRequest.getName() != null ? reservationRequest.getName() : member.getName();
+        String effectiveName = reservationRequest.getName() != null && !reservationRequest.getName().isBlank()
+                ? reservationRequest.getName()
+                : (member != null ? member.getName() : null);
+        if (effectiveName == null || effectiveName.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         ReservationRequest requestWithName = new ReservationRequest(
                 effectiveName,
                 reservationRequest.getDate(),
@@ -43,8 +53,23 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
+    @PostMapping("/admin/reservations")
+    public ResponseEntity adminCreate(@RequestBody @Valid ReservationRequest reservationRequest) {
+        if (reservationRequest.getName() == null || reservationRequest.getName().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        ReservationResponse reservation = reservationService.save(reservationRequest);
+        return ResponseEntity.created(URI.create("/admin/reservations/" + reservation.getId())).body(reservation);
+    }
+
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
+        reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/reservations/{id}")
+    public ResponseEntity adminDelete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

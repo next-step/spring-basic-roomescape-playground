@@ -25,13 +25,30 @@ public class ThemeController {
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
     }
 
+    @PostMapping("/admin/themes")
+    public ResponseEntity<Theme> adminCreateTheme(@RequestBody Theme theme) {
+        Theme newTheme = themeDao.save(theme);
+        return ResponseEntity.created(URI.create("/admin/themes/" + newTheme.getId())).body(newTheme);
+    }
+
     @GetMapping("/themes")
     public ResponseEntity<List<Theme>> list() {
         return ResponseEntity.ok(themeDao.findAll());
     }
 
+    @GetMapping("/admin/themes")
+    public ResponseEntity<List<Theme>> adminList() {
+        return ResponseEntity.ok(themeDao.findAll());
+    }
+
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+        themeDao.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/themes/{id}")
+    public ResponseEntity<Void> adminDeleteTheme(@PathVariable Long id) {
         themeDao.deleteById(id);
         return ResponseEntity.noContent().build();
     }

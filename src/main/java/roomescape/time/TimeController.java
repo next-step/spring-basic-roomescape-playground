@@ -25,6 +25,11 @@ public class TimeController {
         return timeService.findAll();
     }
 
+    @GetMapping("/admin/times")
+    public List<Time> adminList() {
+        return timeService.findAll();
+    }
+
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
         if (time.getValue() == null || time.getValue().isEmpty()) {
@@ -35,8 +40,23 @@ public class TimeController {
         return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
     }
 
+    @PostMapping("/admin/times")
+    public ResponseEntity<Time> adminCreate(@RequestBody Time time) {
+        if (time.getValue() == null || time.getValue().isEmpty()) {
+            throw new RuntimeException();
+        }
+        Time newTime = timeService.save(time);
+        return ResponseEntity.created(URI.create("/admin/times/" + newTime.getId())).body(newTime);
+    }
+
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        timeService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/times/{id}")
+    public ResponseEntity<Void> adminDelete(@PathVariable Long id) {
         timeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
