@@ -5,8 +5,6 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.theme.Theme;
-import roomescape.time.Time;
 
 import java.util.List;
 
@@ -26,19 +24,7 @@ public class ReservationRepository {
     }
 
     @Transactional
-    public Reservation save(ReservationRequest reservationRequest) {
-        // Time과 Theme 조회
-        Time time = entityManager.find(Time.class, reservationRequest.getTime());
-        Theme theme = entityManager.find(Theme.class, reservationRequest.getTheme());
-
-        // Reservation 생성 및 저장
-        Reservation reservation = new Reservation(
-                reservationRequest.getName(),
-                reservationRequest.getDate(),
-                time,
-                theme
-        );
-
+    public Reservation save(Reservation reservation) {
         entityManager.persist(reservation);
         return reservation;
     }
@@ -59,6 +45,16 @@ public class ReservationRepository {
         TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
         query.setParameter("date", date);
         query.setParameter("themeId", themeId);
+        return query.getResultList();
+    }
+
+    public List<Reservation> findByMemberId(Long memberId) {
+        String jpql = "SELECT r FROM Reservation r " +
+                "JOIN FETCH r.time t " +
+                "JOIN FETCH r.theme th " +
+                "WHERE r.member.id = :memberId";
+        TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
+        query.setParameter("memberId", memberId);
         return query.getResultList();
     }
 }

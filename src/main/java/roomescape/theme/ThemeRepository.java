@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional(readOnly = true)
@@ -19,6 +20,10 @@ public class ThemeRepository {
     public Theme save(Theme theme) {
         entityManager.persist(theme);
         return theme;
+    }
+
+    public Optional<Theme> findById(Long id) {
+        return Optional.ofNullable(entityManager.find(Theme.class, id));
     }
 
     public List<Theme> findAll() {

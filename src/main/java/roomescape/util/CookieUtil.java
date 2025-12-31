@@ -21,7 +21,7 @@ public class CookieUtil {
         return null;
     }
 
-    public static Cookie createTokenCookie(String token) {
+    public static Cookie createToken(String token) {
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

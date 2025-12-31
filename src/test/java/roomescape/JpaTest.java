@@ -22,15 +22,13 @@ public class JpaTest {
 
     @Test
     void 사단계() {
-        // Given
+
         Time time = new Time("10:00");
         entityManager.persist(time);
         entityManager.flush();
 
-        // When
         Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
-        // Then
         assertThat(persistTime.getTime()).isEqualTo(time.getTime());
     }
 }
