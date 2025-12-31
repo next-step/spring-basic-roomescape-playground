@@ -37,7 +37,7 @@ public class LoginController {
 
         String token = jwtUtil.generateToken(member);
 
-        response.addCookie(CookieUtil.createTokenCookie(token));
+        response.addCookie(CookieUtil.createToken(token));
 
         log.info("로그인 성공: memberId={}, email={}", member.getId(), member.getEmail());
         return ResponseEntity.ok().build();
