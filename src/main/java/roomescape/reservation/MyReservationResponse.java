@@ -44,4 +44,6 @@ public class MyReservationResponse {
     public String getStatus() {
         return status;
     }
+
+
 }

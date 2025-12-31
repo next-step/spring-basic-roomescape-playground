@@ -49,16 +49,15 @@ public class WaitingService {
 
         validateDuplicateReservation(member.getId(), waitingRequest.getDate(), time.getId(), theme.getId());
 
-        Waiting waiting = new Waiting(waitingRequest.getDate(), time, theme, member);
-        waitingRepository.save(waiting);
-
-        long rank = waitingRepository.findByDateAndTimeIdAndThemeId(
+        long count = waitingRepository.countByDateAndTimeIdAndThemeId(
                 waitingRequest.getDate(),
                 time.getId(),
                 theme.getId()
-        ).stream()
-                .filter(w -> w.getId() < waiting.getId())
-                .count() + 1;
+        );
+        long rank = count + 1;
+
+        Waiting waiting = new Waiting(waitingRequest.getDate(), time, theme, member);
+        waitingRepository.save(waiting);
 
         return new WaitingResponse(
                 waiting.getId(),
@@ -93,7 +92,7 @@ public class WaitingService {
     @Transactional
     public void deleteById(Long id, LoginMember loginMember) {
         Waiting waiting = waitingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundDataException("해당 대기를 찾을 수 없습니다."));
+                                           .orElseThrow(() -> new NotFoundDataException("해당 대기를 찾을 수 없습니다."));
 
         if (!waiting.getMember().getId().equals(loginMember.id())) {
             throw new InvalidDataException("본인의 대기만 취소할 수 있습니다.");

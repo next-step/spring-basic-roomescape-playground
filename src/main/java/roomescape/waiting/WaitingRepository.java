@@ -73,4 +73,18 @@ public class WaitingRepository {
         query.setParameter("themeId", themeId);
         return query.getResultList();
     }
+
+    public long countByDateAndTimeIdAndThemeId(String date, Long timeId, Long themeId) {
+        String jpql = "SELECT COUNT(w) FROM Waiting w " +
+                "WHERE w.date = :date " +
+                "AND w.time.id = :timeId " +
+                "AND w.theme.id = :themeId";
+
+        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
+        query.setParameter("date", date);
+        query.setParameter("timeId", timeId);
+        query.setParameter("themeId", themeId);
+
+        return query.getSingleResult();
+    }
 }
