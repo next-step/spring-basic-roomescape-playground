@@ -10,10 +10,10 @@ import roomescape.member.Member;
 import javax.crypto.SecretKey;
 
 @Component
-public class JwtUtil {
+public class JwtTokenProvider {
     private final SecretKey key;
 
-    public JwtUtil(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+    public JwtTokenProvider(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 

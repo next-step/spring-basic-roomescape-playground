@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.exception.NotFoundDataException;
 import roomescape.util.CookieUtil;
-import roomescape.util.JwtUtil;
+import roomescape.util.JwtTokenProvider;
 
 import java.util.Map;
 
@@ -18,11 +18,11 @@ import java.util.Map;
 @RestController
 public class LoginController {
     private final MemberDao memberDao;
-    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginController(MemberDao memberDao, JwtUtil jwtUtil) {
+    public LoginController(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
         this.memberDao = memberDao;
-        this.jwtUtil = jwtUtil;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/login")
@@ -35,7 +35,7 @@ public class LoginController {
             throw new NotFoundDataException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        String token = jwtUtil.generateToken(member);
+        String token = jwtTokenProvider.generateToken(member);
 
         response.addCookie(CookieUtil.createToken(token));
 
