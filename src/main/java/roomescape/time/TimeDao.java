@@ -4,9 +4,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.member.Member;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TimeDao {
@@ -33,6 +35,19 @@ public class TimeDao {
         }, keyHolder);
 
         return new Time(keyHolder.getKey().longValue(), time.getValue());
+    }
+
+    public Optional<Time> findById(long id) {
+        List<Time> result = jdbcTemplate.query(
+                "SELECT id, time_value FROM time WHERE id = ? AND deleted = false",
+                (rs, rowNum) -> new Time(
+                        rs.getLong("id"),
+                        rs.getString("time_value")
+                ),
+                id
+        );
+
+        return result.stream().findFirst();
     }
 
     public void deleteById(Long id) {
