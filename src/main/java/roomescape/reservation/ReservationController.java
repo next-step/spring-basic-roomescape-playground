@@ -48,7 +48,7 @@ public class ReservationController {
                 reservationRequest.getTime()
         );
 
-        ReservationResponse reservation = reservationService.save(requestWithName);
+        ReservationResponse reservation = reservationService.save(requestWithName, member != null ? member.getId() : null);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
@@ -58,7 +58,7 @@ public class ReservationController {
         if (reservationRequest.getName() == null || reservationRequest.getName().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        ReservationResponse reservation = reservationService.save(reservationRequest, null);
         return ResponseEntity.created(URI.create("/admin/reservations/" + reservation.getId())).body(reservation);
     }
 
@@ -72,5 +72,10 @@ public class ReservationController {
     public ResponseEntity adminDelete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> mine(LoginMember member) {
+        return ResponseEntity.ok(reservationService.findMine(member.getId()));
     }
 }
