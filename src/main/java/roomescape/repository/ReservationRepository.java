@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import roomescape.dto.ReservationRequest;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
 import roomescape.model.Time;
@@ -22,16 +23,18 @@ public class ReservationRepository {
         return query.getResultList();
     }
 
-    public Reservation save(ReservationRequest reservationRequest) {
-        Time time = entityManager.find(Time.class, reservationRequest.time());
-        Theme theme = entityManager.find(Theme.class, reservationRequest.theme());
+    public Reservation save(ReservationRequest request) {
+        Time time = entityManager.find(Time.class, request.time());
+        Theme theme = entityManager.find(Theme.class, request.theme());
 
-        Reservation reservation = new Reservation(
-                reservationRequest.name(),
-                reservationRequest.date(),
-                time,
-                theme
-        );
+        Reservation reservation;
+
+        if (request.memberId() != null) {
+            Member member = entityManager.find(Member.class, request.memberId());
+            reservation = new Reservation(member, request.date(), time, theme);
+        } else {
+            reservation = new Reservation(request.name(), request.date(), time, theme);
+        }
 
         entityManager.persist(reservation);
         return reservation;
@@ -57,6 +60,13 @@ public class ReservationRepository {
         TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
         query.setParameter("date", date);
         query.setParameter("themeId", themeId);
+        return query.getResultList();
+    }
+
+    public List<Reservation> findByMemberId(Long memberId) {
+        String jpql = "SELECT r FROM Reservation r WHERE r.member.id = :memberId";
+        TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
+        query.setParameter("memberId", memberId);
         return query.getResultList();
     }
 }

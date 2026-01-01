@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.repository.MemberRepository;
 import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberResponse;
@@ -8,6 +9,7 @@ import roomescape.exception.UnauthorizedException;
 import roomescape.model.Member;
 
 @Service
+@Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
 

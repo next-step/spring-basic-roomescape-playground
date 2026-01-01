@@ -15,8 +15,14 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    // 관리자 예약용
+    @Column
     private String name;
+
+    // 사용자 예약용
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(nullable = false)
     private String date;
@@ -44,6 +50,13 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation(Member member, String date, Time time, Theme theme) {
+        this.member = member;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
     public Reservation() { }
 
     public Long getId() {
@@ -52,6 +65,10 @@ public class Reservation {
 
     public String getName() {
         return name;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public String getDate() {

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.repository.TimeRepository;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
@@ -12,6 +13,7 @@ import roomescape.dto.AvailableTime;
 import roomescape.model.Time;
 
 @Service
+@Transactional
 public class TimeService {
     private final TimeRepository timeRepository;
     private final ReservationRepository reservationRepository;
