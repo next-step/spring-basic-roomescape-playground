@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,18 +12,18 @@ import java.util.Optional;
 
 @Repository
 public class MemberDao {
+    private final RowMapper<Member> rowMapper = (rs, rowNum) -> new Member(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("email"),
+            rs.getString("password"),
+            Role.valueOf(rs.getString("role"))
+    );
     private JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    private final RowMapper<Member> rowMapper = (rs, rowNum) -> new Member(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("email"),
-            Role.valueOf(rs.getString("role"))
-    );
 
     public Member save(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -40,22 +41,32 @@ public class MemberDao {
 
     public Member findByEmailAndPassword(String email, String password) {
         return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
+                "SELECT id, name, email,password, role FROM member WHERE email = ? AND password = ?",
                 rowMapper,
                 email, password
         );
     }
 
+    public Optional<Member> findByEmail(String email) {
+        String sql = "SELECT id, name, email, password, role FROM member WHERE email = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, rowMapper, email);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE name = ?",
+                "SELECT id, name, email,password, role FROM member WHERE name = ?",
                 rowMapper,
                 name
         );
     }
 
     public Optional<Member> findById(Long id) {
-        String sql = "SELECT id, name, email, role FROM member WHERE id = ?";
+        String sql = "SELECT id, name, email,password, role FROM member WHERE id = ?";
 
         List<Member> results = jdbcTemplate.query(sql, rowMapper, id);
 

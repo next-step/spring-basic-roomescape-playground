@@ -12,7 +12,12 @@ public class MemberService {
     }
 
     public String login(LoginRequest request) {
-        Member member = memberDao.findByEmailAndPassword(request.getEmail(), request.getPassword());
+        Member member = memberDao.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+
+        if (!member.checkPassword(request.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
 
         return JwtUtil.createToken(member);
     }
