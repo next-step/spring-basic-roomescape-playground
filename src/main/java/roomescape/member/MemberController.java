@@ -16,11 +16,9 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private MemberService memberService;
-    private MemberDao memberDao;
 
-    public MemberController(MemberService memberService, MemberDao memberDao) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.memberDao = memberDao;
     }
 
     @PostMapping("/members")
@@ -31,9 +29,7 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        Member member = memberDao.findByEmailAndPassword(request.getEmail(), request.getPassword());
-
-        String accessToken = JwtUtil.createToken(member);
+        String accessToken = memberService.login(request);
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
