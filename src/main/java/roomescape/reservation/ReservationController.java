@@ -27,33 +27,15 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (reservationRequest.getName() == null && loginMember == null) {
+    public ResponseEntity create(@RequestBody ReservationRequest request, LoginMember loginMember) {
+        if (request.getName() == null && loginMember == null) {
             return ResponseEntity.status(401).build();
         }
 
-        String realName;
-        if (reservationRequest.getName() != null) {
-            realName = reservationRequest.getName();
-        } else {
-            realName = loginMember.getName();
-        }
+        ReservationResponse reservation = reservationService.save(request, loginMember);
 
-        ReservationRequest newRequest = new ReservationRequest(
-                realName,
-                reservationRequest.getDate(),
-                reservationRequest.getTheme(),
-                reservationRequest.getTime()
-        );
-
-        ReservationResponse reservation = reservationService.save(newRequest);
-
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);  }
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
