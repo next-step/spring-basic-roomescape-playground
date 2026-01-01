@@ -1,4 +1,6 @@
-package roomescape.reservation;
+package roomescape.reservation.dto;
+
+import roomescape.reservation.Reservation;
 
 public class ReservationResponse {
     private Long id;
@@ -13,6 +15,16 @@ public class ReservationResponse {
         this.theme = theme;
         this.date = date;
         this.time = time;
+    }
+
+    public static ReservationResponse from(Reservation reservation) {
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getTheme().getName(), // Theme 객체에서 이름을 가져옴
+                reservation.getDate(),
+                reservation.getTime().getValue()  // Time 객체에서 시간 값을 가져옴
+        );
     }
 
     public Long getId() {

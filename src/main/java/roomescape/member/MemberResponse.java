@@ -1,5 +1,8 @@
 package roomescape.member;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MemberResponse {
     private Long id;
     private String name;

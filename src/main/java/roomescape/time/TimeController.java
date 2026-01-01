@@ -30,7 +30,6 @@ public class TimeController {
         if (time.getValue() == null || time.getValue().isEmpty()) {
             throw new RuntimeException();
         }
-
         Time newTime = timeService.save(time);
         return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
     }
