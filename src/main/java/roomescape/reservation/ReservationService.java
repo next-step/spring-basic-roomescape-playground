@@ -7,8 +7,11 @@ import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.member.MemberRepository;
 import roomescape.member.Member;
+import roomescape.waiting.WaitingService;
+import roomescape.waiting.WaitingWithRank;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class ReservationService {
@@ -16,12 +19,14 @@ public class ReservationService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
+    private final WaitingService waitingService;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository, WaitingService waitingService) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.waitingService = waitingService;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, Long loginMemberId) {
@@ -54,8 +59,25 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMine(Long memberId) {
-        return reservationRepository.findByMember_Id(memberId).stream()
-                .map(MyReservationResponse::from)
-                .toList();
+        List<MyReservationResponse> result = new ArrayList<>();
+        // 예약
+        result.addAll(
+                reservationRepository.findByMember_Id(memberId).stream()
+                        .map(MyReservationResponse::from)
+                        .toList()
+        );
+        // 대기 + 순번
+        List<WaitingWithRank> waitings = waitingService.findMineWithRank(memberId);
+        for (WaitingWithRank w : waitings) {
+            long rankOneBased = (w.getRank() == null ? 0 : w.getRank()) + 1;
+            result.add(new MyReservationResponse(
+                    w.getWaiting().getId(),
+                    w.getWaiting().getTheme().getName(),
+                    w.getWaiting().getDate(),
+                    w.getWaiting().getTime().getValue(),
+                    rankOneBased + "번째 예약대기"
+            ));
+        }
+        return result;
     }
 }
