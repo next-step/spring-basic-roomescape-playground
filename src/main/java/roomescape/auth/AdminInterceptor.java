@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,11 +20,11 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = extractToken(request.getCookies());
 
         if (token == null) {
-            response.setStatus(401);
+            sendUnauthorized(response, "로그인이 필요합니다.");
             return false;
         }
 
@@ -33,14 +34,22 @@ public class AdminInterceptor implements HandlerInterceptor {
             Member member = memberService.findById(memberId);
 
             if (!member.isAdmin()) {
-                response.setStatus(401);
+                sendUnauthorized(response, "관리자 권한이 없습니다.");
                 return false;
             }
             return true;
 
-        } catch (Exception e) {
-            response.setStatus(401);
+        } catch (JwtException | IllegalArgumentException e) {
+            sendUnauthorized(response, "유효하지 않은 토큰입니다.");
             return false;
+        }
+    }
+
+    private void sendUnauthorized(HttpServletResponse response, String message) {
+        try {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 
