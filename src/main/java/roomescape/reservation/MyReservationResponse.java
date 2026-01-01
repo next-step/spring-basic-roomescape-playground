@@ -44,6 +44,10 @@ public class MyReservationResponse {
     public String getStatus() {
         return status;
     }
+
+    public Long getId() {
+        return reservationId;
+    }
 }
 
 

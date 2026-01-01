@@ -17,9 +17,11 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final MyReservationService myReservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, MyReservationService myReservationService) {
         this.reservationService = reservationService;
+        this.myReservationService = myReservationService;
     }
 
     @GetMapping("/reservations")
@@ -76,6 +78,6 @@ public class ReservationController {
 
     @GetMapping("/reservations-mine")
     public ResponseEntity<List<MyReservationResponse>> mine(LoginMember member) {
-        return ResponseEntity.ok(reservationService.findMine(member.getId()));
+        return ResponseEntity.ok(myReservationService.findMine(member.getId()));
     }
 }

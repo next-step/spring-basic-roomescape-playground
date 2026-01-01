@@ -11,6 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.member.MemberController;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
+import roomescape.waiting.WaitingResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -117,7 +118,7 @@ public class MissionStepTest {
 
     @Test
     void 육단계() {
-        String brownToken = createToken("brown@email.com", "password");
+        String brownToken = memberController.createTokenFromEmailAndPassword("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");

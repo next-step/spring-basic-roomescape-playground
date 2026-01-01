@@ -1,12 +1,11 @@
 package roomescape.waiting;
 
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
-import roomescape.member.MemberRepository;
+import roomescape.member.Member;
 import roomescape.reservation.ReservationRepository;
 import roomescape.theme.Theme;
-import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
-import roomescape.time.TimeRepository;
 
 import java.util.List;
 
@@ -14,34 +13,28 @@ import java.util.List;
 public class WaitingService {
     private final WaitingRepository waitingRepository;
     private final ReservationRepository reservationRepository;
-    private final MemberRepository memberRepository;
-    private final TimeRepository timeRepository;
-    private final ThemeRepository themeRepository;
+    private final EntityManager entityManager;
 
     public WaitingService(WaitingRepository waitingRepository,
                           ReservationRepository reservationRepository,
-                          MemberRepository memberRepository,
-                          TimeRepository timeRepository,
-                          ThemeRepository themeRepository) {
+                          EntityManager entityManager) {
         this.waitingRepository = waitingRepository;
         this.reservationRepository = reservationRepository;
-        this.memberRepository = memberRepository;
-        this.timeRepository = timeRepository;
-        this.themeRepository = themeRepository;
+        this.entityManager = entityManager;
     }
 
     public WaitingResponse create(Long memberId, String date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByMember_IdAndDateAndTime_IdAndTheme_Id(memberId, date, timeId, themeId)) {
+        if (reservationRepository.existsForMemberOnSlot(memberId, date, timeId, themeId)) {
             throw new IllegalStateException();
         }
-        if (waitingRepository.existsByMember_IdAndDateAndTime_IdAndTheme_Id(memberId, date, timeId, themeId)) {
+        if (waitingRepository.existsForMemberOnSlot(memberId, date, timeId, themeId)) {
             throw new IllegalStateException();
         }
 
-        var memberRef = memberRepository.getReferenceById(memberId);
-        Time time = timeRepository.findById(timeId).orElseThrow();
-        Theme theme = themeRepository.findById(themeId).orElseThrow();
-        Waiting waiting = new Waiting(memberRef, date, time, theme);
+        Member memberRef = entityManager.getReference(Member.class, memberId);
+        Time timeRef = entityManager.getReference(Time.class, timeId);
+        Theme themeRef = entityManager.getReference(Theme.class, themeId);
+        Waiting waiting = new Waiting(memberRef, date, timeRef, themeRef);
         waiting = waitingRepository.save(waiting);
         return new WaitingResponse(waiting.getId());
     }
@@ -55,7 +48,14 @@ public class WaitingService {
     }
 
     public List<WaitingWithRank> findMineWithRank(Long memberId) {
-        return waitingRepository.findWaitingsWithRankByMemberId(memberId);
+        var mine = waitingRepository.findByMember_IdOrderByIdAsc(memberId);
+        return mine.stream()
+                .map(w -> new WaitingWithRank(
+                        w,
+                        waitingRepository.countByTheme_IdAndDateAndTime_IdAndIdLessThan(
+                                w.getTheme().getId(), w.getDate(), w.getTime().getId(), w.getId()))
+                )
+                .toList();
     }
 }
 
