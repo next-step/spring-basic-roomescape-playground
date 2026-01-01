@@ -49,6 +49,10 @@ public class Member {
         return role;
     }
 
+    public boolean checkPassword(String password) {
+        return this.password.equals(password);
+    }
+
     public boolean isAdmin() {
         return role == Role.ADMIN;
     }
