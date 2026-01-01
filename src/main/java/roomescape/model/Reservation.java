@@ -1,10 +1,32 @@
 package roomescape.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
 public class Reservation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String date;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "time_id")
     private Time time;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "theme_id")
     private Theme theme;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
@@ -22,9 +44,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation() {
-
-    }
+    public Reservation() { }
 
     public Long getId() {
         return id;

@@ -3,7 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import roomescape.dao.ReservationDao;
+import roomescape.repository.ReservationRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.BadRequestException;
@@ -12,10 +12,10 @@ import roomescape.model.Reservation;
 
 @Service
 public class ReservationService {
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationResponse create(ReservationRequest request, Member member) {
@@ -23,17 +23,17 @@ public class ReservationService {
 
         ReservationRequest finalized = new ReservationRequest(name, request.date(), request.theme(), request.time());
 
-        Reservation reservation = reservationDao.save(finalized);
+        Reservation reservation = reservationRepository.save(finalized);
 
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
