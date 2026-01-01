@@ -1,6 +1,7 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
+import roomescape.util.JwtUtil;
 
 @Service
 public class MemberService {
@@ -8,6 +9,12 @@ public class MemberService {
 
     public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
+    }
+
+    public String login(LoginRequest request) {
+        Member member = memberDao.findByEmailAndPassword(request.getEmail(), request.getPassword());
+
+        return JwtUtil.createToken(member);
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
