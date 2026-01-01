@@ -5,6 +5,8 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
@@ -22,8 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql(scripts = "/sql/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class MissionStepTest {
 
+    @Autowired
     private TestEntityManager entityManager;
 
+    @Autowired
     private TimeDao timeDao;
 
     private final MemberController memberController;
@@ -104,13 +108,4 @@ public class MissionStepTest {
                 .statusCode(200);
     }
 
-    void 사단계() {
-        Time time = new Time("10:00");
-        entityManager.persist(time);
-        entityManager.flush();
-
-        Time persistTime = timeDao.findById(time.getId()).orElse(null);
-
-        assertThat(persistTime.getValue()).isEqualTo(time.getValue());
-    }
 }
