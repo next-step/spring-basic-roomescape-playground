@@ -1,30 +1,104 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.Member;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.WaitingService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
+    private TimeRepository timeRepository;
+    private ThemeRepository themeRepository;
+    private WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository,
+                              TimeRepository timeRepository,
+                              ThemeRepository themeRepository,
+                              WaitingRepository waitingRepository) {
+        this.reservationRepository = reservationRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    @Transactional
+    public ReservationResponse saveAdmin(ReservationRequest reservationRequest) {
+        Time time = timeRepository.findById(reservationRequest.time())
+                .orElseThrow(() -> new IllegalArgumentException(reservationRequest.time() + "존재하지 않는 시간입니다."));
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        Theme theme = themeRepository.findById(reservationRequest.theme())
+                .orElseThrow(() -> new IllegalArgumentException(reservationRequest.theme() + "존재하지 않는 테마입니다."));
+
+        Reservation saved = reservationRepository.save(
+                Reservation.adminReservation(reservationRequest.name(), reservationRequest.date(), time, theme)
+        );
+
+        return new ReservationResponse(saved.getId(), saved.getName(),
+                saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());
     }
 
+    @Transactional
+    public ReservationResponse saveMember(ReservationRequest reservationRequest, Member member) {
+        Time time = timeRepository.findById(reservationRequest.time())
+                .orElseThrow(() -> new IllegalArgumentException(reservationRequest.time() + "존재하지 않는 시간입니다."));
+
+        Theme theme = themeRepository.findById(reservationRequest.theme())
+                .orElseThrow(() -> new IllegalArgumentException(reservationRequest.theme() + "존재하지 않는 테마입니다."));
+
+        Reservation saved = reservationRepository.save(
+                Reservation.memberReservation(reservationRequest.date(), time, theme, member)
+        );
+
+        return new ReservationResponse(saved.getId(), member.getName(),
+                saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());
+    }
+
+    @Transactional
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationRepository.findAll().stream()
+                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyReservationResponse> findMine(Long memberId) {
+        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(memberId).stream()
+                .map(r -> new MyReservationResponse(
+                        r.getId(),
+                        r.getTheme().getName(),
+                        r.getDate(),
+                        r.getTime().getTime(),
+                        "예약"
+                ))
+                .toList();
+
+        List<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(memberId).stream()
+                .map(wr -> new MyReservationResponse(
+                        wr.getWaiting().getId(),
+                        wr.getWaiting().getTheme().getName(),
+                        wr.getWaiting().getDate(),
+                        wr.getWaiting().getTime().getTime(),
+                        (wr.getRank() + 1) + "번째 예약대기"
+                ))
+                .toList();
+
+        List<MyReservationResponse> result = new ArrayList<>();
+        result.addAll(reservations);
+        result.addAll(waitings);
+        return result;
     }
 }
