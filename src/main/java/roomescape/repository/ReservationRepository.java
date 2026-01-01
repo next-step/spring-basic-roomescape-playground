@@ -47,14 +47,6 @@ public class ReservationRepository {
         }
     }
 
-    public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
-        String jpql = "SELECT r FROM Reservation r WHERE r.date = :date AND r.theme.id = :themeId";
-        TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
-        query.setParameter("date", date);
-        query.setParameter("themeId", themeId);
-        return query.getResultList();
-    }
-
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
         String jpql = "SELECT r FROM Reservation r WHERE r.date = :date AND r.theme.id = :themeId";
         TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
@@ -68,5 +60,24 @@ public class ReservationRepository {
         TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
         query.setParameter("memberId", memberId);
         return query.getResultList();
+    }
+
+    public boolean existsByDateAndTimeAndTheme(String date, Long timeId, Long themeId) {
+        String jpql = "SELECT COUNT(r) FROM Reservation r WHERE r.date = :date AND r.time.id = :timeId AND r.theme.id = :themeId";
+        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
+        query.setParameter("date", date);
+        query.setParameter("timeId", timeId);
+        query.setParameter("themeId", themeId);
+        return query.getSingleResult() > 0;
+    }
+
+    public boolean existsByMemberAndDateAndTimeAndTheme(Long memberId, String date, Long timeId, Long themeId) {
+        String jpql = "SELECT COUNT(r) FROM Reservation r WHERE r.member.id = :memberId AND r.date = :date AND r.time.id = :timeId AND r.theme.id = :themeId";
+        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
+        query.setParameter("memberId", memberId);
+        query.setParameter("date", date);
+        query.setParameter("timeId", timeId);
+        query.setParameter("themeId", themeId);
+        return query.getSingleResult() > 0;
     }
 }
