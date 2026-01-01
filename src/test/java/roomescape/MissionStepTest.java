@@ -111,6 +111,6 @@ public class MissionStepTest {
 
         Time persistTime = timeDao.findById(time.getId()).orElse(null);
 
-        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+        assertThat(persistTime.getValue()).isEqualTo(time.getValue());
     }
 }
