@@ -31,6 +31,10 @@ public class Theme {
         this.description = description;
     }
 
+    public void delete() {
+        this.deleted = true;
+    }
+
     public Long getId() {
         return id;
     }
@@ -42,4 +46,6 @@ public class Theme {
     public String getDescription() {
         return description;
     }
+
+
 }

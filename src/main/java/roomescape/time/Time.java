@@ -24,6 +24,10 @@ public class Time {
         this.value = value;
     }
 
+    public void delete() {
+        this.deleted = true;
+    }
+
     public Time() {
 
     }

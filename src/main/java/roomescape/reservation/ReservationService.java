@@ -8,12 +8,12 @@ import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.waiting.WaitingRepository;
-import roomescape.waiting.WaitingService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
     private ReservationRepository reservationRepository;
     private TimeRepository timeRepository;
@@ -67,14 +67,13 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
+
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     public List<MyReservationResponse> findMine(Long memberId) {
         List<MyReservationResponse> reservations = reservationRepository.findByMemberId(memberId).stream()
                 .map(r -> new MyReservationResponse(

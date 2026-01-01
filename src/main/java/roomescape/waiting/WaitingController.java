@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+
 import roomescape.member.MemberService;
 
 import java.net.URI;
