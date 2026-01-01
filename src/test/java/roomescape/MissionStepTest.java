@@ -5,10 +5,13 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.member.MemberController;
 import roomescape.reservation.ReservationResponse;
+import roomescape.time.Time;
+import roomescape.time.TimeDao;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/sql/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class MissionStepTest {
+
+    private TestEntityManager entityManager;
+
+    private TimeDao timeDao;
 
     private final MemberController memberController;
 
@@ -95,5 +102,15 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    void 사단계() {
+        Time time = new Time("10:00");
+        entityManager.persist(time);
+        entityManager.flush();
+
+        Time persistTime = timeDao.findById(time.getId()).orElse(null);
+
+        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
     }
 }
