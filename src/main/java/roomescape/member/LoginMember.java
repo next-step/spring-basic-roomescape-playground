@@ -4,9 +4,9 @@ public class LoginMember {
     private Long id;
     private String name;
     private String email;
-    private String role;
+    private Role role;
 
-    public LoginMember(Long id, String name, String email, String role) {
+    public LoginMember(Long id, String name, String email, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -25,7 +25,7 @@ public class LoginMember {
         return email;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 }

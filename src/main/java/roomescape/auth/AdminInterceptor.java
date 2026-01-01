@@ -1,8 +1,5 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,7 +32,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
             Member member = memberService.findById(memberId);
 
-            if (!"ADMIN".equals(member.getRole())) {
+            if (!member.isAdmin()) {
                 response.setStatus(401);
                 return false;
             }

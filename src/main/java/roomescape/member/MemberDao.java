@@ -23,11 +23,11 @@ public class MemberDao {
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
-            ps.setString(4, member.getRole());
+            ps.setString(4, member.getRole().name());
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
+        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     public Member findByEmailAndPassword(String email, String password) {
@@ -37,7 +37,7 @@ public class MemberDao {
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
-                        rs.getString("role")
+                        Role.valueOf(rs.getString("role"))
                 ),
                 email, password
         );
@@ -50,7 +50,7 @@ public class MemberDao {
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
-                        rs.getString("role")
+                        Role.valueOf(rs.getString("role"))
                 ),
                 name
         );
@@ -63,7 +63,7 @@ public class MemberDao {
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("email"),
-                rs.getString("role")
+                Role.valueOf(rs.getString("role"))
         ), id);
 
         return results.stream().findFirst();
