@@ -3,6 +3,7 @@ TRUNCATE TABLE reservation;
 TRUNCATE TABLE member;
 TRUNCATE TABLE theme;
 TRUNCATE TABLE time;
+TRUNCATE TABLE waiting;
 SET REFERENTIAL_INTEGRITY TRUE;
 
 INSERT INTO member (name, email, password, role)
