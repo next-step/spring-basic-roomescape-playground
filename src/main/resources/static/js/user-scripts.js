@@ -22,7 +22,9 @@ document.getElementById('logout-btn').addEventListener('click', function () {
 });
 
 function updateUIBasedOnLogin() {
-  fetch('/login/check') // 로그인 상태 확인 API 호출
+  fetch('/login/check', {
+    credentials: 'include'
+  }) // 로그인 상태 확인 API 호출
       .then(response => {
         if (!response.ok) { // 요청이 실패하거나 로그인 상태가 아닌 경우
           throw new Error('Not logged in or other error');
@@ -34,6 +36,11 @@ function updateUIBasedOnLogin() {
         document.getElementById('profile-name').textContent = data.name; // 프로필 이름 설정
         document.querySelector('.nav-item.dropdown').style.display = 'block'; // 드롭다운 메뉴 표시
         document.querySelector('.nav-item a[href="/login"]').parentElement.style.display = 'none'; // 로그인 버튼 숨김
+
+        // ADMIN 권한이 있으면 Admin 메뉴 표시
+        if (data.role === 'ADMIN') {
+          document.getElementById('admin-menu').style.display = 'block';
+        }
       })
       .catch(error => {
         // 에러 처리 또는 로그아웃 상태일 때 UI 업데이트
@@ -66,22 +73,26 @@ function login() {
     headers: {
       'Content-Type': 'application/json'
     },
+    credentials: 'include',
     body: JSON.stringify({
       email: email,
       password: password
     })
   })
       .then(response => {
-        if (200 === !response.status) {
-          alert('Login failed'); // 로그인 실패 시 경고창 표시
-          throw new Error('Login failed');
+        if (!response.ok) {
+          return response.text().then(text => {
+            throw new Error(text);
+          });
         }
+        return response;
       })
       .then(() => {
         updateUIBasedOnLogin(); // UI 업데이트
         window.location.href = '/';
       })
       .catch(error => {
+        alert(error.message || '로그인에 실패했습니다.');
         console.error('Error during login:', error);
       });
 }
@@ -120,18 +131,21 @@ function register(event) {
   })
       .then(response => {
         if (!response.ok) {
-          alert('Signup request failed');
-          throw new Error('Signup request failed');
+          return response.text().then(text => {
+            throw new Error(text);
+          });
         }
         return response.json(); // 여기서 응답을 JSON 형태로 변환
       })
       .then(data => {
         // 성공적인 응답 처리
         console.log('Signup successful:', data);
+        alert('회원가입이 완료되었습니다!');
         window.location.href = '/login';
       })
       .catch(error => {
         // 에러 처리
+        alert(error.message || '회원가입에 실패했습니다.');
         console.error('Error during signup:', error);
       });
 

@@ -136,18 +136,23 @@ function onReservationButtonClick() {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(reservationData)
     })
         .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
+          if (!response.ok) {
+            return response.text().then(text => {
+              throw new Error(text);
+            });
+          }
           return response.json();
         })
         .then(data => {
-          alert("Reservation successful!");
+          alert("예약이 완료되었습니다!");
           window.location.href = "/";
         })
         .catch(error => {
-          alert("An error occurred while making the reservation.");
+          alert(error.message || "예약 중 오류가 발생했습니다.");
           console.error(error);
         });
   } else {
