@@ -60,4 +60,10 @@ public class ReservationController {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> findMine(LoginMember loginMember) {
+        List<MyReservationResponse> responses = reservationService.findMine(loginMember);
+        return ResponseEntity.ok(responses);
+    }
 }

@@ -37,4 +37,11 @@ public class ReservationRepository {
                 .setParameter("themeId", themeId)
                 .getResultList();
     }
+
+    public List<Reservation> findByMemberId(Long memberId) {
+        String jpql = "SELECT r FROM Reservation r WHERE r.member.id = :memberId";
+        return em.createQuery(jpql, Reservation.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
 }

@@ -2,6 +2,8 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.LoginMember;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -16,13 +18,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               TimeRepository timeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Transactional
@@ -46,6 +51,20 @@ public class ReservationService {
                 savedReservation.getDate(),
                 savedReservation.getTime().getTime()
         );
+    }
+
+    public List<MyReservationResponse> findMine(LoginMember loginMember) {
+        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.getId());
+
+        return reservations.stream()
+                .map(reservation -> new MyReservationResponse(
+                        reservation.getId(),
+                        reservation.getTheme().getName(),
+                        reservation.getDate(),
+                        reservation.getTime().getTime(),
+                        "예약"
+                ))
+                .toList();
     }
 
     @Transactional

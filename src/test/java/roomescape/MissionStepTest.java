@@ -1,32 +1,46 @@
 package roomescape;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import roomescape.time.Time;
-import roomescape.time.TimeRepository;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.MyReservationResponse;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@Import(TimeRepository.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
-    private TimeRepository timeRepository;
-
     @Test
-    void 사단계() {
-        Time time = new Time("10:00");
-        entityManager.persist(time);
-        entityManager.flush();
+    void 오단계() {
+        String adminToken = createToken("admin@email.com", "password");
 
-        Time persistTime = timeRepository.findById(time.getId()).orElse(null);
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
 
-        assertThat(persistTime.getTime()).isEqualTo(time.getTime());
+        assertThat(reservations).hasSize(3);
+    }
+
+    private String createToken(String email, String password) {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
+
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie("token");
     }
 }
