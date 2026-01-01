@@ -1,4 +1,4 @@
-CREATE TABLE time
+CREATE TABLE reservation_time
 (
     id         BIGINT      NOT NULL AUTO_INCREMENT,
     time_value VARCHAR(20) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE reservation
     time_id  BIGINT,
     theme_id BIGINT,
     PRIMARY KEY (id),
-    FOREIGN KEY (time_id) REFERENCES time (id),
+    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
@@ -46,7 +46,7 @@ VALUES ('테마1', '테마1입니다.'),
        ('테마2', '테마2입니다.'),
        ('테마3', '테마3입니다.');
 
-INSERT INTO time (time_value)
+INSERT INTO reservation_time (time_value)
 VALUES ('10:00'),
        ('12:00'),
        ('14:00'),
