@@ -2,6 +2,7 @@ package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ForbiddenException;
 import roomescape.exception.InvalidDataException;
 import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
@@ -74,7 +75,7 @@ public class WaitingService {
                                            .orElseThrow(() -> new NotFoundDataException("해당 대기를 찾을 수 없습니다."));
 
         if (!waiting.getMember().getId().equals(loginMember.id())) {
-            throw new InvalidDataException("본인의 대기만 취소할 수 있습니다.");
+            throw new ForbiddenException("본인의 대기만 취소할 수 있습니다.");
         }
 
         waitingRepository.deleteById(id);
