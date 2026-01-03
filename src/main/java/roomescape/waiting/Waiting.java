@@ -17,11 +17,11 @@ public class Waiting {
     private String date;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "time_id")
+    @JoinColumn(name = "time_id", nullable = false)
     private Time time;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "theme_id")
+    @JoinColumn(name = "theme_id", nullable = false)
     private Theme theme;
 
     @ManyToOne(fetch = FetchType.LAZY)
