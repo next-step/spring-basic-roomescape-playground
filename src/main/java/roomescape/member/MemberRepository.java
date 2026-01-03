@@ -47,14 +47,10 @@ public class MemberRepository {
     }
 
     public Member findById(Long id) {
-        String jpql = "SELECT m FROM Member m WHERE m.id = :id";
-        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
-        query.setParameter("id", id);
-
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException e) {
+        Member member = entityManager.find(Member.class, id);
+        if (member == null) {
             throw new NotFoundDataException("ID " + id + "에 해당하는 회원이 존재하지 않습니다.");
         }
+        return member;
     }
 }
