@@ -1,8 +1,5 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,6 +13,7 @@ import roomescape.util.JwtUtil;
 public class AdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
+    private JwtUtil jwtUtil;
 
     public AdminInterceptor(MemberService memberService) {
         this.memberService = memberService;
@@ -31,7 +29,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Long memberId = JwtUtil.getMemberIdFromToken(token);
+            Long memberId = jwtUtil.getMemberIdFromToken(token);
 
             Member member = memberService.findById(memberId);
 
