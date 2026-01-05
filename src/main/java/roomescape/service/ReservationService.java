@@ -90,13 +90,6 @@ public class ReservationService {
         return result;
     }
 
-    private String resolveName(ReservationRequest request, Member member) {
-        if (request.name() != null) return request.name();
-        if (member != null) return member.getName();
-
-        throw new BadRequestException("예약자 이름은 누락될 수 없습니다.");
-    }
-
     private void validateRequest(ReservationRequest request, Member member) {
         if (member == null && !StringUtils.hasText(request.name())) {
             throw new BadRequestException("예약자 정보가 없습니다.");
