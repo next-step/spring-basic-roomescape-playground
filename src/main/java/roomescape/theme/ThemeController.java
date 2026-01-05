@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 public class ThemeController {
-    private ThemeRepository themeRepository;
+    private final ThemeRepository themeRepository;
 
     public ThemeController(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
@@ -27,12 +27,15 @@ public class ThemeController {
 
     @GetMapping("/themes")
     public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeRepository.findAll());
+        return ResponseEntity.ok(themeRepository.findByDeletedFalse());
     }
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeRepository.deleteById(id);
+        Theme theme = themeRepository.findById(id)
+                                     .orElseThrow(() -> new IllegalArgumentException("해당 테마를 찾을 수 없습니다."));
+        theme.setDeleted(true);
+        themeRepository.save(theme);
         return ResponseEntity.noContent().build();
     }
 }

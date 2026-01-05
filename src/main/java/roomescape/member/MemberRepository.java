@@ -1,56 +1,30 @@
 package roomescape.member;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.NotFoundDataException;
 
+import java.util.Optional;
+
 @Repository
-@Transactional(readOnly = true)
-public class MemberRepository {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    Optional<Member> findByEmailAndPassword(String email, String password);
 
-    @Transactional
-    public Member save(Member member) {
-        entityManager.persist(member);
-        return member;
+    Optional<Member> findByName(String name);
+
+    default Member findByIdOrThrow(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new NotFoundDataException("ID " + id + "에 해당하는 회원이 존재하지 않습니다."));
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
-        String jpql = "SELECT m FROM Member m WHERE m.email = :email AND m.password = :password";
-        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
-        query.setParameter("email", email);
-        query.setParameter("password", password);
-
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            throw new NotFoundDataException("이메일 또는 비밀번호가 일치하지 않습니다.");
-        }
+    default Member findByEmailAndPasswordOrThrow(String email, String password) {
+        return findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new NotFoundDataException("이메일 또는 비밀번호가 일치하지 않습니다."));
     }
 
-    public Member findByName(String name) {
-        String jpql = "SELECT m FROM Member m WHERE m.name = :name";
-        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
-        query.setParameter("name", name);
-
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            throw new NotFoundDataException("이름이 '" + name + "'인 회원이 존재하지 않습니다.");
-        }
-    }
-
-    public Member findById(Long id) {
-        Member member = entityManager.find(Member.class, id);
-        if (member == null) {
-            throw new NotFoundDataException("ID " + id + "에 해당하는 회원이 존재하지 않습니다.");
-        }
-        return member;
+    default Member findByNameOrThrow(String name) {
+        return findByName(name)
+                .orElseThrow(() -> new NotFoundDataException("이름이 '" + name + "'인 회원이 존재하지 않습니다."));
     }
 }

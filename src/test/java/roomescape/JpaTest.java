@@ -11,7 +11,6 @@ import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
 @DataJpaTest
-@Import(TimeRepository.class)
 public class JpaTest {
 
     @Autowired

@@ -1,6 +1,5 @@
 package roomescape.reservation;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.InvalidDataException;
@@ -75,11 +74,11 @@ public class ReservationService {
 
     private Member determineMember(ReservationRequest request, LoginMember loginMember) {
         if (request.getName() != null && !request.getName().isBlank()) {
-            return memberRepository.findByName(request.getName());
+            return memberRepository.findByNameOrThrow(request.getName());
         }
 
         if (loginMember != null) {
-            return memberRepository.findById(loginMember.id());
+            return memberRepository.findByIdOrThrow(loginMember.id());
         }
 
         throw new InvalidDataException("예약자 정보가 필요합니다.");
@@ -92,7 +91,13 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                                    .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                                    .map(it -> new ReservationResponse(
+                                            it.getId(),
+                                            it.getName(),
+                                            it.getTheme().getName(),
+                                            it.getDate(),
+                                            it.getTime().getValue()
+                                    ))
                                     .toList();
     }
 

@@ -3,7 +3,6 @@ package roomescape.waiting;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ForbiddenException;
-import roomescape.exception.InvalidDataException;
 import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
@@ -26,10 +25,10 @@ public class WaitingService {
     private final ReservationValidator reservationValidator;
 
     public WaitingService(WaitingRepository waitingRepository,
-                          MemberRepository memberRepository,
-                          TimeRepository timeRepository,
-                          ThemeRepository themeRepository,
-                          ReservationValidator reservationValidator) {
+            MemberRepository memberRepository,
+            TimeRepository timeRepository,
+            ThemeRepository themeRepository,
+            ReservationValidator reservationValidator) {
         this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
@@ -39,13 +38,13 @@ public class WaitingService {
 
     @Transactional
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
-        Member member = memberRepository.findById(loginMember.id());
+        Member member = memberRepository.findByIdOrThrow(loginMember.id());
 
         Time time = timeRepository.findById(waitingRequest.getTime())
-                .orElseThrow(() -> new NotFoundDataException("해당 시간을 찾을 수 없습니다."));
+                                  .orElseThrow(() -> new NotFoundDataException("해당 시간을 찾을 수 없습니다."));
 
         Theme theme = themeRepository.findById(waitingRequest.getTheme())
-                .orElseThrow(() -> new NotFoundDataException("해당 테마를 찾을 수 없습니다."));
+                                     .orElseThrow(() -> new NotFoundDataException("해당 테마를 찾을 수 없습니다."));
 
         reservationValidator.validateWaitingCreation(member.getId(), waitingRequest.getDate(), time.getId(), theme.getId());
 
@@ -71,7 +70,7 @@ public class WaitingService {
 
     @Transactional
     public void deleteById(Long id, LoginMember loginMember) {
-        Waiting waiting = waitingRepository.findById(id)
+        Waiting waiting = waitingRepository.findByIdWithMember(id)
                                            .orElseThrow(() -> new NotFoundDataException("해당 대기를 찾을 수 없습니다."));
 
         if (!waiting.getMember().getId().equals(loginMember.id())) {

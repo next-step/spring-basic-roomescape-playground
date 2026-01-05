@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +14,17 @@ public class MemberService {
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(
+                new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER")
+        );
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member findById(Long id) {
-        return memberRepository.findById(id);
+        return memberRepository.findByIdOrThrow(id);
     }
 
     public Member findByName(String name) {
-        return memberRepository.findByName(name);
+        return memberRepository.findByNameOrThrow(name);
     }
 }

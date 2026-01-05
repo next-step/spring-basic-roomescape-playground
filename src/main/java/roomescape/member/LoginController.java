@@ -25,7 +25,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        Member member = memberRepository.findByEmailAndPassword(request.email(), request.password());
+        Member member = memberRepository.findByEmailAndPasswordOrThrow(request.email(), request.password());
 
         String token = jwtTokenProvider.generateToken(member);
         response.addCookie(CookieUtil.createToken(token));
