@@ -1,7 +1,6 @@
 package roomescape.member;
 
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,25 +11,23 @@ import roomescape.util.JwtTokenProvider;
 
 import java.util.Map;
 
-@Slf4j
 @RestController
 public class LoginController {
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginController(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
-        this.memberRepository = memberRepository;
+    public LoginController(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+        this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        Member member = memberRepository.findByEmailAndPasswordOrThrow(request.email(), request.password());
+        Member member = memberService.login(request.email(), request.password());
 
         String token = jwtTokenProvider.generateToken(member);
         response.addCookie(CookieUtil.createToken(token));
 
-        log.info("로그인 성공: memberId={}, email={}", member.getId(), member.getEmail());
         return ResponseEntity.ok().build();
     }
 
