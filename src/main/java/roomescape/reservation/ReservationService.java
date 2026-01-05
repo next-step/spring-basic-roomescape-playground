@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorMessage;
 import roomescape.exception.InvalidDataException;
 import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
@@ -46,10 +47,10 @@ public class ReservationService {
         Member member = determineMember(reservationRequest, loginMember);
 
         Time time = timeRepository.findById(reservationRequest.getTime())
-                                  .orElseThrow(() -> new NotFoundDataException("해당 시간을 찾을 수 없습니다."));
+                                  .orElseThrow(() -> new NotFoundDataException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
 
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
-                                     .orElseThrow(() -> new NotFoundDataException("해당 테마를 찾을 수 없습니다."));
+                                     .orElseThrow(() -> new NotFoundDataException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
 
         reservationValidator.validateReservationCreation(member.getId(), reservationRequest.getDate(), time.getId(), theme.getId());
 
@@ -81,7 +82,7 @@ public class ReservationService {
             return memberRepository.findByIdOrThrow(loginMember.id());
         }
 
-        throw new InvalidDataException("예약자 정보가 필요합니다.");
+        throw new InvalidDataException(ErrorMessage.MEMBER_INFO_REQUIRED.getMessage());
     }
 
     @Transactional

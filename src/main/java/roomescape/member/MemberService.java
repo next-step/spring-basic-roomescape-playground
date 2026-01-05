@@ -31,8 +31,4 @@ public class MemberService {
     public Member findById(Long id) {
         return memberRepository.findByIdOrThrow(id);
     }
-
-    public Member findByName(String name) {
-        return memberRepository.findByNameOrThrow(name);
-    }
 }

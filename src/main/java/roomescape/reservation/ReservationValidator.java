@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Component;
+import roomescape.exception.ErrorMessage;
 import roomescape.exception.InvalidDataException;
 import roomescape.waiting.Waiting;
 import roomescape.waiting.WaitingRepository;
@@ -24,7 +25,7 @@ public class ReservationValidator {
                 .anyMatch(r -> r.getTime().getId().equals(timeId));
 
         if (hasAnyReservation) {
-            throw new InvalidDataException("해당 시간은 이미 예약이 완료되었습니다.");
+            throw new InvalidDataException(ErrorMessage.RESERVATION_TIME_ALREADY_BOOKED.getMessage());
         }
 
         boolean hasMemberReservation = reservations.stream()
@@ -33,7 +34,7 @@ public class ReservationValidator {
                         && r.getTime().getId().equals(timeId));
 
         if (hasMemberReservation) {
-            throw new InvalidDataException("이미 해당 시간에 예약이 존재합니다.");
+            throw new InvalidDataException(ErrorMessage.RESERVATION_ALREADY_EXISTS.getMessage());
         }
     }
 
@@ -45,7 +46,7 @@ public class ReservationValidator {
                         && r.getTime().getId().equals(timeId));
 
         if (hasReservation) {
-            throw new InvalidDataException("이미 해당 시간에 예약이 존재합니다.");
+            throw new InvalidDataException(ErrorMessage.RESERVATION_ALREADY_EXISTS.getMessage());
         }
 
         List<Waiting> waitings = waitingRepository.findByDateAndTimeIdAndThemeId(date, timeId, themeId);
@@ -53,7 +54,7 @@ public class ReservationValidator {
                 .anyMatch(w -> w.getMember().getId().equals(memberId));
 
         if (hasWaiting) {
-            throw new InvalidDataException("이미 해당 시간에 예약 대기가 존재합니다.");
+            throw new InvalidDataException(ErrorMessage.WAITING_ALREADY_EXISTS.getMessage());
         }
     }
 }

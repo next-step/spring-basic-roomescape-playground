@@ -8,6 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
@@ -39,7 +40,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         if (token == null) {
             log.warn("로그인이 필요한 요청: uri={}", request.getRequestURI());
-            throw new NotFoundDataException("로그인이 필요합니다.");
+            throw new NotFoundDataException(ErrorMessage.LOGIN_REQUIRED.getMessage());
         }
 
         try {
@@ -50,7 +51,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
         } catch (Exception e) {
             log.error("토큰 인증 실패: uri={}, error={}", request.getRequestURI(), e.getMessage());
-            throw new NotFoundDataException("유효하지 않은 인증 정보입니다.");
+            throw new NotFoundDataException(ErrorMessage.INVALID_AUTH_INFO.getMessage());
         }
     }
 }
