@@ -26,7 +26,7 @@ public class TimeRepository {
     }
 
     public List<Time> findAll() {
-        return em.createQuery("SELECT t FROM Time t.deleted = false", Time.class).getResultList();
+        return em.createQuery("SELECT t FROM Time WHERE t.deleted = false", Time.class).getResultList();
     }
 
     public void deleteById(Long id) {

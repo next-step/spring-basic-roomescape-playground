@@ -25,7 +25,7 @@ public class ThemeRepository {
     }
 
     public List<Theme> findAll() {
-        return em.createQuery("SELECT t FROM Theme t.deleted false", Theme.class).getResultList();
+        return em.createQuery("SELECT t FROM Theme WHERE t.deleted false", Theme.class).getResultList();
     }
 
     public void deleteById(Long id) {
