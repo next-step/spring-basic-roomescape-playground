@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
@@ -63,8 +64,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+    public void deleteById(Long id, Long memberId) {
+        reservationRepository.deleteById(id, memberId);
     }
 
 

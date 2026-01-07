@@ -32,31 +32,42 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.date() == null
-                || reservationRequest.theme() == null
-                || reservationRequest.time() == null) {
+    public ResponseEntity create(@RequestBody ReservationRequest req, LoginMember loginMember) {
+        if (req.date() == null || req.theme() == null || req.time() == null) {
             return ResponseEntity.badRequest().build();
         }
 
         ReservationResponse reservation;
 
-        if (loginMember != null) {
-            Member member = memberService.findById(loginMember.id());
-            reservation = reservationService.saveMember(reservationRequest, member);
-        } else {
-            if (reservationRequest.name() == null || reservationRequest.name().isBlank()) {
+        // 비로그인: name 필수
+        if (loginMember == null) {
+            if (req.name() == null || req.name().isBlank()) {
                 return ResponseEntity.badRequest().build();
             }
-            reservation = reservationService.saveAdmin(reservationRequest);
+            reservation = reservationService.saveAdmin(req);
+            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
         }
 
+        Member member = memberService.findById(loginMember.id());
+        if ("ADMIN".equals(loginMember.role())) {
+            if (req.name() == null || req.name().isBlank()) {
+                reservation = reservationService.saveMember(req, member);
+            } else {
+                reservation = reservationService.saveAdmin(req);
+            }
+            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        }
+        reservation = reservationService.saveMember(req, member);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
+
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        reservationService.deleteById(id);
+    public ResponseEntity delete(@PathVariable Long id, LoginMember loginMember) {
+        if (loginMember == null) {
+            return ResponseEntity.status(401).build();
+        }
+        reservationService.deleteById(id, loginMember.id());
         return ResponseEntity.noContent().build();
     }
 
