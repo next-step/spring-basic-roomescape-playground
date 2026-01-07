@@ -30,13 +30,12 @@ public class MemberRepository {
                 .getResultList();
     }
 
-    public Optional<Member> findByEmailAndPassword(String email, String password) {
+    public Optional<Member> findByEmail(String email) {
         return em.createQuery(
-                        "select t from Member t where t.email = :email and t.password = :password",
+                        "select t from Member t where t.email = :email",
                         Member.class
                 )
                 .setParameter("email", email)
-                .setParameter("password", password)
                 .getResultList()
                 .stream().findFirst();
     }

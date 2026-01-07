@@ -21,4 +21,9 @@ public class ExceptionController {
     public ResponseEntity<Void> handleConflict(ConflictException e) {
         return ResponseEntity.status(409).build();
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Void> handleUnauthorized(UnauthorizedException e) {
+        return ResponseEntity.status(401).build();
+    }
 }

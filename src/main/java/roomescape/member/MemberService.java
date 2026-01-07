@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -7,14 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService {
     private MemberRepository memberRepository;
+    private PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository,PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        String encodedPassord = passwordEncoder.encode(memberRequest.getPassword());
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), encodedPassord, "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
