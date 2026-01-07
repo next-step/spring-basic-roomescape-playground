@@ -1,7 +1,9 @@
 package roomescape.reservation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
 
+@Getter
 public class MyReservationResponse {
     private Long reservationId;
     private String theme;
@@ -25,26 +27,6 @@ public class MyReservationResponse {
                 reservation.getTime().getValue(),
                 "예약"
         );
-    }
-
-    public Long getReservationId() {
-        return reservationId;
-    }
-
-    public String getTheme() {
-        return theme;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     @JsonIgnore

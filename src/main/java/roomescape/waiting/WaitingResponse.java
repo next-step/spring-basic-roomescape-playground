@@ -1,5 +1,8 @@
 package roomescape.waiting;
 
+import lombok.Getter;
+
+@Getter
 public class WaitingResponse {
     private Long id;
 
@@ -8,10 +11,6 @@ public class WaitingResponse {
 
     public WaitingResponse(Long id) {
         this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public void setId(Long id) {
