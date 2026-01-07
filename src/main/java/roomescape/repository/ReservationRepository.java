@@ -1,83 +1,24 @@
 package roomescape.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import org.springframework.stereotype.Repository;
-import roomescape.dto.ReservationRequest;
-import roomescape.model.Member;
-import roomescape.model.Reservation;
-import roomescape.model.Theme;
-import roomescape.model.Time;
-
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import roomescape.model.Reservation;
 
-@Repository
-public class ReservationRepository {
-    @PersistenceContext
-    private EntityManager entityManager;
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+    List<Reservation> findByDateAndThemeId(String date, Long themeId);
 
-    public List<Reservation> findAll() {
-        String jpql = "SELECT r FROM Reservation r";
-        TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
-        return query.getResultList();
-    }
+    List<Reservation> findByMemberId(Long memberId);
 
-    public Reservation save(ReservationRequest request) {
-        Time time = entityManager.find(Time.class, request.time());
-        Theme theme = entityManager.find(Theme.class, request.theme());
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
+           "FROM Reservation r " +
+           "WHERE r.date = :date AND r.time.id = :timeId AND r.theme.id = :themeId")
+    boolean existsByDateAndTimeAndTheme(@Param("date") String date, @Param("timeId") Long timeId, @Param("themeId") Long themeId);
 
-        Reservation reservation;
-
-        if (request.memberId() != null) {
-            Member member = entityManager.find(Member.class, request.memberId());
-            reservation = new Reservation(member, request.date(), time, theme);
-        } else {
-            reservation = new Reservation(request.name(), request.date(), time, theme);
-        }
-
-        entityManager.persist(reservation);
-        return reservation;
-    }
-
-    public void deleteById(Long id) {
-        Reservation reservation = entityManager.find(Reservation.class, id);
-        if (reservation != null) {
-            entityManager.remove(reservation);
-        }
-    }
-
-    public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
-        String jpql = "SELECT r FROM Reservation r WHERE r.date = :date AND r.theme.id = :themeId";
-        TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
-        query.setParameter("date", date);
-        query.setParameter("themeId", themeId);
-        return query.getResultList();
-    }
-
-    public List<Reservation> findByMemberId(Long memberId) {
-        String jpql = "SELECT r FROM Reservation r WHERE r.member.id = :memberId";
-        TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
-        query.setParameter("memberId", memberId);
-        return query.getResultList();
-    }
-
-    public boolean existsByDateAndTimeAndTheme(String date, Long timeId, Long themeId) {
-        String jpql = "SELECT COUNT(r) FROM Reservation r WHERE r.date = :date AND r.time.id = :timeId AND r.theme.id = :themeId";
-        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
-        query.setParameter("date", date);
-        query.setParameter("timeId", timeId);
-        query.setParameter("themeId", themeId);
-        return query.getSingleResult() > 0;
-    }
-
-    public boolean existsByMemberAndDateAndTimeAndTheme(Long memberId, String date, Long timeId, Long themeId) {
-        String jpql = "SELECT COUNT(r) FROM Reservation r WHERE r.member.id = :memberId AND r.date = :date AND r.time.id = :timeId AND r.theme.id = :themeId";
-        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
-        query.setParameter("memberId", memberId);
-        query.setParameter("date", date);
-        query.setParameter("timeId", timeId);
-        query.setParameter("themeId", themeId);
-        return query.getSingleResult() > 0;
-    }
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
+           "FROM Reservation r " +
+           "WHERE r.member.id = :memberId AND r.date = :date " +
+           "AND r.time.id = :timeId AND r.theme.id = :themeId")
+    boolean existsByMemberAndDateAndTimeAndTheme(@Param("memberId") Long memberId, @Param("date") String date, @Param("timeId") Long timeId, @Param("themeId") Long themeId);
 }
