@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.exception.ErrorMessage;
+import roomescape.exception.InvalidDataException;
 
 import java.net.URI;
 import java.util.List;
@@ -28,7 +30,7 @@ public class TimeController {
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
         if (time.getValue() == null || time.getValue().isEmpty()) {
-            throw new RuntimeException();
+            throw new InvalidDataException(ErrorMessage.TIME_VALUE_REQUIRED.getMessage());
         }
 
         Time newTime = timeService.save(time);

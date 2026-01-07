@@ -13,29 +13,26 @@ import java.util.List;
 
 @RestController
 public class ThemeController {
-    private final ThemeRepository themeRepository;
+    private final ThemeService themeService;
 
-    public ThemeController(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
     }
 
     @PostMapping("/themes")
     public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
-        Theme newTheme = themeRepository.save(theme);
+        Theme newTheme = themeService.save(theme);
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
     }
 
     @GetMapping("/themes")
     public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeRepository.findByDeletedFalse());
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        Theme theme = themeRepository.findById(id)
-                                     .orElseThrow(() -> new IllegalArgumentException("해당 테마를 찾을 수 없습니다."));
-        theme.setDeleted(true);
-        themeRepository.save(theme);
+        themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

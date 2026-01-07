@@ -91,7 +91,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream()
+        return reservationRepository.findAllWithRelations().stream()
                                     .map(it -> new ReservationResponse(
                                             it.getId(),
                                             it.getName(),

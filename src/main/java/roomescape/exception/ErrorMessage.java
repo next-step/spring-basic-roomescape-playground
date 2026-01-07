@@ -14,6 +14,7 @@ public enum ErrorMessage {
     RESERVATION_ALREADY_EXISTS("이미 해당 시간에 예약이 존재합니다."),
     WAITING_ALREADY_EXISTS("이미 해당 시간에 예약 대기가 존재합니다."),
     MEMBER_INFO_REQUIRED("예약자 정보가 필요합니다."),
+    TIME_VALUE_REQUIRED("시간 값은 필수입니다."),
 
     ONLY_OWN_WAITING_CAN_BE_CANCELLED("본인의 대기만 취소할 수 있습니다.");
 

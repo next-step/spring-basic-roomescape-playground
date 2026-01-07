@@ -21,4 +21,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "JOIN FETCH r.theme th " +
             "WHERE r.member.id = :memberId")
     List<Reservation> findByMemberId(@Param("memberId") Long memberId);
+
+    @Query("SELECT r FROM Reservation r " +
+            "JOIN FETCH r.time t " +
+            "JOIN FETCH r.theme th " +
+            "JOIN FETCH r.member m")
+    List<Reservation> findAllWithRelations();
 }
