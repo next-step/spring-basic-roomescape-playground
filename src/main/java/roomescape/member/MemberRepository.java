@@ -5,17 +5,14 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.NotFoundDataException;
 
 @Repository
-@Transactional(readOnly = true)
 public class MemberRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional
     public Member save(Member member) {
         entityManager.persist(member);
         return member;

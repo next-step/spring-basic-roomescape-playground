@@ -4,19 +4,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Transactional(readOnly = true)
 public class WaitingRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional
     public Waiting save(Waiting waiting) {
         entityManager.persist(waiting);
         return waiting;
@@ -34,7 +31,6 @@ public class WaitingRepository {
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
-    @Transactional
     public void deleteById(Long id) {
         Waiting waiting = entityManager.find(Waiting.class, id);
         if (waiting != null) {

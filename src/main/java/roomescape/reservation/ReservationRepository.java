@@ -4,12 +4,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
-@Transactional(readOnly = true)
 public class ReservationRepository {
 
     @PersistenceContext
@@ -23,13 +21,11 @@ public class ReservationRepository {
         return query.getResultList();
     }
 
-    @Transactional
     public Reservation save(Reservation reservation) {
         entityManager.persist(reservation);
         return reservation;
     }
 
-    @Transactional
     public void deleteById(Long id) {
         Reservation reservation = entityManager.find(Reservation.class, id);
         if (reservation != null) {
