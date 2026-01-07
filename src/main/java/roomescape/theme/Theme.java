@@ -41,14 +41,6 @@ public class Theme {
         return name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
