@@ -25,7 +25,7 @@ function render(data) {
       cancelButton.textContent = '취소 '; // 버튼 텍스트 설정
       cancelButton.className = 'btn btn-danger'; // 필요한 경우 CSS 클래스 설정
       cancelButton.onclick = function () {
-        requestDeleteWaiting(item.id).then(() => window.location.reload());
+        requestDeleteWaiting(item.reservationId).then(() => window.location.reload());
       };
       cancelCell.appendChild(cancelButton); // 버튼을 셀에 추가
     } else {
@@ -44,7 +44,10 @@ function requestRead(endpoint) {
 
 function requestDeleteWaiting(id) {
   const endpoint = '/waitings/' + id;
-  return fetch(endpoint, { method: 'DELETE' })
+  return fetch(endpoint, {
+    method: 'DELETE',
+    credentials: 'include'
+  })
       .then(response => {
         if (response.status === 204) return;
         throw new Error('Delete failed');
