@@ -2,7 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.member.LoginMember;
+import roomescape.exception.ConflictException;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
@@ -33,11 +33,9 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse saveAdmin(ReservationRequest reservationRequest) {
-        Time time = timeRepository.findById(reservationRequest.time())
-                .orElseThrow(() -> new IllegalArgumentException(reservationRequest.time() + "존재하지 않는 시간입니다."));
-
-        Theme theme = themeRepository.findById(reservationRequest.theme())
-                .orElseThrow(() -> new IllegalArgumentException(reservationRequest.theme() + "존재하지 않는 테마입니다."));
+        Time time = getTime(reservationRequest.time());
+        Theme theme = getTheme(reservationRequest.theme());
+        validateNotDuplicated(reservationRequest.date(), time.getId(), theme.getId());
 
         Reservation saved = reservationRepository.save(
                 Reservation.adminReservation(reservationRequest.name(), reservationRequest.date(), time, theme)
@@ -49,11 +47,9 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse saveMember(ReservationRequest reservationRequest, Member member) {
-        Time time = timeRepository.findById(reservationRequest.time())
-                .orElseThrow(() -> new IllegalArgumentException(reservationRequest.time() + "존재하지 않는 시간입니다."));
-
-        Theme theme = themeRepository.findById(reservationRequest.theme())
-                .orElseThrow(() -> new IllegalArgumentException(reservationRequest.theme() + "존재하지 않는 테마입니다."));
+        Time time = getTime(reservationRequest.time());
+        Theme theme = getTheme(reservationRequest.theme());
+        validateNotDuplicated(reservationRequest.date(), time.getId(), theme.getId());
 
         Reservation saved = reservationRepository.save(
                 Reservation.memberReservation(reservationRequest.date(), time, theme, member)
@@ -100,5 +96,21 @@ public class ReservationService {
         result.addAll(reservations);
         result.addAll(waitings);
         return result;
+    }
+
+    private Time getTime(Long timeId) {
+        return timeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException(timeId + " 존재하지 않는 시간입니다."));
+    }
+
+    private Theme getTheme(Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException(themeId + " 존재하지 않는 테마입니다."));
+    }
+
+    private void validateNotDuplicated(String date, Long timeId, Long themeId) {
+        if (reservationRepository.existsByDateTimeTheme(date, timeId, themeId)) {
+            throw new ConflictException("이미 예약된 시간입니다.");
+        }
     }
 }

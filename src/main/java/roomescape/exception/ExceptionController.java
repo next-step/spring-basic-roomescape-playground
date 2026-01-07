@@ -16,4 +16,9 @@ public class ExceptionController {
     public ResponseEntity<Void> handleForbidden(ForbiddenException e) {
         return ResponseEntity.status(403).build();
     }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Void> handleConflict(ConflictException e) {
+        return ResponseEntity.status(409).build();
+    }
 }

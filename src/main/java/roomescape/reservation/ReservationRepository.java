@@ -61,4 +61,16 @@ public class ReservationRepository {
                 .setParameter("themeId", themeId)
                 .getResultList();
     }
+
+    public boolean existsByDateTimeTheme(String date, Long timeId, Long themeId) {
+        List<Reservation> reservations = em.createQuery(
+                        "SELECT FROM Reservation t WHERE t.date = :date AND t.time.id = :timeId AND t.theme.id = :themeId",
+                        Reservation.class)
+                .setParameter("date", date)
+                .setParameter("timeId", timeId)
+                .setParameter("themeId", themeId)
+                .getResultList();
+
+        return !reservations.isEmpty();
+    }
 }
