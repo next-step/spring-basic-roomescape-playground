@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberService;
+import roomescape.member.MyReservationResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -16,14 +19,21 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final MemberService memberService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, MemberService memberService) {
         this.reservationService = reservationService;
+        this.memberService = memberService;
     }
 
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
         return reservationService.findAll();
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> findMine(LoginMember loginMember) {
+        return reservationService.findReservationsByMember(loginMember);
     }
 
     @PostMapping("/reservations")
@@ -33,27 +43,15 @@ public class ReservationController {
                 || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (reservationRequest.getName() == null && loginMember == null) {
-            return ResponseEntity.status(401).build();
+        Member member = null;
+        if (loginMember != null) {
+            member = memberService.findById(loginMember.getId());
         }
 
-        String realName;
-        if (reservationRequest.getName() != null) {
-            realName = reservationRequest.getName();
-        } else {
-            realName = loginMember.getName();
-        }
+        ReservationResponse reservation = reservationService.save(reservationRequest, member);
 
-        ReservationRequest newRequest = new ReservationRequest(
-                realName,
-                reservationRequest.getDate(),
-                reservationRequest.getTheme(),
-                reservationRequest.getTime()
-        );
-
-        ReservationResponse reservation = reservationService.save(newRequest);
-
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);  }
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {

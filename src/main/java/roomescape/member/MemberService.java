@@ -5,14 +5,14 @@ import roomescape.util.JwtUtil;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public String login(LoginRequest request) {
-        Member member = memberDao.findByEmail(request.getEmail())
+        Member member = memberRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
 
         if (!member.checkPassword(request.getPassword())) {
@@ -23,12 +23,12 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member findById(Long id) {
-        return memberDao.findById(id)
+        return memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
     }
 }
