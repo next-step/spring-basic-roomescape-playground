@@ -23,7 +23,7 @@ public class WaitingService {
         this.entityManager = entityManager;
     }
 
-    public WaitingResponse create(Long memberId, String date, Long timeId, Long themeId) {
+	public WaitingResponseDto create(Long memberId, String date, Long timeId, Long themeId) {
         if (reservationRepository.existsForMemberOnSlot(memberId, date, timeId, themeId)) {
             throw new IllegalStateException();
         }
@@ -35,8 +35,8 @@ public class WaitingService {
         Time timeRef = entityManager.getReference(Time.class, timeId);
         Theme themeRef = entityManager.getReference(Theme.class, themeId);
         Waiting waiting = new Waiting(memberRef, date, timeRef, themeRef);
-        waiting = waitingRepository.save(waiting);
-        return new WaitingResponse(waiting.getId());
+		waiting = waitingRepository.save(waiting);
+		return new WaitingResponseDto(waiting.getId());
     }
 
     public void cancel(Long waitingId, Long memberId) {
@@ -47,10 +47,10 @@ public class WaitingService {
         waitingRepository.deleteById(waitingId);
     }
 
-    public List<WaitingWithRank> findMineWithRank(Long memberId) {
+	public List<WaitingWithRankDto> findMineWithRank(Long memberId) {
         var mine = waitingRepository.findByMember_IdOrderByIdAsc(memberId);
         return mine.stream()
-                .map(w -> new WaitingWithRank(
+				.map(w -> new WaitingWithRankDto(
                         w,
                         waitingRepository.countByTheme_IdAndDateAndTime_IdAndIdLessThan(
                                 w.getTheme().getId(), w.getDate(), w.getTime().getId(), w.getId()))

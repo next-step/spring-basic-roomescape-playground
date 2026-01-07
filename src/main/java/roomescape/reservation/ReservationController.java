@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.LoginMember;
+import roomescape.member.LoginMemberDto;
 
 import java.net.URI;
 import java.util.List;
@@ -24,18 +24,18 @@ public class ReservationController {
         this.myReservationService = myReservationService;
     }
 
-    @GetMapping("/reservations")
-    public List<ReservationResponse> list() {
+	@GetMapping("/reservations")
+	public List<ReservationResponseDto> list() {
         return reservationService.findAll();
     }
 
     @GetMapping("/admin/reservations")
-    public List<ReservationResponse> adminList() {
+	public List<ReservationResponseDto> adminList() {
         return reservationService.findAll();
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody @Valid ReservationRequest reservationRequest, LoginMember member) {
+	public ResponseEntity create(@RequestBody @Valid ReservationRequestDto reservationRequest, LoginMemberDto member) {
 
         String effectiveName = reservationRequest.getName() != null && !reservationRequest.getName().isBlank()
                 ? reservationRequest.getName()
@@ -43,24 +43,24 @@ public class ReservationController {
         if (effectiveName == null || effectiveName.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        ReservationRequest requestWithName = new ReservationRequest(
+		ReservationRequestDto requestWithName = new ReservationRequestDto(
                 effectiveName,
                 reservationRequest.getDate(),
                 reservationRequest.getTheme(),
                 reservationRequest.getTime()
         );
 
-        ReservationResponse reservation = reservationService.save(requestWithName, member != null ? member.getId() : null);
+		ReservationResponseDto reservation = reservationService.save(requestWithName, member != null ? member.getId() : null);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
     @PostMapping("/admin/reservations")
-    public ResponseEntity adminCreate(@RequestBody @Valid ReservationRequest reservationRequest) {
+	public ResponseEntity adminCreate(@RequestBody @Valid ReservationRequestDto reservationRequest) {
         if (reservationRequest.getName() == null || reservationRequest.getName().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        ReservationResponse reservation = reservationService.save(reservationRequest, null);
+		ReservationResponseDto reservation = reservationService.save(reservationRequest, null);
         return ResponseEntity.created(URI.create("/admin/reservations/" + reservation.getId())).body(reservation);
     }
 
@@ -76,8 +76,8 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/reservations-mine")
-    public ResponseEntity<List<MyReservationResponse>> mine(LoginMember member) {
+	@GetMapping("/reservations-mine")
+	public ResponseEntity<List<MyReservationResponseDto>> mine(LoginMemberDto member) {
         return ResponseEntity.ok(myReservationService.findMine(member.getId()));
     }
 }

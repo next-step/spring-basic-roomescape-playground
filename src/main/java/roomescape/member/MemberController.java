@@ -25,13 +25,13 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
-        MemberResponse member = memberService.createMember(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+	public ResponseEntity createMember(@RequestBody MemberRequestDto memberRequest) {
+		MemberResponseDto member = memberService.createMember(memberRequest);
+		return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
+	public ResponseEntity login(@RequestBody MemberRequestDto memberRequest, HttpServletResponse response) {
         Member member = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
 
         String accessToken = createToken(member);
@@ -45,7 +45,7 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
+	public ResponseEntity<MemberResponseDto> checkLogin(HttpServletRequest request) {
         String token = extractTokenFromCookie(request.getCookies());
 
         String name = Jwts.parserBuilder()
@@ -55,7 +55,7 @@ public class MemberController {
                 .getBody()
                 .get("name", String.class);
 
-        MemberResponse body = new MemberResponse(null, name, null);
+		MemberResponseDto body = new MemberResponseDto(null, name, null);
         return ResponseEntity.ok(body);
     }
 

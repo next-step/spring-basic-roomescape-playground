@@ -25,7 +25,7 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest, Long loginMemberId) {
+	public ReservationResponseDto save(ReservationRequestDto reservationRequest, Long loginMemberId) {
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
         Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme);
@@ -35,16 +35,16 @@ public class ReservationService {
         }
         reservation = reservationRepository.save(reservation);
 
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+		return new ReservationResponseDto(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
     }
 
-    public List<ReservationResponse> findAll() {
+	public List<ReservationResponseDto> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+				.map(it -> new ReservationResponseDto(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
 

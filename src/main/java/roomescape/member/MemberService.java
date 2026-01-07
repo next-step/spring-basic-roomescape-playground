@@ -10,9 +10,9 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+	public MemberResponseDto createMember(MemberRequestDto memberRequest) {
+		Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+		return new MemberResponseDto(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member login(String email, String password) {

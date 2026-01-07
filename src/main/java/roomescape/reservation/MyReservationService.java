@@ -2,7 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.waiting.WaitingService;
-import roomescape.waiting.WaitingWithRank;
+import roomescape.waiting.WaitingWithRankDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,17 +17,17 @@ public class MyReservationService {
         this.waitingService = waitingService;
     }
 
-    public List<MyReservationResponse> findMine(Long memberId) {
-        List<MyReservationResponse> result = new ArrayList<>();
+	public List<MyReservationResponseDto> findMine(Long memberId) {
+		List<MyReservationResponseDto> result = new ArrayList<>();
         result.addAll(
                 reservationRepository.findByMember_Id(memberId).stream()
-                        .map(MyReservationResponse::from)
+						.map(MyReservationResponseDto::from)
                         .toList()
         );
-        List<WaitingWithRank> waitings = waitingService.findMineWithRank(memberId);
-        for (WaitingWithRank w : waitings) {
+		List<WaitingWithRankDto> waitings = waitingService.findMineWithRank(memberId);
+		for (WaitingWithRankDto w : waitings) {
             long rankOneBased = (w.getRank() == null ? 0 : w.getRank()) + 1;
-            result.add(new MyReservationResponse(
+			result.add(new MyReservationResponseDto(
                     w.getWaiting().getId(),
                     w.getWaiting().getTheme().getName(),
                     w.getWaiting().getDate(),

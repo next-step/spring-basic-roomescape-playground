@@ -16,12 +16,12 @@ public class TimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<AvailableTime> getAvailableTime(String date, Long themeId) {
+	public List<AvailableTimeDto> getAvailableTime(String date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findByDateAndTheme_Id(date, themeId);
         List<Time> times = timeRepository.findAll();
 
         return times.stream()
-                .map(time -> new AvailableTime(
+				.map(time -> new AvailableTimeDto(
                         time.getId(),
                         time.getValue(),
                         reservations.stream()
