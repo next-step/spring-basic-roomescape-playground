@@ -21,7 +21,6 @@ public class ReservationValidator {
     public void validateReservationCreation(Long memberId, String date, Long timeId, Long themeId) {
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
 
-        // 1. 먼저 해당 멤버가 같은 날짜/시간/테마에 예약이 있는지 확인 (더 구체적인 에러 메시지)
         boolean hasMemberReservation = reservations.stream()
                 .anyMatch(r -> r.getMember() != null
                         && r.getMember().getId().equals(memberId)
@@ -31,7 +30,6 @@ public class ReservationValidator {
             throw new InvalidDataException(ErrorMessage.RESERVATION_ALREADY_EXISTS.getMessage());
         }
 
-        // 2. 해당 시간에 다른 예약이 있는지 확인
         boolean hasAnyReservation = reservations.stream()
                 .anyMatch(r -> r.getTime().getId().equals(timeId));
 
