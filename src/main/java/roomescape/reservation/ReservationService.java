@@ -7,11 +7,9 @@ import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.member.MemberRepository;
 import roomescape.member.Member;
-import roomescape.waiting.WaitingService;
-import roomescape.waiting.WaitingWithRank;
+
 
 import java.util.List;
-import java.util.ArrayList;
 
 @Service
 public class ReservationService {
@@ -19,14 +17,12 @@ public class ReservationService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
-    private final WaitingService waitingService;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository, WaitingService waitingService) {
+	public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
-        this.waitingService = waitingService;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, Long loginMemberId) {

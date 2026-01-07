@@ -1,7 +1,6 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
