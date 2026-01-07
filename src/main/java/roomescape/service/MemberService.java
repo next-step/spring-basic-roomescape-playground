@@ -24,7 +24,7 @@ public class MemberService {
     }
 
     public Member findById(String id) {
-        return memberRepository.findById(id).orElseThrow(() -> new UnauthorizedException("유효하지 않은 토큰입니다."));
+        return memberRepository.findById(Long.parseLong(id)).orElseThrow(() -> new UnauthorizedException("유효하지 않은 토큰입니다."));
     }
 
     public Member authenticate(String email, String password) {
