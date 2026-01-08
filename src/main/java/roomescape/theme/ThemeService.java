@@ -20,7 +20,7 @@ public class ThemeService {
     }
 
     public List<Theme> findAll() {
-        return themeRepository.findAll();
+        return themeRepository.findByDeletedFalse();
     }
 
     @Transactional

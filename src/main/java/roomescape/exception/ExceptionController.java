@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ExceptionController {
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> handleRuntimeException(Exception e) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Void> handleRuntimeException(RuntimeException e) {
         e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }

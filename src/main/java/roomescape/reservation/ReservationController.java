@@ -39,7 +39,6 @@ public class ReservationController {
 
         ReservationResponse reservation;
 
-        // 비로그인: name 필수
         if (loginMember == null) {
             if (req.name() == null || req.name().isBlank()) {
                 return ResponseEntity.badRequest().build();

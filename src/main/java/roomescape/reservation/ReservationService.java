@@ -3,6 +3,7 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ConflictException;
+import roomescape.exception.ForbiddenException;
 import roomescape.exception.NotFoundException;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
@@ -36,7 +37,7 @@ public class ReservationService {
     public ReservationResponse saveAdmin(ReservationRequest reservationRequest) {
         Time time = getTime(reservationRequest.time());
         Theme theme = getTheme(reservationRequest.theme());
-        validateNotDuplicated(reservationRequest.date(), time.getId(), theme.getId());
+        //validateNotDuplicated(reservationRequest.date(), time.getId(), theme.getId());
 
         Reservation saved = reservationRepository.save(
                 Reservation.adminReservation(reservationRequest.name(), reservationRequest.date(), time, theme)
@@ -50,7 +51,7 @@ public class ReservationService {
     public ReservationResponse saveMember(ReservationRequest reservationRequest, Member member) {
         Time time = getTime(reservationRequest.time());
         Theme theme = getTheme(reservationRequest.theme());
-        validateNotDuplicated(reservationRequest.date(), time.getId(), theme.getId());
+        // validateNotDuplicated(reservationRequest.date(), time.getId(), theme.getId());
 
         Reservation saved = reservationRepository.save(
                 Reservation.memberReservation(reservationRequest.date(), time, theme, member)
@@ -62,18 +63,25 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id, Long memberId) {
-        reservationRepository.deleteById(id, memberId);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("예약이 존재하지 않습니다."));
+        if (reservation.getMember() == null ||
+                !memberId.equals(reservation.getMember().getId())) {
+            throw new ForbiddenException("본인이 소유한 데이터만 삭제할 수 있습니다.");
+        }
+
+        reservationRepository.delete(reservation);
     }
 
 
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream()
+        return reservationRepository.findAllWithRelations().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
                 .toList();
     }
 
     public List<MyReservationResponse> findMine(Long memberId) {
-        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(memberId).stream()
+        List<MyReservationResponse> reservations = reservationRepository.findMineWithRelations(memberId).stream()
                 .map(r -> new MyReservationResponse(
                         r.getId(),
                         r.getTheme().getName(),
@@ -110,7 +118,7 @@ public class ReservationService {
     }
 
     private void validateNotDuplicated(String date, Long timeId, Long themeId) {
-        if (reservationRepository.existsByDateTimeTheme(date, timeId, themeId)) {
+        if (reservationRepository.existsByDateAndTime_IdAndTheme_Id(date, timeId, themeId)) {
             throw new ConflictException("이미 예약된 시간입니다.");
         }
     }
