@@ -26,9 +26,9 @@ public class ReservationService {
     }
 
 	public ReservationResponseDto save(ReservationRequestDto reservationRequest, Long loginMemberId) {
-        Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
-        Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
-        Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme);
+		Time time = timeRepository.findById(reservationRequest.time()).orElseThrow();
+		Theme theme = themeRepository.findById(reservationRequest.theme()).orElseThrow();
+		Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), time, theme);
         if (loginMemberId != null) {
             Member memberRef = memberRepository.getReferenceById(loginMemberId);
             reservation.setMember(memberRef);

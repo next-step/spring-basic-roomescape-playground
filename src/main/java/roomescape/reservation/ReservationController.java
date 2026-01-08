@@ -37,17 +37,17 @@ public class ReservationController {
     @PostMapping("/reservations")
 	public ResponseEntity create(@RequestBody @Valid ReservationRequestDto reservationRequest, LoginMemberDto member) {
 
-        String effectiveName = reservationRequest.getName() != null && !reservationRequest.getName().isBlank()
-                ? reservationRequest.getName()
+		String effectiveName = reservationRequest.name() != null && !reservationRequest.name().isBlank()
+				? reservationRequest.name()
                 : (member != null ? member.getName() : null);
         if (effectiveName == null || effectiveName.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
 		ReservationRequestDto requestWithName = new ReservationRequestDto(
                 effectiveName,
-                reservationRequest.getDate(),
-                reservationRequest.getTheme(),
-                reservationRequest.getTime()
+				reservationRequest.date(),
+				reservationRequest.theme(),
+				reservationRequest.time()
         );
 
 		ReservationResponseDto reservation = reservationService.save(requestWithName, member != null ? member.getId() : null);
@@ -57,7 +57,7 @@ public class ReservationController {
 
     @PostMapping("/admin/reservations")
 	public ResponseEntity adminCreate(@RequestBody @Valid ReservationRequestDto reservationRequest) {
-        if (reservationRequest.getName() == null || reservationRequest.getName().isBlank()) {
+		if (reservationRequest.name() == null || reservationRequest.name().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
 		ReservationResponseDto reservation = reservationService.save(reservationRequest, null);

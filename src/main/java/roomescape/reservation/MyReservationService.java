@@ -26,12 +26,12 @@ public class MyReservationService {
         );
 		List<WaitingWithRankDto> waitings = waitingService.findMineWithRank(memberId);
 		for (WaitingWithRankDto w : waitings) {
-            long rankOneBased = (w.getRank() == null ? 0 : w.getRank()) + 1;
+			long rankOneBased = (w.rank() == null ? 0 : w.rank()) + 1;
 			result.add(new MyReservationResponseDto(
-                    w.getWaiting().getId(),
-                    w.getWaiting().getTheme().getName(),
-                    w.getWaiting().getDate(),
-                    w.getWaiting().getTime().getValue(),
+					w.waiting().getId(),
+					w.waiting().getTheme().getName(),
+					w.waiting().getDate(),
+					w.waiting().getTime().getValue(),
                     rankOneBased + "번째 예약대기"
             ));
         }
