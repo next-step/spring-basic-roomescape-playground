@@ -10,6 +10,8 @@ public final class JwtUtil {
     private JwtUtil() {
     }
 
+	public static final int DEFAULT_MAX_AGE_SECONDS = 10 * 60; // 10분
+
     public static String extractTokenFromCookies(Cookie[] cookies) {
         if (cookies == null || cookies.length == 0) {
             return "";
@@ -40,6 +42,23 @@ public final class JwtUtil {
 				.claim("role", role)
 				.signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
 				.compact();
+	}
+
+	public static Cookie createAuthCookie(String token, int maxAgeSeconds, boolean secure) {
+		Cookie cookie = new Cookie("token", token);
+		cookie.setHttpOnly(true);
+		cookie.setPath("/");
+		cookie.setMaxAge(maxAgeSeconds);
+		cookie.setSecure(secure);
+		return cookie;
+	}
+
+	public static Cookie createExpiredAuthCookie() {
+		Cookie cookie = new Cookie("token", "");
+		cookie.setHttpOnly(true);
+		cookie.setPath("/");
+		cookie.setMaxAge(0);
+		return cookie;
 	}
 }
 

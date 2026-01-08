@@ -35,10 +35,8 @@ public class MemberController {
 
 		String accessToken = createToken(member);
 
-        Cookie cookie = new Cookie("token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+		Cookie cookie = JwtUtil.createAuthCookie(accessToken, JwtUtil.DEFAULT_MAX_AGE_SECONDS, false);
+		response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
     }
@@ -66,10 +64,7 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", "");
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
+		Cookie cookie = JwtUtil.createExpiredAuthCookie();
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }

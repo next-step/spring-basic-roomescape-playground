@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -32,12 +33,18 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
 
-        Claims claims = JwtUtil.parseClaims(token, secretKey);
+		try {
+			Claims claims = JwtUtil.parseClaims(token, secretKey);
 
-        Long id = Long.valueOf(claims.getSubject());
-        String name = claims.get("name", String.class);
-        String role = claims.get("role", String.class);
+			Long id = Long.valueOf(claims.getSubject());
+			String name = claims.get("name", String.class);
+			String role = claims.get("role", String.class);
 
-		return new LoginMemberDto(id, name, null, role);
+			return new LoginMemberDto(id, name, null, role);
+		} catch (ExpiredJwtException e) {
+			return null;
+		} catch (Exception e) {
+			return null;
+		}
     }
 }

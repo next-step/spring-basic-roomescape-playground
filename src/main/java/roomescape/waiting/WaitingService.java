@@ -1,12 +1,14 @@
 package roomescape.waiting;
 
-import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.reservation.ReservationRepository;
 import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import java.util.List;
 
@@ -15,14 +17,20 @@ import java.util.List;
 public class WaitingService {
     private final WaitingRepository waitingRepository;
     private final ReservationRepository reservationRepository;
-    private final EntityManager entityManager;
+	private final MemberRepository memberRepository;
+	private final TimeRepository timeRepository;
+	private final ThemeRepository themeRepository;
 
     public WaitingService(WaitingRepository waitingRepository,
                           ReservationRepository reservationRepository,
-                          EntityManager entityManager) {
+						  MemberRepository memberRepository,
+						  TimeRepository timeRepository,
+						  ThemeRepository themeRepository) {
         this.waitingRepository = waitingRepository;
         this.reservationRepository = reservationRepository;
-        this.entityManager = entityManager;
+		this.memberRepository = memberRepository;
+		this.timeRepository = timeRepository;
+		this.themeRepository = themeRepository;
     }
 
 	@Transactional
@@ -34,9 +42,9 @@ public class WaitingService {
             throw new IllegalStateException();
         }
 
-        Member memberRef = entityManager.getReference(Member.class, memberId);
-        Time timeRef = entityManager.getReference(Time.class, timeId);
-        Theme themeRef = entityManager.getReference(Theme.class, themeId);
+		Member memberRef = memberRepository.getReferenceById(memberId);
+		Time timeRef = timeRepository.getReferenceById(timeId);
+		Theme themeRef = themeRepository.getReferenceById(themeId);
         Waiting waiting = new Waiting(memberRef, date, timeRef, themeRef);
 		waiting = waitingRepository.save(waiting);
 		return new WaitingResponseDto(waiting.getId());

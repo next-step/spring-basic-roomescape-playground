@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -33,6 +34,9 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
                 return false;
             }
             return true;
+		} catch (ExpiredJwtException e) {
+			writeError(response, ApiError.UNAUTHORIZED_EXPIRED_TOKEN);
+			return false;
         } catch (Exception e) {
 			writeError(response, ApiError.UNAUTHORIZED_INVALID_TOKEN);
             return false;
