@@ -1,7 +1,7 @@
 let isEditing = false;
-const RESERVATION_API_ENDPOINT = '/reservations';
-const TIME_API_ENDPOINT = '/times';
-const THEME_API_ENDPOINT = '/themes';
+const RESERVATION_API_ENDPOINT = '/admin/reservations';
+const TIME_API_ENDPOINT = '/admin/times';
+const THEME_API_ENDPOINT = '/admin/themes';
 const timesOptions = [];
 const themesOptions = [];
 
