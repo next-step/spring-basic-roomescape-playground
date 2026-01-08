@@ -1,29 +1,31 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dao.TimeDao;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.repository.TimeRepository;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.model.Reservation;
-import roomescape.dao.ReservationDao;
+import roomescape.repository.ReservationRepository;
 
 import java.util.List;
 import roomescape.dto.AvailableTime;
 import roomescape.model.Time;
 
 @Service
+@Transactional
 public class TimeService {
-    private final TimeDao timeDao;
-    private final ReservationDao reservationDao;
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
+    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
+        this.timeRepository = timeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        List<Time> times = timeRepository.findAll();
 
         return times.stream()
                 .map(time -> new AvailableTime(
@@ -36,16 +38,16 @@ public class TimeService {
     }
 
     public List<TimeResponse> findAll() {
-        return timeDao.findAll().stream().map((time) -> new TimeResponse(time.getId(), time.getValue())).toList();
+        return timeRepository.findAll().stream().map((time) -> new TimeResponse(time.getId(), time.getValue())).toList();
     }
 
     public TimeResponse create(TimeRequest request) {
-        Time time = timeDao.save(new Time(request.value()));
+        Time time = timeRepository.save(new Time(request.value()));
 
         return new TimeResponse(time.getId(), time.getValue());
     }
 
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        timeRepository.deleteById(id);
     }
 }

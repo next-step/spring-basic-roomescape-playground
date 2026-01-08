@@ -12,6 +12,7 @@ import java.net.URI;
 import java.util.List;
 import roomescape.auth.AdminRoute;
 import roomescape.auth.LoginMember;
+import roomescape.dto.MyReservationResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.BadRequestException;
@@ -52,5 +53,10 @@ public class ReservationController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> listMine(@LoginMember Member member) {
+        return reservationService.findByMemberId(member.getId());
     }
 }

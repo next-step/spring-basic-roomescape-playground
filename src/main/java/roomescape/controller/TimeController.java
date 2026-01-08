@@ -17,7 +17,6 @@ import roomescape.dto.AvailableTime;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.exception.BadRequestException;
-import roomescape.model.Time;
 import roomescape.service.TimeService;
 
 @RestController

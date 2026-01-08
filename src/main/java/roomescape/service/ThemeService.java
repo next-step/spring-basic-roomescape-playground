@@ -2,30 +2,32 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ThemeDao;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.repository.ThemeRepository;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.model.Theme;
 
 @Service
+@Transactional
 public class ThemeService {
-    private final ThemeDao themeDao;
+    private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public ThemeService(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
     public List<ThemeResponse> findAll() {
-        return themeDao.findAll().stream().map((theme) -> new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription())).toList();
+        return themeRepository.findAll().stream().map((theme) -> new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription())).toList();
     }
 
     public ThemeResponse create(ThemeRequest request) {
-        Theme theme = themeDao.save(new Theme(request.name(), request.description()));
+        Theme theme = themeRepository.save(new Theme(request.name(), request.description()));
 
         return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription());
     }
 
     public void deleteById(Long id) {
-        themeDao.deleteById(id);
+        themeRepository.deleteById(id);
     }
 }

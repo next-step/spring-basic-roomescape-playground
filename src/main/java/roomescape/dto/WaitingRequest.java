@@ -1,9 +1,8 @@
 package roomescape.dto;
 
-public record ReservationRequest(
-        String name,
-        Long memberId,
+public record WaitingRequest(
         String date,
         Long theme,
         Long time
-) { }
+) {
+}

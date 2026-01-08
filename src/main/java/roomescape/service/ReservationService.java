@@ -1,47 +1,108 @@
 package roomescape.service;
 
+import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import roomescape.dao.ReservationDao;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import roomescape.dto.MyReservationResponse;
+import roomescape.model.Waiting;
+import roomescape.repository.ReservationRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
+import roomescape.repository.WaitingRepository;
 
 @Service
+@Transactional
 public class ReservationService {
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
+    private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository) {
+        this.reservationRepository = reservationRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse create(ReservationRequest request, Member member) {
-        String name = resolveName(request, member);
+        validateRequest(request, member);
 
-        ReservationRequest finalized = new ReservationRequest(name, request.date(), request.theme(), request.time());
+        if (reservationRepository.existsByDateAndTimeAndTheme(request.date(), request.time(), request.theme())) {
+            throw new BadRequestException("이미 예약이 존재합니다.");
+        }
 
-        Reservation reservation = reservationDao.save(finalized);
+        ReservationRequest finalized;
 
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        if (StringUtils.hasText(request.name())) {
+            finalized = new ReservationRequest(request.name(), null, request.date(), request.time(), request.theme());
+        } else {
+            finalized = new ReservationRequest(null, member.getId(), request.date(), request.time(), request.theme());
+        }
+
+        Reservation reservation = reservationRepository.save(finalized);
+
+        return ReservationResponse.from(reservation);
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponse::from)
                 .toList();
     }
 
-    private String resolveName(ReservationRequest request, Member member) {
-        if (request.name() != null) return request.name();
-        if (member != null) return member.getName();
+    public List<MyReservationResponse> findByMemberId(Long memberId) {
+        List<MyReservationResponse> result = new ArrayList<>();
 
-        throw new BadRequestException("예약자 이름은 누락될 수 없습니다.");
+        // 예약
+        reservationRepository.findByMemberId(memberId)
+                .forEach(r -> result.add(
+                        new MyReservationResponse(
+                                r.getId(),
+                                r.getTheme().getName(),
+                                r.getDate(),
+                                r.getTime().getValue(),
+                                "예약"
+                        )
+                ));
+
+        // 예약 대기
+        waitingRepository.findWaitingsWithRankByMemberId(memberId)
+                .forEach(wr -> {
+                    Waiting w = wr.waiting();
+                    result.add(
+                            new MyReservationResponse(
+                                    w.getId(),
+                                    w.getTheme().getName(),
+                                    w.getDate(),
+                                    w.getTime().getValue(),
+                                    wr.rank() + "번째 예약대기"
+                            )
+                    );
+                });
+
+        return result;
+    }
+
+    private void validateRequest(ReservationRequest request, Member member) {
+        if (member == null && !StringUtils.hasText(request.name())) {
+            throw new BadRequestException("예약자 정보가 없습니다.");
+        }
+
+        if (member != null &&
+                waitingRepository.existsByMemberAndDateAndTimeAndTheme(member.getId(), request.date(), request.time(), request.theme())) {
+            throw new BadRequestException("이미 예약 대기 중입니다.");
+        }
+
+        if (member != null &&
+                reservationRepository.existsByMemberAndDateAndTimeAndTheme(member.getId(), request.date(), request.time(), request.theme())) {
+            throw new BadRequestException("이미 예약했습니다.");
+        }
     }
 }
