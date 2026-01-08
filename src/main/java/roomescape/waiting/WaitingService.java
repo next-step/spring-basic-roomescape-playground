@@ -2,6 +2,7 @@ package roomescape.waiting;
 
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.Member;
 import roomescape.reservation.ReservationRepository;
 import roomescape.theme.Theme;
@@ -10,6 +11,7 @@ import roomescape.time.Time;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class WaitingService {
     private final WaitingRepository waitingRepository;
     private final ReservationRepository reservationRepository;
@@ -23,6 +25,7 @@ public class WaitingService {
         this.entityManager = entityManager;
     }
 
+	@Transactional
 	public WaitingResponseDto create(Long memberId, String date, Long timeId, Long themeId) {
         if (reservationRepository.existsForMemberOnSlot(memberId, date, timeId, themeId)) {
             throw new IllegalStateException();
@@ -39,6 +42,7 @@ public class WaitingService {
 		return new WaitingResponseDto(waiting.getId());
     }
 
+	@Transactional
     public void cancel(Long waitingId, Long memberId) {
         Waiting waiting = waitingRepository.findById(waitingId).orElseThrow();
         if (!waiting.getMember().getId().equals(memberId)) {

@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -12,6 +13,7 @@ import roomescape.member.Member;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
@@ -25,6 +27,7 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
+	@Transactional
 	public ReservationResponseDto save(ReservationRequestDto reservationRequest, Long loginMemberId) {
 		Time time = timeRepository.findById(reservationRequest.time()).orElseThrow();
 		Theme theme = themeRepository.findById(reservationRequest.theme()).orElseThrow();
@@ -38,6 +41,7 @@ public class ReservationService {
 		return new ReservationResponseDto(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
+	@Transactional
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
     }
