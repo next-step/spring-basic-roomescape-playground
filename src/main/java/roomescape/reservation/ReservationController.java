@@ -33,6 +33,10 @@ public class ReservationController {
 
     @GetMapping("/reservations-mine")
     public List<MyReservationResponse> findMine(LoginMember loginMember) {
+        if (loginMember == null) {
+            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
+        }
+
         return reservationService.findReservationsByMember(loginMember);
     }
 

@@ -9,7 +9,11 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.Waiting;
+import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.WaitingWithRank;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,11 +23,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     @Transactional
@@ -33,14 +39,26 @@ public class ReservationService {
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("테마를 찾을 수 없습니다."));
 
-        Reservation reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme, null);
+        String reservationName;
+        if (member != null) {
+            reservationName = member.getName();
+        } else {
+            reservationName = reservationRequest.getName();
+        }
+
+        if (reservationName == null || reservationName.isEmpty()) {
+            throw new IllegalArgumentException("예약자 이름을 찾을 수 없습니다.");
+        }
+
+        Reservation reservation = new Reservation(reservationName, reservationRequest.getDate(), time, theme, member);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return new ReservationResponse(reservation.getId(),
-                reservationRequest.getName(), reservation.getTheme().getName(),
-                reservation.getDate(),
-                reservation.getTime().getValue()
+                savedReservation.getName(),
+                savedReservation.getTheme().getName(),
+                savedReservation.getDate(),
+                savedReservation.getTime().getValue()
         );
     }
 
@@ -56,10 +74,10 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findReservationsByMember(LoginMember loginMember) {
-        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.getId());
+        List<MyReservationResponse> response = new ArrayList<>();
 
-        return reservations.stream()
-                .map(it -> new MyReservationResponse(
+        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.getId());
+        List<MyReservationResponse> reservationResponses = reservations.stream()                .map(it -> new MyReservationResponse(
                         it.getId(),
                         it.getTheme().getName(),
                         it.getDate(),
@@ -67,6 +85,25 @@ public class ReservationService {
                         "예약"
                 ))
                 .collect(Collectors.toList());
+        response.addAll(reservationResponses);
+
+        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId());
+        List<MyReservationResponse> waitingResponses = waitings.stream()
+                .map(it -> {
+                    Waiting w = it.getWaiting();
+                    long rank = it.getRank() + 1;
+                    return new MyReservationResponse(
+                            w.getId(),
+                            w.getTheme().getName(),
+                            w.getDate(),
+                            w.getTime().getValue(),
+                            rank + "번째 예약대기"
+                    );
+                })
+                .toList();
+        response.addAll(waitingResponses);
+
+        return response;
     }
 
     public void deleteById(Long id) {
