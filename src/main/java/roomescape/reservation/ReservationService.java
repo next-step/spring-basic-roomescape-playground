@@ -3,6 +3,7 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ConflictException;
+import roomescape.exception.NotFoundException;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
@@ -100,12 +101,12 @@ public class ReservationService {
 
     private Time getTime(Long timeId) {
         return timeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException(timeId + " 존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new NotFoundException(timeId + " 존재하지 않는 시간입니다."));
     }
 
     private Theme getTheme(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException(themeId + " 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException(themeId + " 존재하지 않는 테마입니다."));
     }
 
     private void validateNotDuplicated(String date, Long timeId, Long themeId) {
