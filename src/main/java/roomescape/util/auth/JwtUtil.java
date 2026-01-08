@@ -32,7 +32,7 @@ public final class JwtUtil {
 
 	public static String createToken(String subject, String name, String role, String secretKey) {
 		Date now = new Date();
-		Date expiresAt = new Date(now.getTime() + (10 * 60 * 1000)); // 10 minutes
+		Date expiresAt = new Date(now.getTime() + (10 * 60 * 1000)); // 10분
 		return Jwts.builder()
 				.setSubject(subject)
 				.setExpiration(expiresAt)
