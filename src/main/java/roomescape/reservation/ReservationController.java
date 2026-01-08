@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
-import roomescape.member.MyReservationResponse;
 
 import java.net.URI;
 import java.util.List;
