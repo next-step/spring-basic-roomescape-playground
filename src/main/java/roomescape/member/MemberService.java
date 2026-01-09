@@ -1,12 +1,11 @@
 package roomescape.member;
 
-import lombok.extern.slf4j.Slf4j;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundDataException;
 
-@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class MemberService {
@@ -18,16 +17,20 @@ public class MemberService {
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
+        String hashedPassword = BCrypt.hashpw(memberRequest.getPassword(), BCrypt.gensalt());
         Member member = memberRepository.save(
-                new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER")
+                new Member(memberRequest.getName(), memberRequest.getEmail(), hashedPassword, "USER")
         );
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member login(String email, String password) {
-        Member member = memberRepository.findByEmailAndPassword(email, password)
+        Member member = memberRepository.findByEmail(email)
                                         .orElseThrow(() -> new NotFoundDataException(ErrorMessage.INVALID_LOGIN_CREDENTIALS.getMessage()));
-        log.info("로그인 성공: memberId={}, email={}", member.getId(), member.getEmail());
+
+        if (!BCrypt.checkpw(password, member.getPassword())) {
+            throw new NotFoundDataException(ErrorMessage.INVALID_LOGIN_CREDENTIALS.getMessage());
+        }
         return member;
     }
 
