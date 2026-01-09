@@ -1,28 +1,39 @@
 package roomescape.member;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Member {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
-    private Role role;
 
-    public Member(Long id, String name, String email, Role role) {
+    @Column(nullable = false)
+    private String role;
+
+    protected Member() {}
+
+    public Member(Long id, String name, String email, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.role = role;
     }
 
-    public Member(Long id, String name, String email, String password, Role role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public Member(String name, String email, String password, Role role) {
+    public Member(String name, String email, String password, String role) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -45,15 +56,7 @@ public class Member {
         return password;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
-    }
-
-    public boolean checkPassword(String password) {
-        return this.password.equals(password);
-    }
-
-    public boolean isAdmin() {
-        return role == Role.ADMIN;
     }
 }

@@ -1,6 +1,5 @@
 package roomescape.auth;
 
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,42 +13,35 @@ import roomescape.util.JwtUtil;
 public class AdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
+    private JwtUtil jwtUtil;
 
     public AdminInterceptor(MemberService memberService) {
         this.memberService = memberService;
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = extractToken(request.getCookies());
 
         if (token == null) {
-            sendUnauthorized(response, "로그인이 필요합니다.");
+            response.setStatus(401);
             return false;
         }
 
         try {
-            Long memberId = JwtUtil.getMemberIdFromToken(token);
+            Long memberId = jwtUtil.getMemberIdFromToken(token);
 
             Member member = memberService.findById(memberId);
 
-            if (!member.isAdmin()) {
-                sendUnauthorized(response, "관리자 권한이 없습니다.");
+            if (!"ADMIN".equals(member.getRole())) {
+                response.setStatus(401);
                 return false;
             }
             return true;
 
-        } catch (JwtException | IllegalArgumentException e) {
-            sendUnauthorized(response, "유효하지 않은 토큰입니다.");
-            return false;
-        }
-    }
-
-    private void sendUnauthorized(HttpServletResponse response, String message) {
-        try {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(401);
+            return false;
         }
     }
 
