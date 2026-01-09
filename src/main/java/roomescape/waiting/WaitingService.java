@@ -7,7 +7,7 @@ import roomescape.exception.ForbiddenException;
 import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.member.MemberService;
 import roomescape.reservation.ReservationValidator;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
@@ -20,18 +20,18 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class WaitingService {
     private final WaitingRepository waitingRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final ReservationValidator reservationValidator;
 
     public WaitingService(WaitingRepository waitingRepository,
-            MemberRepository memberRepository,
+            MemberService memberService,
             TimeRepository timeRepository,
             ThemeRepository themeRepository,
             ReservationValidator reservationValidator) {
         this.waitingRepository = waitingRepository;
-        this.memberRepository = memberRepository;
+        this.memberService = memberService;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.reservationValidator = reservationValidator;
@@ -39,7 +39,7 @@ public class WaitingService {
 
     @Transactional
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
-        Member member = memberRepository.findByIdOrThrow(loginMember.id());
+        Member member = memberService.findById(loginMember.id());
 
         Time time = timeRepository.findById(waitingRequest.getTime())
                                   .orElseThrow(() -> new NotFoundDataException(ErrorMessage.TIME_NOT_FOUND.getMessage()));

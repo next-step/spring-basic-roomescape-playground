@@ -7,7 +7,7 @@ import roomescape.exception.InvalidDataException;
 import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.member.MemberService;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -22,20 +22,20 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ReservationService {
     private final ReservationRepository reservationRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final WaitingService waitingService;
     private final ReservationValidator reservationValidator;
 
     public ReservationService(ReservationRepository reservationRepository,
-            MemberRepository memberRepository,
+            MemberService memberService,
             TimeRepository timeRepository,
             ThemeRepository themeRepository,
             WaitingService waitingService,
             ReservationValidator reservationValidator) {
         this.reservationRepository = reservationRepository;
-        this.memberRepository = memberRepository;
+        this.memberService = memberService;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.waitingService = waitingService;
@@ -75,11 +75,11 @@ public class ReservationService {
 
     private Member determineMember(ReservationRequest request, LoginMember loginMember) {
         if (request.getName() != null && !request.getName().isBlank()) {
-            return memberRepository.findByNameOrThrow(request.getName());
+            return memberService.findByName(request.getName());
         }
 
         if (loginMember != null) {
-            return memberRepository.findByIdOrThrow(loginMember.id());
+            return memberService.findById(loginMember.id());
         }
 
         throw new InvalidDataException(ErrorMessage.MEMBER_INFO_REQUIRED.getMessage());
