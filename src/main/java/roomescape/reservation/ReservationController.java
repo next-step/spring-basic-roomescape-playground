@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
+import roomescape.member.Role;
 
 import java.net.URI;
 import java.util.List;
@@ -48,7 +49,7 @@ public class ReservationController {
         }
 
         Member member = memberService.findById(loginMember.id());
-        if ("ADMIN".equals(loginMember.role())) {
+        if (loginMember.role() == Role.ADMIN) {
             if (req.name() == null || req.name().isBlank()) {
                 reservation = reservationService.saveMember(req, member);
             } else {

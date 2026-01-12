@@ -30,7 +30,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(now)
                 .setExpiration(expire)
                 .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .claim("role", member.getRole().name())
                 .signWith(key)
                 .compact();
     }
