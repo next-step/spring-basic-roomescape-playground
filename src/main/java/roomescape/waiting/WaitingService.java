@@ -2,12 +2,12 @@ package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorMessage;
 import roomescape.exception.ForbiddenException;
-import roomescape.exception.InvalidDataException;
 import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.member.MemberService;
 import roomescape.reservation.ReservationValidator;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
@@ -20,18 +20,18 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class WaitingService {
     private final WaitingRepository waitingRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final ReservationValidator reservationValidator;
 
     public WaitingService(WaitingRepository waitingRepository,
-                          MemberRepository memberRepository,
-                          TimeRepository timeRepository,
-                          ThemeRepository themeRepository,
-                          ReservationValidator reservationValidator) {
+            MemberService memberService,
+            TimeRepository timeRepository,
+            ThemeRepository themeRepository,
+            ReservationValidator reservationValidator) {
         this.waitingRepository = waitingRepository;
-        this.memberRepository = memberRepository;
+        this.memberService = memberService;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.reservationValidator = reservationValidator;
@@ -39,13 +39,13 @@ public class WaitingService {
 
     @Transactional
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
-        Member member = memberRepository.findById(loginMember.id());
+        Member member = memberService.findById(loginMember.id());
 
         Time time = timeRepository.findById(waitingRequest.getTime())
-                .orElseThrow(() -> new NotFoundDataException("해당 시간을 찾을 수 없습니다."));
+                                  .orElseThrow(() -> new NotFoundDataException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
 
         Theme theme = themeRepository.findById(waitingRequest.getTheme())
-                .orElseThrow(() -> new NotFoundDataException("해당 테마를 찾을 수 없습니다."));
+                                     .orElseThrow(() -> new NotFoundDataException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
 
         reservationValidator.validateWaitingCreation(member.getId(), waitingRequest.getDate(), time.getId(), theme.getId());
 
@@ -71,11 +71,11 @@ public class WaitingService {
 
     @Transactional
     public void deleteById(Long id, LoginMember loginMember) {
-        Waiting waiting = waitingRepository.findById(id)
-                                           .orElseThrow(() -> new NotFoundDataException("해당 대기를 찾을 수 없습니다."));
+        Waiting waiting = waitingRepository.findByIdWithMember(id)
+                                           .orElseThrow(() -> new NotFoundDataException(ErrorMessage.WAITING_NOT_FOUND.getMessage()));
 
         if (!waiting.getMember().getId().equals(loginMember.id())) {
-            throw new ForbiddenException("본인의 대기만 취소할 수 있습니다.");
+            throw new ForbiddenException(ErrorMessage.ONLY_OWN_WAITING_CAN_BE_CANCELLED.getMessage());
         }
 
         waitingRepository.deleteById(id);

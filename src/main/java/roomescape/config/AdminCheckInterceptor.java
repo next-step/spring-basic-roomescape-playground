@@ -42,7 +42,6 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
                 return false;
             }
 
-            log.info("관리자 페이지 접근 성공: memberId={}, uri={}", memberId, request.getRequestURI());
             return true;
         } catch (Exception e) {
             log.error("관리자 페이지 접근 시도 - 인증 실패: uri={}, error={}", request.getRequestURI(), e.getMessage());

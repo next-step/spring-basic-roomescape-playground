@@ -1,6 +1,6 @@
 INSERT INTO member (name, email, password, role)
-VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
-       ('브라운', 'brown@email.com', 'password', 'USER');
+VALUES ('어드민', 'admin@email.com', '$2a$10$8l8nuVrehA3aJXf2NInk.e0o8vJ1SwQg8yhlThdFKCtm6yWiD455y', 'ADMIN'),
+       ('브라운', 'brown@email.com', '$2a$10$8l8nuVrehA3aJXf2NInk.e0o8vJ1SwQg8yhlThdFKCtm6yWiD455y', 'USER');
 
 INSERT INTO theme (name, description, deleted)
 VALUES ('테마1', '테마1입니다.', false),

@@ -3,7 +3,6 @@ package roomescape;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +10,6 @@ import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
 @DataJpaTest
-@Import(TimeRepository.class)
 public class JpaTest {
 
     @Autowired
