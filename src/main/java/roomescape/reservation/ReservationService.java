@@ -13,10 +13,9 @@ import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.waiting.WaitingService;
-import roomescape.waiting.WaitingWithRank;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -92,42 +91,37 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAllWithRelations().stream()
-                                    .map(it -> new ReservationResponse(
-                                            it.getId(),
-                                            it.getName(),
-                                            it.getTheme().getName(),
-                                            it.getDate(),
-                                            it.getTime().getValue()
+                                    .map(reservation -> new ReservationResponse(
+                                            reservation.getId(),
+                                            reservation.getName(),
+                                            reservation.getTheme().getName(),
+                                            reservation.getDate(),
+                                            reservation.getTime().getValue()
                                     ))
                                     .toList();
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        List<MyReservationResponse> responses = new ArrayList<>();
+        Stream<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.id())
+                .stream()
+                .map(reservation -> new MyReservationResponse(
+                        reservation.getId(),
+                        reservation.getTheme().getName(),
+                        reservation.getDate(),
+                        reservation.getTime().getValue(),
+                        "예약"
+                ));
 
-        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
-        for (Reservation reservation : reservations) {
-            responses.add(new MyReservationResponse(
-                    reservation.getId(),
-                    reservation.getTheme().getName(),
-                    reservation.getDate(),
-                    reservation.getTime().getValue(),
-                    "예약"
-            ));
-        }
+        Stream<MyReservationResponse> waitings = waitingService.findWaitingsWithRankByMemberId(loginMember.id())
+                .stream()
+                .map(waitingWithRank -> new MyReservationResponse(
+                        waitingWithRank.getWaiting().getId(),
+                        waitingWithRank.getWaiting().getTheme().getName(),
+                        waitingWithRank.getWaiting().getDate(),
+                        waitingWithRank.getWaiting().getTime().getValue(),
+                        (waitingWithRank.getRank() + 1) + "번째 예약대기"
+                ));
 
-        List<WaitingWithRank> waitings = waitingService.findWaitingsWithRankByMemberId(loginMember.id());
-        for (WaitingWithRank waitingWithRank : waitings) {
-            long rank = waitingWithRank.getRank() + 1;
-            responses.add(new MyReservationResponse(
-                    waitingWithRank.getWaiting().getId(),
-                    waitingWithRank.getWaiting().getTheme().getName(),
-                    waitingWithRank.getWaiting().getDate(),
-                    waitingWithRank.getWaiting().getTime().getValue(),
-                    rank + "번째 예약대기"
-            ));
-        }
-
-        return responses;
+        return Stream.concat(reservations, waitings).toList();
     }
 }
