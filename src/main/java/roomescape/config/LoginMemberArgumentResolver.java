@@ -40,13 +40,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         }
 
         try {
-            Long id = jwtUtils.getId(token);
-            String name = jwtUtils.getName(token);
-            String email = jwtUtils.getEmail(token);
-            String role = jwtUtils.getRole(token);
-
-            log.debug("로그인 사용자 인증 성공: memberId={}, uri={}", id, request.getRequestURI());
-            return new LoginMember(id, name, email, role);
+            LoginMember loginMember = jwtUtils.getLoginMember(token);
+            log.debug("로그인 사용자 인증 성공: memberId={}, uri={}", loginMember.id(), request.getRequestURI());
+            return loginMember;
         } catch (Exception e) {
             log.error("토큰 인증 실패: uri={}, error={}", request.getRequestURI(), e.getMessage());
             throw new NotFoundDataException(ErrorMessage.INVALID_AUTH_INFO.getMessage());

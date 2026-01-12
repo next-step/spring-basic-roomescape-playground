@@ -3,6 +3,7 @@ package roomescape.auth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import roomescape.member.LoginMember;
 
 import javax.crypto.SecretKey;
 
@@ -31,12 +32,18 @@ public class JwtUtils {
         return getClaims(token).get("name", String.class);
     }
 
-    public String getEmail(String token) {
-        return getClaims(token).get("email", String.class);
-    }
-
     public String getRole(String token) {
         return getClaims(token).get("role", String.class);
+    }
+
+    public LoginMember getLoginMember(String token) {
+        Claims claims = getClaims(token);
+        return new LoginMember(
+                Long.valueOf(claims.getSubject()),
+                claims.get("name", String.class),
+                claims.get("email", String.class),
+                claims.get("role", String.class)
+        );
     }
 
     private Claims getClaims(String token) {
