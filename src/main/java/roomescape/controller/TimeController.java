@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,7 +52,7 @@ public class TimeController {
     }
 
     @GetMapping("/available-times")
-    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date, @RequestParam Long themeId) {
+    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam LocalDate date, @RequestParam Long themeId) {
         return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
     }
 }

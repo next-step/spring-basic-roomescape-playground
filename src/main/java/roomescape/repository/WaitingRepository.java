@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,8 +26,8 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
            "FROM Waiting w " +
            "WHERE w.member.id = :memberId AND w.date = :date " +
            "AND w.time.id = :timeId AND w.theme.id = :themeId")
-    boolean existsByMemberAndDateAndTimeAndTheme(@Param("memberId") Long memberId, @Param("date") String date, @Param("timeId") Long timeId, @Param("themeId") Long themeId);
+    boolean existsByMemberAndDateAndTimeAndTheme(@Param("memberId") Long memberId, @Param("date") LocalDate date, @Param("timeId") Long timeId, @Param("themeId") Long themeId);
 
     @Query("SELECT COUNT(w) FROM Waiting w WHERE w.date = :date AND w.time.id = :timeId AND w.theme.id = :themeId")
-    Long countByDateAndTimeAndTheme(@Param("date") String date, @Param("timeId") Long timeId, @Param("themeId") Long themeId);
+    Long countByDateAndTimeAndTheme(@Param("date") LocalDate date, @Param("timeId") Long timeId, @Param("themeId") Long themeId);
 }

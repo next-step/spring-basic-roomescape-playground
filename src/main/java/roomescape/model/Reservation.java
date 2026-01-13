@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate;
 
 @Entity
 public class Reservation {
@@ -25,7 +26,7 @@ public class Reservation {
     private Member member;
 
     @Column(nullable = false)
-    private String date;
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
@@ -35,7 +36,7 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -43,14 +44,14 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(String name, LocalDate date, Time time, Theme theme) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(Member member, String date, Time time, Theme theme) {
+    public Reservation(Member member, LocalDate date, Time time, Theme theme) {
         this.member = member;
         this.date = date;
         this.time = time;
@@ -71,7 +72,7 @@ public class Reservation {
         return member;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

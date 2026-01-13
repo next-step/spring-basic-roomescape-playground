@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDate;
 
 @Entity
 @Table(
@@ -29,7 +30,7 @@ public class Waiting {
     private Member member;
 
     @Column(nullable = false)
-    private String date;
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id", nullable = false)
@@ -41,7 +42,7 @@ public class Waiting {
 
     public Waiting() { }
 
-    public Waiting(Member member, String date, Time time, Theme theme) {
+    public Waiting(Member member, LocalDate date, Time time, Theme theme) {
         this.member = member;
         this.date = date;
         this.time = time;
@@ -56,7 +57,7 @@ public class Waiting {
         return member;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
