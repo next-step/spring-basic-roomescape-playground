@@ -39,13 +39,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getSubject(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 
     public static String extractTokenFromCookies(Cookie[] cookies) {

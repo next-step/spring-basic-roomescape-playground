@@ -39,8 +39,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
 
-        String subject = jwtTokenProvider.getSubject(token);
+        String subject = jwtTokenProvider.getClaims(token).getSubject();
 
+        // TODO: 불필요한 DB 접근 로직 제거
         return memberService.findById(subject);
     }
 }
