@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.auth.Role;
 import roomescape.repository.MemberRepository;
 import roomescape.dto.MemberRequest;
 import roomescape.dto.MemberResponse;
@@ -18,7 +19,7 @@ public class MemberService {
     }
 
     public MemberResponse create(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
