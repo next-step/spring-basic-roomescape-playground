@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.Role;
@@ -13,13 +14,16 @@ import roomescape.model.Member;
 @Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public MemberResponse create(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
+        String encodedPassword = passwordEncoder.encode(memberRequest.password());
+        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), encodedPassword, Role.USER));
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
@@ -29,6 +33,13 @@ public class MemberService {
     }
 
     public Member authenticate(String email, String password) {
-        return memberRepository.findByEmailAndPassword(email, password).orElseThrow(() -> new UnauthorizedException("유효한 인증 정보가 없습니다."));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("유효한 인증 정보가 없습니다."));
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new UnauthorizedException("유효한 인증 정보가 없습니다.");
+        }
+
+        return member;
     }
 }
