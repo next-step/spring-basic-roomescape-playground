@@ -1,5 +1,8 @@
 package roomescape.reservation;
 
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +23,14 @@ public class ReservationController {
 
     private final ReservationService reservationService;
     private final MemberService memberService;
+    private final Validator validator;
 
     public ReservationController(ReservationService reservationService,
-                                 MemberService memberService) {
+                                 MemberService memberService,
+                                 Validator validator) {
         this.reservationService = reservationService;
         this.memberService = memberService;
+        this.validator = validator;
     }
 
     @GetMapping("/reservations")
@@ -33,16 +39,14 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest req, LoginMember loginMember) {
-        if (req.date() == null || req.theme() == null || req.time() == null) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity create(@Valid @RequestBody ReservationRequest req, LoginMember loginMember) {
 
         ReservationResponse reservation;
 
         if (loginMember == null) {
-            if (req.name() == null || req.name().isBlank()) {
-                return ResponseEntity.badRequest().build();
+            var violations = validator.validate(req, UserReservation.class);
+            if (!violations.isEmpty()) {
+                throw new ConstraintViolationException(violations);
             }
             reservation = reservationService.saveAdmin(req);
             return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
