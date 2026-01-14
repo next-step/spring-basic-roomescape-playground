@@ -82,6 +82,7 @@ public class ReservationService {
 
     public List<MyReservationResponse> findMine(Long memberId) {
         List<MyReservationResponse> reservations = reservationRepository.findMineWithRelations(memberId).stream()
+
                 .map(r -> new MyReservationResponse(
                         r.getId(),
                         r.getTheme().getName(),

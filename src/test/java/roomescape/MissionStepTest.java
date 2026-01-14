@@ -62,8 +62,6 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-
-
         String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();

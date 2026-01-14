@@ -20,6 +20,7 @@ public class MemberService {
     public MemberResponse createMember(MemberRequest memberRequest) {
         String encodedPassord = passwordEncoder.encode(memberRequest.getPassword());
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), encodedPassord, Role.USER));
+
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 

@@ -9,6 +9,7 @@ import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.member.Role;
 
+
 @Component
 public class AdminAuthInterceptor implements HandlerInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
@@ -30,8 +31,8 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         try {
             Long memberId = jwtTokenProvider.extractMemberIdFromToken(token);
             Member member = memberService.findById(memberId);
-
             if (member == null || member.getRole() != Role.ADMIN) {
+
                 response.setStatus(401);
                 return false;
             }
