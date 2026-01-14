@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
-import roomescape.member.Role;
 
 import java.net.URI;
 import java.util.List;
@@ -22,14 +19,11 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final MemberService memberService;
     private final Validator validator;
 
     public ReservationController(ReservationService reservationService,
-                                 MemberService memberService,
                                  Validator validator) {
         this.reservationService = reservationService;
-        this.memberService = memberService;
         this.validator = validator;
     }
 
@@ -41,27 +35,14 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(@Valid @RequestBody ReservationRequest req, LoginMember loginMember) {
 
-        ReservationResponse reservation;
-
         if (loginMember == null) {
             var violations = validator.validate(req, UserReservation.class);
             if (!violations.isEmpty()) {
                 throw new ConstraintViolationException(violations);
             }
-            reservation = reservationService.saveAdmin(req);
-            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
         }
 
-        Member member = memberService.findById(loginMember.id());
-        if (loginMember.role() == Role.ADMIN) {
-            if (req.name() == null || req.name().isBlank()) {
-                reservation = reservationService.saveMember(req, member);
-            } else {
-                reservation = reservationService.saveAdmin(req);
-            }
-            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
-        }
-        reservation = reservationService.saveMember(req, member);
+        ReservationResponse reservation = reservationService.create(req, loginMember);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 

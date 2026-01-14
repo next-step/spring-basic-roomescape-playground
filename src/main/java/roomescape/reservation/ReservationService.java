@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ConflictException;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.NotFoundException;
-import roomescape.member.Member;
+import roomescape.member.*;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -22,15 +22,18 @@ public class ReservationService {
     private TimeRepository timeRepository;
     private ThemeRepository themeRepository;
     private WaitingRepository waitingRepository;
+    private MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               TimeRepository timeRepository,
                               ThemeRepository themeRepository,
-                              WaitingRepository waitingRepository) {
+                              WaitingRepository waitingRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.waitingRepository = waitingRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Transactional
@@ -59,6 +62,20 @@ public class ReservationService {
 
         return new ReservationResponse(saved.getId(), member.getName(),
                 saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());
+    }
+
+    @Transactional
+    public ReservationResponse create(ReservationRequest req, LoginMember loginMember) {
+        if (loginMember == null) {
+            return saveAdmin(req);
+        }
+
+        Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+        if (loginMember.role() == Role.ADMIN && req.name() != null && !req.name().isBlank()) {
+            return saveAdmin(req);
+        }
+        return saveMember(req, member);
     }
 
     @Transactional
