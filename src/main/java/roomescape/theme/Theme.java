@@ -14,23 +14,13 @@ public class Theme {
     private String name;
 
     @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
     private Boolean deleted = false;
 
     protected Theme() {
     }
 
-    public Theme(String name, String description) {
+    public Theme(String name) {
         this.name = name;
-        this.description = description;
-    }
-
-    public Theme(Long id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
     }
 
     public Long getId() {
@@ -41,7 +31,7 @@ public class Theme {
         return name;
     }
 
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
+    public void markDeleted() {
+        this.deleted = true;
     }
 }

@@ -31,16 +31,16 @@ public class ReservationController {
             @RequestBody ReservationRequest reservationRequest,
             LoginMember loginMember
     ) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
+        if (reservationRequest.date() == null
+                || reservationRequest.theme() == null
+                || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
 
         ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
 
         return ResponseEntity
-                .created(URI.create("/reservations/" + reservation.getId()))
+                .created(URI.create("/reservations/" + reservation.id()))
                 .body(reservation);
     }
 

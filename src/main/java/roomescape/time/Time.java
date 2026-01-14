@@ -23,11 +23,6 @@ public class Time {
         this.value = value;
     }
 
-    public Time(Long id, String value) {
-        this.id = id;
-        this.value = value;
-    }
-
     public Long getId() {
         return id;
     }
@@ -36,11 +31,7 @@ public class Time {
         return value;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
+    public void markDeleted() {
+        this.deleted = true;
     }
 }

@@ -47,7 +47,6 @@ public class TimeService {
     public void deleteById(Long id) {
         Time time = timeRepository.findById(id)
                                   .orElseThrow(() -> new NotFoundDataException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
-        time.setDeleted(true);
-        timeRepository.save(time);
+        time.markDeleted();
     }
 }
