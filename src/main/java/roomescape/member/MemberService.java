@@ -1,6 +1,7 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
+import roomescape.error.ErrorCode;
 import roomescape.util.JwtUtil;
 
 @Service
@@ -13,10 +14,10 @@ public class MemberService {
 
     public String login(LoginRequest request) {
         Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
 
         if (!member.checkPassword(request.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException(ErrorCode.PASSWORD_MISMATCH.getMessage());
         }
 
         return JwtUtil.createToken(member);
@@ -29,6 +30,6 @@ public class MemberService {
 
     public Member findById(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
     }
 }

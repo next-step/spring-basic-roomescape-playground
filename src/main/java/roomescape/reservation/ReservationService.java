@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.error.ErrorCode;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
@@ -34,9 +35,9 @@ public class ReservationService {
     @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
         Time time = timeRepository.findById(reservationRequest.getTime())
-                .orElseThrow(() -> new IllegalArgumentException("시간을 찾을 수 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.TIME_NOT_FOUND.getMessage()));
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
-                .orElseThrow(() -> new IllegalArgumentException("테마를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.THEME_NOT_FOUND.getMessage()));
 
         String reservationName;
         if (member != null) {
@@ -46,7 +47,7 @@ public class ReservationService {
         }
 
         if (reservationName == null || reservationName.isEmpty()) {
-            throw new IllegalArgumentException("예약자 이름을 찾을 수 없습니다.");
+            throw new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage());
         }
 
         Reservation reservation = new Reservation(reservationName, reservationRequest.getDate(), time, theme, member);
