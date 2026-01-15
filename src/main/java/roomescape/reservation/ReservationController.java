@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,15 +29,9 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(
-            @RequestBody ReservationRequest reservationRequest,
+            @Valid @RequestBody ReservationRequest reservationRequest,
             LoginMember loginMember
     ) {
-        if (reservationRequest.date() == null
-                || reservationRequest.theme() == null
-                || reservationRequest.time() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
         ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
 
         return ResponseEntity
@@ -45,7 +40,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
