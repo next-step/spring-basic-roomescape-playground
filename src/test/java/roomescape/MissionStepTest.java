@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.dto.MyReservationResponse;
 import roomescape.dto.ReservationResponse;
@@ -19,6 +20,7 @@ import roomescape.dto.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
