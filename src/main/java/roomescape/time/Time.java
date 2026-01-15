@@ -5,7 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
 
+@Getter
 @Entity
 public class Time {
     @Id
@@ -24,13 +26,5 @@ public class Time {
 
     public Time(String value) {
         this.value = value;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getValue() {
-        return value;
     }
 }
