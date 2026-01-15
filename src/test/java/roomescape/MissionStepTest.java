@@ -4,13 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import jakarta.annotation.PostConstruct;
+import missionAuth.JwtUtils;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.auth.JwtTokenProvider;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.waiting.WaitingResponse;
@@ -166,4 +164,11 @@ public class MissionStepTest {
 
         assertThat(status).isEqualTo("1번째 예약대기");
     }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
+    }
+
 }

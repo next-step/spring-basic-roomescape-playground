@@ -3,12 +3,12 @@ package roomescape.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import missionAuth.JwtDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.Member;
 
 @RestController
 public class AuthController {
@@ -41,8 +41,8 @@ public class AuthController {
             return ResponseEntity.status(401).build();
         }
 
-        Member member = authService.findMemberByToken(token);
-        return ResponseEntity.ok(new LoginCheckResponse(member.getName()));
+        JwtDto dto = authService.parseToken(token);
+        return ResponseEntity.ok(new LoginCheckResponse(dto.name()));
     }
 
     private String extractToken(Cookie[] cookies) {

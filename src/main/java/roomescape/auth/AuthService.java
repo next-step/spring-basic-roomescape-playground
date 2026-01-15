@@ -1,5 +1,8 @@
 package roomescape.auth;
 
+import io.jsonwebtoken.JwtException;
+import missionAuth.JwtDto;
+import missionAuth.JwtUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.exception.UnauthorizedException;
@@ -9,10 +12,10 @@ import roomescape.member.MemberRepository;
 @Service
 public class AuthService {
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+    public AuthService(MemberRepository memberRepository, JwtUtils jwtTokenProvider, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.passwordEncoder = passwordEncoder;
@@ -26,13 +29,15 @@ public class AuthService {
             throw new UnauthorizedException("이메일 또는 비밀번호가 틀렸습니다.");
         }
 
-        return jwtTokenProvider.createToken(member);
+        return jwtTokenProvider.createToken(member.getId(), member.getName(), member.getRole());
     }
 
 
-    public Member findMemberByToken(String token) {
-        Long memberId = jwtTokenProvider.extractMemberIdFromToken(token);
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new UnauthorizedException("유효하지 않은 토큰입니다."));
+    public JwtDto parseToken(String token) {
+        try {
+            return jwtTokenProvider.parse(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+        }
     }
 }

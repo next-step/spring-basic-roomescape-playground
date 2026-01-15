@@ -13,6 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final LoginMemberArgumentResolver resolver;
     private final AdminAuthInterceptor adminAuthInterceptor;
+
     public WebConfig(LoginMemberArgumentResolver resolver,
                      AdminAuthInterceptor adminAuthInterceptor) {
         this.resolver = resolver;

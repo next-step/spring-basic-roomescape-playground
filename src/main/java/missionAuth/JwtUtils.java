@@ -1,45 +1,47 @@
-package roomescape.auth;
+package missionAuth;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import roomescape.member.Member;
+import roomescape.member.Role;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
-@Component
-public class JwtTokenProvider {
+public class JwtUtils {
     private final Key key;
     private final long validityInMilliseconds;
 
-    public JwtTokenProvider(
-            @Value("${roomescape.auth.jwt.secret}") String secretKey,
-            @Value("${roomescape.auth.jwt.expire-length}") long validityInMilliseconds) {
+    public JwtUtils(String secretKey, long validityInMilliseconds) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    public String createToken(Member member) {
+    public String createToken(Long memberId, String name, Role role) {
         Date now = new Date();
         Date expire = new Date(now.getTime() + validityInMilliseconds);
         return Jwts.builder()
-                .setSubject(member.getId().toString())
+                .setSubject(memberId.toString())
                 .setIssuedAt(now)
                 .setExpiration(expire)
-                .claim("name", member.getName())
-                .claim("role", member.getRole().name())
+                .claim("name", name)
+                .claim("role", role.name())
                 .signWith(key)
                 .compact();
     }
 
-    public Long extractMemberIdFromToken(String token) {
-        return Long.valueOf(Jwts.parserBuilder()
+    public JwtDto parse(String token) {
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody().getSubject());
+                .getBody();
+
+        Long id = Long.valueOf(claims.getSubject());
+        String name = claims.get("name", String.class);
+        Role role = Role.valueOf(claims.get("role", String.class));
+
+        return new JwtDto(id, name, role);
+
     }
 }
