@@ -51,6 +51,13 @@ public class Reservation {
         this.member = member;
     }
 
+    public Reservation(Member member, String date, Time time, Theme theme) {
+        this.member = member;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
     public Reservation() {
 
     }
