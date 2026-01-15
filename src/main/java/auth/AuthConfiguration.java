@@ -9,8 +9,10 @@ public class AuthConfiguration {
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
 
+    @Value("${security.jwt.token.expire-length}")
+    private long expiration;
+
     @Bean
     public JwtUtils jwtUtils() {
-        return new JwtUtils(secretKey);
-    }
+        return new JwtUtils(secretKey, expiration);    }
 }
