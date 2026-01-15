@@ -10,9 +10,11 @@ import roomescape.util.JwtUtil;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, JwtUtil jwtUtil) {
         this.memberRepository = memberRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     public String login(LoginRequest request) {
@@ -23,7 +25,7 @@ public class MemberService {
             throw new IllegalArgumentException(ErrorCode.PASSWORD_MISMATCH.getMessage());
         }
 
-        return JwtUtil.createToken(member);
+        return jwtUtil.createToken(member);
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {

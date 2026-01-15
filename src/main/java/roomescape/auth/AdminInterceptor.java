@@ -14,9 +14,11 @@ import roomescape.util.JwtUtil;
 public class AdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
+    private final JwtUtil jwtUtil;
 
-    public AdminInterceptor(MemberService memberService) {
+    public AdminInterceptor(MemberService memberService, JwtUtil jwtUtil) {
         this.memberService = memberService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Long memberId = JwtUtil.getMemberIdFromToken(token);
+            Long memberId = jwtUtil.getMemberIdFromToken(token);
 
             Member member = memberService.findById(memberId);
 
