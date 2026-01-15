@@ -1,4 +1,6 @@
-package roomescape.waiting;
+package roomescape.dto;
+
+import roomescape.waiting.Waiting;
 
 public record WaitingResponse(
         Long id,

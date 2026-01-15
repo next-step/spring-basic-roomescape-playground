@@ -1,6 +1,9 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
+import roomescape.dto.LoginRequest;
+import roomescape.dto.MemberRequest;
+import roomescape.dto.MemberResponse;
 import roomescape.error.ErrorCode;
 import roomescape.util.JwtUtil;
 

@@ -2,10 +2,10 @@ package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.dto.WaitingResponse;
 import roomescape.error.ErrorCode;
 import roomescape.member.Member;
-import roomescape.member.MemberRepository;
-import roomescape.reservation.ReservationRequest;
+import roomescape.dto.ReservationRequest;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;

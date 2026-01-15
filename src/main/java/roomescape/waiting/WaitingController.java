@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.WaitingResponse;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
-import roomescape.reservation.ReservationRequest;
+import roomescape.dto.ReservationRequest;
 
 import java.net.URI;
 

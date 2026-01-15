@@ -1,4 +1,6 @@
-package roomescape.reservation;
+package roomescape.dto;
+
+import roomescape.reservation.Reservation;
 
 public record ReservationResponse(
         Long id,
