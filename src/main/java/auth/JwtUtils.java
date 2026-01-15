@@ -1,18 +1,20 @@
-package roomescape.util;
+package auth;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import roomescape.member.Member;
 
 import java.security.Key;
 
-public class JwtUtil {
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    private static final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+public class JwtUtils {
+    private final Key key;
 
-    private JwtUtil() {}
+    public JwtUtils(String secretKey) {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
 
-    public static String createToken(Member member) {
+    public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
@@ -21,12 +23,11 @@ public class JwtUtil {
                 .compact();
     }
 
-    public static Long getMemberIdFromToken(String token) {
-        return Long.parseLong(Jwts.parserBuilder()
+    public Claims getClaims(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject());
+                .getBody();
     }
 }
