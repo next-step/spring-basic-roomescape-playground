@@ -1,37 +1,20 @@
 package roomescape.waiting;
 
-public class WaitingResponse {
-    private Long id;
-    private String theme;
-    private String date;
-    private String time;
-    private Long rank;
+public record WaitingResponse(
+        Long id,
+        String theme,
+        String date,
+        String time,
+        Long rank
+) {
 
-    public WaitingResponse(Long id, String theme, String date, String time, Long rank) {
-        this.id = id;
-        this.theme = theme;
-        this.date = date;
-        this.time = time;
-        this.rank = rank;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTheme() {
-        return theme;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public Long getRank() {
-        return rank;
+    public static WaitingResponse from(Waiting waiting, Long rank) {
+        return new WaitingResponse(
+                waiting.getId(),
+                waiting.getTheme().getName(),
+                waiting.getDate(),
+                waiting.getTime().getValue(),
+                rank
+        );
     }
 }

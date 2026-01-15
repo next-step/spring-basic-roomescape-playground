@@ -34,23 +34,23 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
-        Time time = timeRepository.findById(reservationRequest.getTime())
+        Time time = timeRepository.findById(reservationRequest.time())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.TIME_NOT_FOUND.getMessage()));
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
+        Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.THEME_NOT_FOUND.getMessage()));
 
         String reservationName;
         if (member != null) {
             reservationName = member.getName();
         } else {
-            reservationName = reservationRequest.getName();
+            reservationName = reservationRequest.name();
         }
 
         if (reservationName == null || reservationName.isEmpty()) {
             throw new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage());
         }
 
-        Reservation reservation = new Reservation(reservationName, reservationRequest.getDate(), time, theme, member);
+        Reservation reservation = new Reservation(reservationName, reservationRequest.date(), time, theme, member);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 

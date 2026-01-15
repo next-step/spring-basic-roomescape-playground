@@ -13,10 +13,10 @@ public class MemberService {
     }
 
     public String login(LoginRequest request) {
-        Member member = memberRepository.findByEmail(request.getEmail())
+        Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
 
-        if (!member.checkPassword(request.getPassword())) {
+        if (!member.checkPassword(request.password())) {
             throw new IllegalArgumentException(ErrorCode.PASSWORD_MISMATCH.getMessage());
         }
 
@@ -24,7 +24,7 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
+        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 

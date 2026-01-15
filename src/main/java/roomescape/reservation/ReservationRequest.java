@@ -1,34 +1,19 @@
 package roomescape.reservation;
 
-public class ReservationRequest {
-    private String name;
-    private String date;
-    private Long theme;
-    private Long time;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-    public ReservationRequest() {
-    }
+public record ReservationRequest(
+        @NotBlank(message = "예약자 이름은 필수입니다.")
+        String name,
 
-    public ReservationRequest(String name, String date, Long theme, Long time) {
-        this.name = name;
-        this.date = date;
-        this.theme = theme;
-        this.time = time;
-    }
+        @NotBlank(message = "날짜는 필수입니다.")
+        String date,
 
-    public String getName() {
-        return name;
-    }
+        @NotNull(message = "테마는 필수입니다.")
+        Long theme,
 
-    public String getDate() {
-        return date;
-    }
-
-    public Long getTheme() {
-        return theme;
-    }
-
-    public Long getTime() {
-        return time;
-    }
+        @NotNull(message = "시간은 필수입니다.")
+        Long time
+) {
 }

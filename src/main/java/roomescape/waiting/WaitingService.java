@@ -25,19 +25,19 @@ public class WaitingService {
     }
 
     public WaitingResponse createWaiting(ReservationRequest request, Member member) {
-        Theme theme = themeRepository.findById(request.getTheme())
+        Theme theme = themeRepository.findById(request.theme())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.THEME_NOT_FOUND.getMessage()));
-        Time time = timeRepository.findById(request.getTime())
+        Time time = timeRepository.findById(request.time())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.TIME_NOT_FOUND.getMessage()));
 
-        if (waitingRepository.existsByDateAndTimeAndThemeAndMember(request.getDate(), time, theme, member)) {
+        if (waitingRepository.existsByDateAndTimeAndThemeAndMember(request.date(), time, theme, member)) {
             throw new IllegalArgumentException(ErrorCode.WAITING_ALREADY_EXISTS.getMessage());
         }
 
-        Waiting waiting = new Waiting(theme, time, member, request.getDate());
+        Waiting waiting = new Waiting(theme, time, member, request.date());
         Waiting savedWaiting = waitingRepository.save(waiting);
 
-        long rank = waitingRepository.countByDateAndTimeAndTheme(request.getDate(), time, theme);
+        long rank = waitingRepository.countByDateAndTimeAndTheme(request.date(), time, theme);
 
         return new WaitingResponse(
                 savedWaiting.getId(),

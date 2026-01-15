@@ -28,7 +28,7 @@ public class WaitingController {
         Member member = memberService.findById(loginMember.getId());
 
         WaitingResponse response = waitingService.createWaiting(request, member);
-        return ResponseEntity.created(URI.create("/waitings/" + response.getId())).body(response);
+        return ResponseEntity.created(URI.create("/waitings/" + response.id())).body(response);
     }
 
     @DeleteMapping("/waitings/{id}")
