@@ -9,11 +9,15 @@ import org.springframework.util.StringUtils;
 import roomescape.dto.MyReservationResponse;
 import roomescape.model.Waiting;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.TimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
+import roomescape.model.Theme;
+import roomescape.model.Time;
 import roomescape.repository.WaitingRepository;
 
 @Service
@@ -21,10 +25,15 @@ import roomescape.repository.WaitingRepository;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final WaitingRepository waitingRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository) {
+    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository,
+                            TimeRepository timeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.waitingRepository = waitingRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse create(ReservationRequest request, Member member) {
@@ -34,17 +43,20 @@ public class ReservationService {
             throw new BadRequestException("이미 예약이 존재합니다.");
         }
 
-        ReservationRequest finalized;
+        Time time = timeRepository.findById(request.time())
+                .orElseThrow(() -> new BadRequestException("시간이 존재하지 않습니다."));
+        Theme theme = themeRepository.findById(request.theme())
+                .orElseThrow(() -> new BadRequestException("테마가 존재하지 않습니다."));
 
+        Reservation reservation;
         if (StringUtils.hasText(request.name())) {
-            finalized = new ReservationRequest(request.name(), null, request.date(), request.time(), request.theme());
+            reservation = new Reservation(request.name(), request.date(), time, theme);
         } else {
-            finalized = new ReservationRequest(null, member.getId(), request.date(), request.time(), request.theme());
+            reservation = new Reservation(member, request.date(), time, theme);
         }
 
-        Reservation reservation = reservationRepository.save(finalized);
-
-        return ReservationResponse.from(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+        return ReservationResponse.from(saved);
     }
 
     public void deleteById(Long id) {

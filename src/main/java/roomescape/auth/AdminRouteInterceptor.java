@@ -40,7 +40,7 @@ public class AdminRouteInterceptor implements HandlerInterceptor {
         String subject = jwtTokenProvider.getSubject(token);
         Member member = memberService.findById(subject);
 
-        if (member == null || !member.getRole().equals("ADMIN")) {
+        if (member == null || member.getRole() != Role.ADMIN) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }

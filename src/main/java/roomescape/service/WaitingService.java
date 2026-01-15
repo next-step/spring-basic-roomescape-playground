@@ -6,8 +6,12 @@ import roomescape.dto.WaitingRequest;
 import roomescape.dto.WaitingResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.model.Member;
+import roomescape.model.Theme;
+import roomescape.model.Time;
 import roomescape.model.Waiting;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
+import roomescape.repository.TimeRepository;
 import roomescape.repository.WaitingRepository;
 
 @Service
@@ -15,10 +19,15 @@ import roomescape.repository.WaitingRepository;
 public class WaitingService {
     private final ReservationRepository reservationRepository;
     private final WaitingRepository waitingRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public WaitingService(ReservationRepository reservationRepository, WaitingRepository waitingRepository) {
+    public WaitingService(ReservationRepository reservationRepository, WaitingRepository waitingRepository,
+                         TimeRepository timeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.waitingRepository = waitingRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public WaitingResponse create(WaitingRequest request, Member member) {
@@ -32,11 +41,17 @@ public class WaitingService {
             throw new BadRequestException("이미 예약 대기 중입니다.");
         }
 
-        Waiting waiting = waitingRepository.save(request, member);
+        Time time = timeRepository.findById(request.time())
+                .orElseThrow(() -> new BadRequestException("시간이 존재하지 않습니다."));
+        Theme theme = themeRepository.findById(request.theme())
+                .orElseThrow(() -> new BadRequestException("테마가 존재하지 않습니다."));
+
+        Waiting waiting = new Waiting(member, request.date(), time, theme);
+        Waiting saved = waitingRepository.save(waiting);
 
         Long waitingNumber = waitingRepository.countByDateAndTimeAndTheme(request.date(), request.time(), request.theme());
 
-        return new WaitingResponse(waiting.getId(), waitingNumber);
+        return new WaitingResponse(saved.getId(), waitingNumber);
     }
 
     public void cancel(Long id, Member member) {
