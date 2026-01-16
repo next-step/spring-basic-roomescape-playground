@@ -12,10 +12,15 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-	@Transactional
-	public MemberResponseDto createMember(MemberRequestDto memberRequest) {
-		Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
-		return new MemberResponseDto(member.getId(), member.getName(), member.getEmail());
+    @Transactional
+    public MemberResponseDto createMember(MemberRequestDto memberRequest) {
+        Member member = memberRepository.save(new Member(
+                memberRequest.name(),
+                memberRequest.email(),
+                memberRequest.password(),
+                Role.USER
+        ));
+        return new MemberResponseDto(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member login(String email, String password) {

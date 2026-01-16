@@ -1,5 +1,6 @@
 package roomescape.time;
 
-public record AvailableTimeDto(Long timeId, String time, boolean booked) {}
+public record AvailableTimeDto(Long timeId, String time, boolean booked) {
+}
 
 

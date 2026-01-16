@@ -1,5 +1,6 @@
 package roomescape.waiting;
 
-public record WaitingResponseDto(Long id) {}
+public record WaitingResponseDto(Long id) {
+}
 
 

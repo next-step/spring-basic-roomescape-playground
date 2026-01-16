@@ -2,7 +2,9 @@ package roomescape.time;
 
 import jakarta.persistence.*;
 import roomescape.reservation.Reservation;
+
 import java.util.List;
+
 @Entity
 public class Time {
 

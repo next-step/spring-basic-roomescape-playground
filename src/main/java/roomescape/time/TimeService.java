@@ -18,12 +18,12 @@ public class TimeService {
         this.reservationRepository = reservationRepository;
     }
 
-	public List<AvailableTimeDto> getAvailableTime(String date, Long themeId) {
+    public List<AvailableTimeDto> getAvailableTime(String date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findByDateAndTheme_Id(date, themeId);
         List<Time> times = timeRepository.findAll();
 
         return times.stream()
-				.map(time -> new AvailableTimeDto(
+                .map(time -> new AvailableTimeDto(
                         time.getId(),
                         time.getValue(),
                         reservations.stream()
@@ -36,12 +36,12 @@ public class TimeService {
         return timeRepository.findAll();
     }
 
-	@Transactional
+    @Transactional
     public Time save(Time time) {
         return timeRepository.save(time);
     }
 
-	@Transactional
+    @Transactional
     public void deleteById(Long id) {
         timeRepository.deleteById(id);
     }

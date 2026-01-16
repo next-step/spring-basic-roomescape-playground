@@ -19,21 +19,21 @@ public class MyReservationService {
         this.waitingService = waitingService;
     }
 
-	public List<MyReservationResponseDto> findMine(Long memberId) {
-		List<MyReservationResponseDto> result = new ArrayList<>();
+    public List<MyReservationResponseDto> findMine(Long memberId) {
+        List<MyReservationResponseDto> result = new ArrayList<>();
         result.addAll(
                 reservationRepository.findByMember_Id(memberId).stream()
-						.map(MyReservationResponseDto::from)
+                        .map(MyReservationResponseDto::from)
                         .toList()
         );
-		List<WaitingWithRankDto> waitings = waitingService.findMineWithRank(memberId);
-		for (WaitingWithRankDto w : waitings) {
-			long rankOneBased = (w.rank() == null ? 0 : w.rank()) + 1;
-			result.add(new MyReservationResponseDto(
-					w.waiting().getId(),
-					w.waiting().getTheme().getName(),
-					w.waiting().getDate(),
-					w.waiting().getTime().getValue(),
+        List<WaitingWithRankDto> waitings = waitingService.findMineWithRank(memberId);
+        for (WaitingWithRankDto w : waitings) {
+            long rankOneBased = (w.rank() == null ? 0 : w.rank()) + 1;
+            result.add(new MyReservationResponseDto(
+                    w.waiting().getId(),
+                    w.waiting().getTheme().getName(),
+                    w.waiting().getDate(),
+                    w.waiting().getTime().getValue(),
                     rankOneBased + "번째 예약대기"
             ));
         }

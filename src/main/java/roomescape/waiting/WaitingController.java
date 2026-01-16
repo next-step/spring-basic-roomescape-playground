@@ -16,18 +16,18 @@ public class WaitingController {
         this.waitingService = waitingService;
     }
 
-	@PostMapping("/waitings")
-	public ResponseEntity<WaitingResponseDto> create(@RequestBody Map<String, String> body, LoginMemberDto member) {
+    @PostMapping("/waitings")
+    public ResponseEntity<WaitingResponseDto> create(@RequestBody Map<String, String> body, LoginMemberDto member) {
         String date = body.get("date");
         Long timeId = Long.valueOf(body.get("time"));
         Long themeId = Long.valueOf(body.get("theme"));
-		WaitingResponseDto waiting = waitingService.create(member.getId(), date, timeId, themeId);
-        return ResponseEntity.created(URI.create("/waitings/" + waiting.getId())).body(waiting);
+        WaitingResponseDto waiting = waitingService.create(member.id(), date, timeId, themeId);
+        return ResponseEntity.created(URI.create("/waitings/" + waiting.id())).body(waiting);
     }
 
     @DeleteMapping("/waitings/{id}")
-	public ResponseEntity<Void> cancel(@PathVariable Long id, LoginMemberDto member) {
-        waitingService.cancel(id, member.getId());
+    public ResponseEntity<Void> cancel(@PathVariable Long id, LoginMemberDto member) {
+        waitingService.cancel(id, member.id());
         return ResponseEntity.noContent().build();
     }
 }

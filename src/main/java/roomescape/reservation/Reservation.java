@@ -1,9 +1,9 @@
 package roomescape.reservation;
 
 import jakarta.persistence.*;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
-import roomescape.member.Member;
 
 @Entity
 public class Reservation {
@@ -13,7 +13,6 @@ public class Reservation {
     private Long id;
     private String name;
     private String date;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Time time;
