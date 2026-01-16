@@ -30,7 +30,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
             Claims claims = jwtUtils.parseClaims(token);
             String role = claims.get("role", String.class);
             if (!"ADMIN".equals(role)) {
-                writeError(response, ApiError.FORBIDDEN_ADMIN_ONLY);
+                writeError(response, ApiError.UNAUTHORIZED_MISSING_TOKEN);
                 return false;
             }
             return true;
