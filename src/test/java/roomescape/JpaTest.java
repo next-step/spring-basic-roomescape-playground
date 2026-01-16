@@ -14,6 +14,9 @@ public class JpaTest {
     @Autowired
     private TestEntityManager entityManager;
 
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
+
     @Autowired
     private TimeRepository timeRepository;
 
@@ -26,5 +29,10 @@ public class JpaTest {
         Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 
         assertThat(persistTime.getValue()).isEqualTo(time.getValue());
+    }
+
+    @Test
+    void 팔단계() {
+        assertThat(secretKey).isNotBlank();
     }
 }
