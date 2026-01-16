@@ -156,4 +156,14 @@ public class MissionStepTest {
         assertThat(status).isEqualTo("1번째 예약대기");
     }
 
+    @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+public class MissionStepTest {
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
+    }
+}
+
 }
