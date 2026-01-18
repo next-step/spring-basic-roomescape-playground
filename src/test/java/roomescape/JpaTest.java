@@ -4,14 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import roomescape.time.TimeRepository;
 import roomescape.time.Time;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-@Import(TimeRepository.class)
 public class JpaTest {
     @Autowired
     private TestEntityManager entityManager;
@@ -29,6 +27,4 @@ public class JpaTest {
 
         assertThat(persistTime.getTime()).isEqualTo(time.getTime());
     }
-
-
 }

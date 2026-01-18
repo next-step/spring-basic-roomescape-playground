@@ -17,14 +17,15 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private Role role;
 
     public Member() {
 
     }
 
-    public Member(String name, String email, String password, String role) {
+    public Member(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -47,7 +48,7 @@ public class Member {
         return password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 }

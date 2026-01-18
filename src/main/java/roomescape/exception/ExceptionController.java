@@ -1,14 +1,18 @@
 package roomescape.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ExceptionController {
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> handleRuntimeException(Exception e) {
-        e.printStackTrace();
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            ConstraintViolationException.class
+    })
+    public ResponseEntity<Void> handleValidationException(Exception e) {
         return ResponseEntity.badRequest().build();
     }
 

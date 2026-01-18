@@ -17,7 +17,7 @@ public class JwtTokenProvider {
 
     public JwtTokenProvider(
             @Value("${roomescape.auth.jwt.secret}") String secretKey,
-            @Value("${roomescape.auth.jwt.expire-length:3600000}") long validityInMilliseconds) {
+            @Value("${roomescape.auth.jwt.expire-length}") long validityInMilliseconds) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.validityInMilliseconds = validityInMilliseconds;
     }
@@ -30,7 +30,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(now)
                 .setExpiration(expire)
                 .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .claim("role", member.getRole().name())
                 .signWith(key)
                 .compact();
     }
