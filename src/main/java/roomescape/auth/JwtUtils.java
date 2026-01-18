@@ -6,8 +6,11 @@ import io.jsonwebtoken.security.Keys;
 import roomescape.member.LoginMember;
 
 import javax.crypto.SecretKey;
+import java.util.Date;
 
 public class JwtUtils {
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
+
     private final SecretKey key;
 
     public JwtUtils(String secretKey) {
@@ -15,11 +18,16 @@ public class JwtUtils {
     }
 
     public String createToken(Long id, String name, String email, String role) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
+
         return Jwts.builder()
                    .setSubject(id.toString())
                    .claim("name", name)
                    .claim("email", email)
                    .claim("role", role)
+                   .setIssuedAt(now)
+                   .setExpiration(expiration)
                    .signWith(key)
                    .compact();
     }
