@@ -8,6 +8,7 @@ import roomescape.member.MemberRepository;
 
 @Component
 @Order(1)
+@Profile("!prod") // 운영환경 배포에서는 실행하지 않도록
 public class DataLoader implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
