@@ -14,13 +14,14 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDto createMember(MemberRequestDto memberRequest) {
-        Member member = memberRepository.save(new Member(
+        Member memberToSave = new Member(
                 memberRequest.name(),
                 memberRequest.email(),
                 memberRequest.password(),
                 Role.USER
-        ));
-        return new MemberResponseDto(member.getId(), member.getName(), member.getEmail());
+        );
+        Member savedMember = memberRepository.save(memberToSave);
+        return MemberResponseDto.from(savedMember);
     }
 
     public Member login(String email, String password) {

@@ -1,5 +1,6 @@
 package roomescape.member;
 
+import jakarta.validation.Valid;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,13 +25,13 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity createMember(@RequestBody MemberRequestDto memberRequest) {
+    public ResponseEntity<MemberResponseDto> createMember(@RequestBody @Valid MemberRequestDto memberRequest) {
         MemberResponseDto member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody MemberRequestDto memberRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody @Valid MemberRequestDto memberRequest, HttpServletResponse response) {
         Member member = memberService.login(memberRequest.email(), memberRequest.password());
 
         String accessToken = createToken(member);
@@ -61,7 +62,7 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = CookieUtil.expireCookie("token");
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
