@@ -4,6 +4,7 @@ APP_NAME="roomescape"
 APP_DIR="/home/ubuntu/roomescape"
 JAR_NAME="roomescape-0.0.1-SNAPSHOT.jar"
 PROD_BRANCH="deploy"
+KILL_TIMEOUT=10000
 
 # 1. Git 저장소 확인
 if [ ! -d "$APP_DIR/.git" ]; then
@@ -19,11 +20,13 @@ git pull origin $PROD_BRANCH
 ./gradlew clean build -x test
 
 # 4. 기존 프로세스 종료
+pm2 stop $APP_NAME --kill-timeout $KILL_TIMEOUT
 pm2 delete $APP_NAME || true
 
 # 5. 실행
 pm2 start java \
   --name $APP_NAME \
+  --kill-timeout $KILL_TIMEOUT \
   -- -jar build/libs/$JAR_NAME \
   --spring.profiles.active=prod
 
