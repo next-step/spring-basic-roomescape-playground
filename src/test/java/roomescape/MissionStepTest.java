@@ -1,12 +1,15 @@
 package roomescape;
 
+import roomescape.auth.JwtUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.waiting.WaitingResponse;
@@ -20,6 +23,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class MissionStepTest {
 
     @Test
@@ -72,7 +76,7 @@ public class MissionStepTest {
 
         assertSoftly(softly -> {
             softly.assertThat(response.statusCode()).isEqualTo(201);
-            softly.assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+            softly.assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
         });
 
         reservationParams.put("name", "브라운");
@@ -88,7 +92,7 @@ public class MissionStepTest {
 
         assertSoftly(softly -> {
             softly.assertThat(adminResponse.statusCode()).isEqualTo(201);
-            softly.assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+            softly.assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
         });
     }
 
@@ -156,13 +160,19 @@ public class MissionStepTest {
                 .extract().jsonPath().getList(".", MyReservationResponse.class);
 
         String status = myReservations.stream()
-                .filter(it -> it.getId() == waiting.getId())
-                .filter(it -> !it.getStatus().equals("예약"))
+                .filter(it -> it.reservationId() == waiting.id())
+                .filter(it -> !it.status().equals("예약"))
                 .findFirst()
-                .map(it -> it.getStatus())
+                .map(it -> it.status())
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 
     private String createToken(String email, String password) {

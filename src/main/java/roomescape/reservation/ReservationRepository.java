@@ -24,4 +24,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "JOIN FETCH r.theme th " +
             "JOIN FETCH r.member m")
     List<Reservation> findAllWithRelations();
+
+    boolean existsByDateAndThemeIdAndTimeId(String date, Long themeId, Long timeId);
+
+    boolean existsByMemberIdAndDateAndThemeIdAndTimeId(Long memberId, String date, Long themeId, Long timeId);
 }

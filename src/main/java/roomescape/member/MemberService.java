@@ -17,9 +17,9 @@ public class MemberService {
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        String hashedPassword = BCrypt.hashpw(memberRequest.getPassword(), BCrypt.gensalt());
+        String hashedPassword = BCrypt.hashpw(memberRequest.password(), BCrypt.gensalt());
         Member member = memberRepository.save(
-                new Member(memberRequest.getName(), memberRequest.getEmail(), hashedPassword, "USER")
+                new Member(memberRequest.name(), memberRequest.email(), hashedPassword, "USER")
         );
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }

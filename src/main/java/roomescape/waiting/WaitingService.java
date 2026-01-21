@@ -41,22 +41,22 @@ public class WaitingService {
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
         Member member = memberService.findById(loginMember.id());
 
-        Time time = timeRepository.findById(waitingRequest.getTime())
+        Time time = timeRepository.findById(waitingRequest.time())
                                   .orElseThrow(() -> new NotFoundDataException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
 
-        Theme theme = themeRepository.findById(waitingRequest.getTheme())
+        Theme theme = themeRepository.findById(waitingRequest.theme())
                                      .orElseThrow(() -> new NotFoundDataException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
 
-        reservationValidator.validateWaitingCreation(member.getId(), waitingRequest.getDate(), time.getId(), theme.getId());
+        reservationValidator.validateWaitingCreation(member.getId(), waitingRequest.date(), time.getId(), theme.getId());
 
         long count = waitingRepository.countByDateAndTimeIdAndThemeId(
-                waitingRequest.getDate(),
+                waitingRequest.date(),
                 time.getId(),
                 theme.getId()
         );
         long rank = count + 1;
 
-        Waiting waiting = new Waiting(waitingRequest.getDate(), time, theme, member);
+        Waiting waiting = new Waiting(waitingRequest.date(), time, theme, member);
         waitingRepository.save(waiting);
 
         return new WaitingResponse(

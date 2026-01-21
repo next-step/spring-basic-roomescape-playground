@@ -15,8 +15,8 @@ import roomescape.time.TimeRepository;
 import roomescape.waiting.WaitingService;
 import roomescape.waiting.WaitingWithRank;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -46,17 +46,17 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Member member = determineMember(reservationRequest, loginMember);
 
-        Time time = timeRepository.findById(reservationRequest.getTime())
+        Time time = timeRepository.findById(reservationRequest.time())
                                   .orElseThrow(() -> new NotFoundDataException(ErrorMessage.TIME_NOT_FOUND.getMessage()));
 
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
+        Theme theme = themeRepository.findById(reservationRequest.theme())
                                      .orElseThrow(() -> new NotFoundDataException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
 
-        reservationValidator.validateReservationCreation(member.getId(), reservationRequest.getDate(), time.getId(), theme.getId());
+        reservationValidator.validateReservationCreation(member.getId(), reservationRequest.date(), time.getId(), theme.getId());
 
         Reservation reservation = new Reservation(
                 member.getName(),
-                reservationRequest.getDate(),
+                reservationRequest.date(),
                 time,
                 theme,
                 member
@@ -64,18 +64,12 @@ public class ReservationService {
 
         reservationRepository.save(reservation);
 
-        return new ReservationResponse(
-                reservation.getId(),
-                reservation.getName(),
-                reservation.getTheme().getName(),
-                reservation.getDate(),
-                reservation.getTime().getValue()
-        );
+        return toReservationResponse(reservation);
     }
 
     private Member determineMember(ReservationRequest request, LoginMember loginMember) {
-        if (request.getName() != null && !request.getName().isBlank()) {
-            return memberService.findByName(request.getName());
+        if (request.name() != null && !request.name().isBlank()) {
+            return memberService.findByName(request.name());
         }
 
         if (loginMember != null) {
@@ -92,42 +86,49 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAllWithRelations().stream()
-                                    .map(it -> new ReservationResponse(
-                                            it.getId(),
-                                            it.getName(),
-                                            it.getTheme().getName(),
-                                            it.getDate(),
-                                            it.getTime().getValue()
-                                    ))
+                                    .map(this::toReservationResponse)
                                     .toList();
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        List<MyReservationResponse> responses = new ArrayList<>();
+        Stream<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.id())
+                .stream()
+                .map(this::toMyReservationResponse);
 
-        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.id());
-        for (Reservation reservation : reservations) {
-            responses.add(new MyReservationResponse(
-                    reservation.getId(),
-                    reservation.getTheme().getName(),
-                    reservation.getDate(),
-                    reservation.getTime().getValue(),
-                    "예약"
-            ));
-        }
+        Stream<MyReservationResponse> waitings = waitingService.findWaitingsWithRankByMemberId(loginMember.id())
+                .stream()
+                .map(this::toMyWaitingResponse);
 
-        List<WaitingWithRank> waitings = waitingService.findWaitingsWithRankByMemberId(loginMember.id());
-        for (WaitingWithRank waitingWithRank : waitings) {
-            long rank = waitingWithRank.getRank() + 1;
-            responses.add(new MyReservationResponse(
-                    waitingWithRank.getWaiting().getId(),
-                    waitingWithRank.getWaiting().getTheme().getName(),
-                    waitingWithRank.getWaiting().getDate(),
-                    waitingWithRank.getWaiting().getTime().getValue(),
-                    rank + "번째 예약대기"
-            ));
-        }
+        return Stream.concat(reservations, waitings).toList();
+    }
 
-        return responses;
+    private ReservationResponse toReservationResponse(Reservation reservation) {
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue()
+        );
+    }
+
+    private MyReservationResponse toMyReservationResponse(Reservation reservation) {
+        return new MyReservationResponse(
+                reservation.getId(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue(),
+                "예약"
+        );
+    }
+
+    private MyReservationResponse toMyWaitingResponse(WaitingWithRank waitingWithRank) {
+        return new MyReservationResponse(
+                waitingWithRank.getWaiting().getId(),
+                waitingWithRank.getWaiting().getTheme().getName(),
+                waitingWithRank.getWaiting().getDate(),
+                waitingWithRank.getWaiting().getTime().getValue(),
+                (waitingWithRank.getRank() + 1) + "번째 예약대기"
+        );
     }
 }

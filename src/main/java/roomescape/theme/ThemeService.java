@@ -29,7 +29,6 @@ public class ThemeService {
     public void deleteById(Long id) {
         Theme theme = themeRepository.findById(id)
                                      .orElseThrow(() -> new NotFoundDataException(ErrorMessage.THEME_NOT_FOUND.getMessage()));
-        theme.setDeleted(true);
-        themeRepository.save(theme);
+        theme.markDeleted();
     }
 }

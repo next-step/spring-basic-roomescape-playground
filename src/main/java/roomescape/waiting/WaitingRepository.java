@@ -38,4 +38,6 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
             "AND w.time.id = :timeId " +
             "AND w.theme.id = :themeId")
     long countByDateAndTimeIdAndThemeId(String date, Long timeId, Long themeId);
+
+    boolean existsByMemberIdAndDateAndTimeIdAndThemeId(Long memberId, String date, Long timeId, Long themeId);
 }

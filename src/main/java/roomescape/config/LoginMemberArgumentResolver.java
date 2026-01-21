@@ -1,5 +1,6 @@
 package roomescape.config;
 
+import roomescape.auth.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -11,20 +12,15 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.exception.ErrorMessage;
 import roomescape.exception.NotFoundDataException;
 import roomescape.member.LoginMember;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
 import roomescape.util.CookieUtil;
-import roomescape.util.JwtTokenProvider;
 
 @Slf4j
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
-        this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -44,11 +40,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         }
 
         try {
-            Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
-            Member member = memberService.findById(memberId);
-
-            log.debug("로그인 사용자 인증 성공: memberId={}, uri={}", memberId, request.getRequestURI());
-            return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+            LoginMember loginMember = jwtUtils.getLoginMember(token);
+            log.debug("로그인 사용자 인증 성공: memberId={}, uri={}", loginMember.id(), request.getRequestURI());
+            return loginMember;
         } catch (Exception e) {
             log.error("토큰 인증 실패: uri={}, error={}", request.getRequestURI(), e.getMessage());
             throw new NotFoundDataException(ErrorMessage.INVALID_AUTH_INFO.getMessage());

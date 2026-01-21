@@ -28,4 +28,9 @@ public class CookieUtil {
         return cookie;
     }
 
+    public static Cookie clearToken() {
+        Cookie cookie = createToken("");
+        cookie.setMaxAge(0);
+        return cookie;
+    }
 }

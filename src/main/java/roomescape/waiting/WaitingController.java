@@ -22,7 +22,7 @@ public class WaitingController {
     ) {
         WaitingResponse waiting = waitingService.save(waitingRequest, loginMember);
         return ResponseEntity
-                .created(URI.create("/waitings/" + waiting.getId()))
+                .created(URI.create("/waitings/" + waiting.id()))
                 .body(waiting);
     }
 

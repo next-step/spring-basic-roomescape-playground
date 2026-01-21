@@ -1,0 +1,28 @@
+package roomescape.config;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
+
+@Component
+@Order(1)
+@Profile("!prod") // 운영환경 배포에서는 실행하지 않도록
+public class DataLoader implements CommandLineRunner {
+
+    private final MemberRepository memberRepository;
+
+    public DataLoader(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
+    @Override
+    public void run(String... args) {
+        memberRepository.save(new Member("어드민", "admin@email.com",
+                "$2a$10$8l8nuVrehA3aJXf2NInk.e0o8vJ1SwQg8yhlThdFKCtm6yWiD455y", "ADMIN"));
+        memberRepository.save(new Member("브라운", "brown@email.com",
+                "$2a$10$8l8nuVrehA3aJXf2NInk.e0o8vJ1SwQg8yhlThdFKCtm6yWiD455y", "USER"));
+    }
+}

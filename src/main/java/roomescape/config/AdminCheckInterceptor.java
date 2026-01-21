@@ -1,24 +1,20 @@
 package roomescape.config;
 
+import roomescape.auth.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
 import roomescape.util.CookieUtil;
-import roomescape.util.JwtTokenProvider;
 
 @Slf4j
 @Component
 public class AdminCheckInterceptor implements HandlerInterceptor {
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public AdminCheckInterceptor(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
-        this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AdminCheckInterceptor(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -32,12 +28,12 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Long memberId = jwtTokenProvider.getMemberIdFromToken(token);
-            Member member = memberService.findById(memberId);
+            Long memberId = jwtUtils.getId(token);
+            String role = jwtUtils.getRole(token);
 
-            if (!"ADMIN".equals(member.getRole())) {
+            if (!"ADMIN".equals(role)) {
                 log.warn("관리자 페이지 접근 시도 - 권한 부족: memberId={}, role={}, uri={}",
-                        memberId, member.getRole(), request.getRequestURI());
+                        memberId, role, request.getRequestURI());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
             }
