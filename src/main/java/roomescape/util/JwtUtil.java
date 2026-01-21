@@ -13,22 +13,22 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private final Key key;
-    private final long validityInMilliseconds;
+    private final long expiration;
 
-    public JwtUtil(@Value("${roomescape.auth.jwt.secret}") String secretKey,
-                   @Value("${security.jwt.token.expire-length:3600000}") long validityInMilliseconds) {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-        this.validityInMilliseconds = validityInMilliseconds;
+    public JwtUtil(@Value("${roomescape.auth.jwt.secret}") String secret,
+                   @Value("${jwt.expiration}") long expiration) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.expiration = expiration;
     }
 
     public String createToken(Member member) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
-
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expiration))
                 .signWith(key)
                 .compact();
     }

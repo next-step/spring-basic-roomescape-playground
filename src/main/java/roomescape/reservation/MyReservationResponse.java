@@ -15,9 +15,23 @@ public class MyReservationResponse {
         this.status = status;
     }
 
-    public Long getReservationId() { return reservationId; }
-    public String getTheme() { return theme; }
-    public String getDate() { return date; }
-    public String getTime() { return time; }
-    public String getStatus() { return status; }
+    public Long getReservationId() {
+        return reservationId;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

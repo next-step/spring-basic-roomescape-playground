@@ -2,10 +2,10 @@ package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.member.LoginMember;
+import roomescape.dto.WaitingResponse;
+import roomescape.error.ErrorCode;
 import roomescape.member.Member;
-import roomescape.member.MemberRepository;
-import roomescape.reservation.ReservationRequest;
+import roomescape.dto.ReservationRequest;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -15,33 +15,40 @@ import roomescape.time.TimeRepository;
 @Transactional
 public class WaitingService {
     private final WaitingRepository waitingRepository;
-    private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
 
-    public WaitingService(WaitingRepository waitingRepository,
-                          MemberRepository memberRepository,
-                          ThemeRepository themeRepository,
-                          TimeRepository timeRepository
-    ) {
+    public WaitingService(WaitingRepository waitingRepository, ThemeRepository themeRepository, TimeRepository timeRepository) {
         this.waitingRepository = waitingRepository;
-        this.memberRepository = memberRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
     }
 
-    public WaitingResponse createWaiting(LoginMember loginMember, ReservationRequest request) {
-        Member member = memberRepository.findById(loginMember.getId()).orElseThrow();
-        Theme theme = themeRepository.findById(request.getTheme());
-        Time time = timeRepository.findById(request.getTime()).orElseThrow();
+    public WaitingResponse createWaiting(ReservationRequest request, Member member) {
+        Theme theme = themeRepository.findById(request.theme())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.THEME_NOT_FOUND.getMessage()));
+        Time time = timeRepository.findById(request.time())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.TIME_NOT_FOUND.getMessage()));
 
-        Waiting waiting = new Waiting(member, theme, time, request.getDate());
-        waitingRepository.save(waiting);
+        if (waitingRepository.existsByDateAndTimeAndThemeAndMember(request.date(), time, theme, member)) {
+            throw new IllegalArgumentException(ErrorCode.WAITING_ALREADY_EXISTS.getMessage());
+        }
 
-        return new WaitingResponse(waiting.getId(), theme.getName(), waiting.getDate(), time.getTime());
+        Waiting waiting = new Waiting(theme, time, member, request.date());
+        Waiting savedWaiting = waitingRepository.save(waiting);
+
+        long rank = waitingRepository.countByDateAndTimeAndTheme(request.date(), time, theme);
+
+        return new WaitingResponse(
+                savedWaiting.getId(),
+                savedWaiting.getTheme().getName(),
+                savedWaiting.getDate(),
+                savedWaiting.getTime().getValue(),
+                rank
+        );
     }
 
-    public void deleteWaiting(Long id) {
+    public void deleteById(Long id) {
         waitingRepository.deleteById(id);
     }
 }

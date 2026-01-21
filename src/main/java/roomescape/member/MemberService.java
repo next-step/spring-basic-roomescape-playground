@@ -1,29 +1,40 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.dto.LoginRequest;
+import roomescape.dto.MemberRequest;
+import roomescape.dto.MemberResponse;
+import roomescape.error.ErrorCode;
+import roomescape.util.JwtUtil;
 
 @Service
-@Transactional(readOnly = true)
 public class MemberService {
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, JwtUtil jwtUtil) {
         this.memberRepository = memberRepository;
+        this.jwtUtil = jwtUtil;
+    }
+
+    public String login(LoginRequest request) {
+        Member member = memberRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
+
+        if (!member.checkPassword(request.password())) {
+            throw new IllegalArgumentException(ErrorCode.PASSWORD_MISMATCH.getMessage());
+        }
+
+        return jwtUtil.createToken(member);
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member findById(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-    }
-
-    public Member login(String email, String password) {
-        return memberRepository.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
     }
 }

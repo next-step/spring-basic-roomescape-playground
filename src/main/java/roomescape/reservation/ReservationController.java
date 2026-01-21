@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,7 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
 import roomescape.member.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberService;
 
 import java.net.URI;
 import java.util.List;
@@ -16,9 +21,11 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final MemberService memberService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, MemberService memberService) {
         this.reservationService = reservationService;
+        this.memberService = memberService;
     }
 
     @GetMapping("/reservations")
@@ -26,26 +33,30 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
-    @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest request, LoginMember loginMember) {
-        if (request.getName() == null && loginMember == null) {
-            return ResponseEntity.status(401).build();
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> findMine(LoginMember loginMember) {
+        if (loginMember == null) {
+            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
         }
 
-        ReservationResponse reservation = reservationService.save(request, loginMember);
+        return reservationService.findReservationsByMember(loginMember);
+    }
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    @PostMapping("/reservations")
+    public ResponseEntity create(@RequestBody @Valid ReservationRequest reservationRequest, LoginMember loginMember) {
+        Member member = null;
+        if (loginMember != null) {
+            member = memberService.findById(loginMember.getId());
+        }
+
+        ReservationResponse reservation = reservationService.save(reservationRequest, member);
+
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/reservations-mine")
-    public ResponseEntity<List<MyReservationResponse>> findMine(LoginMember loginMember) {
-        List<MyReservationResponse> responses = reservationService.findMine(loginMember);
-        return ResponseEntity.ok(responses);
     }
 }

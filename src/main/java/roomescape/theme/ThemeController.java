@@ -1,5 +1,6 @@
 package roomescape.theme;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,26 +14,26 @@ import java.util.List;
 
 @RestController
 public class ThemeController {
-    private final ThemeService themeService;
+    private ThemeRepository themeRepository;
 
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
+    public ThemeController(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
-        Theme newTheme = themeService.addTheme(theme);
+    public ResponseEntity<Theme> createTheme(@RequestBody @Valid Theme theme) {
+        Theme newTheme = themeRepository.save(theme);
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
     }
 
     @GetMapping("/themes")
     public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeService.findAll());
+        return ResponseEntity.ok(themeRepository.findAll());
     }
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeService.deleteTheme(id);
+        themeRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
