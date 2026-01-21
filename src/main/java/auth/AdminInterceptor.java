@@ -7,8 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
+import roomescape.member.Role;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
@@ -33,7 +32,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 
             String role = claims.get("role", String.class);
 
-            if (!"ADMIN".equals(role)) {
+            if (!Role.ADMIN.name().equals(role)) {
                 sendUnauthorized(response, "관리자 권한이 없습니다.");
                 return false;
             }
