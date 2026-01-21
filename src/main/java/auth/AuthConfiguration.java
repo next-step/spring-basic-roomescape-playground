@@ -14,5 +14,6 @@ public class AuthConfiguration {
 
     @Bean
     public JwtUtils jwtUtils() {
-        return new JwtUtils(secretKey, expiration);    }
+        return new JwtUtils(secretKey, expiration);
+    }
 }
