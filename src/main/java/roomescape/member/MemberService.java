@@ -26,4 +26,8 @@ public class MemberService {
     public Member login(String email, String password) {
         return memberRepository.findByEmailAndPassword(email, password).orElseThrow();
     }
+
+    public Member login(String email, String password) {
+        return memberDao.findByEmailAndPassword(email, password);
+    }
 }
