@@ -3,6 +3,7 @@ package auth;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.member.Role;
@@ -30,11 +31,17 @@ public class TestDataLoader implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) {
         Member admin = memberRepository.save(new Member("어드민", "admin@email.com", "password", Role.ADMIN));
+
+        memberRepository.save(new Member("브라운", "brown@email.com", "password", Role.USER));
+
         Theme theme1 = themeRepository.save(new Theme("테마1", "테마1입니다."));
         Time time1 = timeRepository.save(new Time("10:00"));
 
         reservationRepository.save(new Reservation(admin, "2024-03-01", time1, theme1));
+        reservationRepository.save(new Reservation(admin, "2024-03-02", time1, theme1));
+        reservationRepository.save(new Reservation(admin, "2024-03-03", time1, theme1));
     }
 }

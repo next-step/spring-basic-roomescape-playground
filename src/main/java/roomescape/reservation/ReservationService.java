@@ -39,13 +39,13 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("테마를 찾을 수 없습니다."));
 
         String reservationName;
-        if (member != null) {
-            reservationName = member.getName();
-        } else {
+        if (reservationRequest.getName() != null && !reservationRequest.getName().isEmpty()) {
             reservationName = reservationRequest.getName();
         }
-
-        if (reservationName == null || reservationName.isEmpty()) {
+        else if (member != null) {
+            reservationName = member.getName();
+        }
+        else {
             throw new IllegalArgumentException("예약자 이름을 찾을 수 없습니다.");
         }
 

@@ -53,6 +53,7 @@ public class Reservation {
 
     public Reservation(Member member, String date, Time time, Theme theme) {
         this.member = member;
+        this.name = member.getName();
         this.date = date;
         this.time = time;
         this.theme = theme;

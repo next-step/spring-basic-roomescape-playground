@@ -37,12 +37,13 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         try {
             Claims claims = jwtUtils.getClaims(token);
+            String roleName = claims.get("role", String.class);
 
             return new LoginMember(
                     Long.parseLong(claims.getSubject()),
                     claims.get("name", String.class),
                     claims.get("email", String.class),
-                    claims.get("role", Role.class)
+                    Role.valueOf(roleName)
             );
 
         } catch (Exception e) {
