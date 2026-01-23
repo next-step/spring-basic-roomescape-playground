@@ -1,4 +1,4 @@
-package roomescape.config.dataloader;
+package roomescape.initializer;
 
 import java.time.LocalDate;
 import org.springframework.boot.CommandLineRunner;
@@ -15,14 +15,14 @@ import roomescape.repository.TimeRepository;
 
 @Profile("test")
 @Configuration
-public class TestDataLoader implements CommandLineRunner {
+public class TestDataInitializer implements CommandLineRunner {
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
 
-    public TestDataLoader(ThemeRepository themeRepository, TimeRepository timeRepository,
-                          ReservationRepository reservationRepository, MemberRepository memberRepository) {
+    public TestDataInitializer(ThemeRepository themeRepository, TimeRepository timeRepository,
+                               ReservationRepository reservationRepository, MemberRepository memberRepository) {
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
         this.reservationRepository = reservationRepository;

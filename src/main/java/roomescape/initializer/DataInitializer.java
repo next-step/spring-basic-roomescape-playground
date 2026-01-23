@@ -1,4 +1,4 @@
-package roomescape.config.dataloader;
+package roomescape.initializer;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +10,11 @@ import roomescape.repository.MemberRepository;
 
 @Profile({"prod", "test"})
 @Configuration
-public class DataLoader implements CommandLineRunner {
+public class DataInitializer implements CommandLineRunner {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DataLoader(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
     }
