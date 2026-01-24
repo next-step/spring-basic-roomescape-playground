@@ -3,6 +3,7 @@ package roomescape.initializer;
 import java.time.LocalDate;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import roomescape.model.Member;
 import roomescape.model.Reservation;
@@ -14,6 +15,7 @@ import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
 
 @Profile("test")
+@Order(2)
 @Component
 public class TestDataInitializer implements CommandLineRunner {
     private final ThemeRepository themeRepository;
