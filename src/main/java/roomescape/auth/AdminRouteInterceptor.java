@@ -1,22 +1,19 @@
 package roomescape.auth;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.model.Member;
-import roomescape.service.MemberService;
 
 @Component
 public class AdminRouteInterceptor implements HandlerInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService;
 
-    public AdminRouteInterceptor(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
+    public AdminRouteInterceptor(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberService = memberService;
     }
 
     @Override
@@ -37,10 +34,10 @@ public class AdminRouteInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        String subject = jwtTokenProvider.getSubject(token);
-        Member member = memberService.findById(subject);
+        Claims claims = jwtTokenProvider.getClaims(token);
+        String role = claims.get("role", String.class);
 
-        if (member == null || member.getRole() != Role.ADMIN) {
+        if (!Role.ADMIN.name().equals(role)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }

@@ -8,17 +8,16 @@ import jakarta.servlet.http.Cookie;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import roomescape.model.Member;
 
-@Component
 public class JwtTokenProvider {
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey;
+    private final String secretKey;
+    private final long expiryInMs;
 
-    @Value("${roomescape.auth.jwt.expiry}")
-    private long expiryInMs;
+    public JwtTokenProvider(String secretKey, long expiryInMs) {
+        this.secretKey = secretKey;
+        this.expiryInMs = expiryInMs;
+    }
 
     public String createToken(Member member) {
         Claims claims = Jwts.claims().setSubject(member.getId().toString());
@@ -38,13 +37,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getSubject(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 
     public static String extractTokenFromCookies(Cookie[] cookies) {
