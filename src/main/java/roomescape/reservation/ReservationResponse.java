@@ -1,22 +1,26 @@
-package roomescape.waiting;
+package roomescape.reservation;
 
-public class WaitingResponse {
+public class ReservationResponse {
     private Long id;
+    private String name;
     private String theme;
     private String date;
     private String time;
-    private Long rank;
 
-    public WaitingResponse(Long id, String theme, String date, String time, Long rank) {
+    public ReservationResponse(Long id, String name, String theme, String date, String time) {
         this.id = id;
+        this.name = name;
         this.theme = theme;
         this.date = date;
         this.time = time;
-        this.rank = rank;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getTheme() {
@@ -29,9 +33,5 @@ public class WaitingResponse {
 
     public String getTime() {
         return time;
-    }
-
-    public Long getRank() {
-        return rank;
     }
 }

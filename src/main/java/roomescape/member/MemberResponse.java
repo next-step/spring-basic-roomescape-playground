@@ -1,16 +1,14 @@
 package roomescape.member;
 
-public class LoginMember {
+public class MemberResponse {
     private Long id;
     private String name;
     private String email;
-    private Role role;
 
-    public LoginMember(Long id, String name, String email, Role role) {
+    public MemberResponse(Long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.role = role;
     }
 
     public Long getId() {
@@ -23,9 +21,5 @@ public class LoginMember {
 
     public String getEmail() {
         return email;
-    }
-
-    public Role getRole() {
-        return role;
     }
 }

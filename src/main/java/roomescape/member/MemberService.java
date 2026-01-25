@@ -1,40 +1,36 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.LoginRequest;
-import roomescape.dto.MemberRequest;
-import roomescape.dto.MemberResponse;
-import roomescape.error.ErrorCode;
-import roomescape.util.JwtUtil;
+import auth.JwtUtils;
 
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final JwtUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
-    public MemberService(MemberRepository memberRepository, JwtUtil jwtUtil) {
+    public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
-        this.jwtUtil = jwtUtil;
+        this.jwtUtils = jwtUtils;
     }
 
     public String login(LoginRequest request) {
-        Member member = memberRepository.findByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
+        Member member = memberRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
 
-        if (!member.checkPassword(request.password())) {
-            throw new IllegalArgumentException(ErrorCode.PASSWORD_MISMATCH.getMessage());
+        if (!member.checkPassword(request.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        return jwtUtil.createToken(member);
+        return jwtUtils.createToken(member);
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member findById(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
     }
 }

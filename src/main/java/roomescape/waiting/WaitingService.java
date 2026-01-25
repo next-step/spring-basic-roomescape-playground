@@ -2,10 +2,9 @@ package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dto.WaitingResponse;
-import roomescape.error.ErrorCode;
 import roomescape.member.Member;
-import roomescape.dto.ReservationRequest;
+import roomescape.member.MemberRepository;
+import roomescape.reservation.ReservationRequest;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -25,19 +24,19 @@ public class WaitingService {
     }
 
     public WaitingResponse createWaiting(ReservationRequest request, Member member) {
-        Theme theme = themeRepository.findById(request.theme())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.THEME_NOT_FOUND.getMessage()));
-        Time time = timeRepository.findById(request.time())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.TIME_NOT_FOUND.getMessage()));
+        Theme theme = themeRepository.findById(request.getTheme())
+                .orElseThrow(() -> new IllegalArgumentException("테마를 찾을 수 없습니다."));
+        Time time = timeRepository.findById(request.getTime())
+                .orElseThrow(() -> new IllegalArgumentException("시간을 찾을 수 없습니다."));
 
-        if (waitingRepository.existsByDateAndTimeAndThemeAndMember(request.date(), time, theme, member)) {
-            throw new IllegalArgumentException(ErrorCode.WAITING_ALREADY_EXISTS.getMessage());
+        if (waitingRepository.existsByDateAndTimeAndThemeAndMember(request.getDate(), time, theme, member)) {
+            throw new IllegalArgumentException("이미 대기 중입니다.");
         }
 
-        Waiting waiting = new Waiting(theme, time, member, request.date());
+        Waiting waiting = new Waiting(theme, time, member, request.getDate());
         Waiting savedWaiting = waitingRepository.save(waiting);
 
-        long rank = waitingRepository.countByDateAndTimeAndTheme(request.date(), time, theme);
+        long rank = waitingRepository.countByDateAndTimeAndTheme(request.getDate(), time, theme);
 
         return new WaitingResponse(
                 savedWaiting.getId(),

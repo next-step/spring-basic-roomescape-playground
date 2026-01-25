@@ -2,9 +2,6 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.error.ErrorCode;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
@@ -36,23 +33,23 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
-        Time time = timeRepository.findById(reservationRequest.time())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.TIME_NOT_FOUND.getMessage()));
-        Theme theme = themeRepository.findById(reservationRequest.theme())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.THEME_NOT_FOUND.getMessage()));
+        Time time = timeRepository.findById(reservationRequest.getTime())
+                .orElseThrow(() -> new IllegalArgumentException("시간을 찾을 수 없습니다"));
+        Theme theme = themeRepository.findById(reservationRequest.getTheme())
+                .orElseThrow(() -> new IllegalArgumentException("테마를 찾을 수 없습니다."));
 
         String reservationName;
-        if (member != null) {
+        if (reservationRequest.getName() != null && !reservationRequest.getName().isEmpty()) {
+            reservationName = reservationRequest.getName();
+        }
+        else if (member != null) {
             reservationName = member.getName();
-        } else {
-            reservationName = reservationRequest.name();
+        }
+        else {
+            throw new IllegalArgumentException("예약자 이름을 찾을 수 없습니다.");
         }
 
-        if (reservationName == null || reservationName.isEmpty()) {
-            throw new IllegalArgumentException(ErrorCode.MEMBER_NOT_FOUND.getMessage());
-        }
-
-        Reservation reservation = new Reservation(reservationName, reservationRequest.date(), time, theme, member);
+        Reservation reservation = new Reservation(reservationName, reservationRequest.getDate(), time, theme, member);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 

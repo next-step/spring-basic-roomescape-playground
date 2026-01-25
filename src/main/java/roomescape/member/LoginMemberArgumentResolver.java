@@ -1,7 +1,7 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import auth.JwtUtils;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -10,17 +10,14 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.util.JwtUtil;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
-    private final JwtUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtUtil jwtUtil) {
-        this.memberService = memberService;
-        this.jwtUtil = jwtUtil;
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -39,10 +36,15 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         }
 
         try {
-            Long memberId = jwtUtil.getMemberIdFromToken(token);
+            Claims claims = jwtUtils.getClaims(token);
+            String roleName = claims.get("role", String.class);
 
-            Member member = memberService.findById(memberId);
-            return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+            return new LoginMember(
+                    Long.parseLong(claims.getSubject()),
+                    claims.get("name", String.class),
+                    claims.get("email", String.class),
+                    Role.valueOf(roleName)
+            );
 
         } catch (Exception e) {
             return null;

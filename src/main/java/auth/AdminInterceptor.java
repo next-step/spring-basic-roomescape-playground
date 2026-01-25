@@ -1,24 +1,21 @@
-package roomescape.auth;
+package auth;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
-import roomescape.util.JwtUtil;
+import roomescape.member.Role;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
-    private final JwtUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
-    public AdminInterceptor(MemberService memberService, JwtUtil jwtUtil) {
-        this.memberService = memberService;
-        this.jwtUtil = jwtUtil;
+    public AdminInterceptor(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -31,11 +28,11 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Long memberId = jwtUtil.getMemberIdFromToken(token);
+            Claims claims = jwtUtils.getClaims(token);
 
-            Member member = memberService.findById(memberId);
+            String role = claims.get("role", String.class);
 
-            if (!member.isAdmin()) {
+            if (!Role.ADMIN.name().equals(role)) {
                 sendUnauthorized(response, "관리자 권한이 없습니다.");
                 return false;
             }

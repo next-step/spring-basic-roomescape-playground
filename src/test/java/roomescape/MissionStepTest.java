@@ -6,10 +6,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
+import auth.JwtUtils;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservation.MyReservationResponse;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.WaitingResponse;
+import roomescape.reservation.ReservationResponse;
+import roomescape.waiting.WaitingResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class MissionStepTest {
 
     @Test
@@ -68,7 +72,7 @@ public class MissionStepTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(201);
-        assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
+        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
 
         params.put("name", "브라운");
 
@@ -81,7 +85,7 @@ public class MissionStepTest {
                 .extract();
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
-        assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
+        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
     private String createToken(String email, String password) {
@@ -166,12 +170,18 @@ public class MissionStepTest {
 
         // 예약 대기 상태 확인
         String status = myReservations.stream()
-                .filter(it -> it.getReservationId() == waiting.id())
+                .filter(it -> it.getReservationId() == waiting.getId())
                 .filter(it -> !it.getStatus().equals("예약"))
                 .findFirst()
                 .map(it -> it.getStatus())
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 }

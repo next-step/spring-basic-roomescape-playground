@@ -7,12 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
-@Getter
 @Entity
 public class Reservation {
     @Id
@@ -53,7 +51,37 @@ public class Reservation {
         this.member = member;
     }
 
+    public Reservation(Member member, String date, Time time, Theme theme) {
+        this.member = member;
+        this.name = member.getName();
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
     public Reservation() {
 
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public Time getTime() {
+        return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public Member getMember() {return member;}
 }
