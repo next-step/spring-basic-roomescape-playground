@@ -27,34 +27,28 @@ CREATE TABLE member
 
 CREATE TABLE reservation
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    date     VARCHAR(255) NOT NULL,
-    name     VARCHAR(255) NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    id         BIGINT       NOT NULL AUTO_INCREMENT,
+    date       VARCHAR(255) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
+    time_id    BIGINT,
+    theme_id   BIGINT,
+    member_id  BIGINT,
     PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (member_id) REFERENCES member (id)
+);
+
+CREATE TABLE waiting
+(
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id BIGINT       NOT NULL,
+    date      VARCHAR(255) NOT NULL,
+    time_id   BIGINT,
+    theme_id  BIGINT,
+    created_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
-
-INSERT INTO member (name, email, password, role)
-VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
-       ('브라운', 'brown@email.com', 'password', 'USER');
-
-INSERT INTO theme (name, description)
-VALUES ('테마1', '테마1입니다.'),
-       ('테마2', '테마2입니다.'),
-       ('테마3', '테마3입니다.');
-
-INSERT INTO time (time_value)
-VALUES ('10:00'),
-       ('12:00'),
-       ('14:00'),
-       ('16:00'),
-       ('18:00'),
-       ('20:00');
-
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('어드민', '2024-03-01', 1, 1),
-       ('어드민', '2024-03-01', 2, 2),
-       ('어드민', '2024-03-01', 3, 3);

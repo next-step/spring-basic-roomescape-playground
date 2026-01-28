@@ -1,44 +1,55 @@
 package roomescape.auth;
 
+import auth.JwtUtils;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.member.LoginMember;
-import roomescape.util.JwtUtil;
+import roomescape.member.LoginMemberDto;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final String secretKey;
+    private final JwtUtils jwtUtils;
 
-    public LoginMemberArgumentResolver(String secretKey) {
-        this.secretKey = secretKey;
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(LoginMember.class);
+        return parameter.getParameterType().equals(LoginMemberDto.class);
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+    public Object resolveArgument(
+            MethodParameter parameter,
+            ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory
+    ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        String token = JwtUtil.extractTokenFromCookies(request.getCookies());
+        String token = jwtUtils.extractTokenFromCookies(request.getCookies());
 
         if (token.isEmpty()) {
             return null;
         }
 
-        Claims claims = JwtUtil.parseClaims(token, secretKey);
+        try {
+            Claims claims = jwtUtils.parseClaims(token);
 
-        Long id = Long.valueOf(claims.getSubject());
-        String name = claims.get("name", String.class);
-        String role = claims.get("role", String.class);
+            Long id = Long.valueOf(claims.getSubject());
+            String name = claims.get("name", String.class);
+            String role = claims.get("role", String.class);
 
-        return new LoginMember(id, name, null, role);
+            return new LoginMemberDto(id, name, null, role);
+        } catch (ExpiredJwtException e) {
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

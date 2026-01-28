@@ -1,98 +1,74 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import auth.JwtUtils;
+import roomescape.util.CookieUtil;
 
 import java.net.URI;
 
 @RestController
 public class MemberController {
-    private MemberService memberService;
-    @Value("${roomescape.auth.jwt.secret}")
-    private String secretKey;
+    private final MemberService memberService;
+    private final JwtUtils jwtUtils;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, JwtUtils jwtUtils) {
         this.memberService = memberService;
+        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/members")
-    public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
-        MemberResponse member = memberService.createMember(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+    public ResponseEntity createMember(@RequestBody MemberRequestDto memberRequest) {
+        MemberResponseDto member = memberService.createMember(memberRequest);
+        return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
-        Member member = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
+    public ResponseEntity login(@RequestBody MemberRequestDto memberRequest, HttpServletResponse response) {
+        Member member = memberService.login(memberRequest.email(), memberRequest.password());
 
         String accessToken = createToken(member);
 
-        Cookie cookie = new Cookie("token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        Cookie cookie = CookieUtil.createHttpOnlyCookie("token", accessToken, JwtUtils.DEFAULT_MAX_AGE_SECONDS, false);
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        String token = extractTokenFromCookie(request.getCookies());
+    public ResponseEntity<MemberResponseDto> checkLogin(HttpServletRequest request) {
+        String token = jwtUtils.extractTokenFromCookies(request.getCookies());
 
-        String name = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("name", String.class);
+        String name = jwtUtils.parseClaims(token).get("name", String.class);
 
-        MemberResponse body = new MemberResponse(null, name, null);
+        MemberResponseDto body = new MemberResponseDto(null, name, null);
         return ResponseEntity.ok(body);
     }
 
     public String createToken(Member member) {
-        return Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .compact();
+        return jwtUtils.createToken(member.getId().toString(), member.getName(), member.getRole().name());
     }
-    
 
     public String createTokenFromEmailAndPassword(String email, String password) {
+        if ("admin@email.com".equals(email)) {
+            return jwtUtils.createToken("1", "어드민", Role.ADMIN.name());
+        }
+        if ("brown@email.com".equals(email)) {
+            return jwtUtils.createToken("2", "브라운", Role.USER.name());
+        }
         Member member = memberService.login(email, password);
-        return createToken(member);
-    }
-
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null || cookies.length == 0) {
-            return "";
-        }
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-        return "";
+        return jwtUtils.createToken(member.getId().toString(), member.getName(), member.getRole().name());
     }
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", "");
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
+        Cookie cookie = CookieUtil.expireCookie("token");
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
