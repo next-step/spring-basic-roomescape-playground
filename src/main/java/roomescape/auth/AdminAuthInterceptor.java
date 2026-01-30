@@ -14,11 +14,9 @@ import roomescape.member.Role;
 @Component
 public class AdminAuthInterceptor implements HandlerInterceptor {
     private final JwtUtils jwtTokenProvider;
-    private final MemberService memberService;
 
-    public AdminAuthInterceptor(JwtUtils jwtTokenProvider, MemberService memberService) {
+    public AdminAuthInterceptor(JwtUtils jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberService = memberService;
     }
 
     @Override
