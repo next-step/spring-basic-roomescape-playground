@@ -9,16 +9,16 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import missionAuth.JwtUtils;
+import roomescape.auth.AuthService;
 import roomescape.member.LoginMember;
 
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final JwtUtils jwtTokenProvider;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(JwtUtils jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public LoginMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -33,13 +33,13 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   WebDataBinderFactory binderFactory) {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-
         String token = extractToken(request.getCookies());
+
         if (token == null || token.isBlank()) {
             return null;
         }
 
-        JwtDto dto = jwtTokenProvider.parse(token);
+        JwtDto dto = authService.parseToken(token);
         return new LoginMember(dto.id(), dto.name(), dto.role());
     }
 
