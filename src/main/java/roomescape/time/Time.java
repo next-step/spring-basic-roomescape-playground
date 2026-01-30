@@ -1,7 +1,9 @@
 package roomescape.time;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 public class Time {
 
