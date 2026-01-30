@@ -3,6 +3,7 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ConflictException;
+import roomescape.exception.FailMessage;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.NotFoundException;
 import roomescape.member.*;
@@ -71,7 +72,7 @@ public class ReservationService {
         }
 
         Member member = memberRepository.findById(loginMember.id())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_MEMBER));
         if (loginMember.role() == Role.ADMIN && req.name() != null && !req.name().isBlank()) {
             return saveAdmin(req);
         }
@@ -81,10 +82,10 @@ public class ReservationService {
     @Transactional
     public void deleteById(Long id, Long memberId) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("예약이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_RESERVATION));
         if (reservation.getMember() == null ||
                 !memberId.equals(reservation.getMember().getId())) {
-            throw new ForbiddenException("본인이 소유한 데이터만 삭제할 수 있습니다.");
+            throw new ForbiddenException(FailMessage.FORBIDDEN_OWNERSHIP);
         }
 
         reservationRepository.delete(reservation);
@@ -127,17 +128,17 @@ public class ReservationService {
 
     private Time getTime(Long timeId) {
         return timeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException(timeId + " 존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_TIME));
     }
 
     private Theme getTheme(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException(themeId + " 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_THEME));
     }
 
     private void validateNotDuplicated(String date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTime_IdAndTheme_Id(date, timeId, themeId)) {
-            throw new ConflictException("이미 예약된 시간입니다.");
+            throw new ConflictException(FailMessage.CONFLICT_ALREADY_RESERVED);
         }
     }
 }

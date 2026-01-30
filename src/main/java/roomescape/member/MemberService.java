@@ -3,6 +3,7 @@ package roomescape.member;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.FailMessage;
 import roomescape.exception.NotFoundException;
 
 @Service
@@ -26,6 +27,6 @@ public class MemberService {
 
     public Member findById(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("id = " + id + "존제하지 않습니다"));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_MEMBER));
     }
 }

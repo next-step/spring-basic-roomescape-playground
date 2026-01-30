@@ -5,6 +5,7 @@ import missionAuth.JwtDto;
 import missionAuth.JwtUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import roomescape.exception.FailMessage;
 import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
@@ -23,10 +24,10 @@ public class AuthService {
 
     public String login(String email, String password) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 틀렸습니다."));
+                .orElseThrow(() -> new UnauthorizedException(FailMessage.AUTH_LOGIN_FAILED));
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new UnauthorizedException("이메일 또는 비밀번호가 틀렸습니다.");
+            throw new UnauthorizedException(FailMessage.AUTH_LOGIN_FAILED);
         }
 
         return jwtTokenProvider.createToken(member.getId(), member.getName(), member.getRole());
@@ -37,7 +38,7 @@ public class AuthService {
         try {
             return jwtTokenProvider.parse(token);
         } catch (JwtException | IllegalArgumentException e) {
-            throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+            throw new UnauthorizedException(FailMessage.AUTH_INVALID_TOKEN);
         }
     }
 }
