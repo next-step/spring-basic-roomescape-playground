@@ -8,8 +8,8 @@ import roomescape.exception.NotFoundException;
 @Service
 @Transactional(readOnly = true)
 public class MemberService {
-    private MemberRepository memberRepository;
-    private PasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;

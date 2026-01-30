@@ -11,9 +11,9 @@ import roomescape.time.TimeRepository;
 
 @Service
 public class WaitingService {
-    private WaitingRepository waitingRepository;
-    private TimeRepository timeRepository;
-    private ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
     public WaitingService(WaitingRepository waitingRepository,
                           TimeRepository timeRepository,

@@ -7,7 +7,6 @@ import missionAuth.JwtDto;
 import missionAuth.JwtUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.MemberService;
 import roomescape.member.Role;
 
 

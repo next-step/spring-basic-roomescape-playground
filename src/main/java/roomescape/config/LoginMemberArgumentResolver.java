@@ -11,7 +11,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import missionAuth.JwtUtils;
 import roomescape.member.LoginMember;
-import roomescape.member.MemberService;
+
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {

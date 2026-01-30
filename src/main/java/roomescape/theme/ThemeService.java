@@ -8,7 +8,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
-    private ThemeRepository themeRepository;
+    private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;

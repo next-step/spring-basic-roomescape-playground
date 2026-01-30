@@ -18,11 +18,11 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
-    private ReservationRepository reservationRepository;
-    private TimeRepository timeRepository;
-    private ThemeRepository themeRepository;
-    private WaitingRepository waitingRepository;
-    private MemberRepository memberRepository;
+    private final ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               TimeRepository timeRepository,
