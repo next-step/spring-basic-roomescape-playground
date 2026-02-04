@@ -40,6 +40,6 @@ public class WaitingService {
                 saved.getId(),
                 saved.getTheme().getName(),
                 saved.getDate(),
-                saved.getTime().getTime());
+                saved.getTime().getValue());
     }
 }
