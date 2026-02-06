@@ -10,8 +10,8 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class TimeService {
-    private TimeRepository timeRepository;
-    private ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
     public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
@@ -25,7 +25,7 @@ public class TimeService {
         return times.stream()
                 .map(time -> new AvailableTime(
                         time.getId(),
-                        time.getTime(),
+                        time.getValue(),
                         reservations.stream()
                                 .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
                 ))

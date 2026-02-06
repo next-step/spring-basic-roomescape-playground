@@ -27,7 +27,7 @@ public class TimeController {
 
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getTime() == null || time.getTime().isEmpty()) {
+        if (time.getValue() == null || time.getValue().isEmpty()) {
             throw new RuntimeException();
         }
 

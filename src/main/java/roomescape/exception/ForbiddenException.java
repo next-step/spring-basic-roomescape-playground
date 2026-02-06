@@ -1,8 +1,14 @@
 package roomescape.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ForbiddenException extends RuntimeException {
 
-    public ForbiddenException(String message) {
-        super(message);
+    private final FailMessage failMessage;
+
+    public ForbiddenException(FailMessage failMessage) {
+        super(failMessage.getMessage());
+        this.failMessage = failMessage;
     }
 }

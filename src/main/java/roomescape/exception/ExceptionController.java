@@ -18,22 +18,22 @@ public class ExceptionController {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Void> handleUnauthorized(UnauthorizedException e) {
-        return ResponseEntity.status(401).build();
+        return ResponseEntity.status(e.getFailMessage().getHttpStatus()).build();
     }
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<Void> handleForbidden(ForbiddenException e) {
-        return ResponseEntity.status(403).build();
+        return ResponseEntity.status(e.getFailMessage().getHttpStatus()).build();
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Void> handleNotFound(NotFoundException e) {
-        return ResponseEntity.status(404).build();
+        return ResponseEntity.status(e.getFailMessage().getHttpStatus()).build();
     }
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<Void> handleConflict(ConflictException e) {
-        return ResponseEntity.status(409).build();
+        return ResponseEntity.status(e.getFailMessage().getHttpStatus()).build();
     }
 
     @ExceptionHandler(Exception.class)

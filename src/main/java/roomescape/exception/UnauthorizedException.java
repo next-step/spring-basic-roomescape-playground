@@ -1,7 +1,13 @@
 package roomescape.exception;
 
+import lombok.Getter;
+
+@Getter
 public class UnauthorizedException extends RuntimeException {
-    public UnauthorizedException(String message) {
-        super(message);
+    private final FailMessage failMessage;
+
+    public UnauthorizedException(FailMessage failMessage) {
+        super(failMessage.getMessage());
+        this.failMessage = failMessage;
     }
 }

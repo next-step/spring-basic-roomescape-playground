@@ -3,21 +3,19 @@ package roomescape.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import missionAuth.JwtDto;
+import missionAuth.JwtUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
 import roomescape.member.Role;
 
 
 @Component
 public class AdminAuthInterceptor implements HandlerInterceptor {
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService;
+    private final JwtUtils jwtTokenProvider;
 
-    public AdminAuthInterceptor(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
+    public AdminAuthInterceptor(JwtUtils jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberService = memberService;
     }
 
     @Override
@@ -29,10 +27,8 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Long memberId = jwtTokenProvider.extractMemberIdFromToken(token);
-            Member member = memberService.findById(memberId);
-            if (member == null || member.getRole() != Role.ADMIN) {
-
+            JwtDto dto = jwtTokenProvider.parse(token);
+            if (dto.role() != Role.ADMIN) {
                 response.setStatus(401);
                 return false;
             }

@@ -2,6 +2,7 @@ package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.FailMessage;
 import roomescape.exception.NotFoundException;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
@@ -11,9 +12,9 @@ import roomescape.time.TimeRepository;
 
 @Service
 public class WaitingService {
-    private WaitingRepository waitingRepository;
-    private TimeRepository timeRepository;
-    private ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
     public WaitingService(WaitingRepository waitingRepository,
                           TimeRepository timeRepository,
@@ -26,10 +27,10 @@ public class WaitingService {
     @Transactional
     public WaitingResponse save(WaitingRequest waitingRequest, Member member) {
         Time time = timeRepository.findById(waitingRequest.time())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 timeId=" + waitingRequest.time()));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_TIME));
 
         Theme theme = themeRepository.findById(waitingRequest.theme())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 themeId=" + waitingRequest.theme()));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_THEME));
 
         Waiting saved = waitingRepository.save(
                 Waiting.memberWaiting(waitingRequest.date(), time, theme, member)
@@ -39,6 +40,6 @@ public class WaitingService {
                 saved.getId(),
                 saved.getTheme().getName(),
                 saved.getDate(),
-                saved.getTime().getTime());
+                saved.getTime().getValue());
     }
 }

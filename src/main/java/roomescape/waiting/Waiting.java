@@ -1,10 +1,12 @@
 package roomescape.waiting;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+@Getter
 @Entity
 public class Waiting {
     @Id
@@ -36,25 +38,5 @@ public class Waiting {
         w.theme = theme;
         w.member = member;
         return w;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public Time getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
-
-    public Member getMember() {
-        return member;
     }
 }

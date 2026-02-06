@@ -2,25 +2,23 @@ package roomescape.config;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import missionAuth.JwtDto;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.AuthService;
 import roomescape.member.LoginMember;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
+
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
-        this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+    public LoginMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -35,16 +33,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   WebDataBinderFactory binderFactory) {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-
         String token = extractToken(request.getCookies());
+
         if (token == null || token.isBlank()) {
             return null;
         }
 
-        Long memberId = jwtTokenProvider.extractMemberIdFromToken(token);
-        Member member = memberService.findById(memberId);
-
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        JwtDto dto = authService.parseToken(token);
+        return new LoginMember(dto.id(), dto.name(), dto.role());
     }
 
     private String extractToken(Cookie[] cookies) {

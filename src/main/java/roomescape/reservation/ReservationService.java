@@ -3,6 +3,7 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ConflictException;
+import roomescape.exception.FailMessage;
 import roomescape.exception.ForbiddenException;
 import roomescape.exception.NotFoundException;
 import roomescape.member.*;
@@ -18,11 +19,11 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
-    private ReservationRepository reservationRepository;
-    private TimeRepository timeRepository;
-    private ThemeRepository themeRepository;
-    private WaitingRepository waitingRepository;
-    private MemberRepository memberRepository;
+    private final ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               TimeRepository timeRepository,
@@ -47,7 +48,7 @@ public class ReservationService {
         );
 
         return new ReservationResponse(saved.getId(), saved.getName(),
-                saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());
+                saved.getTheme().getName(), saved.getDate(), saved.getTime().getValue());
     }
 
     @Transactional
@@ -61,7 +62,7 @@ public class ReservationService {
         );
 
         return new ReservationResponse(saved.getId(), member.getName(),
-                saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());
+                saved.getTheme().getName(), saved.getDate(), saved.getTime().getValue());
     }
 
     @Transactional
@@ -71,7 +72,7 @@ public class ReservationService {
         }
 
         Member member = memberRepository.findById(loginMember.id())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_MEMBER));
         if (loginMember.role() == Role.ADMIN && req.name() != null && !req.name().isBlank()) {
             return saveAdmin(req);
         }
@@ -81,10 +82,10 @@ public class ReservationService {
     @Transactional
     public void deleteById(Long id, Long memberId) {
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("예약이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_RESERVATION));
         if (reservation.getMember() == null ||
                 !memberId.equals(reservation.getMember().getId())) {
-            throw new ForbiddenException("본인이 소유한 데이터만 삭제할 수 있습니다.");
+            throw new ForbiddenException(FailMessage.FORBIDDEN_OWNERSHIP);
         }
 
         reservationRepository.delete(reservation);
@@ -93,7 +94,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAllWithRelations().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
+                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
 
@@ -104,7 +105,7 @@ public class ReservationService {
                         r.getId(),
                         r.getTheme().getName(),
                         r.getDate(),
-                        r.getTime().getTime(),
+                        r.getTime().getValue(),
                         "예약"
                 ))
                 .toList();
@@ -114,7 +115,7 @@ public class ReservationService {
                         wr.getWaiting().getId(),
                         wr.getWaiting().getTheme().getName(),
                         wr.getWaiting().getDate(),
-                        wr.getWaiting().getTime().getTime(),
+                        wr.getWaiting().getTime().getValue(),
                         (wr.getRank() + 1) + "번째 예약대기"
                 ))
                 .toList();
@@ -127,17 +128,17 @@ public class ReservationService {
 
     private Time getTime(Long timeId) {
         return timeRepository.findById(timeId)
-                .orElseThrow(() -> new NotFoundException(timeId + " 존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_TIME));
     }
 
     private Theme getTheme(Long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException(themeId + " 존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException(FailMessage.NOT_FOUND_THEME));
     }
 
     private void validateNotDuplicated(String date, Long timeId, Long themeId) {
         if (reservationRepository.existsByDateAndTime_IdAndTheme_Id(date, timeId, themeId)) {
-            throw new ConflictException("이미 예약된 시간입니다.");
+            throw new ConflictException(FailMessage.CONFLICT_ALREADY_RESERVED);
         }
     }
 }

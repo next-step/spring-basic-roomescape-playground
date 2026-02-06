@@ -1,7 +1,9 @@
 package roomescape.time;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 public class Time {
 
@@ -30,13 +32,5 @@ public class Time {
 
     public Time() {
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTime() {
-        return value;
     }
 }
