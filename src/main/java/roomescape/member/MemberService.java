@@ -25,6 +25,14 @@ public class MemberService {
                 loginRequest.getPassword());
     }
 
+    public Member findById(Long id) {
+        return memberDao.findById(id);
+    }
+
+    public Member findByName(String name) {
+        return memberDao.findByName(name);
+    }
+
     public LoginCheckResponse getLoginCheckInfo(Long memberId) {
         Member member = memberDao.findById(memberId);
         return new LoginCheckResponse(member.getName());

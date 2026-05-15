@@ -1,7 +1,6 @@
 package roomescape.member;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 import roomescape.auth.AuthService;
 import roomescape.auth.LoginCheckResponse;
+import roomescape.auth.LoginMember;
 import roomescape.auth.LoginRequest;
 import roomescape.auth.LoginResponse;
 
@@ -27,13 +27,8 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity checkLogin(HttpServletRequest httpServletRequest) {
-        Cookie[] cookies = httpServletRequest.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        Long memberId = authService.getMemberId(token);
-        LoginCheckResponse response = memberService.getLoginCheckInfo(memberId);
-
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity checkLogin(@LoginMember Member member) {
+        return ResponseEntity.ok().body(new LoginCheckResponse(member.getName()));
     }
 
 
@@ -43,7 +38,6 @@ public class MemberController {
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
 
-    // TODO: 사용자 권한 에러 추가
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest,
             HttpServletResponse httpServletResponse) {
@@ -68,12 +62,4 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
-    }
 }
