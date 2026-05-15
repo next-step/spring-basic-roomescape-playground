@@ -20,13 +20,23 @@ public class JwtTokenProvider {
         this.secertKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(String memberName, String email, String password) {
+    public String createToken(Long memberId, String name, String role) {
 
         return Jwts.builder()
-                .setSubject("token")
-                .claim("email", email)
-                .claim("password", password)
+                .setSubject(String.valueOf(memberId))
+                .claim("name", name)
+                .claim("role", role)
                 .signWith(secertKey)
                 .compact();
+    }
+
+    public Long findMemberId(String token) {
+
+        return Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(secertKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject());
     }
 }

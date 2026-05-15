@@ -14,10 +14,15 @@ public class AuthService {
 
     public LoginResponse createToken(Member member) {
         String accessToken = jwtTokenProvider.createToken(
+                member.getId(),
                 member.getName(),
-                member.getEmail(),
-                member.getPassword());
+                member.getRole());
 
         return new LoginResponse(accessToken);
+    }
+
+    public Long getMemberId(String token) {
+
+        return jwtTokenProvider.findMemberId(token);
     }
 }
