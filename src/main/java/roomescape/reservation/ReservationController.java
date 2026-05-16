@@ -12,6 +12,7 @@ import java.net.URI;
 import java.util.List;
 import roomescape.auth.LoginMember;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.MemberService;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -42,9 +43,12 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        Member member = reservationRequest.getName() != null
-                ? memberService.findByName(reservationRequest.getName())
-                : loginMember;
+        Member member;
+        if (loginMember.getRole() == Role.ADMIN && reservationRequest.getName() != null) {
+            member = memberService.findByName(reservationRequest.getName());
+        } else {
+            member = loginMember;
+        }
 
         ReservationResponse reservation = reservationService.save(reservationRequest, member);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))

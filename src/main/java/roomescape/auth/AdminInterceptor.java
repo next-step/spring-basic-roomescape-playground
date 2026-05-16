@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.MemberService;
 
 public class AdminInterceptor implements HandlerInterceptor {
@@ -24,7 +25,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         Long memberId = authService.getMemberId(token);
         Member member = memberService.findById(memberId);
 
-        if (member == null || !member.getRole().equals("ADMIN")) {
+        if (member == null || member.getRole() != Role.ADMIN) {
             response.setStatus(401);
             return false;
         }
