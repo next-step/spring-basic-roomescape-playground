@@ -10,12 +10,6 @@ import roomescape.member.domain.Member;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private MemberService memberService;
-
-    public LoginMemberArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
-    }
-
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType().equals(Member.class);
