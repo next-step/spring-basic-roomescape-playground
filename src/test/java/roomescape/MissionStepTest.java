@@ -10,7 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.Map;
-import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.dto.ReservationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

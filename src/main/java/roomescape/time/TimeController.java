@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import roomescape.time.domain.AvailableTime;
+import roomescape.time.domain.Time;
 
 @RestController
 public class TimeController {

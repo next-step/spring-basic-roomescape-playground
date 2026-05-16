@@ -4,8 +4,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.Theme;
-import roomescape.time.Time;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.Time;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -73,31 +75,6 @@ public class ReservationDao {
 
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
-    }
-
-    public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
-        return jdbcTemplate.query(
-                "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
-                        "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
-                        "ti.id AS time_id, ti.time_value AS time_value " +
-                        "FROM reservation r " +
-                        "JOIN theme t ON r.theme_id = t.id " +
-                        "JOIN time ti ON r.time_id = ti.id" +
-                        "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
-                (rs, rowNum) -> new Reservation(
-                        rs.getLong("reservation_id"),
-                        rs.getString("reservation_name"),
-                        rs.getString("reservation_date"),
-                        new Time(
-                                rs.getLong("time_id"),
-                                rs.getString("time_value")
-                        ),
-                        new Theme(
-                                rs.getLong("theme_id"),
-                                rs.getString("theme_name"),
-                                rs.getString("theme_description")
-                        )));
     }
 
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {

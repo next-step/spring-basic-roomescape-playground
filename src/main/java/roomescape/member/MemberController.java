@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import roomescape.auth.AuthService;
-import roomescape.auth.LoginCheckResponse;
+import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.LoginMember;
-import roomescape.auth.LoginRequest;
-import roomescape.auth.LoginResponse;
+import roomescape.auth.dto.LoginRequest;
+import roomescape.auth.dto.LoginResponse;
+import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 @RestController
 public class MemberController {

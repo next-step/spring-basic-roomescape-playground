@@ -1,12 +1,13 @@
 package roomescape.auth;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.LoginResponse;
 import roomescape.member.Member;
 
 @Service
 public class AuthService {
 
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AuthService(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
