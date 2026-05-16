@@ -15,6 +15,10 @@ public class MemberResponse {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
+    public static MemberResponse from(LoginMember loginMember) {
+        return new MemberResponse(loginMember.getId(), loginMember.getName(), loginMember.getEmail());
+    }
+
     public Long getId() {
         return id;
     }
