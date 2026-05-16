@@ -23,8 +23,10 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
-                "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
-                        "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
+                "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, "
+                        +
+                        "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, "
+                        +
                         "ti.id AS time_id, ti.time_value AS time_value " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
@@ -48,7 +50,9 @@ public class ReservationDao {
     public Reservation save(ReservationRequest reservationRequest, String name) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)",
+                    new String[]{"id"});
             ps.setString(1, reservationRequest.getDate());
             ps.setString(2, name);
             ps.setLong(3, reservationRequest.getTheme());
@@ -61,7 +65,8 @@ public class ReservationDao {
                 reservationRequest.getTime());
 
         Theme theme = jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
-                (rs, rowNum) -> new Theme(rs.getLong("id"), rs.getString("name"), rs.getString("description")),
+                (rs, rowNum) -> new Theme(rs.getLong("id"), rs.getString("name"),
+                        rs.getString("description")),
                 reservationRequest.getTheme());
 
         return new Reservation(
@@ -79,8 +84,10 @@ public class ReservationDao {
 
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
         return jdbcTemplate.query(
-                "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
-                        "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
+                "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, "
+                        +
+                        "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, "
+                        +
                         "ti.id AS time_id, ti.time_value AS time_value " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +

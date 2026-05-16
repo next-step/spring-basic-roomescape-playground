@@ -10,6 +10,7 @@ import java.util.List;
 
 @Service
 public class ReservationService {
+
     private ReservationDao reservationDao;
 
     public ReservationService(ReservationDao reservationDao) {
@@ -19,7 +20,9 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
         Reservation reservation = reservationDao.save(reservationRequest, member.getName());
 
-        return new ReservationResponse(reservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(reservation.getId(), member.getName(),
+                reservation.getTheme().getName(), reservation.getDate(),
+                reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
@@ -28,7 +31,8 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(it -> new ReservationResponse(it.getId(), it.getName(),
+                        it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
 }

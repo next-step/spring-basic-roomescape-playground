@@ -18,7 +18,8 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+            Object handler) throws Exception {
         String token = extractToken(request);
         Long memberId = authService.getMemberId(token);
         Member member = memberService.findById(memberId);
@@ -33,9 +34,13 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     private String extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        if (cookies == null) return "";
+        if (cookies == null) {
+            return "";
+        }
         for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) return cookie.getValue();
+            if ("token".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
         }
         return "";
     }

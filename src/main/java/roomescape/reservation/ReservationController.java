@@ -22,7 +22,8 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final MemberService memberService;
 
-    public ReservationController(ReservationService reservationService, MemberService memberService) {
+    public ReservationController(ReservationService reservationService,
+            MemberService memberService) {
         this.reservationService = reservationService;
         this.memberService = memberService;
     }
@@ -46,7 +47,8 @@ public class ReservationController {
                 : loginMember;
 
         ReservationResponse reservation = reservationService.save(reservationRequest, member);
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
+                .body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")

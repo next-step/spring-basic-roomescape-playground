@@ -10,6 +10,7 @@ import java.util.List;
 
 @Service
 public class TimeService {
+
     private TimeDao timeDao;
     private ReservationDao reservationDao;
 
@@ -27,7 +28,8 @@ public class TimeService {
                         time.getId(),
                         time.getValue(),
                         reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
+                                .anyMatch(reservation -> reservation.getTime().getId()
+                                        .equals(time.getId()))
                 ))
                 .toList();
     }

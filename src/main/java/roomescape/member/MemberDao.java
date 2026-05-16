@@ -8,6 +8,7 @@ import roomescape.member.domain.Member;
 
 @Repository
 public class MemberDao {
+
     private JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
@@ -17,7 +18,9 @@ public class MemberDao {
     public Member save(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", new String[]{"id"});
+            var ps = connection.prepareStatement(
+                    "INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)",
+                    new String[]{"id"});
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
@@ -25,7 +28,8 @@ public class MemberDao {
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
+        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(),
+                "USER");
     }
 
     public Member findByEmailAndPassword(String email, String password) {

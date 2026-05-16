@@ -2,7 +2,7 @@ package roomescape.auth;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginResponse;
-import roomescape.member.Member;
+import roomescape.member.domain.Member;
 
 @Service
 public class AuthService {
