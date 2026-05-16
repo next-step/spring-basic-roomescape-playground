@@ -1,7 +1,6 @@
 package roomescape.member;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberRequest;
@@ -34,10 +33,5 @@ public class MemberService {
 
     public Member findByName(String name) {
         return memberDao.findByName(name);
-    }
-
-    public LoginCheckResponse getLoginCheckInfo(Long memberId) {
-        Member member = memberDao.findById(memberId);
-        return new LoginCheckResponse(member.getName());
     }
 }
