@@ -33,10 +33,10 @@ public class PageController {
         Member member = memberDao.findById(Integer.parseInt(memberId));
         if (member.getRole().equals("ADMIN"))
             return "admin/index";
-        else
+        else {
             response.setStatus(401);
             return null;
-
+        }
     }
 
     @GetMapping("/admin/reservation")
