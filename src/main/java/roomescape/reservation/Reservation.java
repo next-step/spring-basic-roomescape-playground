@@ -1,4 +1,4 @@
-package roomescape.reservation;
+ppackage roomescape.reservation;
 
 import roomescape.theme.Theme;
 import roomescape.time.Time;
