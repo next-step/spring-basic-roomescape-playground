@@ -20,7 +20,7 @@ public class MemberService {
         String password = memberLoginRequest.getPassword();
         Member member = memberDao.findByEmailAndPassword(email, password);
         if (member == null) {
-            throw new RuntimeException("아이디 혹은 비밀번호를 확인해 주세요");
+            throw new LoginFailedException("아이디 혹은 비밀번호를 확인해 주세요");
         }
         return member;
     }
