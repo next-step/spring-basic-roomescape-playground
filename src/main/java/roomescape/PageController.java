@@ -11,7 +11,7 @@ import roomescape.member.MemberDao;
 
 @Controller
 public class PageController {
-    MemberDao memberDao;
+    private final MemberDao memberDao;
 
     public PageController(MemberDao memberDao) {
         this.memberDao = memberDao;

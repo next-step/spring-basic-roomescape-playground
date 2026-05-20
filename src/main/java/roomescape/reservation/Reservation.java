@@ -4,8 +4,8 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 public class Reservation {
-    private Long id;
-    private String name;
+    private final Long id;
+    private final String name;
     private String date;
     private Time time;
     private Theme theme;

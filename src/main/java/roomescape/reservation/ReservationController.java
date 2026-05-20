@@ -13,7 +13,7 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
 
     public ReservationController(ReservationService reservationService, MemberDao memberDao) {
         this.reservationService = reservationService;
