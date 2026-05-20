@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,29 +36,30 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest,
+    public ResponseEntity create(@RequestBody @Valid ReservationRequest reservationRequest,
             @LoginMember Member loginMember) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Member member;
-        if (loginMember.getRole() == Role.ADMIN && reservationRequest.getName() != null) {
-            member = memberService.findByName(reservationRequest.getName());
-        } else {
-            member = loginMember;
-        }
-
+        Member member = resolveReservationMember(reservationRequest, loginMember);
         ReservationResponse reservation = reservationService.save(reservationRequest, member);
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId()))
+
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id()))
                 .body(reservation);
     }
+
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private Member resolveReservationMember(ReservationRequest reservationRequest,
+            Member loginMember) {
+        Member member;
+
+        if (loginMember.getRole() == Role.ADMIN && reservationRequest.name() != null) {
+            member = memberService.findByName(reservationRequest.name());
+            return member;
+        }
+        return loginMember;
     }
 }

@@ -17,15 +17,15 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(),
-                memberRequest.getPassword(), Role.USER));
+        Member member = memberDao.save(new Member(memberRequest.name(), memberRequest.email(),
+                memberRequest.password(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member getMemberWithLoginRequest(LoginRequest loginRequest) {
         return memberDao.findByEmailAndPassword(
-                loginRequest.getEmail(),
-                loginRequest.getPassword());
+                loginRequest.email(),
+                loginRequest.password());
     }
 
     public Member findById(Long id) {

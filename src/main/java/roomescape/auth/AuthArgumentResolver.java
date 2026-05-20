@@ -3,21 +3,20 @@ package roomescape.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.domain.Member;
-import roomescape.member.MemberService;
 
+@Component
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthService authService;
-    private final MemberService memberService;
 
-    public AuthArgumentResolver(AuthService authService, MemberService memberService) {
+    public AuthArgumentResolver(AuthService authService) {
         this.authService = authService;
-        this.memberService = memberService;
     }
 
     @Override
@@ -31,8 +30,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = extractToken(request);
-        Long memberId = authService.getMemberId(token);
-        return memberService.findById(memberId);
+        return authService.getMember(token);
     }
 
     private String extractToken(HttpServletRequest request) {

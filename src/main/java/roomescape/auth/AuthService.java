@@ -23,7 +23,10 @@ public class AuthService {
     }
 
     public Long getMemberId(String token) {
-
         return jwtTokenProvider.findMemberId(token);
+    }
+
+    public Member getMember(String token) {
+        return jwtTokenProvider.findMember(token);
     }
 }
