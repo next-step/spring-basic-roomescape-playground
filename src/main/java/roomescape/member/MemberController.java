@@ -8,17 +8,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import roomescape.JwtTokenProvider;
 
 import java.net.URI;
 
 @RestController
 public class MemberController {
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/members")
@@ -41,10 +42,7 @@ public class MemberController {
     public ResponseEntity login(@RequestBody MemberLoginRequest memberLoginRequest, HttpServletResponse response) {
         Member member = memberService.memberLogin(memberLoginRequest);
 
-        String token = Jwts.builder()
-                .setSubject(member.getId().toString())
-                .signWith(SignatureAlgorithm.HS256, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789AB")
-                .compact();
+        String token = jwtTokenProvider.createToken(member.getId());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);

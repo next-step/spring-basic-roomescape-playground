@@ -4,8 +4,8 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
-
+import roomescape.JwtTokenProvider;
+import roomescape.member.MemberService;
 import java.net.URI;
 import java.util.List;
 
@@ -13,11 +13,13 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final MemberDao memberDao;
+    private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public ReservationController(ReservationService reservationService, MemberDao memberDao) {
+    public ReservationController(ReservationService reservationService, MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.reservationService = reservationService;
-        this.memberDao = memberDao;
+        this.memberService = memberService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @GetMapping("/reservations")
@@ -35,13 +37,9 @@ public class ReservationController {
 
         if (reservationRequest.getName() == null) {
 
-            String memberId = Jwts.parser()
-                    .setSigningKey("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789AB")
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
+            String memberId = jwtTokenProvider.getMemberId(token);
 
-            Member member = memberDao.findById(Integer.parseInt(memberId));
+            Member member = memberService.findById(Integer.parseInt(memberId));
             reservationRequest.setName(member.getName());
         }
 

@@ -11,32 +11,10 @@ import roomescape.member.MemberDao;
 
 @Controller
 public class PageController {
-    private final MemberDao memberDao;
-
-    public PageController(MemberDao memberDao) {
-        this.memberDao = memberDao;
-    }
 
     @GetMapping("/admin")
-    public String admin(@CookieValue(value = "token", required = false) String token, HttpServletResponse response) {
-        if (token == null) {
-            response.setStatus(401);
-            return null;
-        }
-
-        String memberId = Jwts.parser()
-                .setSigningKey("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789AB")
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-
-        Member member = memberDao.findById(Integer.parseInt(memberId));
-        if (member.getRole().equals("ADMIN"))
-            return "admin/index";
-        else {
-            response.setStatus(401);
-            return null;
-        }
+    public String admin() {
+        return "admin/index";
     }
 
     @GetMapping("/admin/reservation")
