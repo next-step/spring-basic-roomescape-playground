@@ -5,7 +5,7 @@ public class MemberResponse {
     private String name;
     private String email;
 
-    public MemberResponse(Long id, String name, String email) {
+    private MemberResponse(Long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;

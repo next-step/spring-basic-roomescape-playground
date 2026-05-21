@@ -13,7 +13,7 @@ public class MemberService {
 
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return MemberResponse.from(member);
     }
 
     public Member login(LoginRequest loginRequest, HttpServletResponse response) {
