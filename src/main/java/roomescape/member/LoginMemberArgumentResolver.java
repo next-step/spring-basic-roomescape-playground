@@ -12,9 +12,11 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
+    public LoginMemberArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -29,7 +31,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         if (token == null || token.isBlank()) {
             throw new IllegalAccessError("토큰이 없습니다.");
         }
-        Member member = memberService.findByToken(token);
+        Long memberId = jwtTokenProvider.getMemberId(token);
+        Member member = memberService.findByToken(memberId);
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 

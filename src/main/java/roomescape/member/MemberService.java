@@ -6,11 +6,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberService {
     private final MemberDao memberDao;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -26,9 +24,7 @@ public class MemberService {
         return member;
     }
 
-    public Member findByToken(String token) {
-        Long memberId = jwtTokenProvider.getMemberId(token);
-
+    public Member findByToken(Long memberId) {
         Member member = memberDao.findById(memberId);
         if (member == null) {
             throw new IllegalArgumentException("존재하지 않는 회원입니다.");
