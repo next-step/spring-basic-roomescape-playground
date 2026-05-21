@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -19,7 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MissionStepTest {
 
     @Test
-    void 일단계() {
+    @DisplayName("토큰으로 로그인 상태를 확인한다")
+    void checkLoginStatus() {
         String token = createToken("admin@email.com", "password");
         assertThat(token).isNotBlank();
 
@@ -35,8 +37,9 @@ public class MissionStepTest {
     }
 
     @Test
-    void 이단계() {
-        String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+    @DisplayName("이름 없이 예약하면 토큰 소유자 이름으로 생성된다")
+    void createReservation_WithTokenName() {
+        String token = createToken("admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -53,8 +56,18 @@ public class MissionStepTest {
 
         assertThat(response.statusCode()).isEqualTo(201);
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+    }
 
-        params.put("name", "브라운");
+    @Test
+    @DisplayName("관리자가 대리 예약하면 입력한 이름으로 생성된다")
+    void createReservation_WithInputName() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+        params.put("name", "이름");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
                 .body(params)
@@ -65,7 +78,31 @@ public class MissionStepTest {
                 .extract();
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
-        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("이름");
+    }
+
+    @Test
+    @DisplayName("일반 회원은 관리자 페이지 접근이 불가능하다")
+    void adminPage_RegularUser_Unauthorized() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    @DisplayName("관리자는 관리자 페이지 접근이 가능하다")
+    void adminPage_AdminUser_Success() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 
     private String createToken(String email, String password) {
@@ -86,24 +123,5 @@ public class MissionStepTest {
                 .getValue()
                 .split(";")[0]
                 .split("=")[1];
-    }
-
-    @Test
-    void 삼단계() {
-        String brownToken = createToken("brown@email.com", "password");
-
-        RestAssured.given().log().all()
-                .cookie("token", brownToken)
-                .get("/admin")
-                .then().log().all()
-                .statusCode(401);
-
-        String adminToken = createToken("admin@email.com", "password");
-
-        RestAssured.given().log().all()
-                .cookie("token", adminToken)
-                .get("/admin")
-                .then().log().all()
-                .statusCode(200);
     }
 }
