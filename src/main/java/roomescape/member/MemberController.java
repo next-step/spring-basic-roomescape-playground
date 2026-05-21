@@ -9,7 +9,7 @@ import java.net.URI;
 
 @RestController
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
     public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
