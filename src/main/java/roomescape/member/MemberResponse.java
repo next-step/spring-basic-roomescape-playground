@@ -1,3 +1,3 @@
 package roomescape.member;
 
-public record MemberRequest(Long Id, String name, String password) { }
+public record MemberResponse(Long Id, String name, String email) { }

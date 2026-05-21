@@ -11,13 +11,13 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberDao.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member memberLogin(MemberLoginRequest memberLoginRequest) {
-        String email = memberLoginRequest.getEmail();
-        String password = memberLoginRequest.getPassword();
+        String email = memberLoginRequest.email();
+        String password = memberLoginRequest.password();
         Member member = memberDao.findByEmailAndPassword(email, password);
         if (member == null) {
             throw new LoginFailedException("아이디 혹은 비밀번호를 확인해 주세요");
