@@ -29,13 +29,11 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, @CookieValue(value = "token", required = false) String token) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
+        if (reservationRequest.isValid()) {
             return ResponseEntity.badRequest().build();
         }
 
-        if (reservationRequest.getName() == null) {
+        if (reservationRequest.name() == null) {
 
             String memberId = jwtTokenProvider.getMemberId(token);
 
