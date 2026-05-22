@@ -7,7 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-    private static final String SECRET_KEY = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789AB";
+    private final String secretKey;
+
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     public String createToken(Long memberId) {
         return Jwts.builder()
