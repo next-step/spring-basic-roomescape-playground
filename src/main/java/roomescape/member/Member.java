@@ -5,7 +5,7 @@ public class Member {
     private final String name;
     private final String email;
     private String password;
-    private String role;
+    private final String role;
 
     public Member(Long id, String name, String email, String role) {
         this.id = id;
