@@ -33,15 +33,7 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        if (reservationRequest.name() == null) {
-
-            String memberId = jwtTokenProvider.getMemberId(token);
-
-            Member member = memberService.findById(Integer.parseInt(memberId));
-            reservationRequest.setName(member.getName());
-        }
-
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        ReservationResponse reservation = reservationService.save(reservationRequest, token);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
