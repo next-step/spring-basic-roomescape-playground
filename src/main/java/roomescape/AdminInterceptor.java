@@ -24,7 +24,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         String token = null;
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            response.setStatus(401);
+            throw new UnauthorizedException("쿠키가 없습니다");
             return false;
         }
 

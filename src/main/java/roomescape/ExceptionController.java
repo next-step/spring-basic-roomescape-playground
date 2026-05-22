@@ -11,4 +11,9 @@ public class ExceptionController {
         e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> handleUnauthorized(UnauthorizedException e) {
+        return ResponseEntity.status(401).body(e.getMessage());
+    }
 }
