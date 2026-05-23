@@ -25,10 +25,10 @@ public class ReservationService {
     }
 
     private Member findMember(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
-            return memberDao.findByName(reservationRequest.getName());
+        if (reservationRequest.name() != null && !reservationRequest.name().isBlank()) {
+            return memberDao.findByName(reservationRequest.name());
         }
-        return memberDao.findById(loginMember.getId());
+        return memberDao.findById(loginMember.id());
     }
 
     public void deleteById(Long id) {
