@@ -17,7 +17,7 @@ public class JwtTokenProvider {
     public String createToken(Long memberId) {
         return Jwts.builder()
                 .setSubject(memberId.toString())
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
