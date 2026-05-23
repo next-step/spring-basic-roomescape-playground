@@ -25,7 +25,6 @@ public class AdminInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             throw new UnauthorizedException("쿠키가 없습니다");
-            return false;
         }
 
         boolean find = false;
@@ -38,8 +37,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         if (!find) {
-            response.setStatus(401);
-            return false;
+            throw new UnauthorizedException("관리자 권한이 없습니다");
         }
 
         String memberId = jwtTokenProvider.getMemberId(token);
