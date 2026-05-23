@@ -19,10 +19,8 @@ public class ReservationService {
     private final JwtTokenProvider jwtTokenProvider;
 
 
-    public ReservationService(ReservationDao reservationDao, ThemeDao themeDao, TimeDao timeDao, MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+    public ReservationService(ReservationDao reservationDao, MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
-        this.timeDao = timeDao;
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -37,12 +35,9 @@ public class ReservationService {
             name = member.getName();
         }
 
-        Theme theme = themeDao.findById(Long.parseLong(reservationRequest.theme()));
-        Time time = timeDao.findById(Long.parseLong(reservationRequest.time()));
+        ReservationRequest reservationRequest = new ReservationRequest(reservationRequest.date(), reservationRequest.theme(), reservationRequest.time(), name);
 
-        Reservation reservation = new Reservation(null, name, reservationRequest.date(), time, theme);
-
-        Reservation saved = reservationDao.save(reservation);
+        Reservation saved = reservationDao.save(reservationRequest);
 
         return new ReservationResponse(saved.getId(), saved.getName(), saved.getTheme().getName(), saved.getDate(), saved.getTime().getValue());
     }

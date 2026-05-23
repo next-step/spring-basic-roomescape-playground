@@ -39,14 +39,4 @@ public class TimeDao {
         jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ?", id);
     }
 
-    public Time findById(Long id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM time WHERE id = ?",
-                (rs, rowNum) -> new Time(
-                        rs.getLong("id"),
-                        rs.getString("time_value")
-                ),
-                id
-        );
-    }
 }

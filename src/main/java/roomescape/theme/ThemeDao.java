@@ -39,15 +39,4 @@ public class ThemeDao {
         jdbcTemplate.update("UPDATE theme SET deleted = true WHERE id = ?", id);
     }
 
-    public Theme findById(Long id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM theme WHERE id = ?",
-                (rs, rowNum) -> new Theme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description")
-                ),
-                id
-        );
-    }
 }
