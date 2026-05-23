@@ -29,7 +29,7 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, @CookieValue(value = "token", required = false) String token) {
-        if (reservationRequest.isValid()) {
+        if (!reservationRequest.isValid()) {
             return ResponseEntity.badRequest().build();
         }
 

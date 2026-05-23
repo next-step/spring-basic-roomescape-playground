@@ -13,8 +13,6 @@ import roomescape.time.TimeDao;
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
-    private final ThemeDao themeDao;
-    private final TimeDao timeDao;
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -35,9 +33,9 @@ public class ReservationService {
             name = member.getName();
         }
 
-        ReservationRequest reservationRequest = new ReservationRequest(reservationRequest.date(), reservationRequest.theme(), reservationRequest.time(), name);
+        ReservationRequest request = new ReservationRequest(name, reservationRequest.date(), reservationRequest.theme(), reservationRequest.time());
 
-        Reservation saved = reservationDao.save(reservationRequest);
+        Reservation saved = reservationDao.save(request);
 
         return new ReservationResponse(saved.getId(), saved.getName(), saved.getTheme().getName(), saved.getDate(), saved.getTime().getValue());
     }
