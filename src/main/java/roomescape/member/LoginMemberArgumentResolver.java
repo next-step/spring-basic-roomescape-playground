@@ -29,7 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = extractTokenFromCookie(request);
         if (token == null || token.isBlank()) {
-            throw new IllegalAccessError("토큰이 없습니다.");
+            throw new IllegalArgumentException("토큰이 없습니다.");
         }
         Long memberId = jwtTokenProvider.getMemberId(token);
         Member member = memberService.findByToken(memberId);
