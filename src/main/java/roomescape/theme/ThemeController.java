@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import roomescape.theme.domain.Theme;
 
 @RestController
 public class ThemeController {
+
     private ThemeDao themeDao;
 
     public ThemeController(ThemeDao themeDao) {

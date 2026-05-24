@@ -1,13 +1,16 @@
 package roomescape.time;
 
 import org.springframework.stereotype.Service;
-import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationDao;
+import roomescape.reservation.domain.Reservation;
+import roomescape.time.domain.AvailableTime;
+import roomescape.time.domain.Time;
 
 import java.util.List;
 
 @Service
 public class TimeService {
+
     private TimeDao timeDao;
     private ReservationDao reservationDao;
 
@@ -25,7 +28,8 @@ public class TimeService {
                         time.getId(),
                         time.getValue(),
                         reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
+                                .anyMatch(reservation -> reservation.getTime().getId()
+                                        .equals(time.getId()))
                 ))
                 .toList();
     }

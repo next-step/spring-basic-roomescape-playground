@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import roomescape.time.domain.AvailableTime;
+import roomescape.time.domain.Time;
 
 @RestController
 public class TimeController {
+
     private TimeService timeService;
 
     public TimeController(TimeService timeService) {
@@ -42,7 +45,8 @@ public class TimeController {
     }
 
     @GetMapping("/available-times")
-    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date, @RequestParam Long themeId) {
+    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date,
+            @RequestParam Long themeId) {
         return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
     }
 }
