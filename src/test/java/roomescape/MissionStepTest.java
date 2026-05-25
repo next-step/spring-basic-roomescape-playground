@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -30,10 +31,12 @@ public class MissionStepTest {
                 .cookie("token", token)
                 .when().get("/login/check")
                 .then().log().all()
-                .statusCode(200)
                 .extract();
 
-        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
+        assertSoftly(softly -> {
+            softly.assertThat(checkResponse.statusCode()).isEqualTo(200);
+            softly.assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
+        });
     }
 
     @Test
@@ -54,8 +57,12 @@ public class MissionStepTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(response.statusCode()).isEqualTo(201);
-        assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
+        ReservationResponse reservationResponse = response.as(ReservationResponse.class);
+
+        assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(201);
+            softly.assertThat(reservationResponse.name()).isEqualTo("어드민");
+        });
     }
 
     @Test
@@ -77,8 +84,12 @@ public class MissionStepTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(adminResponse.statusCode()).isEqualTo(201);
-        assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("이름");
+        ReservationResponse reservationResponse = adminResponse.as(ReservationResponse.class);
+
+        assertSoftly(softly -> {
+            softly.assertThat(adminResponse.statusCode()).isEqualTo(201);
+            softly.assertThat(reservationResponse.name()).isEqualTo("이름");
+        });
     }
 
     @Test
@@ -86,11 +97,15 @@ public class MissionStepTest {
     void adminPage_RegularUser_Unauthorized() {
         String brownToken = createToken("brown@email.com", "password");
 
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .cookie("token", brownToken)
                 .get("/admin")
                 .then().log().all()
-                .statusCode(401);
+                .extract();
+
+        assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(401);
+        });
     }
 
     @Test
@@ -98,11 +113,15 @@ public class MissionStepTest {
     void adminPage_AdminUser_Success() {
         String adminToken = createToken("admin@email.com", "password");
 
-        RestAssured.given().log().all()
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .cookie("token", adminToken)
                 .get("/admin")
                 .then().log().all()
-                .statusCode(200);
+                .extract();
+
+        assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(200);
+        });
     }
 
     private String createToken(String email, String password) {
@@ -115,8 +134,9 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(200)
                 .extract();
+
+        assertThat(response.statusCode()).isEqualTo(200);
 
         return response.headers()
                 .get("Set-Cookie")
