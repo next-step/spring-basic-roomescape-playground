@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -43,29 +44,41 @@ public class ReservationDao {
                         )));
     }
 
-    public Reservation save(ReservationRequest reservationRequest) {
+    public Reservation save(ReservationCreateCommand command, String reservationName) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, reservationRequest.getDate());
-            ps.setString(2, reservationRequest.getName());
-            ps.setLong(3, reservationRequest.getTheme());
-            ps.setLong(4, reservationRequest.getTime());
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)",
+                    new String[]{"id"}
+            );
+            ps.setString(1, command.date());
+            ps.setString(2, reservationName);
+            ps.setLong(3, command.themeId());
+            ps.setLong(4, command.timeId());
             return ps;
         }, keyHolder);
 
-        Time time = jdbcTemplate.queryForObject("SELECT * FROM time WHERE id = ?",
+        Time time = jdbcTemplate.queryForObject(
+                "SELECT * FROM time WHERE id = ?",
                 (rs, rowNum) -> new Time(rs.getLong("id"), rs.getString("time_value")),
-                reservationRequest.getTime());
+                command.timeId()
+        );
 
-        Theme theme = jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
-                (rs, rowNum) -> new Theme(rs.getLong("id"), rs.getString("name"), rs.getString("description")),
-                reservationRequest.getTheme());
+        Theme theme = jdbcTemplate.queryForObject(
+                "SELECT * FROM theme WHERE id = ?",
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description")
+                ),
+                command.themeId()
+        );
 
         return new Reservation(
                 keyHolder.getKey().longValue(),
-                reservationRequest.getName(),
-                reservationRequest.getDate(),
+                reservationName,
+                command.date(),
                 time,
                 theme
         );
