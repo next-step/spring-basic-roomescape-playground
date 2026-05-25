@@ -32,7 +32,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new IllegalArgumentException("토큰이 없습니다.");
         }
         Long memberId = jwtTokenProvider.getMemberId(token);
-        Member member = memberService.findByToken(memberId);
+        Member member = memberService.findById(memberId);
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 

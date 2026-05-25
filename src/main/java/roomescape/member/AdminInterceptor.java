@@ -24,7 +24,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
         Long memberId = jwtTokenProvider.getMemberId(token);
-        Member member = memberService.findByToken(memberId);
+        Member member = memberService.findById(memberId);
         if (member == null || !member.getRole().equals("ADMIN")) {
             response.setStatus(401);
             return false;
