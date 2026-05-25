@@ -57,7 +57,7 @@ public class ReservationController {
         Member member;
 
         if (loginMember.getRole() == Role.ADMIN && reservationRequest.name() != null) {
-            member = memberService.findByName(reservationRequest.name());
+            member = memberService.findByName(reservationRequest.name()).orElseThrow();
             return member;
         }
         return loginMember;
