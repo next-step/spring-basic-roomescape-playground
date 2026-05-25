@@ -1,8 +1,8 @@
 package roomescape.time;
 
 import org.springframework.stereotype.Service;
-import roomescape.reservation.ReservationDao;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.AvailableTime;
 import roomescape.time.domain.Time;
 
@@ -13,15 +13,16 @@ import roomescape.time.repository.TimeRepository;
 public class TimeService {
 
     private TimeRepository timeRepository;
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
-    public TimeService(TimeRepository timeRepository, ReservationDao reservationDao) {
+    public TimeService(TimeRepository timeRepository,
+            ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
-        this.reservationDao = reservationDao;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
         List<Time> times = timeRepository.findAll();
 
         return times.stream()

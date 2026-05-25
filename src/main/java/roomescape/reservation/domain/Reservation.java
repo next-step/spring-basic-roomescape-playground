@@ -3,6 +3,7 @@ package roomescape.reservation.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import roomescape.member.domain.Member;
@@ -13,7 +14,7 @@ import roomescape.time.domain.Time;
 public class Reservation {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -29,6 +30,7 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
+    // 테스트 용도의 생성자?
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
         this.id = id;
         this.name = name;
@@ -42,6 +44,14 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public Reservation(Member member, String date, Time time, Theme theme) {
+        this.name = member.getName();
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+        this.member = member;
     }
 
     public Reservation() {
