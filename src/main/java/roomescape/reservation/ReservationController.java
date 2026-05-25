@@ -33,9 +33,16 @@ public class ReservationController {
                 || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
-        ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
+        ReservationCreateCommand command = new ReservationCreateCommand(
+                reservationRequest.name(),
+                reservationRequest.date(),
+                reservationRequest.theme(),
+                reservationRequest.time()
+        );
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
+        ReservationResponse reservationResponse = reservationService.save(command, loginMember);
+
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id())).body(reservationResponse);
     }
 
     @DeleteMapping("/reservations/{id}")
