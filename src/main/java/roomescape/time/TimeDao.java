@@ -38,4 +38,5 @@ public class TimeDao {
     public void deleteById(Long id) {
         jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ?", id);
     }
+
 }

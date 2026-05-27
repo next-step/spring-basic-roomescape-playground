@@ -38,4 +38,5 @@ public class ThemeDao {
     public void deleteById(Long id) {
         jdbcTemplate.update("UPDATE theme SET deleted = true WHERE id = ?", id);
     }
+
 }

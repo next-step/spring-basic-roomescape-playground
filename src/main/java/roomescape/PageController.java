@@ -1,10 +1,17 @@
 package roomescape;
 
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import roomescape.member.Member;
+import roomescape.member.MemberDao;
 
 @Controller
 public class PageController {
+
     @GetMapping("/admin")
     public String admin() {
         return "admin/index";

@@ -5,10 +5,10 @@ import roomescape.time.Time;
 
 public class Reservation {
     private Long id;
-    private String name;
-    private String date;
-    private Time time;
-    private Theme theme;
+    private final String name;
+    private final String date;
+    private final Time time;
+    private final Theme theme;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
         this.id = id;
@@ -23,10 +23,6 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Reservation() {
-
     }
 
     public Long getId() {
