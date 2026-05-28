@@ -29,11 +29,12 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest, String token) {
         String name;
+        Member member = null;
         if (reservationRequest.name() != null) {
             name = reservationRequest.name();
         } else {
             String memberId = jwtTokenProvider.getMemberId(token);
-            Member member = memberService.findById(Long.parseLong(memberId));
+            member = memberService.findById(Long.parseLong(memberId));
             name = member.getName();
         }
 

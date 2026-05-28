@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 import jakarta.persistence.Entity;
@@ -32,6 +33,14 @@ public class Reservation {
     private Member member;
 
     protected Reservation() {
+    }
+
+    public Reservation(String name, Member member, String date, Time time, Theme theme) {
+        this.name = name;
+        this.member = member;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
     }
 
     public Reservation(Member member, String date, Time time, Theme theme) {
