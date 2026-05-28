@@ -12,13 +12,13 @@ import roomescape.time.TimeDao;
 
 @Service
 public class ReservationService {
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
 
-    public ReservationService(ReservationDao reservationDao, MemberService memberService, JwtTokenProvider jwtTokenProvider) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository, MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+        this.reservationRepository = reservationRepository;
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -35,17 +35,17 @@ public class ReservationService {
 
         ReservationRequest request = new ReservationRequest(name, reservationRequest.date(), reservationRequest.theme(), reservationRequest.time());
 
-        Reservation saved = reservationDao.save(request);
+        Reservation saved = reservationRepository.save(request);
 
         return new ReservationResponse(saved.getId(), saved.getName(), saved.getTheme().getName(), saved.getDate(), saved.getTime().getValue());
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
