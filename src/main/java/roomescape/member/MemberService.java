@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.member.dto.MemberAuthInfo;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
 import roomescape.member.repository.MemberRepository;
@@ -25,10 +26,18 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public Optional<Member> getMemberWithLoginRequest(LoginRequest loginRequest) {
-        return memberRepository.findByEmailAndPassword(
+    public MemberAuthInfo getMemberWithLoginRequest(LoginRequest loginRequest) {
+        Optional<Member> memberOptional = memberRepository.findByEmailAndPassword(
                 loginRequest.email(),
                 loginRequest.password());
+        Member member = memberOptional.orElseThrow();
+
+        return new MemberAuthInfo(
+                member.getId(),
+                member.getName(),
+                member.getRole().name()
+        );
+
     }
 
     public Optional<Member> findByName(String name) {

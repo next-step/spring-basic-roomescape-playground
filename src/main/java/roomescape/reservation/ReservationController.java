@@ -15,6 +15,7 @@ import roomescape.auth.LoginMember;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.MemberService;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 
@@ -33,6 +34,11 @@ public class ReservationController {
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
         return reservationService.findAll();
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> getMyReservations(@LoginMember Member member) {
+        return reservationService.findByMember(member);
     }
 
     @PostMapping("/reservations")

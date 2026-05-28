@@ -15,6 +15,7 @@ import roomescape.auth.LoginMember;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.LoginResponse;
 import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberAuthInfo;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
 
@@ -44,8 +45,9 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest,
             HttpServletResponse httpServletResponse) {
-        Member member = memberService.getMemberWithLoginRequest(loginRequest).orElseThrow();
-        LoginResponse loginResponse = authService.createToken(member);
+        MemberAuthInfo memberAuthInfo = memberService.getMemberWithLoginRequest(
+                loginRequest);
+        LoginResponse loginResponse = authService.createToken(memberAuthInfo);
 
         Cookie cookie = new Cookie("token", loginResponse.accessToken());
         cookie.setHttpOnly(true);

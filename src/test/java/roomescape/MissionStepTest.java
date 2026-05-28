@@ -10,7 +10,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.dto.ReservationResponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import roomescape.reservation.dto.MyReservationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,10 +41,10 @@ public class MissionStepTest {
     void 이단계() {
         String token = createToken("admin@email.com", "password");
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("date", "2024-03-01");
-        params.put("time", "1");
-        params.put("theme", "1");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
@@ -102,5 +104,19 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    void 오단계() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 }
