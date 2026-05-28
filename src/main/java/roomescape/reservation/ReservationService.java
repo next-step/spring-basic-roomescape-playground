@@ -6,21 +6,25 @@ import roomescape.JwtTokenProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.theme.Theme;
-import roomescape.theme.ThemeDao;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
-import roomescape.time.TimeDao;
+import roomescape.time.TimeRepository;
 
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-
-    public ReservationService(ReservationRepository reservationRepository, MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+    public ReservationService(ReservationRepository reservationRepository, MemberService memberService, JwtTokenProvider jwtTokenProvider,
+                            TimeRepository timeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, String token) {
@@ -29,15 +33,20 @@ public class ReservationService {
             name = reservationRequest.name();
         } else {
             String memberId = jwtTokenProvider.getMemberId(token);
-            Member member = memberService.findById(Integer.parseInt(memberId));
+            Member member = memberService.findById(Long.parseLong(memberId));
             name = member.getName();
         }
 
-        ReservationRequest request = new ReservationRequest(name, reservationRequest.date(), reservationRequest.theme(), reservationRequest.time());
+        Time time = timeRepository.findById(reservationRequest.time())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다"));
+        Theme theme = themeRepository.findById(reservationRequest.theme())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다"));
 
-        Reservation saved = reservationRepository.save(request);
+        Reservation reservation = new Reservation(name, reservationRequest.date(), time, theme);
 
-        return new ReservationResponse(saved.getId(), saved.getName(), saved.getTheme().getName(), saved.getDate(), saved.getTime().getValue());
+        Reservation saved = reservationRepository.save(reservation);
+
+        return new ReservationResponse(saved.getId(), saved.getName(), saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());
     }
 
     public void deleteById(Long id) {
@@ -46,7 +55,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
                 .toList();
     }
 
