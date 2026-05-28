@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 
 @Entity
 public class Time {
@@ -13,7 +14,7 @@ public class Time {
     private Long id;
 
     @Column(name = "time_value")
-    private String value;
+    private String time;
 
     private boolean deleted = false;
 
@@ -22,18 +23,18 @@ public class Time {
 
     public Time(Long id, String value) {
         this.id = id;
-        this.value = value;
+        this.time = time;
     }
 
-    public Time(String value) {
-        this.value = value;
+    public Time(String time) {
+        this.time = time;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getValue() {
-        return value;
+    public String getTime() {
+        return time;
     }
 }
