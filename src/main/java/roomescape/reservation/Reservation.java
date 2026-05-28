@@ -50,6 +50,10 @@ public class Reservation {
     }
 
     public String getName() {
+
+        if (member != null) {
+            return member.getName();
+        }
         return name;
     }
 
