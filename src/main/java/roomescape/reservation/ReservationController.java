@@ -27,6 +27,11 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> myList(@CookieValue("token") String token) {
+        return reservationService.findMyReservations(token);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, @CookieValue(value = "token", required = false) String token) {
         if (!reservationRequest.isValid()) {
