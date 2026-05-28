@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import roomescape.waiting.WaitingWithRank;
 
 public record MyReservationResponse(Long reservationId, String theme, String date, String time, String status) {
@@ -24,6 +25,7 @@ public record MyReservationResponse(Long reservationId, String theme, String dat
         );
     }
 
+    @JsonIgnore
     public Long getId() {
         return reservationId;
     }
