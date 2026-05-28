@@ -63,3 +63,16 @@ VALUES (1, '', '2024-03-01', 1, 1),
 
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('브라운', '2024-03-01', 1, 2);
+
+CREATE TABLE waiting
+(
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id BIGINT,
+    date      VARCHAR(255) NOT NULL,
+    time_id   BIGINT,
+    theme_id  BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (time_id) REFERENCES time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id)
+);
