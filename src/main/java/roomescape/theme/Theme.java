@@ -40,4 +40,8 @@ public class Theme {
     public String getDescription() {
         return description;
     }
+
+    public void delete() {
+        this.deleted = true;
+    }
 }
