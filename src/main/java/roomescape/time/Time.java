@@ -37,4 +37,8 @@ public class Time {
     public String getTime() {
         return time;
     }
+
+    public void delete() {
+        this.deleted = true;
+    }
 }
