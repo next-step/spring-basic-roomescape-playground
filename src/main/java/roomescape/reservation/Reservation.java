@@ -27,12 +27,15 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
+    @ManyToOne()
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     protected Reservation() {
     }
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
+    public Reservation(Member member, String date, Time time, Theme theme) {
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -68,4 +71,6 @@ public class Reservation {
     public Theme getTheme() {
         return theme;
     }
+
+    public Member getMember() {return member;}
 }
