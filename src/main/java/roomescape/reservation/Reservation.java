@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 public class Reservation {
@@ -16,7 +18,13 @@ public class Reservation {
 
     private String name;
     private String date;
+
+    @ManyToOne()
+    @JoinColumn(name = "time_id")
     private Time time;
+
+    @ManyToOne()
+    @JoinColumn(name = "theme_id")
     private Theme theme;
 
     protected Reservation() {

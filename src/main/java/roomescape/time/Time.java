@@ -26,10 +26,6 @@ public class Time {
         this.value = value;
     }
 
-    public Time() {
-
-    }
-
     public Long getId() {
         return id;
     }
