@@ -12,7 +12,10 @@ public class Time {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "time_value")
     private String value;
+
+    private boolean deleted = false;
 
     protected Time() {
     }
