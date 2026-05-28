@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import roomescape.reservation.MyReservationResponse;
+import roomescape.waiting.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
