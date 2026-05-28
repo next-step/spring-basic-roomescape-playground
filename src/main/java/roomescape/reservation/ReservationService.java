@@ -42,7 +42,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다"));
 
-        Reservation reservation = new Reservation(name, reservationRequest.date(), time, theme);
+        Reservation reservation = new Reservation(name, member, reservationRequest.date(), time, theme);
 
         Reservation saved = reservationRepository.save(reservation);
 
@@ -56,6 +56,13 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
+                .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservations(String token) {
+        String memberId = jwtTokenProvider.getMemberId(token);
+        return reservationRepository.findByMemberId(Long.parseLong(memberId)).stream()
+                .map(MyReservationResponse::from)
                 .toList();
     }
 
