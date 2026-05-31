@@ -1,7 +1,6 @@
 package roomescape.reservation;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
@@ -90,7 +89,6 @@ public class ReservationService {
         );
     }
 
-    // TODO: 현재 예약 확정 목록에서도 가져와야 하고, 예약대기목록에서도 가져와야 하므로 서비스에서 두 개의 역할을 처리해야 하나?
     public List<MyReservationResponse> findByMember(Member member) {
 
         Stream<MyReservationResponse> reservations = reservationRepository.findByMemberId(

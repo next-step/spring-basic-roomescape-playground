@@ -38,7 +38,6 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
-    // TODO: 반환 DTO + 예약대기목록도 같이 보여주기
     @GetMapping("/reservations-mine")
     public List<MyReservationResponse> getMyReservations(@LoginMember Member member) {
         return reservationService.findByMember(member);
