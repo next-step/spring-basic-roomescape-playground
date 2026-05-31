@@ -18,6 +18,8 @@ import roomescape.member.MemberService;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.WaitingRequest;
+import roomescape.reservation.dto.WaitingResponse;
 
 @RestController
 public class ReservationController {
@@ -36,6 +38,7 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    // TODO: 반환 DTO + 예약대기목록도 같이 보여주기
     @GetMapping("/reservations-mine")
     public List<MyReservationResponse> getMyReservations(@LoginMember Member member) {
         return reservationService.findByMember(member);
@@ -51,10 +54,24 @@ public class ReservationController {
                 .body(reservation);
     }
 
-
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        reservationService.deleteById(id);
+    public ResponseEntity delete(@PathVariable Long id,  @LoginMember Member member) {
+        reservationService.deleteById(id, member);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/waitings")
+    public ResponseEntity createWaiting(@RequestBody @Valid WaitingRequest waitingRequest,
+            @LoginMember Member loginMember) {
+        WaitingResponse waiting = reservationService.saveWaiting(waitingRequest, loginMember);
+
+        return ResponseEntity.created(URI.create("/reservations/" + waiting.id()))
+                .body(waiting);
+    }
+
+    @DeleteMapping("/waitings/cancel/{id}")
+    public ResponseEntity cancelWaiting(@PathVariable Long id, @LoginMember Member member) {
+        reservationService.deleteWaitingById(id, member);
         return ResponseEntity.noContent().build();
     }
 
