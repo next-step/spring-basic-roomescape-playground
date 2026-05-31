@@ -39,6 +39,19 @@ CREATE TABLE reservation
     FOREIGN KEY (member_id) REFERENCES member (id)
 );
 
+CREATE TABLE waiting
+(
+    id        BIGINT       NOT NULL AUTO_INCREMENT,
+    date      VARCHAR(255) NOT NULL,
+    time_id   BIGINT,
+    theme_id  BIGINT,
+    member_id BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (time_id) REFERENCES time (id),
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (member_id) REFERENCES member (id)
+);
+
 INSERT INTO member (name, email, password, role)
 VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
        ('브라운', 'brown@email.com', 'password', 'USER');
@@ -62,5 +75,5 @@ VALUES (1, '', '2024-03-01', 1, 1),
        (1, '', '2024-03-01', 2, 2),
        (1, '', '2024-03-01', 3, 3);
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('브라운', '2024-03-01', 1, 2);
+INSERT INTO reservation (member_id, name, date, time_id, theme_id)
+VALUES (2, '브라운', '2024-03-01', 1, 2);
