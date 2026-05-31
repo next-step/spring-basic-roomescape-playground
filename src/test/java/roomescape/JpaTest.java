@@ -13,6 +13,8 @@ import roomescape.member.domain.Role;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.WaitingRepository;
+import roomescape.reservation.domain.Waiting;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
@@ -35,9 +37,12 @@ public class JpaTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Autowired
+    private WaitingRepository waitingRepository;
+
     @DisplayName("Time 레포지토리 테스트")
     @Test
-    void time_repository_test() {
+    void save_and_find_time() {
         // given
         Time time = new Time("10:00");
 
@@ -52,7 +57,7 @@ public class JpaTest {
 
     @DisplayName("Theme 레포지토리 테스트")
     @Test
-    void theme_repository_test() {
+    void save_and_find_theme() {
         // given
         Theme theme = new Theme("Theme", "This is a Theme.");
 
@@ -67,7 +72,7 @@ public class JpaTest {
 
     @DisplayName("Member 레포지토리 테스트")
     @Test
-    void member_repository_test() {
+    void save_and_find_member() {
         // given
         Member member = new Member("tester", "test@test.com", "password", Role.USER);
 
@@ -82,7 +87,7 @@ public class JpaTest {
 
     @DisplayName("Member 이름으로 조회 테스트")
     @Test
-    void member_find_by_name_test() {
+    void find_member_by_name() {
         // given
         Member member = new Member("tester", "test@test.com", "password", Role.USER);
 
@@ -97,7 +102,7 @@ public class JpaTest {
 
     @DisplayName("Member 이메일/비밀번호로 조회 테스트")
     @Test
-    void member_find_by_email_and_password_test() {
+    void find_member_by_email_and_password() {
         // given
         Member member = new Member("tester", "test@test.com", "password", Role.USER);
 
@@ -112,13 +117,15 @@ public class JpaTest {
 
     @DisplayName("Reservation 레포지토리 테스트")
     @Test
-    void reservation_repository_test() {
+    void save_and_find_reservation() {
         // given
         Time time = new Time("10:00");
         Theme theme = new Theme("Theme", "This is a Theme.");
+        Member member = new Member("tester", "test@test.com", "password", Role.USER);
         entityManager.persist(time);
         entityManager.persist(theme);
-        Reservation reservation = new Reservation("tester", "2025-01-01", time, theme);
+        entityManager.persist(member);
+        Reservation reservation = new Reservation("tester", "2025-01-01", time, theme, member);
 
         // when
         entityManager.persist(reservation);
@@ -127,17 +134,20 @@ public class JpaTest {
 
         // then
         assertThat(persistReservation.getName()).isEqualTo(reservation.getName());
+        assertThat(persistReservation.getMember().getId()).isEqualTo(member.getId());
     }
 
     @DisplayName("Reservation 날짜/테마로 조회 테스트")
     @Test
-    void reservation_find_by_date_and_theme_id_test() {
+    void find_reservations_by_date_and_theme_id() {
         // given
         Time time = new Time("10:00");
         Theme theme = new Theme("Theme", "This is a Theme.");
+        Member member = new Member("tester", "test@test.com", "password", Role.USER);
         entityManager.persist(time);
         entityManager.persist(theme);
-        Reservation reservation = new Reservation("tester", "2025-01-01", time, theme);
+        entityManager.persist(member);
+        Reservation reservation = new Reservation("tester", "2025-01-01", time, theme, member);
 
         // when
         entityManager.persist(reservation);
@@ -147,6 +157,48 @@ public class JpaTest {
         // then
         assertThat(reservations).hasSize(1);
         assertThat(reservations.get(0).getDate()).isEqualTo(reservation.getDate());
+    }
+
+    @DisplayName("Reservation 멤버로 조회 테스트")
+    @Test
+    void find_reservations_by_member_id() {
+        // given
+        Time time = new Time("10:00");
+        Theme theme = new Theme("Theme", "This is a Theme.");
+        Member member = new Member("tester", "test@test.com", "password", Role.USER);
+        entityManager.persist(time);
+        entityManager.persist(theme);
+        entityManager.persist(member);
+        entityManager.persist(new Reservation("tester", "2025-01-01", time, theme, member));
+        entityManager.persist(new Reservation("tester", "2025-01-02", time, theme, member));
+        entityManager.flush();
+
+        // when
+        List<Reservation> reservations = reservationRepository.findByMemberId(member.getId());
+
+        // then
+        assertThat(reservations).hasSize(2);
+    }
+
+    @DisplayName("Waiting 멤버로 조회 테스트")
+    @Test
+    void find_waitings_by_member_id() {
+        // given
+        Time time = new Time("10:00");
+        Theme theme = new Theme("Theme", "This is a Theme.");
+        Member member = new Member("tester", "test@test.com", "password", Role.USER);
+        entityManager.persist(time);
+        entityManager.persist(theme);
+        entityManager.persist(member);
+        entityManager.persist(new Waiting("2025-01-01", time, theme, member));
+        entityManager.flush();
+
+        // when
+        List<Waiting> waitings = waitingRepository.findByMemberId(member.getId());
+
+        // then
+        assertThat(waitings).hasSize(1);
+        assertThat(waitings.get(0).getMember().getId()).isEqualTo(member.getId());
     }
 
 }
