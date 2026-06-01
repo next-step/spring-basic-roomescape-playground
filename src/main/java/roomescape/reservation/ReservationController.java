@@ -15,8 +15,11 @@ import roomescape.auth.LoginMember;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
 import roomescape.member.MemberService;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.WaitingRequest;
+import roomescape.reservation.dto.WaitingResponse;
 
 @RestController
 public class ReservationController {
@@ -35,6 +38,11 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> getMyReservations(@LoginMember Member member) {
+        return reservationService.findByMember(member);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody @Valid ReservationRequest reservationRequest,
             @LoginMember Member loginMember) {
@@ -45,10 +53,24 @@ public class ReservationController {
                 .body(reservation);
     }
 
-
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        reservationService.deleteById(id);
+    public ResponseEntity delete(@PathVariable Long id,  @LoginMember Member member) {
+        reservationService.deleteById(id, member);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/waitings")
+    public ResponseEntity createWaiting(@RequestBody @Valid WaitingRequest waitingRequest,
+            @LoginMember Member loginMember) {
+        WaitingResponse waiting = reservationService.saveWaiting(waitingRequest, loginMember);
+
+        return ResponseEntity.created(URI.create("/reservations/" + waiting.id()))
+                .body(waiting);
+    }
+
+    @DeleteMapping("/waitings/cancel/{id}")
+    public ResponseEntity cancelWaiting(@PathVariable Long id, @LoginMember Member member) {
+        reservationService.deleteWaitingById(id, member);
         return ResponseEntity.noContent().build();
     }
 
@@ -57,7 +79,7 @@ public class ReservationController {
         Member member;
 
         if (loginMember.getRole() == Role.ADMIN && reservationRequest.name() != null) {
-            member = memberService.findByName(reservationRequest.name());
+            member = memberService.findByName(reservationRequest.name()).orElseThrow();
             return member;
         }
         return loginMember;

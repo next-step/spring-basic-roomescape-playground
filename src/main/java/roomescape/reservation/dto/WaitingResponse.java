@@ -1,11 +1,12 @@
 package roomescape.reservation.dto;
 
-public record ReservationResponse(
+
+public record WaitingResponse (
         Long id,
-        String name,
         String theme,
         String date,
-        String time
+        String time,
+        Long rank
 ) {
 
 }

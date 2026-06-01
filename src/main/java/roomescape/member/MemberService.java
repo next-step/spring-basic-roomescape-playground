@@ -1,38 +1,46 @@
 package roomescape.member;
 
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.member.dto.MemberAuthInfo;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class MemberService {
 
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.name(), memberRequest.email(),
-                memberRequest.password(), Role.USER));
+        Member member = memberRepository.save(
+                new Member(memberRequest.name(), memberRequest.email(),
+                        memberRequest.password(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public Member getMemberWithLoginRequest(LoginRequest loginRequest) {
-        return memberDao.findByEmailAndPassword(
+    public MemberAuthInfo getMemberWithLoginRequest(LoginRequest loginRequest) {
+        Optional<Member> memberOptional = memberRepository.findByEmailAndPassword(
                 loginRequest.email(),
                 loginRequest.password());
+        Member member = memberOptional.orElseThrow();
+
+        return new MemberAuthInfo(
+                member.getId(),
+                member.getName(),
+                member.getRole().name()
+        );
+
     }
 
-    public Member findById(Long id) {
-        return memberDao.findById(id);
-    }
-
-    public Member findByName(String name) {
-        return memberDao.findByName(name);
+    public Optional<Member> findByName(String name) {
+        return memberRepository.findByName(name);
     }
 }
