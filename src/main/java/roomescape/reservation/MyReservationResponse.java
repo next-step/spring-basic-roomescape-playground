@@ -1,6 +1,5 @@
 package roomescape.reservation;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import roomescape.waiting.WaitingWithRank;
 
 public record MyReservationResponse(Long reservationId, String theme, String date, String time, String status) {
@@ -23,14 +22,5 @@ public record MyReservationResponse(Long reservationId, String theme, String dat
                 waitingWithRank.getWaiting().getTime().getTime(),
                 (waitingWithRank.getRank() + 1) + "번째 예약대기"
         );
-    }
-
-    @JsonIgnore
-    public Long getId() {
-        return reservationId;
-    }
-
-    public String getStatus() {
-        return status;
     }
 }

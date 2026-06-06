@@ -6,7 +6,4 @@ public record WaitingResponse(
         String date,
         String time
 ) {
-    public Long getId() {
-        return id;
-    }
 }
