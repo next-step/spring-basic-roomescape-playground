@@ -8,8 +8,9 @@ import java.util.List;
 
 @Service
 public class TimeService {
-    private TimeRepository timeRepository;
-    private ReservationRepository reservationRepository;
+
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
     public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
@@ -18,7 +19,7 @@ public class TimeService {
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeRepository.findAll();
+        List<Time> times = timeRepository.findAllByDeletedFalse();   // 삭제분 제외
 
         return times.stream()
                 .map(time -> new AvailableTime(
@@ -31,7 +32,7 @@ public class TimeService {
     }
 
     public List<Time> findAll() {
-        return timeRepository.findAll();
+        return timeRepository.findAllByDeletedFalse();   // 삭제분 제외
     }
 
     public Time save(Time time) {
@@ -39,6 +40,9 @@ public class TimeService {
     }
 
     public void deleteById(Long id) {
-        timeRepository.deleteById(id);
+        Time time = timeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다"));
+        time.delete();                  // 물리삭제 → soft delete
+        timeRepository.save(time);
     }
 }

@@ -21,8 +21,12 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, MemberService memberService, JwtTokenProvider jwtTokenProvider,
-                              TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              MemberService memberService,
+                              JwtTokenProvider jwtTokenProvider,
+                              TimeRepository timeRepository,
+                              ThemeRepository themeRepository,
+                              WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;

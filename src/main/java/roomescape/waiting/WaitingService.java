@@ -16,8 +16,10 @@ public class WaitingService {
     private final ThemeRepository themeRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public WaitingService(WaitingRepository waitingRepository, TimeRepository timeRepository,
-                          ThemeRepository themeRepository, JwtTokenProvider jwtTokenProvider) {
+    public WaitingService(WaitingRepository waitingRepository,
+                          TimeRepository timeRepository,
+                          ThemeRepository themeRepository,
+                          JwtTokenProvider jwtTokenProvider) {
         this.waitingRepository = waitingRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
