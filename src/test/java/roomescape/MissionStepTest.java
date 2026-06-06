@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MissionStepTest {
 
     @Test
-    void 일단계() {
+    void loginToken() {
         Map<String, String> params = new HashMap<>();
         params.put("email", "admin@email.com");
         params.put("password", "password");
@@ -62,7 +62,7 @@ public class MissionStepTest {
     }
 
     @Test
-    void 이단계() {
+    void createReservation() {
         String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
@@ -96,7 +96,7 @@ public class MissionStepTest {
     }
 
     @Test
-    void 삼단계() {
+    void adminTest() {
         String brownToken = createToken("brown@email.com", "password");
 
         RestAssured.given().log().all()
@@ -115,7 +115,7 @@ public class MissionStepTest {
     }
 
     @Test
-    void 오단계() {
+    void findsMyReservations() {
         String adminToken = createToken("admin@email.com", "password");
 
         List<MyReservationResponse> reservations = RestAssured.given().log().all()
@@ -129,7 +129,7 @@ public class MissionStepTest {
     }
 
     @Test
-    void 육단계() {
+    void RankMyReservations() {
         String brownToken = createToken("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();

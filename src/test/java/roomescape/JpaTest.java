@@ -19,7 +19,7 @@ public class JpaTest {
     private TimeRepository timeRepository;
 
     @Test
-    void 사단계() {
+    void saveTimeFindId() {
         Time time = new Time("10:00");
         entityManager.persist(time);
         entityManager.flush();
@@ -28,6 +28,4 @@ public class JpaTest {
 
         assertThat(persistTime.getTime()).isEqualTo(time.getTime());
     }
-
-
 }
