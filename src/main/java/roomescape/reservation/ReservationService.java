@@ -14,6 +14,7 @@ import roomescape.waiting.WaitingRepository;
 
 @Service
 public class ReservationService {
+
     private final ReservationRepository reservationRepository;
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -21,12 +22,8 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              MemberService memberService,
-                              JwtTokenProvider jwtTokenProvider,
-                              TimeRepository timeRepository,
-                              ThemeRepository themeRepository,
-                              WaitingRepository waitingRepository) {
+    public ReservationService(ReservationRepository reservationRepository, MemberService memberService, JwtTokenProvider jwtTokenProvider,
+                              TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -50,12 +47,6 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다"));
         Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다"));
-
-        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
-                reservationRequest.date(), reservationRequest.time(), reservationRequest.theme());
-        if (exists) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다");
-        }
 
         Reservation reservation = new Reservation(name, member, reservationRequest.date(), time, theme);
         Reservation saved = reservationRepository.save(reservation);
