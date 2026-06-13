@@ -36,20 +36,16 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, String token) {
-        Member member;
-        if (reservationRequest.memberId() != null) {
-            member = memberService.findById(reservationRequest.memberId());
-        } else {
-            Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
-            member = memberService.findById(memberId);
-        }
+        Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
+        Member member = memberService.findById(memberId);
 
         Time time = timeRepository.findById(reservationRequest.time())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다"));
         Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다"));
 
-        Reservation reservation = new Reservation(member, reservationRequest.date(), time, theme);
+        Reservation reservation = new Reservation(
+                reservationRequest.name(), member, reservationRequest.date(), time, theme);
         Reservation saved = reservationRepository.save(reservation);
 
         return new ReservationResponse(saved.getId(), saved.getName(), saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());

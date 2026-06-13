@@ -17,6 +17,7 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
     private String date;
 
     @ManyToOne()
@@ -34,7 +35,8 @@ public class Reservation {
     protected Reservation() {
     }
 
-    public Reservation(Member member, String date, Time time, Theme theme) {
+    public Reservation(String name, Member member, String date, Time time, Theme theme) {
+        this.name = name;
         this.member = member;
         this.date = date;
         this.time = time;
@@ -46,8 +48,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return member.getName();
-    }
+        return name != null ? name : member.getName();    }
 
     public String getDate() {
         return date;
