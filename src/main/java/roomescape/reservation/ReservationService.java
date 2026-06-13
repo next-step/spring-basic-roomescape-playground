@@ -36,14 +36,12 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, String token) {
-        String name = null;
         Member member = null;
-        if (reservationRequest.name() != null) {
-            name = reservationRequest.name();
+        if (reservationRequest.memberId() != null) {
+            member = memberService.findById(reservationRequest.memberId());
         } else {
-            String memberId = jwtTokenProvider.getMemberId(token);
-            member = memberService.findById(Long.parseLong(memberId));
-            name = member.getName();
+            Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
+            member = memberService.findById(memberId);
         }
 
         Time time = timeRepository.findById(reservationRequest.time())
