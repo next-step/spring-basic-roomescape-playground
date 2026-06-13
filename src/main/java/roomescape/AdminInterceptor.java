@@ -3,10 +3,11 @@ package roomescape;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
-import org.springframework.stereotype.Component;
+import roomescape.member.Role;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
@@ -20,7 +21,9 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request,
+                             HttpServletResponse response,
+                             Object handler) throws Exception {
         String token = null;
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
@@ -41,14 +44,13 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         String memberId = jwtTokenProvider.getMemberId(token);
-        Member member = memberService.findById(Integer.parseInt(memberId));
+        Member member = memberService.findById(Long.parseLong(memberId));
 
-        if (!"ADMIN".equals(member.getRole())) {
+        if (member.getRole() != Role.ADMIN) {
             response.setStatus(401);
             return false;
         }
 
         return true;
     }
-
 }

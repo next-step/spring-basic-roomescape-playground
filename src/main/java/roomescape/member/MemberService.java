@@ -4,28 +4,28 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-    private final MemberDao memberDao;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    private final MemberRepository memberRepository;
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
+        Member member = memberRepository.save(
+                new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member memberLogin(MemberLoginRequest memberLoginRequest) {
         String email = memberLoginRequest.email();
         String password = memberLoginRequest.password();
-        Member member = memberDao.findByEmailAndPassword(email, password);
-        if (member == null) {
-            throw new LoginFailedException("아이디 혹은 비밀번호를 확인해 주세요");
-        }
-        return member;
+        return memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new LoginFailedException("아이디 혹은 비밀번호를 확인해 주세요"));
     }
 
-    public Member findById(int id) {
-        return memberDao.findById(id);
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다"));
     }
 }
