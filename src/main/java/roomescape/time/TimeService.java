@@ -3,10 +3,12 @@ package roomescape.time;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class TimeService {
 
     private final TimeRepository timeRepository;
@@ -43,6 +45,5 @@ public class TimeService {
         Time time = timeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다"));
         time.delete();                  // 물리삭제 → soft delete
-        timeRepository.save(time);
     }
 }
