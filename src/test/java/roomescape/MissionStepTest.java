@@ -21,6 +21,8 @@ import roomescape.reservation.MyReservationResponse;
 import roomescape.waiting.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import auth.JwtUtils;
+import org.springframework.stereotype.Component;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
