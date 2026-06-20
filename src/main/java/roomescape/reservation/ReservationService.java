@@ -3,7 +3,7 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Stream;
-import roomescape.JwtTokenProvider;
+import roomescape.auth.JwtUtils;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.theme.Theme;
@@ -19,16 +19,16 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, MemberService memberService, JwtTokenProvider jwtTokenProvider,
+    public ReservationService(ReservationRepository reservationRepository, MemberService memberService, JwtUtils jwtUtils,
                               TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtils = jwtUtils;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.waitingRepository = waitingRepository;
@@ -36,7 +36,7 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, String token) {
-        Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
+        Long memberId = Long.parseLong(jwtUtils.getMemberId(token));
         Member member = memberService.findById(memberId);
 
         Time time = timeRepository.findById(reservationRequest.time())
@@ -63,7 +63,7 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(String token) {
-        Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
+        Long memberId = Long.parseLong(jwtUtils.getMemberId(token));
 
         Stream<MyReservationResponse> reservations = reservationRepository.findByMemberId(memberId).stream()
                 .map(MyReservationResponse::from);

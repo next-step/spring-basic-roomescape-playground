@@ -8,16 +8,17 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.member.Role;
+import roomescape.auth.JwtUtils;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public AdminInterceptor(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+    public AdminInterceptor(MemberService memberService, JwtUtils jwtUtils) {
         this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             throw new UnauthorizedException("관리자 권한이 없습니다");
         }
 
-        String memberId = jwtTokenProvider.getMemberId(token);
+        String memberId = jwtUtils.getMemberId(token);
         Member member = memberService.findById(Long.parseLong(memberId));
 
         if (member.getRole() != Role.ADMIN) {

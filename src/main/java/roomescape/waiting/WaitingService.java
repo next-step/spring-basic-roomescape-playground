@@ -1,7 +1,7 @@
 package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
-import roomescape.JwtTokenProvider;
+import roomescape.auth.JwtUtils;
 import roomescape.reservation.ReservationRequest;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
@@ -14,20 +14,20 @@ public class WaitingService {
     private final WaitingRepository waitingRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
     public WaitingService(WaitingRepository waitingRepository,
                           TimeRepository timeRepository,
                           ThemeRepository themeRepository,
-                          JwtTokenProvider jwtTokenProvider) {
+                          JwtUtils jwtUtils) {
         this.waitingRepository = waitingRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtils = jwtUtils;
     }
 
     public WaitingResponse save(ReservationRequest request, String token) {
-        Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
+        Long memberId = Long.parseLong(jwtUtils.getMemberId(token));
 
         Time time = timeRepository.findById(request.time())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다"));
@@ -41,7 +41,7 @@ public class WaitingService {
     }
 
     public void deleteById(Long id, String token) {
-        Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
+        Long memberId = Long.parseLong(jwtUtils.getMemberId(token));
 
         Waiting waiting = waitingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 대기입니다"));
