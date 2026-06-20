@@ -1,4 +1,4 @@
-package auth;
+package roomescape.auth;
 
 import roomescape.auth.JwtUtils;
 import org.springframework.context.annotation.Configuration;
