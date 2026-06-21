@@ -8,10 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 @Configuration
 public class JwtConfig {
 
-    @Value("${roomescape.auth.jwt.secret}") String secretKey
+    @Value("${roomescape.auth.jwt.secret}")
+    String secretKey;
 
     @Bean
-    public JwtUtils jwtUtils(String secretKey) {
-        return new JwtUtils(secretKey);
+    public JwtUtils jwtUtils() {
+        return new JwtUtils(this.secretKey);
     }
 }
