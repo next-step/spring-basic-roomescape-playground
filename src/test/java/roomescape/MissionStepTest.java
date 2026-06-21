@@ -23,7 +23,7 @@ import roomescape.waiting.WaitingResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import roomescape.auth.JwtUtils;
 import org.springframework.stereotype.Component;
-import: org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
