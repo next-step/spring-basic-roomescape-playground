@@ -33,7 +33,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null) {
-            throw new IllegalArgumentException("인증을 위한 쿠키가 존재하지 않습니다.");
+            return null;
         }
 
         Cookie tokenCookie = Arrays.stream(cookies)
