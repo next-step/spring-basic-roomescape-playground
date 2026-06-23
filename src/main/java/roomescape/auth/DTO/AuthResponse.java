@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.DTO;
 
 public class AuthResponse {
 }

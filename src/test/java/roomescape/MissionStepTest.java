@@ -23,7 +23,7 @@ public class MissionStepTest {
 
 
     @Test
-    @DisplayName("로그인 후 쿠키가 잘 저장되는지 테스트한다. ")
+    @DisplayName("로그인 후 쿠키가 잘 저장되는지 && 로그인된 사용자의 이름이 잘 불러와지는지 테스트한다. ")
     void testStep1() {
         Map<String, String> params = new HashMap<>();
         params.put("email", "admin@email.com");
@@ -40,5 +40,15 @@ public class MissionStepTest {
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
 
         assertThat(token).isNotBlank();
+
+        ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+
+        assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
 }

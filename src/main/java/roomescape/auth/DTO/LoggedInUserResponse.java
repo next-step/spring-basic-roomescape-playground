@@ -1,4 +1,4 @@
-package roomescape.auth;
+package roomescape.auth.DTO;
 
 //현재 로그인된 사용자의 이름만을 반환
 public class LoggedInUserResponse {

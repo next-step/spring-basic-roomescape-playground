@@ -5,9 +5,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.auth.DTO.LoggedInUserResponse;
+import roomescape.auth.DTO.LoginRequest;
 import roomescape.auth.config.AuthenticationPrincipal;
 import roomescape.auth.config.CookieProvider;
-import roomescape.member.MemberResponse;
+import roomescape.member.DTO.MemberResponse;
 
 @RestController
 public class AuthController {

@@ -1,8 +1,9 @@
 package roomescape.auth;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.DTO.LoginRequest;
 import roomescape.auth.config.TokenProvider;
-import roomescape.member.MemberResponse;
+import roomescape.member.DTO.MemberResponse;
 import roomescape.member.MemberService;
 
 import java.util.HashMap;
