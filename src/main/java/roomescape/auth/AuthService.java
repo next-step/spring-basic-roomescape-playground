@@ -1,11 +1,9 @@
 package roomescape.auth;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.DTO.LoginRequest;
-import roomescape.auth.config.utils.TokenProvider;
-import roomescape.member.DTO.MemberResponse;
+import roomescape.auth.config.TokenProvider;
+import roomescape.member.MemberResponse;
 import roomescape.member.MemberService;
-import roomescape.member.Role;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,9 +26,9 @@ public class AuthService {
             throw new IllegalArgumentException("일치하는 회원 정보가 없어요!");
         }
 
-        String name = response.getName();
-        Role role = response.getRole();
-        return tokenProvider.createToken(response.getEmail(), name, role);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("name", response.getName());
+        return tokenProvider.createToken(response.getEmail(), claims);
     }
 
     public void logout() {
