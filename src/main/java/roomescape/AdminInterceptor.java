@@ -8,7 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.member.Role;
-import roomescape.auth.JwtUtils;
+import auth.JwtUtils;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {

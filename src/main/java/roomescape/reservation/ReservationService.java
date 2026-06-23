@@ -3,7 +3,7 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Stream;
-import roomescape.auth.JwtUtils;
+import auth.JwtUtils;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.theme.Theme;

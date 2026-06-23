@@ -21,7 +21,7 @@ import roomescape.reservation.MyReservationResponse;
 import roomescape.waiting.WaitingResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import roomescape.auth.JwtUtils;
+import auth.JwtUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 

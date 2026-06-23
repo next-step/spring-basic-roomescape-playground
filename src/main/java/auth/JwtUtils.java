@@ -1,4 +1,4 @@
-package roomescape.auth;
+package auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
