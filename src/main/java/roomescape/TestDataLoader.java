@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
+import roomescape.member.Role;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 import roomescape.theme.Theme;
