@@ -58,7 +58,7 @@ public class MemberController {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) return "";
+        if (cookies == null) return ""; //빈 값은 빈 값대로 로그인 안했을 시
         for (Cookie cookie : cookies) {
             if ("token".equals(cookie.getName())) {
                 return cookie.getValue();
