@@ -21,4 +21,4 @@ fi
 # 빌드된 애플리케이션 실행
 JAR=$(ls build/libs/*.jar | grep -v plain | head -n 1)
 nohup java -jar "$JAR" --spring.profiles.active=prod > application.log 2>&1 &
-echo $! > "$PID_FILE"
+echo $! > "$PID_FILE"정
