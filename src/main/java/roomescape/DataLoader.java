@@ -6,6 +6,7 @@ import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.member.Role;
 
+@Profile("!test")
 @Component
 public class DataLoader implements CommandLineRunner {
 

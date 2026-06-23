@@ -44,9 +44,8 @@ public class TestDataLoader implements CommandLineRunner {
         timeRepository.save(new Time("18:00"));
         timeRepository.save(new Time("20:00"));
 
-        // DataLoader가 먼저 넣은 회원을 이름으로 조회 (findByName 이미 있음)
-        Member admin = memberRepository.findByName("어드민").orElseThrow();
-        Member brown = memberRepository.findByName("브라운").orElseThrow();
+        Member admin = memberRepository.save(new Member("어드민", "admin@email.com", "password", Role.ADMIN));
+        Member brown = memberRepository.save(new Member("브라운", "brown@email.com", "password", Role.USER));
 
         // 예약 — name은 null (getName()이 회원 이름 반환). data.sql과 동일 매핑
         reservationRepository.save(new Reservation(null, admin, "2024-03-01", t1, theme1));
