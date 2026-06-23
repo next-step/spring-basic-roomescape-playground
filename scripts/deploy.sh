@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 REPO_DIR="/home/ec2-user/roomescape"
 PID_FILE="$REPO_DIR/application.pid"
 

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 REPO_URL="https://github.com/selee1012/spring-basic-roomescape-playground.git"
 REPO_DIR="/home/ec2-user/roomescape"
 PID_FILE="$REPO_DIR/application.pid"
