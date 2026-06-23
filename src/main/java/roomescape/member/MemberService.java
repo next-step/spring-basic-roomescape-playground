@@ -20,4 +20,11 @@ public class MemberService {
         Member member = memberDao.findByEmailAndPassword(request.getEmail(), request.getPassword());
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
+
+    public MemberResponse findByEmail(String email) {
+        Member member = memberDao.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 회원정볼르 찾지 못했어요."));
+
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
 }

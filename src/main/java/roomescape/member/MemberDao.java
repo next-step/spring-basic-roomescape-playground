@@ -5,6 +5,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class MemberDao {
     private JdbcTemplate jdbcTemplate;
@@ -38,6 +40,19 @@ public class MemberDao {
                 ),
                 email, password
         );
+    }
+
+    public Optional<Member> findByEmail(String email) {
+        return jdbcTemplate.query(
+                "SELECT id, name, email, role FROM member where email = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                ),
+                email
+        ).stream().findFirst();
     }
 
     public Member findByName(String name) {

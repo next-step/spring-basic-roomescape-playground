@@ -4,10 +4,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import roomescape.auth.config.AuthenticationPrincipal;
 import roomescape.auth.config.CookieProvider;
+import roomescape.member.MemberResponse;
 
 @RestController
 public class AuthController {
@@ -16,6 +16,11 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoggedInUserResponse> getLoggedInUsername(@AuthenticationPrincipal MemberResponse member) {
+        return ResponseEntity.ok(new LoggedInUserResponse(member.getName()));
     }
 
     @PostMapping("/login")

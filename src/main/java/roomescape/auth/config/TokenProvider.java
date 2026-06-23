@@ -1,5 +1,6 @@
 package roomescape.auth.config;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -37,5 +38,34 @@ public class TokenProvider {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .serializeToJsonWith(new io.jsonwebtoken.gson.io.GsonSerializer<>())
                 .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+
+            return true;
+
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("유효하지 않은 토큰이에요. 다시 로그인해 주세요!");
+        }
+    }
+
+    //jwt중에 페이로드에서 email뽑아서 반환
+    public String getPayload(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();  //subject로 이메일 넣어뒀었음
+
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("토큰에서 정보를 꺼내는데 문제가 생겼어요!");
+        }
     }
 }
