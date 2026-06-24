@@ -38,6 +38,11 @@ public class MemberController {
                 .build();
     }
 
+    @GetMapping("/login/check")
+    public CheckLoginResponse checkLogin(AuthorizedMember member) {
+        return new CheckLoginResponse(member.name(), member.email(), member.role());
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", "");
