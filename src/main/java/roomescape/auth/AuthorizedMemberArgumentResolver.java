@@ -2,7 +2,9 @@ package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.ErrorResponseException;
@@ -21,11 +23,18 @@ public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentRe
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType() == AuthorizedMember.class;
+        if(parameter.getParameterType() == AuthorizedMember.class) return true;
+
+        if(parameter.getParameterType() == Optional.class) {
+            ResolvableType type = ResolvableType.forMethodParameter(parameter);
+            return type.getGeneric(0).resolve() == AuthorizedMember.class;
+        }
+
+        return false;
     }
 
     @Override
-    public AuthorizedMember resolveArgument(
+    public Object resolveArgument(
             MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
@@ -33,9 +42,26 @@ public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentRe
     ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
+        if (parameter.getParameterType() == AuthorizedMember.class) {
+            return resolveAuthorizedMember(request);
+        }
+
+        if(parameter.getParameterType() == Optional.class) {
+            return resolveAuthorizedMemberOptional(request);
+        }
+
+        throw new IllegalStateException("unexhaustive code for type: " + parameter);
+    }
+
+    private AuthorizedMember resolveAuthorizedMember(HttpServletRequest request) {
+        Optional<AuthorizedMember> member = resolveAuthorizedMemberOptional(request);
+        return member.orElseThrow(() -> new ErrorResponseException(HttpStatus.UNAUTHORIZED));
+    }
+
+    private Optional<AuthorizedMember> resolveAuthorizedMemberOptional(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new ErrorResponseException(HttpStatus.UNAUTHORIZED);
+            return Optional.empty();
         }
 
         for (Cookie cookie : cookies) {
@@ -44,9 +70,9 @@ public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentRe
             }
 
             AuthToken token = new AuthToken(cookie.getValue());
-            return authTokenProvider.parseSessionToken(token);
+            return Optional.of(authTokenProvider.parseSessionToken(token));
         }
 
-        throw new ErrorResponseException(HttpStatus.UNAUTHORIZED);
+        return Optional.empty();
     }
 }
