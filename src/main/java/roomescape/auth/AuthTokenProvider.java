@@ -1,0 +1,71 @@
+package roomescape.auth;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.ErrorResponseException;
+
+@Component
+public class AuthTokenProvider {
+    private static final long TOKEN_VALIDITY_MILLISECONDS = 1516249022 + 1000 * 60 * 60 * 24 * 7;
+
+    private final Key secretKey;
+    private final JwtParser jwtParser;
+
+    public AuthTokenProvider(@Value("${roomescape.auth.jwt.secret}") String rawSecretKey) {
+        byte[] secretKeyBytes = Base64.getDecoder().decode(rawSecretKey);
+        this.secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
+
+        this.jwtParser = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build();
+    }
+
+    public AuthToken generateSessionToken(AuthorizedMember claims) {
+        String token = Jwts.builder()
+                .setClaims(generateClaimsForMember(claims))
+                .signWith(secretKey)
+                .compact();
+
+        return new AuthToken(token);
+    }
+
+    private Claims generateClaimsForMember(AuthorizedMember member) {
+        Date now = new Date();
+
+        Claims claims = Jwts.claims();
+        claims.setIssuedAt(now);
+        claims.setExpiration(new Date(now.getTime() + TOKEN_VALIDITY_MILLISECONDS));
+
+        claims.put("name", member.name());
+        claims.put("email", member.email());
+        claims.put("roles", member.role());
+        return claims;
+    }
+
+    public AuthorizedMember parseSessionToken(AuthToken token) {
+        try {
+            Jws<Claims> jws = jwtParser.parseClaimsJws(token.token());
+            return getMemberFromToken(jws.getBody());
+        } catch (JwtException ignored) {
+            throw new ErrorResponseException(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    private AuthorizedMember getMemberFromToken(Claims tokenClaims) {
+        return new AuthorizedMember(
+                tokenClaims.get("name", String.class),
+                tokenClaims.get("email", String.class),
+                tokenClaims.get("roles", String.class)
+        );
+    }
+}
