@@ -49,16 +49,4 @@ public class LoginController {
 
         return ResponseEntity.ok(new MemberResponse(loginMember.getName()));
     }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return "";
-        }
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
-    }
 }
