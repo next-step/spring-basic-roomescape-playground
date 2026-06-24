@@ -25,7 +25,7 @@ public class MemberService {
         return jwtTokenProvider.createToken(claims);
     }
 
-    public Member checkToken(Cookie[] cookies) {
+    public Member extractMemberFromCookie(Cookie[] cookies) {
         String token = extractTokenFromCookie(cookies);
         String name = jwtTokenProvider.getTokenPayload(token).get("name", String.class);
         return getMemberByName(name);
