@@ -43,12 +43,14 @@ public class ReservationDao {
                         )));
     }
 
-    public Reservation save(ReservationRequest reservationRequest) {
+    public Reservation save(ReservationRequest reservationRequest, String name) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)",
+                    new String[]{"id"});
             ps.setString(1, reservationRequest.getDate());
-            ps.setString(2, reservationRequest.getName());
+            ps.setString(2, name);
             ps.setLong(3, reservationRequest.getTheme());
             ps.setLong(4, reservationRequest.getTime());
             return ps;
@@ -62,13 +64,7 @@ public class ReservationDao {
                 (rs, rowNum) -> new Theme(rs.getLong("id"), rs.getString("name"), rs.getString("description")),
                 reservationRequest.getTheme());
 
-        return new Reservation(
-                keyHolder.getKey().longValue(),
-                reservationRequest.getName(),
-                reservationRequest.getDate(),
-                time,
-                theme
-        );
+        return new Reservation(keyHolder.getKey().longValue(), name, reservationRequest.getDate(), time, theme);
     }
 
     public void deleteById(Long id) {
