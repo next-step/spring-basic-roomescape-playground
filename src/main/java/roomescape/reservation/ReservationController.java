@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.login.AdminOnly;
 import roomescape.login.LoginMember;
 import roomescape.member.Member;
 
@@ -42,6 +43,7 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
+    @AdminOnly
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
