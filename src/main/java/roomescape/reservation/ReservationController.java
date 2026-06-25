@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,8 +44,10 @@ public class ReservationController {
                     reservationRequest.getTheme(),
                     reservationRequest.getTime()
             );
-        } else {
+        } else if (Objects.equals(member.getRole(), "Admin")) {
             request = reservationRequest;
+        } else {
+            throw new IllegalArgumentException("관리자 이외에는 자신의 이름으로만 예약할 수 있습니다");
         }
 
         ReservationResponse reservation = reservationService.save(request);
