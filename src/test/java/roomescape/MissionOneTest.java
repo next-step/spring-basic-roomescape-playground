@@ -21,7 +21,7 @@ public class MissionOneTest {
     private int port;
 
     @Test
-    void shouldIssueTokenCookieWhenLoginSucceeds() {
+    void 로그인하면_토큰_쿠키가_발급된다() {
         ExtractableResponse<Response> response = loginAsAdmin();
 
         String token = response.cookie("token");
@@ -31,7 +31,7 @@ public class MissionOneTest {
     }
 
     @Test
-    void shouldExtractMemberNameFromToken() {
+    void 토큰으로_로그인_회원의_이름을_추출한다() {
         String token = loginAsAdmin().cookie("token");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()

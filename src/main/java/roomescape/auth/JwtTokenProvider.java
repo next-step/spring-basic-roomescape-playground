@@ -40,9 +40,16 @@ public class JwtTokenProvider {
                 .signWith(secretKey)
                 .compact();
     }
+    public Long getId(String token) {
+        return Long.valueOf(parseClaims(token).getBody().getSubject());
+    }
 
     public String getName(String token) {
         return parseClaims(token).getBody().get("name", String.class);
+    }
+
+    public String getRole(String token) {
+        return parseClaims(token).getBody().get("role", String.class);
     }
 
     private Jws<Claims> parseClaims(String token) {

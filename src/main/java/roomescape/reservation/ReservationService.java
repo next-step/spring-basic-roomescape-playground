@@ -3,6 +3,8 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import roomescape.member.Member;
+import roomescape.member.MemberDao;
 
 @Service
 public class ReservationService {
@@ -12,11 +14,19 @@ public class ReservationService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
+    public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
+        if (reservationRequest.getName() == null || reservationRequest.getName().isBlank()) {
+            if (member == null || member.getName().isBlank()) {
+                throw new IllegalArgumentException("예약자 이름 또는 로그인 정보가 필요합니다.");
+            }
+            reservationRequest.setName(member.getName());
+        }
+
         Reservation reservation = reservationDao.save(reservationRequest);
 
         return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
+
 
     public void deleteById(Long id) {
         reservationDao.deleteById(id);
