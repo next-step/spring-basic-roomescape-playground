@@ -3,6 +3,7 @@ package roomescape.member;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +43,10 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(LoginMember loginMember) {
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         LoginCheckResponse response = memberService.checkLogin(loginMember);
         return ResponseEntity.ok(response);
     }
