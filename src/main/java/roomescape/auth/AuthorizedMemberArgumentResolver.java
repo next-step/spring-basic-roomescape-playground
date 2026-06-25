@@ -1,6 +1,5 @@
 package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import org.springframework.core.MethodParameter;
@@ -16,10 +15,10 @@ import roomescape.ApiException;
 @SuppressWarnings("unchecked")
 @Component
 public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final AuthTokenProvider authTokenProvider;
+    private final AuthService authService;
 
-    public AuthorizedMemberArgumentResolver(AuthTokenProvider authTokenProvider) {
-        this.authTokenProvider = authTokenProvider;
+    public AuthorizedMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -75,32 +74,22 @@ public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentRe
             Class<? extends AuthorizedMember> type,
             HttpServletRequest request
     ) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
+        AuthorizedMember member = authService.tryAuthenticateRequest(request);
+        if (member == null) {
             return Optional.empty();
         }
 
-        for (Cookie cookie : cookies) {
-            if (!cookie.getName().equals("token")) {
-                continue;
+        if (type != AuthorizedMember.class) {
+            Class<?>[] parameterTypes = AuthorizedMember.class.getDeclaredConstructors()[0].getParameterTypes();
+            try {
+                var constructor = type.getDeclaredConstructor(parameterTypes);
+                //noinspection JavaReflectionInvocation: Intellij가 parameterTypes이 유일한 argument의 타입인 것으로 착각
+                member = constructor.newInstance(member.name(), member.email(), member.role());
+            } catch (ReflectiveOperationException e) {
+                throw new AssertionError(e);
             }
-
-            AuthToken token = new AuthToken(cookie.getValue());
-            AuthorizedMember member = authTokenProvider.parseSessionToken(token);
-
-            if (type != AuthorizedMember.class) {
-                Class<?>[] parameterTypes = AuthorizedMember.class.getDeclaredConstructors()[0].getParameterTypes();
-                try {
-                    var constructor = type.getDeclaredConstructor(parameterTypes);
-                    //noinspection JavaReflectionInvocation: Intellij가 parameterTypes이 유일한 argument의 타입인 것으로 착각
-                    member = constructor.newInstance(member.name(), member.email(), member.role());
-                } catch (ReflectiveOperationException e) {
-                    throw new AssertionError(e);
-                }
-            }
-            return Optional.of(member);
         }
 
-        return Optional.empty();
+        return Optional.of(member);
     }
 }
