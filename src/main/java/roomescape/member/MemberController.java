@@ -40,7 +40,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public CheckLoginResponse checkLogin(AuthorizedMember member) {
-        return new CheckLoginResponse(member.name(), member.email(), member.role());
+        return new CheckLoginResponse(member.name(), member.email(), member.role().name());
     }
 
     @PostMapping("/logout")

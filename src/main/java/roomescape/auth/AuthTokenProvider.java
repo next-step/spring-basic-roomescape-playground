@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.ErrorResponseException;
+import roomescape.member.Member;
 
 @Component
 public class AuthTokenProvider {
@@ -65,7 +66,7 @@ public class AuthTokenProvider {
         return new AuthorizedMember(
                 tokenClaims.get("name", String.class),
                 tokenClaims.get("email", String.class),
-                tokenClaims.get("roles", String.class)
+                Member.Role.valueOf(tokenClaims.get("roles", String.class))
         );
     }
 }

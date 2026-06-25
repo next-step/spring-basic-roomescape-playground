@@ -9,7 +9,7 @@ import roomescape.member.Member;
 public record AuthorizedMember(
         String name,
         String email,
-        String role
+        Member.Role role
 ) {
     public static AuthorizedMember from(Member member) {
         return new AuthorizedMember(member.getName(), member.getEmail(), member.getRole());
