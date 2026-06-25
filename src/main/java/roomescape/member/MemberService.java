@@ -19,13 +19,15 @@ public class MemberService {
     }
 
     public MemberResponse loadMember(MemberRequest memberRequest) {
-        Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
+        Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword())
+                .orElseThrow(NoSuchMemberException::new);
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public MemberResponse loadMember(Long id) {
-        Member member = memberDao.findById(id);
+        Member member = memberDao.findById(id)
+                .orElseThrow(NoSuchMemberException::new);
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }

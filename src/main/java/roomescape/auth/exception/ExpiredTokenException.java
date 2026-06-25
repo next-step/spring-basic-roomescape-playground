@@ -1,7 +1,10 @@
 package roomescape.auth.exception;
 
-public class ExpiredTokenException extends RuntimeException{
+import org.springframework.http.HttpStatus;
+import roomescape.exception.BusinessException;
+
+public class ExpiredTokenException extends BusinessException {
     public ExpiredTokenException(String message) {
-        super(message);
+        super(message, HttpStatus.UNAUTHORIZED);
     }
 }
