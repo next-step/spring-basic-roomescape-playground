@@ -5,6 +5,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class MemberDao {
     private JdbcTemplate jdbcTemplate;
@@ -50,6 +52,19 @@ public class MemberDao {
                         rs.getString("role")
                 ),
                 name
+        );
+    }
+
+    public Member findById(String memberId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT id, name, email, role FROM member WHERE id = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                ),
+                memberId
         );
     }
 }
