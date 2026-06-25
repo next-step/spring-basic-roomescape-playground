@@ -34,12 +34,12 @@ public class ReservationController {
     public ResponseEntity create(
             @RequestBody ReservationRequest reservationRequest,
             @AuthenticationPrincipal MemberResponse member) {
-        if (reservationRequest.getName() == null
-                || reservationRequest.getDate() == null
+        if (reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
                 || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
+
         ReservationResponse reservation = reservationService.save(reservationRequest, member);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
