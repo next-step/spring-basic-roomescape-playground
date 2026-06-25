@@ -1,7 +1,5 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -19,10 +17,7 @@ public class MemberService {
     public String createToken(String email, String password) {
         validateLogin(email, password);
         Member member = getMemberByEmailAndPassword(email, password);
-        Claims claims = Jwts.claims().setSubject(member.getId().toString());
-        claims.put("name", member.getName());
-        claims.put("role", member.getRole());
-        return jwtTokenProvider.createToken(claims);
+        return jwtTokenProvider.createToken(member);
     }
 
     public Member extractMemberFromCookie(Cookie[] cookies) {

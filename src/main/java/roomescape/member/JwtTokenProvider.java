@@ -18,9 +18,11 @@ public class JwtTokenProvider {
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(Claims claims) {
+    public String createToken(Member member) {
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(member.getId().toString())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
                 .signWith(secretKey)
                 .compact();
     }
