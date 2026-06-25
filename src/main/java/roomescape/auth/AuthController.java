@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.auth.DTO.LoggedInUserResponse;
 import roomescape.auth.DTO.LoginRequest;
 import roomescape.auth.config.AuthenticationPrincipal;
-import roomescape.auth.config.CookieProvider;
+import roomescape.auth.config.utils.CookieProvider;
 import roomescape.member.DTO.MemberResponse;
 
 @RestController
