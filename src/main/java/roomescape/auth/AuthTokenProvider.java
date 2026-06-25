@@ -12,7 +12,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.ErrorResponseException;
+import roomescape.ApiException;
 import roomescape.member.Member;
 
 @Component
@@ -58,7 +58,7 @@ public class AuthTokenProvider {
             Jws<Claims> jws = jwtParser.parseClaimsJws(token.token());
             return getMemberFromToken(jws.getBody());
         } catch (JwtException ignored) {
-            throw new ErrorResponseException(HttpStatus.UNAUTHORIZED);
+            throw ApiException.status(HttpStatus.UNAUTHORIZED);
         }
     }
 

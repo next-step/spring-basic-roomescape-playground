@@ -7,11 +7,11 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.ApiException;
 
 @SuppressWarnings("unchecked")
 @Component
@@ -68,7 +68,7 @@ public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentRe
             HttpServletRequest request
     ) {
         Optional<AuthorizedMember> member = resolveAuthorizedMemberOptional(type, request);
-        return member.orElseThrow(() -> new ErrorResponseException(HttpStatus.UNAUTHORIZED));
+        return member.orElseThrow(() -> ApiException.status(HttpStatus.UNAUTHORIZED));
     }
 
     private Optional<AuthorizedMember> resolveAuthorizedMemberOptional(

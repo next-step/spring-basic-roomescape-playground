@@ -1,7 +1,7 @@
 package roomescape.auth;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.ErrorResponseException;
+import roomescape.ApiException;
 import roomescape.member.Member;
 
 
@@ -15,8 +15,8 @@ public class AuthorizedAdmin extends AuthorizedMember {
     public AuthorizedAdmin(String name, String email, Member.Role role) {
         super(name, email, role);
 
-        if(role != Member.Role.ADMIN) {
-            throw new ErrorResponseException(HttpStatus.UNAUTHORIZED);
+        if (role != Member.Role.ADMIN) {
+            throw ApiException.status(HttpStatus.FORBIDDEN);
         }
     }
 }
