@@ -2,14 +2,16 @@ package roomescape.member;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
 import org.springframework.stereotype.Service;
+import roomescape.auth.LoginMember;
+
+import java.security.Key;
 
 @Service
 public class MemberService {
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
 
     public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
@@ -37,11 +39,20 @@ public class MemberService {
         return createToken(member);
     }
 
-    public LoginCheckResponse checkLogin(String token) {
+    public LoginCheckResponse checkLogin(LoginMember loginMember) {
+        return new LoginCheckResponse(loginMember.getName());
+    }
+
+    public LoginMember findLoginMemberByToken(String token) {
         Long memberId = extractMemberId(token);
         Member member = memberDao.findById(memberId);
 
-        return new LoginCheckResponse(member.getName());
+        return new LoginMember(
+                member.getId(),
+                member.getName(),
+                member.getEmail(),
+                member.getRole()
+        );
     }
 
     private String createToken(Member member) {
