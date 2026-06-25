@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.auth.config.TokenProvider;
+import roomescape.auth.config.utils.TokenProvider;
 import roomescape.reservation.DTO.ReservationResponse;
 
 import java.util.HashMap;
@@ -90,5 +90,25 @@ public class MissionStepTest {
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    @Test
+    @DisplayName("어드민 권한이 없는 유저가 /admin 경로로 접근하는 것을 잘 막는지 테스트")
+    void testStep3() {
+        String brownToken = tokenProvider.createToken("brown@email.com", Map.of("password", "password", "role", "guest"));
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = tokenProvider.createToken("admin@email.com", Map.of("password", "password", "role", "admin"));
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 }

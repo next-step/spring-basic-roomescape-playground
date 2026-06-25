@@ -1,4 +1,4 @@
-package roomescape.auth.config;
+package roomescape.auth.config.interceptors;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import jakarta.servlet.http.HttpServletRequest;

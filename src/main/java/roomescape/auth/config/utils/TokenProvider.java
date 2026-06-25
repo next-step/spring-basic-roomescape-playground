@@ -1,4 +1,4 @@
-package roomescape.auth.config;
+package roomescape.auth.config.utils;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -67,5 +67,14 @@ public class TokenProvider {
         } catch (JwtException | IllegalArgumentException e) {
             throw new IllegalArgumentException("토큰에서 정보를 꺼내는데 문제가 생겼어요!");
         }
+    }
+
+    public String getRoleFromPayload(String token) {
+        return (String) Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role");
     }
 }
