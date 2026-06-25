@@ -10,13 +10,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import roomescape.auth.AuthService;
+import roomescape.auth.TokenRequest;
 
 @RestController
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
+    private final AuthService authService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, AuthService authService) {
         this.memberService = memberService;
+        this.authService = authService;
     }
 
     @PostMapping("/members")
@@ -25,13 +29,42 @@ public class MemberController {
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@RequestBody TokenRequest tokenRequest, HttpServletResponse response) {
+        String token = authService.createToken(tokenRequest);
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginMemberResponse> checkLogin(HttpServletRequest request) {
+        String token = extractTokenFromCookie(request.getCookies());
+        String name = authService.extractName(token);
+
+        return ResponseEntity.ok(new LoginMemberResponse(name));
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+
+        return "";
     }
 }
