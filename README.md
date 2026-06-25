@@ -39,3 +39,17 @@ Cookie token
 request.name 있음 → request.name으로 Member 찾기
 request.name 없음 → LoginMember로 Member 찾기
 ```
+
+## 3단계 - 관리자 기능
+
+### 흐름
+```
+GET /admin
+Cookie에서 token 꺼냄
+→ token이 없으면 401 응답
+→ JWT 파싱해서 subject의 memberId 확인
+→ memberId로 멤버 조회
+→ member.role 확인
+→ role이 ADMIN이면 /admin 페이지 접근 허용
+→ role이 ADMIN이 아니면 401 응답
+```
