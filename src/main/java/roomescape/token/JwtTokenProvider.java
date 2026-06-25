@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.token;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -8,6 +8,7 @@ import java.security.Key;
 import java.util.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.member.Member;
 
 @Component
 public class JwtTokenProvider {

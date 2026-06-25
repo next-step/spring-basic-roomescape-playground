@@ -3,6 +3,7 @@ package roomescape.member;
 import jakarta.servlet.http.Cookie;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.token.JwtTokenProvider;
 
 @Service
 public class MemberService {
