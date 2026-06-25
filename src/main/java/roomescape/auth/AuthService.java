@@ -23,7 +23,7 @@ public class AuthService {
     public AuthResult signUp(MemberRequest memberRequest) {
         MemberResponse memberResponse = memberService.createMember(memberRequest);
         MemberInfo memberInfo = MemberInfo.from(memberResponse);
-        String token = jwtTokenProvider.createToken(memberResponse.getId(), memberResponse.getName(), memberResponse.getEmail());
+        String token = jwtTokenProvider.createToken(memberResponse.id(), memberResponse.name(), memberResponse.role());
 
         return new AuthResult(token, memberInfo);
     }
@@ -31,7 +31,7 @@ public class AuthService {
     public AuthResult login(MemberRequest memberRequest) {
         MemberResponse memberResponse = memberService.loadMember(memberRequest);
         MemberInfo memberInfo = MemberInfo.from(memberResponse);
-        String token = jwtTokenProvider.createToken(memberResponse.getId(), memberResponse.getName(), memberResponse.getEmail());
+        String token = jwtTokenProvider.createToken(memberResponse.id(), memberResponse.name(), memberResponse.role());
 
         return new AuthResult(token, memberInfo);
     }
