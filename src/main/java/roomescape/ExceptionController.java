@@ -17,7 +17,7 @@ public class ExceptionController {
 
     @ExceptionHandler(ApiException.class)
     public ProblemDetail handleApiException(ApiException e) {
-        // see org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler#handleExceptionInternal
+        // 참고: org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler#handleExceptionInternal
         return e.updateAndGetBody(applicationContext, LocaleContextHolder.getLocale());
     }
 

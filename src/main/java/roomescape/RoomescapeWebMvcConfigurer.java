@@ -28,6 +28,7 @@ public class RoomescapeWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(adminPageAuthorizeInterceptor);
+        registry.addInterceptor(adminPageAuthorizeInterceptor)
+                .addPathPatterns("/admin/**");
     }
 }
