@@ -1,6 +1,5 @@
 package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -12,10 +11,10 @@ import roomescape.member.Member;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public LoginMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -36,29 +35,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
 
-        String token = extractTokenFromCookie(request.getCookies());
-        if (token == null || token.isBlank()) {
-            return null;
-        }
-
-        Long id = jwtTokenProvider.getId(token);
-        String name = jwtTokenProvider.getName(token);
-        String role = jwtTokenProvider.getRole(token);
-
-        return new Member(id, name, null, role);
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
-        }
-
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-
-        return null;
+        return authService.extractMember(request.getCookies());
     }
 }
