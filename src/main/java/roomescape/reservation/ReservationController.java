@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.loginmember.LoginMember;
 import roomescape.member.Member;
+import roomescape.member.MemberRole;
 
 @RestController
 public class ReservationController {
@@ -31,7 +32,7 @@ public class ReservationController {
                     reservationRequest.theme(),
                     reservationRequest.time()
             );
-        } else if (Objects.equals(member.getRole(), "ADMIN")) {
+        } else if (Objects.equals(member.getRole(), MemberRole.ADMIN.toString())) {
             request = reservationRequest;
         } else {
             throw new IllegalArgumentException("관리자 이외에는 자신의 이름으로만 예약할 수 있습니다");

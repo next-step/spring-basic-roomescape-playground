@@ -25,7 +25,8 @@ public class MemberDao {
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
+        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(),
+                MemberRole.USER.toString());
     }
 
     public Member findByEmailAndPassword(String email, String password) {
