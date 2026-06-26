@@ -8,11 +8,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CookieTokenUtils implements TokenUtils {
+    private static final String COOKIE_NAME = "token";
+
     @Override
     public String extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
+            if (cookie.getName().equals(COOKIE_NAME)) {
                 return cookie.getValue();
             }
         }
@@ -21,7 +23,7 @@ public class CookieTokenUtils implements TokenUtils {
 
     @Override
     public void appendToken(String token, HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("token", token)
+        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, token)
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Lax")
@@ -33,7 +35,7 @@ public class CookieTokenUtils implements TokenUtils {
 
     @Override
     public void removeToken(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("token", "")
+        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, "")
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Lax")
