@@ -33,6 +33,15 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
+    public String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        throw new IllegalArgumentException("토큰이 필요합니다");
+    }
+
     private void validateLogin(String email, String password) {
         if (email.isBlank() || password.isBlank()) {
             throw new IllegalArgumentException("이메일과 패스워드를 모두 입력해주세요");
@@ -53,14 +62,5 @@ public class MemberService {
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("이메일 또는 패스워드가 틀렸습니다");
         }
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        throw new IllegalArgumentException("토큰이 필요합니다");
     }
 }
