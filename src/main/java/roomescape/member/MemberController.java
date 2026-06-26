@@ -21,7 +21,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody MemberRequest memberRequest,
                                       HttpServletResponse httpServletResponse) {
-        String accessToken = memberService.createToken(memberRequest.getEmail(), memberRequest.getPassword());
+        String accessToken = memberService.createToken(memberRequest.email(), memberRequest.password());
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -38,7 +38,7 @@ public class MemberController {
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
+        return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
     }
 
     @PostMapping("/logout")

@@ -30,19 +30,19 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest reservationRequest,
                                                       @LoginMember Member member) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
+        if (reservationRequest.date() == null
+                || reservationRequest.theme() == null
+                || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
 
         ReservationRequest request;
-        if (reservationRequest.getName() == null) {
+        if (reservationRequest.name() == null) {
             request = new ReservationRequest(
                     member.getName(),
-                    reservationRequest.getDate(),
-                    reservationRequest.getTheme(),
-                    reservationRequest.getTime()
+                    reservationRequest.date(),
+                    reservationRequest.theme(),
+                    reservationRequest.time()
             );
         } else if (Objects.equals(member.getRole(), "Admin")) {
             request = reservationRequest;
@@ -52,7 +52,7 @@ public class ReservationController {
 
         ReservationResponse reservation = reservationService.save(request);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
