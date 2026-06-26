@@ -10,8 +10,8 @@ import roomescape.loginmember.LoginMemberArgumentResolver;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private LoginMemberArgumentResolver loginMemberArgumentResolver;
-    private AdminInterceptor adminInterceptor;
+    private final LoginMemberArgumentResolver loginMemberArgumentResolver;
+    private final AdminInterceptor adminInterceptor;
 
     public WebMvcConfiguration(LoginMemberArgumentResolver loginMemberArgumentResolver,
                                AdminInterceptor adminInterceptor) {

@@ -11,7 +11,7 @@ import roomescape.member.MemberService;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public AdminInterceptor(MemberService memberService) {
         this.memberService = memberService;
