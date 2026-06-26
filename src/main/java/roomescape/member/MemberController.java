@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.JwtTokenProvider;
+import auth.JwtUtils;
 
 import java.net.URI;
 
@@ -14,11 +14,11 @@ import java.net.URI;
 public class MemberController {
 
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+    public MemberController(MemberService memberService, JwtUtils jwtUtils) {
         this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/members")
@@ -41,7 +41,7 @@ public class MemberController {
     public ResponseEntity login(@RequestBody MemberLoginRequest memberLoginRequest, HttpServletResponse response) {
         Member member = memberService.memberLogin(memberLoginRequest);
 
-        String token = jwtTokenProvider.createToken(member.getId());
+        String token = jwtUtils.createToken(member.getId());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
