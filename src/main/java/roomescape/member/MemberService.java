@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.token.JwtTokenProvider;
@@ -21,8 +20,7 @@ public class MemberService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public Member extractMemberFromCookie(Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
+    public Member extractMemberFromToken(String token) {
         String name = jwtTokenProvider.getTokenPayload(token).get("name", String.class);
         return getMemberByName(name);
     }
@@ -31,15 +29,6 @@ public class MemberService {
         Member member = memberDao.save(
                 new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
-    }
-
-    public String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        throw new IllegalArgumentException("토큰이 필요합니다");
     }
 
     private void validateLogin(String email, String password) {

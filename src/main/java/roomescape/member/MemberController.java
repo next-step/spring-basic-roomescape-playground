@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
@@ -9,23 +8,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.loginmember.LoginMember;
+import roomescape.token.CookieTokenUtils;
+import roomescape.token.TokenUtils;
 
 @RestController
 public class MemberController {
     private final MemberService memberService;
+    private final TokenUtils tokenUtils;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, CookieTokenUtils cookieTokenUtils) {
         this.memberService = memberService;
+        this.tokenUtils = cookieTokenUtils;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody MemberRequest memberRequest,
                                       HttpServletResponse httpServletResponse) {
-        String accessToken = memberService.createToken(memberRequest.email(), memberRequest.password());
-        Cookie cookie = new Cookie("token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        httpServletResponse.addCookie(cookie);
+        String token = memberService.createToken(memberRequest.email(), memberRequest.password());
+        tokenUtils.appendToken(token, httpServletResponse);
         return ResponseEntity.ok().build();
     }
 
@@ -43,11 +43,7 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse httpServletResponse) {
-        Cookie cookie = new Cookie("token", "");
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        httpServletResponse.addCookie(cookie);
+        tokenUtils.removeToken(httpServletResponse);
         return ResponseEntity.ok().build();
     }
 }
