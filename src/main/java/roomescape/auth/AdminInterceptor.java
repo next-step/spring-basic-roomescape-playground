@@ -4,16 +4,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.Member;
-import roomescape.member.MemberDao;
 
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final MemberDao memberDao;
     private final TokenService tokenService;
 
-    public AdminInterceptor(MemberDao memberDao, TokenService tokenService) {
-        this.memberDao = memberDao;
+    public AdminInterceptor(TokenService tokenService) {
         this.tokenService = tokenService;
     }
 
@@ -25,11 +21,9 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Long memberId = tokenService.getMemberIdFromToken(token);
-        Member member = memberDao.findById(memberId);
-
-        if (member == null || !member.getRole().equals("ADMIN")) {
-            response.setStatus(401);
+        String role = tokenService.getRoleFromToken(token);
+        if (!role.equals("ADMIN")) {
+            response.setStatus(403);
             return false;
         }
 
