@@ -22,6 +22,23 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    private static ReservationRequest checkRequestName(ReservationRequest reservationRequest, Member member) {
+        ReservationRequest request;
+        if (reservationRequest.name() == null) {
+            request = new ReservationRequest(
+                    member.getName(),
+                    reservationRequest.date(),
+                    reservationRequest.theme(),
+                    reservationRequest.time()
+            );
+        } else if (Objects.equals(member.getRole(), "ADMIN")) {
+            request = reservationRequest;
+        } else {
+            throw new IllegalArgumentException("관리자 이외에는 자신의 이름으로만 예약할 수 있습니다");
+        }
+        return request;
+    }
+
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
         return reservationService.findAll();
@@ -36,19 +53,7 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        ReservationRequest request;
-        if (reservationRequest.name() == null) {
-            request = new ReservationRequest(
-                    member.getName(),
-                    reservationRequest.date(),
-                    reservationRequest.theme(),
-                    reservationRequest.time()
-            );
-        } else if (Objects.equals(member.getRole(), "Admin")) {
-            request = reservationRequest;
-        } else {
-            throw new IllegalArgumentException("관리자 이외에는 자신의 이름으로만 예약할 수 있습니다");
-        }
+        ReservationRequest request = checkRequestName(reservationRequest, member);
 
         ReservationResponse reservation = reservationService.save(request);
 
