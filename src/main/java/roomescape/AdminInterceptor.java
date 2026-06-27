@@ -29,14 +29,14 @@ public class AdminInterceptor implements HandlerInterceptor {
             String role = tokenProvider.extractRole(token);
 
             if (!"ADMIN".equals(role)) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setStatus(HttpStatus.FORBIDDEN.value());
                 return false;
             }
 
             return true;
 
         } catch (Exception e) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setStatus(HttpStatus.FORBIDDEN.value());
             return false;
         }
     }
