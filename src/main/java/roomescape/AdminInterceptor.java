@@ -19,7 +19,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         String token = extractTokenFromCookie(cookies);
 
         if (token.isBlank()) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value()); // 401
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
 
