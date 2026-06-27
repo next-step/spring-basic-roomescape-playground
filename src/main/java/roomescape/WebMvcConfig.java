@@ -14,7 +14,7 @@ import roomescape.token.TokenProvider;
 public class WebMvcConfig implements WebMvcConfigurer {
     private final TokenProvider tokenProvider;
 
-    public WebMvcConfig(MemberDao memberDao, TokenProvider tokenProvider) {
+    public WebMvcConfig(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
