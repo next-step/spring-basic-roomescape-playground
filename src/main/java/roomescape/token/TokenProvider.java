@@ -16,6 +16,7 @@ public class TokenProvider {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
+                .claim("email", member.getEmail())
                 .claim("role", member.getRole())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
@@ -23,7 +24,15 @@ public class TokenProvider {
                 .compact();
     }
 
-    public static String getRole(String token) {
+    public static Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SIGNING_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public static String extractRole(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()

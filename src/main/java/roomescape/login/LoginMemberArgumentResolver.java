@@ -1,5 +1,6 @@
 package roomescape.login;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -12,11 +13,8 @@ import roomescape.member.MemberDao;
 import roomescape.token.TokenProvider;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private MemberDao memberDao;
 
-    public LoginMemberArgumentResolver(MemberDao memberDao) {
-        this.memberDao = memberDao;
-    }
+    public LoginMemberArgumentResolver() {}
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -36,11 +34,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
 
-        String name = TokenProvider.extractName(token);
+        Claims claims = TokenProvider.extractClaims(token);
 
-        Member member = memberDao.findByName(name);
+        Long id = Long.valueOf(claims.getSubject());
+        String name = claims.get("name", String.class);
+        String email = claims.get("email", String.class);
+        String role = claims.get("role", String.class);
 
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        return new LoginMember(id, name, email, role);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

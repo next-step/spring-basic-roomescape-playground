@@ -12,18 +12,15 @@ import roomescape.token.TokenProvider;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-
-    private final MemberDao memberDao;
     private final TokenProvider tokenProvider;
 
     public WebMvcConfig(MemberDao memberDao, TokenProvider tokenProvider) {
-        this.memberDao = memberDao;
         this.tokenProvider = tokenProvider;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(memberDao));
+        resolvers.add(new LoginMemberArgumentResolver());
     }
 
     @Override
