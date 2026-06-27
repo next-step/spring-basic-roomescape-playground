@@ -8,10 +8,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.token.TokenProvider;
 
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private static TokenProvider tokenProvider;
+
+    public AdminInterceptor(TokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -24,13 +29,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            String role = claims.get("role", String.class);
+            String role = tokenProvider.getRole(token);
 
             if (!"ADMIN".equals(role)) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());

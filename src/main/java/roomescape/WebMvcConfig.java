@@ -8,14 +8,17 @@ import roomescape.login.LoginMemberArgumentResolver;
 import roomescape.member.MemberDao;
 
 import java.util.List;
+import roomescape.token.TokenProvider;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final MemberDao memberDao;
+    private final TokenProvider tokenProvider;
 
-    public WebMvcConfig(MemberDao memberDao) {
+    public WebMvcConfig(MemberDao memberDao, TokenProvider tokenProvider) {
         this.memberDao = memberDao;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
@@ -25,7 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor())
+        registry.addInterceptor(new AdminInterceptor(tokenProvider))
                 .addPathPatterns("/admin/**");
     }
 }

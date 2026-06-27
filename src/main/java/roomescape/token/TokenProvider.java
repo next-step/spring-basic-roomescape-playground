@@ -19,6 +19,16 @@ public class TokenProvider {
                 .compact();
     }
 
+    public static String getRole(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("role", String.class);
+    }
+
     public static String extractName(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SIGNING_KEY)
