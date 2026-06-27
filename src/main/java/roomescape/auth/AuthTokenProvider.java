@@ -17,7 +17,7 @@ import roomescape.member.Member;
 
 @Component
 public class AuthTokenProvider {
-    private static final long TOKEN_VALIDITY_MILLISECONDS = 1516249022 + 1000 * 60 * 60 * 24 * 7;
+    private static final long TOKEN_VALIDITY_MILLISECONDS = 1000 * 60 * 60 * 24 * 7;
 
     private final Key secretKey;
     private final JwtParser jwtParser;
