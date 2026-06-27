@@ -19,5 +19,4 @@ public class CookieBuilder {
                 .maxAge(0)
                 .build();
     }
-    
 }
