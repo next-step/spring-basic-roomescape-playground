@@ -38,9 +38,9 @@ public class ReservationController {
                 && loginMember == null) {
             return ResponseEntity.badRequest().build();
         }
-        ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
+        ReservationResponse reservationResponse = reservationService.save(reservationRequest, loginMember);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.getId())).body(reservationResponse);
     }
 
     @AdminOnly
