@@ -1,6 +1,5 @@
 package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -8,9 +7,11 @@ import roomescape.member.MemberService;
 
 public class AdminInterceptor implements HandlerInterceptor {
     private final MemberService memberService;
+    private final TokenExtractor tokenExtractor;
 
-    public AdminInterceptor(MemberService memberService) {
+    public AdminInterceptor(MemberService memberService, TokenExtractor tokenExtractor) {
         this.memberService = memberService;
+        this.tokenExtractor = tokenExtractor;
     }
 
     @Override
@@ -19,7 +20,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) {
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = tokenExtractor.extract(request);
 
         if (token.isBlank()) {
             throw new UnauthorizedException();
@@ -28,7 +29,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         try {
             LoginMember loginMember = memberService.findLoginMemberByToken(token);
 
-            if (!loginMember.getRole().equals("ADMIN")) {
+            if (!"ADMIN".equals(loginMember.getRole())) {
                 throw new UnauthorizedException();
             }
 
@@ -38,19 +39,5 @@ public class AdminInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             throw new UnauthorizedException();
         }
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return "";
-        }
-
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
     }
 }
