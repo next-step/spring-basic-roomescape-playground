@@ -1,16 +1,10 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 
-import java.security.Key;
-
 @Service
 public class MemberService {
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-
     private final MemberDao memberDao;
 
     public MemberService(MemberDao memberDao) {
@@ -30,21 +24,18 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public String login(LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(
+    public Member login(LoginRequest loginRequest) {
+        return memberDao.findByEmailAndPassword(
                 loginRequest.getEmail(),
                 loginRequest.getPassword()
         );
-
-        return createToken(member);
     }
 
     public LoginCheckResponse checkLogin(LoginMember loginMember) {
         return new LoginCheckResponse(loginMember.getName());
     }
 
-    public LoginMember findLoginMemberByToken(String token) {
-        Long memberId = extractMemberId(token);
+    public LoginMember findLoginMemberById(Long memberId) {
         Member member = memberDao.findById(memberId);
 
         return new LoginMember(
@@ -53,29 +44,5 @@ public class MemberService {
                 member.getEmail(),
                 member.getRole()
         );
-    }
-
-    private String createToken(Member member) {
-        return Jwts.builder()
-                .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
-                .signWith(getSecretKey())
-                .compact();
-    }
-
-    private Key getSecretKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-    }
-
-    private Long extractMemberId(String token) {
-        String subject = Jwts.parserBuilder()
-                .setSigningKey(getSecretKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-
-        return Long.valueOf(subject);
     }
 }

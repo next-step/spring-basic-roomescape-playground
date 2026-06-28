@@ -11,10 +11,16 @@ import roomescape.member.MemberService;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberService memberService;
     private final TokenExtractor tokenExtractor;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService, TokenExtractor tokenExtractor) {
+    public LoginMemberArgumentResolver(
+            MemberService memberService,
+            TokenExtractor tokenExtractor,
+            JwtTokenProvider jwtTokenProvider
+    ) {
         this.memberService = memberService;
         this.tokenExtractor = tokenExtractor;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -36,6 +42,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
 
-        return memberService.findLoginMemberByToken(token);
+        Long memberId = jwtTokenProvider.extractMemberId(token);
+        return memberService.findLoginMemberById(memberId);
     }
 }

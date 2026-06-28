@@ -8,10 +8,16 @@ import roomescape.member.MemberService;
 public class AdminInterceptor implements HandlerInterceptor {
     private final MemberService memberService;
     private final TokenExtractor tokenExtractor;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AdminInterceptor(MemberService memberService, TokenExtractor tokenExtractor) {
+    public AdminInterceptor(
+            MemberService memberService,
+            TokenExtractor tokenExtractor,
+            JwtTokenProvider jwtTokenProvider
+    ) {
         this.memberService = memberService;
         this.tokenExtractor = tokenExtractor;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -27,7 +33,8 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            LoginMember loginMember = memberService.findLoginMemberByToken(token);
+            Long memberId = jwtTokenProvider.extractMemberId(token);
+            LoginMember loginMember = memberService.findLoginMemberById(memberId);
 
             if (!"ADMIN".equals(loginMember.getRole())) {
                 throw new UnauthorizedException();
