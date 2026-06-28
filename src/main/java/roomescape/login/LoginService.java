@@ -3,6 +3,7 @@ package roomescape.login;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
@@ -31,7 +32,12 @@ public class LoginService {
     }
 
     public String createToken(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
+        Member member;
+        try {
+            member = memberDao.findByEmailAndPassword(email, password);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다.");
+        }
 
         String token = Jwts.builder()
                 .setSubject(member.getId().toString())

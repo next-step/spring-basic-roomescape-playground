@@ -99,7 +99,7 @@ public class MissionStepTest {
                         , brownToken)
                 .get("/admin")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
         String adminToken = createToken("admin@email.com"
                 ,
                 "password");
