@@ -4,40 +4,39 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.ApiException;
 
-@SuppressWarnings("unchecked")
 @Component
 public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final AuthService authService;
+    private final AuthorizationService authorizationService;
 
-    public AuthorizedMemberArgumentResolver(AuthService authService) {
-        this.authService = authService;
+    public AuthorizedMemberArgumentResolver(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        if (AuthorizedMember.class.isAssignableFrom(parameter.getParameterType())) {
+        if (parameter.getParameterType() == AuthorizedMember.class) {
+            if (AuthorizationInterceptor.findAuthorizedAnnotation(parameter.getMethod()) == null) {
+                System.err.print("AuthorizedMember argument를 받으려면 @Authorized를 포함해야 합니다: ");
+                System.err.println(parameter.getMethod());
+                return false;
+            }
+
             return true;
         }
 
         if (parameter.getParameterType() == Optional.class) {
-            Class<?> innerType = extractSingleGenericType(parameter);
-            return innerType != null && AuthorizedMember.class.isAssignableFrom(innerType);
+            ResolvableType type = ResolvableType.forMethodParameter(parameter);
+            return type.getGeneric(0).resolve() == AuthorizedMember.class;
         }
 
         return false;
-    }
-
-    private Class<?> extractSingleGenericType(MethodParameter parameter) {
-        ResolvableType type = ResolvableType.forMethodParameter(parameter);
-        return type.getGeneric(0).resolve();
     }
 
     @Override
@@ -50,46 +49,25 @@ public class AuthorizedMemberArgumentResolver implements HandlerMethodArgumentRe
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         Class<?> parameterType = parameter.getParameterType();
-        if (AuthorizedMember.class.isAssignableFrom(parameterType)) {
-            return resolveAuthorizedMember((Class<? extends AuthorizedMember>) parameterType, request);
+
+        if (parameterType == AuthorizedMember.class) {
+            return resolveAuthorizedMember(request);
         }
 
         if (parameterType == Optional.class) {
-            var innerType = (Class<? extends AuthorizedMember>) extractSingleGenericType(parameter);
-            return resolveAuthorizedMemberOptional(innerType, request);
+            return resolveAuthorizedMemberOptional(request);
         }
 
         throw new AssertionError("unexhaustive code for type: " + parameter);
     }
 
-    private AuthorizedMember resolveAuthorizedMember(
-            Class<? extends AuthorizedMember> type,
-            HttpServletRequest request
-    ) {
-        Optional<AuthorizedMember> member = resolveAuthorizedMemberOptional(type, request);
-        return member.orElseThrow(() -> ApiException.status(HttpStatus.UNAUTHORIZED));
+    private AuthorizedMember resolveAuthorizedMember(HttpServletRequest request) {
+        Optional<AuthorizedMember> member = resolveAuthorizedMemberOptional(request);
+        return member.orElseThrow(() -> new AssertionError("@Authorized 없이 AuthorizedMember을 사용하지 마세요."));
     }
 
-    private Optional<AuthorizedMember> resolveAuthorizedMemberOptional(
-            Class<? extends AuthorizedMember> type,
-            HttpServletRequest request
-    ) {
-        AuthorizedMember member = authService.tryAuthenticateRequest(request);
-        if (member == null) {
-            return Optional.empty();
-        }
-
-        if (type != AuthorizedMember.class) {
-            Class<?>[] parameterTypes = AuthorizedMember.class.getDeclaredConstructors()[0].getParameterTypes();
-            try {
-                var constructor = type.getDeclaredConstructor(parameterTypes);
-                //noinspection JavaReflectionInvocation: Intellij가 parameterTypes이 유일한 argument의 타입인 것으로 착각
-                member = constructor.newInstance(member.name(), member.email(), member.role());
-            } catch (ReflectiveOperationException e) {
-                throw new AssertionError(e);
-            }
-        }
-
-        return Optional.of(member);
+    private Optional<AuthorizedMember> resolveAuthorizedMemberOptional(HttpServletRequest request) {
+        AuthorizedMember member = authorizationService.tryAuthorizeRequest(request);
+        return Optional.ofNullable(member);
     }
 }

@@ -1,7 +1,7 @@
 package roomescape.member;
 
 public class Member {
-    public enum Role { ADMIN, USER}
+    public enum Role {ADMIN, USER}
 
     private Long id;
     private String name;

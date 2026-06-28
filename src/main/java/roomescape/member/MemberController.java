@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AuthToken;
+import roomescape.auth.Authorized;
 import roomescape.auth.AuthorizedMember;
 
 @RestController
@@ -38,6 +39,7 @@ public class MemberController {
                 .build();
     }
 
+    @Authorized
     @GetMapping("/login/check")
     public CheckLoginResponse checkLogin(AuthorizedMember member) {
         return new CheckLoginResponse(member.name(), member.email(), member.role().name());

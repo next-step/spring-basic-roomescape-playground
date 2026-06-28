@@ -11,16 +11,16 @@ import roomescape.member.Member;
 
 @Component
 public class AdminPageAuthorizeInterceptor implements HandlerInterceptor {
-    private final AuthService authService;
+    private final AuthorizationService authorizationService;
 
-    public AdminPageAuthorizeInterceptor(AuthService authService) {
-        this.authService = authService;
+    public AdminPageAuthorizeInterceptor(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws IOException {
-        AuthorizedMember member = authService.tryAuthenticateRequest(request);
+        AuthorizedMember member = authorizationService.tryAuthorizeRequest(request);
 
         if (member == null) {
             response.sendRedirect("/login");
@@ -28,7 +28,7 @@ public class AdminPageAuthorizeInterceptor implements HandlerInterceptor {
         }
 
         if (member.role() != Member.Role.ADMIN) {
-            throw ApiException.status(HttpStatus.FORBIDDEN);
+            throw ApiException.status(HttpStatus.UNAUTHORIZED);
         }
 
         return true;
