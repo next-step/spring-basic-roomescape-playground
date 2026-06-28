@@ -30,17 +30,11 @@ public class ReservationController {
             @RequestBody ReservationRequest reservationRequest,
             LoginMember loginMember
     ) {
-        if (reservationRequest.getDate() == null
-                || reservationRequest.getTheme() == null
-                || reservationRequest.getTime() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
+        ReservationResponse reservationResponse = reservationService.save(reservationRequest, loginMember);
 
         return ResponseEntity
-                .created(URI.create("/reservations/" + reservation.getId()))
-                .body(reservation);
+                .created(URI.create("/reservations/" + reservationResponse.getId()))
+                .body(reservationResponse);
     }
 
     @DeleteMapping("/reservations/{id}")
