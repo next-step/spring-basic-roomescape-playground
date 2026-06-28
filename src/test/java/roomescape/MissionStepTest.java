@@ -109,4 +109,88 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    void 일반_사용자는_관리자_페이지에_접근할_수_없다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    void 관리자는_관리자_페이지에_접근할_수_있다() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    void 이름이_없는_예약_요청은_로그인_사용자_이름으로_예약된다() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2026-07-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract();
+
+        ReservationResponse reservationResponse = response.as(ReservationResponse.class);
+
+        assertThat(reservationResponse.getName()).isEqualTo("어드민");
+    }
+
+    @Test
+    void 이름이_있는_예약_요청은_요청으로_전달된_이름으로_예약된다() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2026-07-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+        params.put("name", "브라운");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract();
+
+        ReservationResponse reservationResponse = response.as(ReservationResponse.class);
+
+        assertThat(reservationResponse.getName()).isEqualTo("브라운");
+    }
+
+    @Test
+    void 이름도_없고_로그인_정보도_없으면_예약할_수_없다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2026-07-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(401);
+    }
 }
