@@ -1,12 +1,36 @@
 package roomescape.auth;
 
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import roomescape.member.Member;
+import roomescape.member.Role;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+public class LoginMember {
+    private final Long id;
+    private final String name;
+    private final Role role;
 
-@Target(PARAMETER)
-@Retention(RUNTIME)
-public @interface LoginMember {
+    public LoginMember(Long id, String name, Role role) {
+        this.id = id;
+        this.name = name;
+        this.role = role;
+    }
+
+    public static LoginMember from(Member member) {
+        return new LoginMember(member.getId(), member.getName(), member.getRole());
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public boolean isAdmin() {
+        return role == Role.ADMIN;
+    }
 }

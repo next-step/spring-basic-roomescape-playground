@@ -45,6 +45,21 @@ public class MissionOneTest {
         assertThat(response.jsonPath().getString("name")).isEqualTo("어드민");
     }
 
+    @Test
+    void 로그인_정보가_틀리면_인증에_실패한다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", "admin@email.com");
+        params.put("password", "wrong-password");
+
+        RestAssured.given().log().all()
+                .port(port)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(401);
+    }
+
     private ExtractableResponse<Response> loginAsAdmin() {
         Map<String, String> params = new HashMap<>();
         params.put("email", "admin@email.com");

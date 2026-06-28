@@ -10,7 +10,7 @@ import java.util.Base64;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.member.Member;
+import roomescape.member.Role;
 
 @Component
 public class JwtTokenProvider {
@@ -27,29 +27,32 @@ public class JwtTokenProvider {
     }
 
 
-    public String createToken(Member member) {
+    public String createToken(LoginMember member) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
                 .setSubject(String.valueOf(member.getId()))
                 .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .claim("role", member.getRole().name())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(secretKey)
                 .compact();
     }
-    public Long getId(String token) {
-        return Long.valueOf(parseClaims(token).getBody().getSubject());
-    }
 
-    public String getName(String token) {
-        return parseClaims(token).getBody().get("name", String.class);
-    }
+    public LoginMember extractLoginMember(String token) {
+        Claims claims = parseClaims(token).getBody();
+        String name = claims.get("name", String.class);
+        if (name == null || name.isBlank()) {
+            throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+        }
 
-    public String getRole(String token) {
-        return parseClaims(token).getBody().get("role", String.class);
+        return new LoginMember(
+                extractId(claims),
+                name,
+                extractRole(claims)
+        );
     }
 
     private Jws<Claims> parseClaims(String token) {
@@ -59,7 +62,23 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
         } catch (JwtException | IllegalArgumentException e) {
-            throw new RuntimeException("Invalid token");
+            throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+        }
+    }
+
+    private Long extractId(Claims claims) {
+        try {
+            return Long.valueOf(claims.getSubject());
+        } catch (NumberFormatException e) {
+            throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+        }
+    }
+
+    private Role extractRole(Claims claims) {
+        try {
+            return Role.valueOf(claims.get("role", String.class));
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new UnauthorizedException("유효하지 않은 토큰입니다.");
         }
     }
 }

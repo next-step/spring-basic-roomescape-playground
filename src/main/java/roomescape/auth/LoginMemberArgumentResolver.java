@@ -1,13 +1,13 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.member.Member;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -19,8 +19,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginMember.class)
-                && parameter.getParameterType().equals(Member.class);
+        return parameter.hasParameterAnnotation(AuthenticatedMember.class)
+                && parameter.getParameterType().equals(LoginMember.class);
     }
 
     @Override
@@ -32,9 +32,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null) {
-            return null;
+            throw new UnauthorizedException("요청 정보를 확인할 수 없습니다.");
         }
 
-        return authService.extractMember(request.getCookies());
+        Optional<LoginMember> loginMember = authService.extractMember(request.getCookies());
+        return loginMember.orElseThrow(() -> new UnauthorizedException("로그인이 필요합니다."));
     }
 }

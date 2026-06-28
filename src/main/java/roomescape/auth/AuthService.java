@@ -1,9 +1,11 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
+import java.util.Arrays;
+import java.util.Optional;
+import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
@@ -16,37 +18,25 @@ public class AuthService {
     }
 
     public String createToken(TokenRequest tokenRequest) {
-        Member member = memberDao.findByEmailAndPassword(tokenRequest.getEmail(), tokenRequest.getPassword());
-        return jwtTokenProvider.createToken(member);
+        Member member = memberDao.findByEmailAndPassword(tokenRequest.getEmail(), tokenRequest.getPassword())
+                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다."));
+        return jwtTokenProvider.createToken(LoginMember.from(member));
     }
 
-    public Member extractMember(Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
-        if (token == null || token.isBlank()) {
-            return null;
-        }
-
-        try {
-            Long id = jwtTokenProvider.getId(token);
-            String name = jwtTokenProvider.getName(token);
-            String role = jwtTokenProvider.getRole(token);
-            return new Member(id, name, null, role);
-        } catch (RuntimeException e) {
-            return null;
-        }
+    public Optional<LoginMember> extractMember(Cookie[] cookies) {
+        return extractTokenFromCookie(cookies)
+                .map(jwtTokenProvider::extractLoginMember);
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
+    private Optional<String> extractTokenFromCookie(Cookie[] cookies) {
         if (cookies == null) {
-            return null;
+            return Optional.empty();
         }
 
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-
-        return null;
+        return Arrays.stream(cookies)
+                .filter(cookie -> AuthCookie.TOKEN_NAME.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .filter(token -> !token.isBlank())
+                .findFirst();
     }
 }
