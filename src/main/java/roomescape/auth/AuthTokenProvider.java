@@ -1,11 +1,13 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.net.URI;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import roomescape.ApiException;
+import roomescape.RedirectException;
 import roomescape.member.Member;
 
 @Component
@@ -57,6 +60,8 @@ public class AuthTokenProvider {
         try {
             Jws<Claims> jws = jwtParser.parseClaimsJws(token.token());
             return getMemberFromToken(jws.getBody());
+        } catch (ExpiredJwtException ignored) {
+            throw new RedirectException(HttpStatus.TEMPORARY_REDIRECT, URI.create("/login"));
         } catch (JwtException ignored) {
             throw ApiException.status(HttpStatus.UNAUTHORIZED);
         }

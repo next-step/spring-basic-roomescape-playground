@@ -21,6 +21,13 @@ public class ExceptionController {
         return e.updateAndGetBody(applicationContext, LocaleContextHolder.getLocale());
     }
 
+    @ExceptionHandler(RedirectException.class)
+    public ResponseEntity<Void> handleRedirectException(RedirectException e) {
+        return ResponseEntity.status(e.getStatus())
+                .location(e.getLocation())
+                .build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> handleRuntimeException(Exception e) {
         e.printStackTrace();
