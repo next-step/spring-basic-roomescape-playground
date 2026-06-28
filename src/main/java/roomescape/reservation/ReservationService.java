@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
+import roomescape.auth.UnauthorizedException;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
@@ -52,7 +53,7 @@ public class ReservationService {
         }
 
         if (loginMember == null) {
-            throw new IllegalArgumentException("로그인 정보가 필요합니다.");
+            throw new UnauthorizedException();
         }
 
         return memberDao.findById(loginMember.getId());
