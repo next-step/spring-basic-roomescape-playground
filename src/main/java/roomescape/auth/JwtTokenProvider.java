@@ -1,12 +1,16 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.SignatureException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.auth.exception.ExpiredTokenException;
+import roomescape.auth.exception.InvalidTokenException;
 
 import java.security.Key;
 import java.util.Base64;
@@ -50,8 +54,12 @@ public class JwtTokenProvider {
                     .getSubject());
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException("The token is expired.");
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid token.");
+        } catch (SignatureException e) {
+            throw new InvalidTokenException("The token signature is invalid.");
+        } catch (MalformedJwtException e) {
+            throw new InvalidTokenException("The token is malformed.");
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new InvalidTokenException("Invalid token.");
         }
     }
 }

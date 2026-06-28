@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.auth.exception.ExpiredTokenException;
+import roomescape.auth.exception.InvalidTokenException;
 import roomescape.member.NoSuchMemberException;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,11 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
     @ExceptionHandler(ExpiredTokenException.class)
     public ResponseEntity<ErrorResponseBody> handleExpiredTokenException(ExpiredTokenException e) {
+        return handleBusinessException(e);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponseBody> handleInvalidTokenException(InvalidTokenException e) {
         return handleBusinessException(e);
     }
 

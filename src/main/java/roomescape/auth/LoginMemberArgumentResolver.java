@@ -12,6 +12,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.util.WebUtils;
 import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.MemberInfo;
+import roomescape.auth.exception.InvalidTokenException;
 import roomescape.member.MemberService;
 
 @Component
@@ -34,6 +35,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie tokenCookie = WebUtils.getCookie(request, "token");
+        if (tokenCookie == null || tokenCookie.getValue() == null) {
+            throw new InvalidTokenException("Token is required.");
+        }
+
         String token = tokenCookie.getValue();
 
         Long memberId = jwtTokenProvider.validateToken(token);

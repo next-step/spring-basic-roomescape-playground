@@ -61,6 +61,48 @@ class AuthenticationTest {
     }
 
     @Test
+    void loginCheckReturnsUnauthorizedWhenTokenCookieIsMissing() throws Exception {
+        // when
+        MvcResult result = mockMvc.perform(get("/login/check"))
+                .andReturn();
+
+        // then
+        assertEquals(401, result.getResponse().getStatus());
+        assertEquals("Token is required.", jsonValue(result, "message"));
+    }
+
+    @Test
+    void loginCheckReturnsUnauthorizedWhenTokenSignatureIsInvalid() throws Exception {
+        // given
+        Cookie tokenCookie = loginAndExtractToken("brown@email.com", "password");
+        Cookie invalidSignatureTokenCookie = new Cookie("token", tamperSignature(tokenCookie.getValue()));
+
+        // when
+        MvcResult result = mockMvc.perform(get("/login/check")
+                        .cookie(invalidSignatureTokenCookie))
+                .andReturn();
+
+        // then
+        assertEquals(401, result.getResponse().getStatus());
+        assertEquals("The token signature is invalid.", jsonValue(result, "message"));
+    }
+
+    @Test
+    void loginCheckReturnsUnauthorizedWhenTokenIsMalformed() throws Exception {
+        // given
+        Cookie malformedTokenCookie = new Cookie("token", "not-a-token");
+
+        // when
+        MvcResult result = mockMvc.perform(get("/login/check")
+                        .cookie(malformedTokenCookie))
+                .andReturn();
+
+        // then
+        assertEquals(401, result.getResponse().getStatus());
+        assertEquals("The token is malformed.", jsonValue(result, "message"));
+    }
+
+    @Test
     void createReservationUsesLoginMemberNameWhenNameIsMissing() throws Exception {
         // given
         Cookie tokenCookie = loginAndExtractToken("admin@email.com", "password");
@@ -107,6 +149,17 @@ class AuthenticationTest {
         assertEquals(200, adminResult.getResponse().getStatus());
     }
 
+    @Test
+    void adminPageReturnsUnauthorizedWhenTokenCookieIsMissing() throws Exception {
+        // when
+        MvcResult result = mockMvc.perform(get("/admin"))
+                .andReturn();
+
+        // then
+        assertEquals(401, result.getResponse().getStatus());
+        assertEquals("Token is required.", jsonValue(result, "message"));
+    }
+
     private Cookie loginAndExtractToken(String email, String password) throws Exception {
         MvcResult result = mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -123,6 +176,15 @@ class AuthenticationTest {
                     "password": "%s"
                 }
                 """.formatted(email, password);
+    }
+
+    private String tamperSignature(String token) {
+        String[] tokenParts = token.split("\\.");
+        String signature = tokenParts[2];
+        char replacement = signature.charAt(0) == 'a' ? 'b' : 'a';
+        tokenParts[2] = replacement + signature.substring(1);
+
+        return String.join(".", tokenParts);
     }
 
     private String jsonValue(MvcResult result, String fieldName) throws Exception {
