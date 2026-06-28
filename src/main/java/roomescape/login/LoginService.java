@@ -1,0 +1,51 @@
+package roomescape.login;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import org.springframework.stereotype.Service;
+import roomescape.member.Member;
+import roomescape.member.MemberDao;
+import roomescape.member.MemberResponse;
+
+@Service
+public class LoginService {
+    private final MemberDao memberDao;
+
+    public LoginService(MemberDao memberDao) {
+        this.memberDao = memberDao;
+    }
+
+    public Member login(String email, String password) {
+        Member member = memberDao.findByEmailAndPassword(email, password);
+        if (member == null) {
+            throw new RuntimeException("Invalid email or password");
+        }
+        return member;
+    }
+
+    public MemberResponse checkLogin(Cookie[] cookies) {
+        String token =extractTokenFromCookie(cookies);
+
+        Long memberId = Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody().getSubject());
+        Member member = memberDao.findById(memberId);
+        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        if(cookies==null){
+            throw new RuntimeException("Invalid cookies");
+        }
+        for(Cookie cookie : cookies){
+            if(cookie.getName().equals("token")){
+                return cookie.getValue();
+            }
+        }
+        throw new RuntimeException("Token not found");
+    }
+
+}
