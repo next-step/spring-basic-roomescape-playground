@@ -1,5 +1,7 @@
 package roomescape.member;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -11,11 +13,12 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberService memberService;
+    private final String secretKey;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
+    public LoginMemberArgumentResolver(MemberService memberService, String secretKey) {
         this.memberService = memberService;
+        this.secretKey = secretKey;
     }
-
     @Override
     public boolean supportsParameter(MethodParameter parameter) { //로그인한 회원정보의 필요여부 판단
         return parameter.getParameterType().equals(LoginMember.class);
@@ -31,11 +34,18 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         MemberResponse memberResponse = memberService.findMemberByToken(token);
 
+        String role = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
+
         return new LoginMember(
                 memberResponse.getId(),
                 memberResponse.getName(),
                 memberResponse.getEmail(),
-                "USER"
+                role
         );
     }
 

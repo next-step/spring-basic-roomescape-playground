@@ -3,15 +3,25 @@ package roomescape.member;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import java.util.Date;
 
 @Service
 public class MemberService {
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+    private final String secretKey;
     private MemberDao memberDao;
 
-    public MemberService(MemberDao memberDao) {
+    private static final long TOKEN_VALIDITY_IN_MILLISECONDS = 3600000;
+
+    public MemberService(MemberDao memberDao, @Value("${jwt.secret}") String secretKey) {
         this.memberDao = memberDao;
+        this.secretKey = secretKey;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -23,11 +33,16 @@ public class MemberService {
         try {
             Member member = memberDao.findByEmailAndPassword(email, password);
 
+            Date now = new Date();
+            Date validity = new Date(now.getTime() + TOKEN_VALIDITY_IN_MILLISECONDS);
+
             return Jwts.builder()
                     .setSubject(member.getId().toString())
                     .claim("name", member.getName())
                     .claim("role", member.getRole())
-                    .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .setIssuedAt(now)
+                    .setExpiration(validity)
+                    .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .compact();
         } catch (Exception e) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
@@ -41,7 +56,7 @@ public class MemberService {
 
         try {
             String name = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build()
                     .parseClaimsJws(token)
                     .getBody()

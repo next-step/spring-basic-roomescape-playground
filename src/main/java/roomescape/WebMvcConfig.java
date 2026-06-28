@@ -14,19 +14,21 @@ import roomescape.member.MemberService;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final MemberService memberService;
+    private final AdminInterceptor adminInterceptor;
 
-    public WebMvcConfig(MemberService memberService) {
+    public WebMvcConfig(MemberService memberService, AdminInterceptor adminInterceptor) {
         this.memberService = memberService;
+        this.adminInterceptor = adminInterceptor;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(memberService));
+        resolvers.add(new LoginMemberArgumentResolver(memberService, memberService.getSecretKey()));
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminInterceptor(memberService))
-                .addPathPatterns("/admin", "/admin/**");
+        registry.addInterceptor(adminInterceptor)
+                .addPathPatterns("/admin", "/admin/**", "/reservations", "/reservations/**");
     }
 }
