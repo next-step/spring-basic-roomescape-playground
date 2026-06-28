@@ -22,22 +22,21 @@ public class AdminInterceptor implements HandlerInterceptor {
         String token = extractTokenFromCookie(request.getCookies());
 
         if (token.isBlank()) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            throw new UnauthorizedException();
         }
 
         try {
             LoginMember loginMember = memberService.findLoginMemberByToken(token);
 
             if (!loginMember.getRole().equals("ADMIN")) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return false;
+                throw new UnauthorizedException();
             }
 
             return true;
+        } catch (UnauthorizedException e) {
+            throw e;
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
+            throw new UnauthorizedException();
         }
     }
 
