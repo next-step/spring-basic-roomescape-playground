@@ -27,14 +27,14 @@ public class JwtTokenProvider {
     }
 
 
-    public String createToken(LoginMember member) {
+    public String createToken(String id, String name, Role role) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(String.valueOf(member.getId()))
-                .claim("name", member.getName())
-                .claim("role", member.getRole().name())
+                .setSubject(id)
+                .claim("name", name)
+                .claim("role", role.name())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(secretKey)
