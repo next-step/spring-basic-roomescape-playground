@@ -53,7 +53,7 @@ public class MemberDao {
         );
     }
 
-    public Member findById(Long id){
+    public Member findById(Long id) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role From member WHERE id = ?",
                 (rs, rowNum) -> new Member(

@@ -2,7 +2,6 @@ package roomescape.login;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -12,18 +11,15 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.JwtProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
-import roomescape.member.MemberService;
 
 import java.util.Arrays;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private MemberService memberService;
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
     private final JwtProvider jwtProvider;
 
-    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberService memberService, MemberDao memberDao) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberDao memberDao) {
         this.memberDao = memberDao;
         this.jwtProvider = jwtProvider;
     }

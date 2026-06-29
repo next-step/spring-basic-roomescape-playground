@@ -14,11 +14,11 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        String name= reservationRequest.getName();
-        if(name==null){
-            name= loginMember.name();
+        String name = reservationRequest.getName();
+        if (name == null) {
+            name = loginMember.name();
         }
-        Reservation reservation = reservationDao.save(reservationRequest,name);
+        Reservation reservation = reservationDao.save(reservationRequest, name);
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 

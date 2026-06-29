@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.Member;
-import roomescape.member.MemberRequest;
 import roomescape.member.MemberResponse;
 
 @RestController
@@ -24,7 +23,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpresponse) {
-        Member member= loginService.login(loginRequest.email(),loginRequest.password());
+        Member member = loginService.login(loginRequest.email(), loginRequest.password());
 
         String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
@@ -46,7 +45,7 @@ public class LoginController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
 
-        MemberResponse memberResponse= loginService.checkLogin(request.getCookies());
+        MemberResponse memberResponse = loginService.checkLogin(request.getCookies());
 
         return ResponseEntity.ok(memberResponse);
     }

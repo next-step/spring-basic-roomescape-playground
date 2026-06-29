@@ -25,7 +25,7 @@ public class LoginService {
     }
 
     public MemberResponse checkLogin(Cookie[] cookies) {
-        String token =extractTokenFromCookie(cookies);
+        String token = extractTokenFromCookie(cookies);
 
         Long memberId = Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
@@ -37,11 +37,11 @@ public class LoginService {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
-        if(cookies==null){
+        if (cookies == null) {
             throw new RuntimeException("Invalid cookies");
         }
-        for(Cookie cookie : cookies){
-            if(cookie.getName().equals("token")){
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
                 return cookie.getValue();
             }
         }
