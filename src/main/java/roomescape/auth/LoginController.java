@@ -46,6 +46,10 @@ public class LoginController {
 
         String token = extractTokenFromCookie(request.getCookies());
 
+        if (token.isBlank()) {
+            return ResponseEntity.ok().build();
+        }
+
         Long memberId = jwtProvider.extractMemberId(token);
 
         Member member = memberService.findById(memberId);
