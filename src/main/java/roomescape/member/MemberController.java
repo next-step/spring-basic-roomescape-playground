@@ -1,7 +1,6 @@
 package roomescape.member;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,7 @@ import java.net.URI;
 
 @RestController
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -40,23 +39,8 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return ResponseEntity.status(401).build();
-        }
-
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {
-                try {
-                    MemberResponse member = memberService.checkLogin(cookie.getValue());
-                    return ResponseEntity.ok(member);
-                } catch (RuntimeException e) {
-                    return ResponseEntity.status(401).build();
-                }
-            }
-        }
-        return ResponseEntity.status(401).build();
+    public ResponseEntity checkLogin(@LoginMember MemberResponse member) {
+        return ResponseEntity.ok(member);
     }
 
     @PostMapping("/logout")
