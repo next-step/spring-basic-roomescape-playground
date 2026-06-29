@@ -33,17 +33,25 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
+        LoginMember loginMember = parameter.getParameterAnnotation(LoginMember.class);
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null) {
-            throw new AuthenticationException();
+            return handleAuthenticationFailure(loginMember);
         }
 
         try {
             String token = extractToken(request);
             return memberService.checkLogin(token);
         } catch (RuntimeException e) {
-            throw new AuthenticationException();
+            return handleAuthenticationFailure(loginMember);
         }
+    }
+
+    private Object handleAuthenticationFailure(LoginMember loginMember) {
+        if (loginMember != null && !loginMember.required()) {
+            return null;
+        }
+        throw new AuthenticationException();
     }
 
     private String extractToken(HttpServletRequest request) {

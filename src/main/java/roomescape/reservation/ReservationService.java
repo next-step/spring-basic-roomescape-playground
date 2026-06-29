@@ -1,21 +1,38 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import roomescape.AuthenticationException;
+import roomescape.member.Member;
+import roomescape.member.MemberDao;
+import roomescape.member.MemberResponse;
 
 import java.util.List;
 
 @Service
 public class ReservationService {
     private ReservationDao reservationDao;
+    private MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao) {
+    public ReservationService(ReservationDao reservationDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
+        this.memberDao = memberDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    public ReservationResponse save(ReservationRequest reservationRequest, MemberResponse loginMember) {
+        Member member = findReservationMember(reservationRequest, loginMember);
+        Reservation reservation = reservationDao.save(reservationRequest, member.getName());
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(reservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+    }
+
+    private Member findReservationMember(ReservationRequest reservationRequest, MemberResponse loginMember) {
+        if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
+            return memberDao.findByName(reservationRequest.getName());
+        }
+        if (loginMember == null) {
+            throw new AuthenticationException();
+        }
+        return memberDao.findByEmail(loginMember.getEmail());
     }
 
     public void deleteById(Long id) {
