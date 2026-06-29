@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import roomescape.auth.Authorized;
+import roomescape.auth.AuthorizedAdmin;
+import roomescape.member.Member;
 
 @RestController
 public class TimeController {
@@ -25,6 +28,7 @@ public class TimeController {
         return timeService.findAll();
     }
 
+    @Authorized(role = {Member.Role.ADMIN})
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
         if (time.getValue() == null || time.getValue().isEmpty()) {
@@ -35,6 +39,7 @@ public class TimeController {
         return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
     }
 
+    @Authorized(role = {Member.Role.ADMIN})
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         timeService.deleteById(id);
