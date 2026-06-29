@@ -82,7 +82,7 @@ public class ReservationDao {
                         "ti.id AS time_id, ti.time_value AS time_value " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
-                        "JOIN time ti ON r.time_id = ti.id" +
+                        "JOIN time ti ON r.time_id = ti.id " +
                         "WHERE r.date = ? AND r.theme_id = ?",
                 new Object[]{date, themeId},
                 (rs, rowNum) -> new Reservation(
