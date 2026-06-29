@@ -2,8 +2,9 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
-import roomescape.member.Member;
+import roomescape.exception.ApplicationException;
 import roomescape.member.MemberDao;
+import roomescape.member.MemberErrorCode;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ReservationService {
 
         Reservation reservation = reservationDao.save(reservationRequest, name);
 
-        return new ReservationResponse(reservation.getId(), name    , reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(reservation.getId(), name, reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
@@ -37,7 +38,8 @@ public class ReservationService {
 
     private String resolveName(ReservationRequest reservationRequest, LoginMember loginMember) {
         if (reservationRequest.getName() != null) {
-            memberDao.findByName(reservationRequest.getName()).orElseThrow();
+            memberDao.findByName(reservationRequest.getName())
+                    .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
             return reservationRequest.getName();
         }
 
