@@ -16,6 +16,14 @@ public class CookieUtil {
         response.addCookie(cookie);
     }
 
+    public void expireCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", "");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+
     public String extractToken(Cookie[] cookies) {
         if (cookies == null) {
             throw new ApplicationException(AuthErrorCode.UNAUTHENTICATED_ACCESS);

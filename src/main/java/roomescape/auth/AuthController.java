@@ -1,5 +1,6 @@
 package roomescape.auth;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +32,11 @@ public class AuthController {
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(LoginMember loginMember) {
         return ResponseEntity.ok(new LoginCheckResponse(loginMember.name()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        cookieUtil.expireCookie(response);
+        return ResponseEntity.ok().build();
     }
 }
