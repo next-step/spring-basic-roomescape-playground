@@ -19,13 +19,7 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest request, LoginMember loginMember) {
 
-        Member member;
-
-        if (request.getName() == null) {
-            member = memberService.findById(loginMember.id());
-        } else {
-            member = memberService.findByName(request.getName());
-        }
+        Member member = resolveReservationMember(request, loginMember);
 
         Reservation reservation = reservationDao.save(request, member);
 
@@ -46,5 +40,13 @@ public class ReservationService {
         return reservationDao.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
+    }
+
+    private Member resolveReservationMember(ReservationRequest request, LoginMember loginMember) {
+        if (request.getName() == null) {
+            return memberService.findById(loginMember.id());
+        }
+
+        return memberService.findByName(request.getName());
     }
 }
