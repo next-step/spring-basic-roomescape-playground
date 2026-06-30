@@ -24,28 +24,12 @@ public class LoginService {
         return member;
     }
 
-    public MemberResponse checkLogin(Cookie[] cookies) {
-        String token = extractTokenFromCookie(cookies);
+    public MemberResponse checkLogin(Long memberId) {
 
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
         Member member = memberDao.findById(memberId);
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            throw new RuntimeException("Invalid cookies");
-        }
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        throw new RuntimeException("Token not found");
-    }
+
 
 }
