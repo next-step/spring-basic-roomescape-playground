@@ -1,8 +1,5 @@
 package roomescape.login;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
@@ -29,7 +26,5 @@ public class LoginService {
         Member member = memberDao.findById(memberId);
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
-
-
 
 }
