@@ -15,10 +15,11 @@ VALUES (1, '10:00'),
        (5, '18:00'),
        (6, '20:00');
 
-INSERT INTO reservation (id, name, date, "time_id", theme_id)
-VALUES (1, '어드민', '2024-03-01', 1, 1),
-       (2, '어드민', '2024-03-01', 2, 2),
-       (3, '어드민', '2024-03-01', 3, 3);
+INSERT INTO reservation (id, member_id, date, "time_id", theme_id)
+VALUES (1, 1, '2024-03-01', 1, 1),
+       (2, 1, '2024-03-01', 2, 2),
+       (3, 1, '2024-03-01', 3, 3),
+       (4, 2, '2024-03-01', 1, 2);
 
 ALTER SEQUENCE member_seq RESTART WITH (SELECT MAX(id) + 1 FROM member);
 ALTER SEQUENCE theme_seq RESTART WITH (SELECT MAX(id) + 1 FROM theme);
