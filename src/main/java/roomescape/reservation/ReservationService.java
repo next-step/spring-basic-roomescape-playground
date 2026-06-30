@@ -2,28 +2,41 @@ package roomescape.reservation;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 @Service
 public class ReservationService {
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
+                              ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+        Time time = timeRepository.getReferenceById(reservationRequest.time());
+        Theme theme = themeRepository.getReferenceById(reservationRequest.theme());
+
+        Reservation reservation = reservationRepository.save(
+                new Reservation(reservationRequest.name(), reservationRequest.date(), time, theme));
 
         return new ReservationResponse(reservation.getId(), reservationRequest.name(),
                 reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(),
                         it.getTime().getValue()))
                 .toList();
