@@ -20,7 +20,15 @@ public class AuthService {
     public String createToken(TokenRequest tokenRequest) {
         Member member = memberDao.findByEmailAndPassword(tokenRequest.getEmail(), tokenRequest.getPassword())
                 .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다."));
-        return jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getName(), member.getRole());
+        return jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getName(), member.getEmail(), member.getRole());
+    }
+
+    public Cookie createTokenCookie(TokenRequest tokenRequest) {
+        return AuthCookie.createTokenCookie(createToken(tokenRequest));
+    }
+
+    public Cookie createExpiredTokenCookie() {
+        return AuthCookie.createExpiredTokenCookie();
     }
 
     public Optional<LoginMember> extractMember(Cookie[] cookies) {

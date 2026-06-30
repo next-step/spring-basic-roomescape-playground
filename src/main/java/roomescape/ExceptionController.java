@@ -9,13 +9,12 @@ import roomescape.auth.UnauthorizedException;
 @ControllerAdvice
 public class ExceptionController {
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<Void> handleUnauthorizedException(UnauthorizedException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> handleRuntimeException(Exception e) {
-        e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 }

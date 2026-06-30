@@ -19,8 +19,13 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Optional<LoginMember> loginMember = authService.extractMember(request.getCookies());
 
-        if (loginMember.isEmpty() || !loginMember.get().isAdmin()) {
+        if (loginMember.isEmpty()) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return false;
+        }
+
+        if (!loginMember.get().isAdmin()) {
+            response.setStatus(HttpStatus.FORBIDDEN.value());
             return false;
         }
 

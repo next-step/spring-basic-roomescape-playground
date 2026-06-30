@@ -1,21 +1,18 @@
 package roomescape.auth;
 
-import roomescape.member.Member;
 import roomescape.member.Role;
 
 public class LoginMember {
     private final Long id;
     private final String name;
+    private final String email;
     private final Role role;
 
-    public LoginMember(Long id, String name, Role role) {
+    public LoginMember(Long id, String name, String email, Role role) {
         this.id = id;
         this.name = name;
+        this.email = email;
         this.role = role;
-    }
-
-    public static LoginMember from(Member member) {
-        return new LoginMember(member.getId(), member.getName(), member.getRole());
     }
 
     public Long getId() {
@@ -24,6 +21,10 @@ public class LoginMember {
 
     public String getName() {
         return name;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public Role getRole() {
