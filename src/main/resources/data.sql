@@ -21,7 +21,7 @@ VALUES (1, 1, '2024-03-01', 1, 1),
        (3, 1, '2024-03-01', 3, 3),
        (4, 2, '2024-03-01', 1, 2);
 
-ALTER SEQUENCE member_seq RESTART WITH (SELECT MAX(id) + 1 FROM member);
-ALTER SEQUENCE theme_seq RESTART WITH (SELECT MAX(id) + 1 FROM theme);
-ALTER SEQUENCE time_seq RESTART WITH (SELECT MAX(id) + 1 FROM "time");
-ALTER SEQUENCE reservation_seq RESTART WITH (SELECT MAX(id) + 1 FROM reservation);
+ALTER SEQUENCE member_seq RESTART WITH (SELECT MAX(id) + 50 FROM member);
+ALTER SEQUENCE theme_seq RESTART WITH (SELECT MAX(id) + 50 FROM theme);
+ALTER SEQUENCE time_seq RESTART WITH (SELECT MAX(id) + 50 FROM "time");
+ALTER SEQUENCE reservation_seq RESTART WITH (SELECT MAX(id) + 50 FROM reservation);
