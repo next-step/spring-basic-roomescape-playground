@@ -31,19 +31,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (request == null) {
-            throw new IllegalStateException("request is not https");
-        }
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new IllegalStateException("cookie is not exist");
-        }
-        String token = Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("token is not found in cookies"));
+        HttpServletRequest request = getRequest(webRequest);
+        Cookie[] cookies = getCookies(request);
+
+        String token = extractToken(cookies);
 
         Long memberId = jwtProvider.getMemberId(token);
 
@@ -51,4 +42,30 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
+
+    private HttpServletRequest getRequest(NativeWebRequest nativeWebRequest) {
+        HttpServletRequest httpServletRequest = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
+        if (httpServletRequest == null) {
+            throw new IllegalStateException("request is not https");
+        }
+        return httpServletRequest;
+    }
+
+    private Cookie[] getCookies(HttpServletRequest httpServletRequest) {
+        Cookie[] cookies = httpServletRequest.getCookies();
+        if (cookies == null) {
+            throw new IllegalStateException("cookie is not exist");
+        }
+        return cookies;
+    }
+
+    private String extractToken(Cookie[] cookies) {
+        String token = Arrays.stream(cookies)
+                .filter(cookie -> "token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("token is not found in cookies"));
+        return token;
+    }
+
 }
