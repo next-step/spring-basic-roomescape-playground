@@ -38,10 +38,24 @@ public class LoginController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-
-        MemberResponse memberResponse = loginService.checkLogin(request.getCookies());
+        Cookie[] cookies = request.getCookies();
+        String token = extractTokenFromCookie(cookies);
+        Long memberId = jwtProvider.getMemberId(token);
+        MemberResponse memberResponse = loginService.checkLogin(memberId);
 
         return ResponseEntity.ok(memberResponse);
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new RuntimeException("Invalid cookies");
+        }
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        throw new RuntimeException("Token not found");
     }
 
 }
