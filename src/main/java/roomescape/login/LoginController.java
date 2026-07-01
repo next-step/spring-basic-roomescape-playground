@@ -37,12 +37,9 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        Long memberId = jwtProvider.getMemberId(token);
+    public ResponseEntity<MemberResponse> checkLogin(LoginMember loginMember) {
+        Long memberId = loginMember.id();
         MemberResponse memberResponse = loginService.checkLogin(memberId);
-
         return ResponseEntity.ok(memberResponse);
     }
 
