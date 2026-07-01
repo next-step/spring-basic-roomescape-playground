@@ -29,25 +29,26 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        String name = resolveName(reservationRequest, loginMember);
         Time time = timeRepository.findById(reservationRequest.getTime())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        Reservation reservation = reservationRepository.save(
-                new Reservation(name, reservationRequest.getDate(), time, theme));
+        Reservation reservation = createReservation(reservationRequest, loginMember, time, theme);
+        Reservation saved = reservationRepository.save(reservation);
 
-        return new ReservationResponse(reservation.getId(), name, theme.getName(), reservation.getDate(), time.getTime());
+        return new ReservationResponse(saved.getId(), saved.getName(), theme.getName(), saved.getDate(), time.getTime());
     }
 
-    private String resolveName(ReservationRequest reservationRequest, LoginMember loginMember) {
+    private Reservation createReservation(ReservationRequest reservationRequest, LoginMember loginMember, Time time, Theme theme) {
         if (reservationRequest.getName() != null) {
             Member member = memberRepository.findByName(reservationRequest.getName())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-            return member.getName();
+            return new Reservation(member.getName(), reservationRequest.getDate(), time, theme);
         }
-        return loginMember.getName();
+        Member member = memberRepository.findById(loginMember.getId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        return new Reservation(member, reservationRequest.getDate(), time, theme);
     }
 
     public void deleteById(Long id) {
@@ -57,6 +58,17 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
+                .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        return reservationRepository.findByMember_Id(loginMember.getId()).stream()
+                .map(it -> new MyReservationResponse(
+                        it.getId(),
+                        it.getTheme().getName(),
+                        it.getDate(),
+                        it.getTime().getTime(),
+                        "예약"))
                 .toList();
     }
 }
