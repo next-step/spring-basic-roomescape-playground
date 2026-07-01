@@ -5,12 +5,17 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
 import java.util.Map;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -114,4 +119,5 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
 }
