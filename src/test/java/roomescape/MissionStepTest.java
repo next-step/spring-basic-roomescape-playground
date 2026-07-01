@@ -4,7 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -101,5 +103,28 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    private String createExpiredToken() {
+        Date past = new Date(System.currentTimeMillis() - 60000);
+        return io.jsonwebtoken.Jwts.builder()
+                .setSubject("1")
+                .claim("name", "브라운")
+                .claim("role", "USER")
+                .setIssuedAt(past)
+                .setExpiration(past)
+                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .compact();
+    }
+    @Test
+    void 토큰_만료_테스트() {
+        String expiredToken = createExpiredToken();
+        RestAssured.given().log().all()
+                .cookie("token", expiredToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
     }
 }
