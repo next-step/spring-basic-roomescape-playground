@@ -5,28 +5,28 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
     @Autowired
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(),  member.getRole());
     }
 
     public MemberResponse loadMember(MemberRequest memberRequest) {
-        Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword())
+        Member member = memberRepository.findByEmailAndPassword(memberRequest.email(), memberRequest.password())
                 .orElseThrow(NoSuchMemberException::new);
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public MemberResponse loadMember(Long id) {
-        Member member = memberDao.findById(id)
+        Member member = memberRepository.findById(id)
                 .orElseThrow(NoSuchMemberException::new);
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());

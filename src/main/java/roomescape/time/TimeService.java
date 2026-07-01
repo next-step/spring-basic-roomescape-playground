@@ -2,23 +2,29 @@ package roomescape.time;
 
 import org.springframework.stereotype.Service;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
+import roomescape.reservation.ReservationService;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeResponse;
+import roomescape.theme.ThemeService;
 
 import java.util.List;
 
 @Service
 public class TimeService {
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
+    private final TimeRepository timeRepository;
+    private final ThemeService themeService;
+    private final ReservationService reservationService;
 
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
+    public TimeService(TimeRepository timeRepository, ThemeService themeService, ReservationService reservationService) {
+        this.timeRepository = timeRepository;
+        this.themeService = themeService;
+        this.reservationService = reservationService;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+        Theme theme = themeService.findEntityById(themeId);
+        List<Reservation> reservations = reservationService.findEntitiesByDateAndTheme(date, theme);
+        List<Time> times = timeRepository.findAll();
 
         return times.stream()
                 .map(time -> new AvailableTime(
@@ -30,15 +36,18 @@ public class TimeService {
                 .toList();
     }
 
+    public Time findEntityById(Long id) {
+        return timeRepository.findById(id).orElseThrow(NoSuchTimeException::new);    }
+
     public List<Time> findAll() {
-        return timeDao.findAll();
+        return timeRepository.findAll();
     }
 
     public Time save(Time time) {
-        return timeDao.save(time);
+        return timeRepository.save(time);
     }
 
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        timeRepository.deleteById(id);
     }
 }
