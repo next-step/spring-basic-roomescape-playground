@@ -16,10 +16,12 @@ public class LoginController {
 
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
+    private final CookieExtractor cookieExtractor;
 
-    public LoginController(MemberService memberService, JwtProvider jwtProvider) {
+    public LoginController(MemberService memberService, JwtProvider jwtProvider, CookieExtractor cookieExtractor) {
         this.memberService = memberService;
         this.jwtProvider = jwtProvider;
+        this.cookieExtractor = cookieExtractor;
     }
 
     @PostMapping("/login")
@@ -44,7 +46,7 @@ public class LoginController {
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
 
-        String token = extractTokenFromCookie(request.getCookies());
+        String token = cookieExtractor.extractTokenFromCookie(request.getCookies());
 
         if (token.isBlank()) {
             return ResponseEntity.ok().build();
@@ -57,19 +59,5 @@ public class LoginController {
         return ResponseEntity.ok(
                 new LoginCheckResponse(member.getName())
         );
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return "";
-        }
-
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
     }
 }
