@@ -1,7 +1,6 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import roomescape.member.LoginMember;
 
@@ -14,7 +13,6 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-
         String reservationName;
         if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
             reservationName = reservationRequest.getName();
@@ -29,7 +27,17 @@ public class ReservationService {
         return new ReservationResponse(reservation.getId(), reservationName, reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(Long id, LoginMember loginMember) {
+        if (loginMember == null) {
+            throw new IllegalArgumentException("로그인 정보가 없습니다.");
+        }
+
+        Reservation reservation = reservationDao.findById(id);
+
+        if (!"ADMIN".equals(loginMember.getRole()) && !reservation.getName().equals(loginMember.getName())) {
+            throw new IllegalArgumentException("본인의 예약만 삭제할 수 있습니다.");
+        }
+
         reservationDao.deleteById(id);
     }
 
