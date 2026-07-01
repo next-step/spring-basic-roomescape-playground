@@ -43,28 +43,43 @@ public class ReservationDao {
                         )));
     }
 
-    public Reservation save(ReservationRequest reservationRequest) {
+    public Reservation save(ReservationRequest reservationRequest, String memberName) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)",
+                    new String[]{"id"}
+            );
             ps.setString(1, reservationRequest.getDate());
-            ps.setString(2, reservationRequest.getName());
+            ps.setString(2, memberName);
             ps.setLong(3, reservationRequest.getTheme());
             ps.setLong(4, reservationRequest.getTime());
             return ps;
         }, keyHolder);
 
-        Time time = jdbcTemplate.queryForObject("SELECT * FROM time WHERE id = ?",
-                (rs, rowNum) -> new Time(rs.getLong("id"), rs.getString("time_value")),
-                reservationRequest.getTime());
+        Time time = jdbcTemplate.queryForObject(
+                "SELECT * FROM time WHERE id = ?",
+                (rs, rowNum) -> new Time(
+                        rs.getLong("id"),
+                        rs.getString("time_value")
+                ),
+                reservationRequest.getTime()
+        );
 
-        Theme theme = jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
-                (rs, rowNum) -> new Theme(rs.getLong("id"), rs.getString("name"), rs.getString("description")),
-                reservationRequest.getTheme());
+        Theme theme = jdbcTemplate.queryForObject(
+                "SELECT * FROM theme WHERE id = ?",
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description")
+                ),
+                reservationRequest.getTheme()
+        );
 
         return new Reservation(
                 keyHolder.getKey().longValue(),
-                reservationRequest.getName(),
+                memberName,
                 reservationRequest.getDate(),
                 time,
                 theme
