@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findByDateAndTheme(String date, Theme theme);
+    List<Reservation> findByName(String name);
 }

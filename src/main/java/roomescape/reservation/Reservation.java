@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import jakarta.persistence.*;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -11,6 +12,11 @@ public class Reservation {
     private Long id;
     private String name;
     private String date;
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
     @ManyToOne
     private Time time;
     @ManyToOne
@@ -24,11 +30,13 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(String name, String date, Time time, Theme theme, Member member) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
+        this.status = ReservationStatus.PENDING;
     }
 
     public Reservation() {
@@ -53,5 +61,13 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ReservationStatus status) {
+        this.status = status;
     }
 }

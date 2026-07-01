@@ -31,4 +31,8 @@ public class MemberService {
 
         return new MemberResponse(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
+
+    public Member loadMemberEntity(String memberName) {
+        return memberRepository.findByName(memberName).orElseThrow(NoSuchMemberException::new);
+    }
 }

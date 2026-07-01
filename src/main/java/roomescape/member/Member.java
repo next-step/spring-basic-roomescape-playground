@@ -1,9 +1,9 @@
 package roomescape.member;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import roomescape.reservation.Reservation;
+
+import java.util.List;
 
 @Entity
 public class Member {
@@ -14,13 +14,8 @@ public class Member {
     private String email;
     private String password;
     private String role;
-
-    public Member(Long id, String name, String email, String role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-    }
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations;
 
     public Member(String name, String email, String password, String role) {
         this.name = name;
@@ -43,10 +38,6 @@ public class Member {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public String getRole() {

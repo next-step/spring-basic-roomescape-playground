@@ -1,13 +1,9 @@
 package roomescape.reservation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.auth.dto.LoginMember;
+import roomescape.time.AvailableTime;
 
 import java.net.URI;
 import java.util.List;
@@ -27,7 +23,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest request, LoginMember loginMember) {
+    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request, LoginMember loginMember) {
         if (request.date() == null
                 || request.themeId() == null
                 || request.timeId() == null) {
@@ -35,14 +31,24 @@ public class ReservationController {
         } else if (request.name() == null) {
             request = new ReservationRequest(loginMember.name(), request.date(), request.themeId(), request.timeId());
         }
-        ReservationResponse response = reservationService.save(request);
+        ReservationResponse response = reservationService.registerReservation(loginMember.name(), request);
 
         return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> getMyReservations(LoginMember loginMember) {
+        return ResponseEntity.ok(reservationService.getMyReservations(loginMember.name()));
+    }
+
+    @GetMapping("/available-times")
+    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date, @RequestParam Long themeId) {
+        return ResponseEntity.ok(reservationService.getAvailableTime(date, themeId));
     }
 }

@@ -40,9 +40,4 @@ public class TimeController {
         timeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/available-times")
-    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date, @RequestParam Long themeId) {
-        return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
-    }
 }
