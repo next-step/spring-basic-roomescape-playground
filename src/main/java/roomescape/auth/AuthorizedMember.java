@@ -8,22 +8,28 @@ import roomescape.member.Member;
  * `AuthorizedMember` 값은 jwt 세션 토큰의 claims payload에서 가져옵니다.
  */
 public class AuthorizedMember {
+    private final long id;
     private final String name;
     private final String email;
     private final Member.Role role;
 
-    public AuthorizedMember(String name, String email, Member.Role role) {
+    public AuthorizedMember(long id, String name, String email, Member.Role role) {
         Objects.requireNonNull(name, "name이 null일 수 없습니다.");
         Objects.requireNonNull(email, "email이 null일 수 없습니다.");
         Objects.requireNonNull(role, "role이 null일 수 없습니다.");
 
+        this.id = id;
         this.name = name;
         this.email = email;
         this.role = role;
     }
 
     public static AuthorizedMember from(Member member) {
-        return new AuthorizedMember(member.getName(), member.getEmail(), member.getRole());
+        return new AuthorizedMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+    }
+
+    public long id() {
+        return id;
     }
 
     public String name() {

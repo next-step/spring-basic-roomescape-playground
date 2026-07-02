@@ -29,6 +29,12 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @Authorized
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> listMine(AuthorizedMember member) {
+        return reservationService.findMine(member.id());
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(
             Optional<AuthorizedMember> authorizedMember,
@@ -44,9 +50,9 @@ public class ReservationController {
                 .map(member -> member.role() == Member.Role.ADMIN)
                 .orElse(false);
 
-        if (reservationRequest.getName() == null) {
+        if (reservationRequest.getName() == null && reservationRequest.getMemberId() == null) {
             if(authorizedMember.isEmpty()) return ResponseEntity.badRequest().build();
-            reservationRequest.setName(authorizedMember.get().name());
+            reservationRequest.setMemberId(authorizedMember.get().id());
         } else {
             if(!isAdmin) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

@@ -50,6 +50,7 @@ public class AuthTokenProvider {
         claims.setIssuedAt(now);
         claims.setExpiration(new Date(now.getTime() + TOKEN_VALIDITY_MILLISECONDS));
 
+        claims.setSubject(Long.toString(member.id()));
         claims.put("name", member.name());
         claims.put("email", member.email());
         claims.put("roles", member.role());
@@ -69,6 +70,7 @@ public class AuthTokenProvider {
 
     private AuthorizedMember getMemberFromToken(Claims tokenClaims) {
         return new AuthorizedMember(
+                Long.parseLong(tokenClaims.getSubject()),
                 tokenClaims.get("name", String.class),
                 tokenClaims.get("email", String.class),
                 Member.Role.valueOf(tokenClaims.get("roles", String.class))
