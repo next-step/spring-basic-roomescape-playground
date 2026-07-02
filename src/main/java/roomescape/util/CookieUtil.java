@@ -3,8 +3,9 @@ package roomescape.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
-import roomescape.auth.AuthErrorCode;
-import roomescape.exception.ApplicationException;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class CookieUtil {
@@ -24,17 +25,10 @@ public class CookieUtil {
         response.addCookie(cookie);
     }
 
-    public String extractToken(Cookie[] cookies) {
-        if (cookies == null) {
-            throw new ApplicationException(AuthErrorCode.UNAUTHENTICATED_ACCESS);
-        }
-
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        throw new ApplicationException(AuthErrorCode.UNAUTHENTICATED_ACCESS);
+    public Optional<String> extractToken(Cookie[] cookies) {
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .map(Cookie::getValue)
+                .findFirst();
     }
 }

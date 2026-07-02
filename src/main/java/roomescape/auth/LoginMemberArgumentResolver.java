@@ -40,7 +40,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new ApplicationException(AuthErrorCode.UNAUTHENTICATED_ACCESS);
         }
 
-        String token = cookieUtil.extractToken(cookies);
+        String token = cookieUtil.extractToken(cookies)
+                .orElseThrow(() -> new ApplicationException(AuthErrorCode.UNAUTHENTICATED_ACCESS));
+
         return authService.findAuthenticatedMember(token);
     }
 }
