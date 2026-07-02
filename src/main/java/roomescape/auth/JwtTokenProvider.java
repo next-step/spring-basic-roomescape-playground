@@ -2,6 +2,8 @@ package roomescape.auth;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
@@ -45,7 +47,7 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(accessToken)
                     .getBody().getSubject());
-        } catch (SignatureException e) {
+        } catch (SignatureException | MalformedJwtException | UnsupportedJwtException e) {
             throw new ApplicationException(AuthErrorCode.INVALID_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
             throw new ApplicationException(AuthErrorCode.ACCESS_TOKEN_EXPIRED);
