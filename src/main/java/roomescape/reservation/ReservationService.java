@@ -32,16 +32,13 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        Member member = findReservationMember(reservationRequest, loginMember);
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
-        Reservation reservation = reservationRepository.save(
-                new Reservation(member.getName(), reservationRequest.getDate(), time, theme)
-        );
+        Reservation reservation = reservationRepository.save(createReservation(reservationRequest, loginMember, theme, time));
 
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                getReservationName(reservation),
                 reservation.getTheme().getName(),
                 reservation.getDate(),
                 reservation.getTime().getValue()
@@ -56,7 +53,7 @@ public class ReservationService {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(
                         it.getId(),
-                        it.getName(),
+                        getReservationName(it),
                         it.getTheme().getName(),
                         it.getDate(),
                         it.getTime().getValue()
@@ -64,20 +61,50 @@ public class ReservationService {
                 .toList();
     }
 
-    private Member findReservationMember(ReservationRequest reservationRequest, LoginMember loginMember) {
+    public List<MyReservationResponse> findMine(LoginMember loginMember) {
+        if (loginMember == null) {
+            throw new UnauthorizedException();
+        }
+
+        return reservationRepository.findByMemberId(loginMember.getId()).stream()
+                .map(it -> new MyReservationResponse(
+                        it.getId(),
+                        it.getTheme().getName(),
+                        it.getDate(),
+                        it.getTime().getValue(),
+                        "예약"
+                ))
+                .toList();
+    }
+
+    private Reservation createReservation(
+            ReservationRequest reservationRequest,
+            LoginMember loginMember,
+            Theme theme,
+            Time time
+    ) {
         if (hasName(reservationRequest)) {
-            return memberRepository.findByName(reservationRequest.getName()).orElseThrow();
+            return new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme);
         }
 
         if (loginMember == null) {
             throw new UnauthorizedException();
         }
 
-        return memberRepository.findById(loginMember.getId()).orElseThrow();
+        Member member = memberRepository.findById(loginMember.getId()).orElseThrow();
+        return new Reservation("", reservationRequest.getDate(), member, time, theme);
     }
 
     private boolean hasName(ReservationRequest reservationRequest) {
         return reservationRequest.getName() != null
                 && !reservationRequest.getName().isBlank();
+    }
+
+    private String getReservationName(Reservation reservation) {
+        if (reservation.getName() != null && !reservation.getName().isBlank()) {
+            return reservation.getName();
+        }
+
+        return reservation.getMember().getName();
     }
 }
