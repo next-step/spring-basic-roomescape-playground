@@ -2,7 +2,10 @@ package roomescape.reservation;
 
 import java.util.List;
 import java.util.Objects;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import roomescape.ApiException;
+import roomescape.auth.AuthorizedMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.theme.ThemeRepository;
@@ -44,7 +47,17 @@ public class ReservationService {
         return createReservationResponse(reservation);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(AuthorizedMember member, Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> ApiException.status(HttpStatus.NOT_FOUND));
+
+        if(member.role() != Member.Role.ADMIN) {
+            Long memberId = reservation.getMemberId();
+            if (memberId == null || memberId != member.id()) {
+                throw ApiException.status(HttpStatus.FORBIDDEN);
+            }
+        }
+
         reservationRepository.deleteById(id);
     }
 
