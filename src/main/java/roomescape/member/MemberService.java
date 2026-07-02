@@ -12,7 +12,7 @@ public class MemberService {
     private final String secretKey;
     private MemberDao memberDao;
 
-    private static final long TOKEN_VALIDITY_IN_MILLISECONDS = 3600000;
+    private static final long TOKEN_VALIDITY_IN_MILLISECONDS = 3600000; //토큰 만료 기간 1시간 설정
 
     public MemberService(MemberDao memberDao, @Value("${jwt.secret}") String secretKey) {
         this.memberDao = memberDao;

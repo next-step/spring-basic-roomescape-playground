@@ -29,7 +29,7 @@ public class Time {
         return id;
     }
 
-    public String getTime() { //getValue -> getTime으로 수정
+    public String getValue() {
         return value;
     }
 
