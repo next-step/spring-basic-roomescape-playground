@@ -37,7 +37,7 @@ public class ReservationService {
     }
 
     private String resolveName(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.getName() != null) {
+        if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
             memberDao.findByName(reservationRequest.getName())
                     .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
             return reservationRequest.getName();
