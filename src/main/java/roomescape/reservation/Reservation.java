@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
@@ -18,10 +19,16 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
-@Where(clause = "deleted = false")
-@SQLDelete(sql = "UPDATE theme SET deleted = true WHERE id = ?")
-@Table(name = "reservation")
-@SQLDelete(sql = "UPDATE reservation SET deleted = true WHERE id = ?")
+@Where(clause = "active IS NOT NULL")
+@SQLDelete(sql = "UPDATE reservation SET active = NULL WHERE id = ?")
+@Table(
+        name = "reservation",
+        indexes = { // H2 Index에서 기본 NULLS DISTINCT임을 사용
+                @Index(columnList = "active, id"),
+                @Index(columnList = "active, name"),
+                @Index(columnList = "active, theme_id, date, time_id", unique = true)
+        }
+)
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,8 +56,8 @@ public class Reservation {
     @Column(name = "pending", columnDefinition = "TINYINT DEFAULT 0", nullable = false)
     private int pending = 0;
 
-    @Column(name = "deleted", columnDefinition = "BOOLEAN DEFAULT false", insertable = false, nullable = false)
-    private boolean deleted = false;
+    @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT true", insertable = false, nullable = true)
+    private boolean active = true;
 
     public Reservation(Long id, String name, Member member, String date, Time time, Theme theme) {
         this.id = id;

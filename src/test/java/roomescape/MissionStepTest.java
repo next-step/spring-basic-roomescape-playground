@@ -46,7 +46,7 @@ public class MissionStepTest {
         String token = createToken("admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", "2024-04-01");
         params.put("time", "1");
         params.put("theme", "1");
 
@@ -61,6 +61,7 @@ public class MissionStepTest {
         assertThat(response.statusCode()).isEqualTo(201);
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
 
+        params.put("date", "2024-04-02");
         params.put("name", "브라운");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
