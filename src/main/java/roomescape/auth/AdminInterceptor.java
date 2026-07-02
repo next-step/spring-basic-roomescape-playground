@@ -3,21 +3,14 @@ package roomescape.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.MemberService;
 
 public class AdminInterceptor implements HandlerInterceptor {
-    private final MemberService memberService;
+    private final AuthService authService;
     private final TokenExtractor tokenExtractor;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    public AdminInterceptor(
-            MemberService memberService,
-            TokenExtractor tokenExtractor,
-            JwtTokenProvider jwtTokenProvider
-    ) {
-        this.memberService = memberService;
+    public AdminInterceptor(AuthService authService, TokenExtractor tokenExtractor) {
+        this.authService = authService;
         this.tokenExtractor = tokenExtractor;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -33,10 +26,9 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Long memberId = jwtTokenProvider.extractMemberId(token);
-            LoginMember loginMember = memberService.findLoginMemberById(memberId);
+            LoginMember loginMember = authService.findLoginMemberByToken(token);
 
-            if (!"ADMIN".equals(loginMember.getRole())) {
+            if (!authService.isAdmin(loginMember)) {
                 throw new UnauthorizedException();
             }
 
