@@ -9,8 +9,11 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingWithRank;
+import roomescape.waiting.WaitingRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -18,20 +21,25 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             MemberRepository memberRepository,
             ThemeRepository themeRepository,
-            TimeRepository timeRepository
+            TimeRepository timeRepository,
+            WaitingRepository waitingRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
+        validateDuplicateReservation(reservationRequest);
+
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
         Reservation reservation = reservationRepository.save(createReservation(reservationRequest, loginMember, theme, time));
@@ -66,14 +74,12 @@ public class ReservationService {
             throw new UnauthorizedException();
         }
 
-        return reservationRepository.findByMemberId(loginMember.getId()).stream()
-                .map(it -> new MyReservationResponse(
-                        it.getId(),
-                        it.getTheme().getName(),
-                        it.getDate(),
-                        it.getTime().getValue(),
-                        "예약"
-                ))
+        Stream<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.getId()).stream()
+                .map(this::toMyReservationResponse);
+        Stream<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId()).stream()
+                .map(this::toMyWaitingResponse);
+
+        return Stream.concat(reservations, waitings)
                 .toList();
     }
 
@@ -100,11 +106,42 @@ public class ReservationService {
                 && !reservationRequest.getName().isBlank();
     }
 
+    private void validateDuplicateReservation(ReservationRequest reservationRequest) {
+        boolean duplicated = reservationRepository.existsByDateAndThemeIdAndTimeId(
+                reservationRequest.getDate(),
+                reservationRequest.getTheme(),
+                reservationRequest.getTime()
+        );
+        if (duplicated) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     private String getReservationName(Reservation reservation) {
         if (reservation.getName() != null && !reservation.getName().isBlank()) {
             return reservation.getName();
         }
 
         return reservation.getMember().getName();
+    }
+
+    private MyReservationResponse toMyReservationResponse(Reservation reservation) {
+        return new MyReservationResponse(
+                reservation.getId(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue(),
+                "예약"
+        );
+    }
+
+    private MyReservationResponse toMyWaitingResponse(WaitingWithRank waitingWithRank) {
+        return new MyReservationResponse(
+                waitingWithRank.getWaiting().getId(),
+                waitingWithRank.getWaiting().getTheme().getName(),
+                waitingWithRank.getWaiting().getDate(),
+                waitingWithRank.getWaiting().getTime().getValue(),
+                waitingWithRank.getRank() + 1 + "번째 예약대기"
+        );
     }
 }

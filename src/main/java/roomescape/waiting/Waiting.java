@@ -1,0 +1,64 @@
+package roomescape.waiting;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
+
+@Entity
+@Table(name = "waiting")
+public class Waiting {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private Long memberId;
+
+    @Column(nullable = false)
+    private String date;
+
+    @ManyToOne
+    @JoinColumn(name = "time_id")
+    private Time time;
+
+    @ManyToOne
+    @JoinColumn(name = "theme_id")
+    private Theme theme;
+
+    protected Waiting() {
+    }
+
+    public Waiting(Long memberId, String date, Time time, Theme theme) {
+        this.memberId = memberId;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public Time getTime() {
+        return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+}
