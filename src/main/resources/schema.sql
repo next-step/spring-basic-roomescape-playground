@@ -35,6 +35,7 @@ CREATE TABLE reservation
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     date     VARCHAR(255) NOT NULL,
     name     VARCHAR(255) NOT NULL,
+    is_waiting BOOLEAN NOT NULL DEFAULT FALSE,
     time_id  BIGINT,
     theme_id BIGINT,
     member_id BIGINT,

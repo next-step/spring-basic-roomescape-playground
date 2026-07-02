@@ -17,7 +17,7 @@ public class TimeService {
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationRepository.findByDateAndTheme_Id(date, themeId);
+        List<Reservation> reservations = reservationRepository.findByDateAndTheme_IdAndIsWaitingFalse(date, themeId);
         List<Time> times = timeRepository.findAll();
 
         return times.stream()
