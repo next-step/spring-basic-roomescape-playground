@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.AuthResult;
 import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.MemberInfo;
-import roomescape.member.MemberRequest;
+import roomescape.member.dto.MemberRequest;
 
 import java.net.URI;
 

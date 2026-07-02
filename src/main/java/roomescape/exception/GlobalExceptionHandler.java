@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.auth.exception.ExpiredTokenException;
 import roomescape.auth.exception.InvalidTokenException;
-import roomescape.member.NoSuchMemberException;
+import roomescape.member.exception.NoSuchMemberException;
 
 import java.time.LocalDateTime;
 

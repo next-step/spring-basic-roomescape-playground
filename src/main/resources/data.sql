@@ -15,8 +15,14 @@ VALUES ('10:00'),
        ('18:00'),
        ('20:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('어드민', '2024-03-01', 1, 1),
-       ('어드민', '2024-03-01', 2, 2),
-       ('어드민', '2024-03-01', 3, 3),
-       ('브라운', '2024-03-01', 1, 2);
+INSERT INTO inventory (date_value, time_id, theme_id)
+VALUES ('2024-03-01', 1, 1),
+       ('2024-03-01', 2, 2),
+       ('2024-03-01', 3, 3),
+       ('2024-03-01', 1, 2);
+
+INSERT INTO reservation (inventory_id, member_id, status)
+VALUES (1, 1, 'CONFIRMED'),
+       (2, 1, 'CONFIRMED'),
+       (3, 1, 'CONFIRMED'),
+       (4, 2, 'CONFIRMED');
