@@ -283,4 +283,60 @@ public class MissionStepTest {
         assertThat(myReservations).noneMatch(it -> it.getId().equals(waiting.getId())
                 && !it.getStatus().equals("예약"));
     }
+
+    @Test
+    void 예약_대기_순번을_확인할_수_있다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> memberParams = new HashMap<>();
+        memberParams.put("name", "체리");
+        memberParams.put("email", "cherry@email.com");
+        memberParams.put("password", "password");
+
+        RestAssured.given().log().all()
+                .body(memberParams)
+                .contentType(ContentType.JSON)
+                .post("/members")
+                .then().log().all()
+                .statusCode(201);
+
+        String cherryToken = createToken("cherry@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201);
+
+        WaitingResponse waiting = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", cherryToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        List<MyReservationResponse> myReservations = RestAssured.given().log().all()
+                .cookie("token", cherryToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        String status = myReservations.stream()
+                .filter(it -> it.getId().equals(waiting.getId()))
+                .findFirst()
+                .map(it -> it.getStatus())
+                .orElse(null);
+
+        assertThat(status).isEqualTo("2번째 예약대기");
+    }
 }
