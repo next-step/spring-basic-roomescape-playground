@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import java.util.List;
 import java.util.Objects;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import roomescape.ApiException;
@@ -17,16 +18,22 @@ public class ReservationService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
+    private final WaitingQueueRepository waitingQueueRepository;
+    private final WaitingReservationRepository waitingReservationRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository, TimeRepository timeRepository,
             ThemeRepository themeRepository,
-            MemberRepository memberRepository
+            MemberRepository memberRepository,
+            WaitingQueueRepository waitingQueueRepository,
+            WaitingReservationRepository waitingReservationRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.waitingQueueRepository = waitingQueueRepository;
+        this.waitingReservationRepository = waitingReservationRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
@@ -42,6 +49,7 @@ public class ReservationService {
                 timeRepository.getReferenceById(reservationRequest.getTime()),
                 themeRepository.getReferenceById(reservationRequest.getTheme())
         );
+
         Reservation reservation = reservationRepository.save(newReservation);
 
         return createReservationResponse(reservation);

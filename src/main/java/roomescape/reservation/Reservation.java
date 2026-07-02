@@ -53,8 +53,9 @@ public class Reservation {
     @ManyToOne(optional = false)
     private Theme theme;
 
-    @Column(name = "pending", columnDefinition = "TINYINT DEFAULT 0", nullable = false)
-    private int pending = 0;
+    @JoinColumn(name = "waiting_reservation", nullable = true)
+    @ManyToOne
+    private WaitingReservation waitingReservation = null;
 
     @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT true", insertable = false, nullable = true)
     private boolean active = true;
@@ -111,5 +112,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public WaitingReservation waitingReservation() {
+        return waitingReservation;
     }
 }
