@@ -1,9 +1,8 @@
 package roomescape.reservation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
 import roomescape.waiting.WaitingRepository;
 
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 public class MyReservationController {
 
     private final ReservationRepository reservationRepository;
@@ -22,13 +21,7 @@ public class MyReservationController {
         this.waitingRepository = waitingRepository;
     }
 
-    @GetMapping("/reservation-mine")
-    public String myReservationPage() {
-        return "reservation-mine";
-    }
-
     @GetMapping("/reservations-mine")
-    @ResponseBody
     public ResponseEntity<List<MyReservationResponse>> getMyReservations(LoginMember loginMember) {
         List<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.getId()).stream()
                 .map(MyReservationResponse::from)

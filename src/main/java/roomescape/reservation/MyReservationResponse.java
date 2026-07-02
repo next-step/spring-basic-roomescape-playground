@@ -35,7 +35,7 @@ public class MyReservationResponse {
                 waitingWithRank.getWaiting().getTheme().getName(),
                 waitingWithRank.getWaiting().getDate(),
                 waitingWithRank.getWaiting().getTime().getValue(),
-                waitingWithRank.getRank() + "번째 예약대기"
+                (waitingWithRank.getCount() + 1) + "번째 예약대기"
         );
     }
 
