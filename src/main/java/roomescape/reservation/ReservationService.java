@@ -44,15 +44,19 @@ public class ReservationService {
 
     private Member resolveReservationMember(ReservationRequest request, LoginMember loginMember) {
 
-        if (request.getName() == null) {
+        if (request.name() != null && request.name().isBlank()) {
+            throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
+        }
+
+        if (request.name() == null) {
             return memberService.findById(loginMember.id());
         }
 
         if (loginMember.role().equals("ADMIN")) {
-            return memberService.findByName(request.getName());
+            return memberService.findByName(request.name());
         }
 
-        if (!loginMember.name().equals(request.getName())) {
+        if (!loginMember.name().equals(request.name())) {
             throw new IllegalArgumentException("다른 사용자의 이름으로 예약할 수 없습니다.");
         }
 
