@@ -78,7 +78,6 @@ public class MissionStepTest {
                 .statusCode(200);
     }
 
-
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);

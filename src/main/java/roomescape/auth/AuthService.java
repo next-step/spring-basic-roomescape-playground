@@ -5,20 +5,20 @@ import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Service
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
+    public AuthService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
     }
 
     public String createToken(TokenRequest tokenRequest) {
-        Member member = memberDao.findByEmailAndPassword(tokenRequest.getEmail(), tokenRequest.getPassword())
+        Member member = memberRepository.findByEmailAndPassword(tokenRequest.getEmail(), tokenRequest.getPassword())
                 .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다."));
         return jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getName(), member.getEmail(), member.getRole());
     }
