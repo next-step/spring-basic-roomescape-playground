@@ -1,6 +1,5 @@
 package roomescape.login;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -30,13 +29,13 @@ public class AdminInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
+        String token = CookieUtil.extractToken(request.getCookies());
+        if (token == null) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
         }
 
-        Member member = loginService.getByToken(cookies);
+        Member member = loginService.getByToken(token);
         if (member == null) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             return false;
