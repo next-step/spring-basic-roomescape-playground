@@ -21,6 +21,7 @@ import roomescape.time.Time;
 @Where(clause = "deleted = false")
 @SQLDelete(sql = "UPDATE theme SET deleted = true WHERE id = ?")
 @Table(name = "reservation")
+@SQLDelete(sql = "UPDATE reservation SET deleted = true WHERE id = ?")
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -12,7 +12,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "time")
 @Where(clause = "deleted = false")
-@SQLDelete(sql = "UPDATE theme SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE time SET deleted = true WHERE id = ?")
 public class Time {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

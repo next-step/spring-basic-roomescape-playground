@@ -14,7 +14,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "member")
 @Where(clause = "deleted = false")
-@SQLDelete(sql = "UPDATE theme SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE member SET deleted = true WHERE id = ?")
 public class Member {
     public enum Role {ADMIN, USER}
 
