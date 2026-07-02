@@ -5,14 +5,14 @@ import roomescape.auth.LoginMember;
 
 @Service
 public class MemberService {
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(
+        Member member = memberRepository.save(
                 new Member(
                         memberRequest.getName(),
                         memberRequest.getEmail(),
@@ -25,10 +25,10 @@ public class MemberService {
     }
 
     public Member login(LoginRequest loginRequest) {
-        return memberDao.findByEmailAndPassword(
+        return memberRepository.findByEmailAndPassword(
                 loginRequest.getEmail(),
                 loginRequest.getPassword()
-        );
+        ).orElseThrow();
     }
 
     public LoginCheckResponse checkLogin(LoginMember loginMember) {
@@ -36,7 +36,7 @@ public class MemberService {
     }
 
     public LoginMember findLoginMemberById(Long memberId) {
-        Member member = memberDao.findById(memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow();
 
         return new LoginMember(
                 member.getId(),

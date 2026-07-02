@@ -4,23 +4,40 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.auth.UnauthorizedException;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import java.util.List;
 
 @Service
 public class ReservationService {
-    private final ReservationDao reservationDao;
-    private final MemberDao memberDao;
+    private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
+    private final ThemeRepository themeRepository;
+    private final TimeRepository timeRepository;
 
-    public ReservationService(ReservationDao reservationDao, MemberDao memberDao) {
-        this.reservationDao = reservationDao;
-        this.memberDao = memberDao;
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            MemberRepository memberRepository,
+            ThemeRepository themeRepository,
+            TimeRepository timeRepository
+    ) {
+        this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
+        this.themeRepository = themeRepository;
+        this.timeRepository = timeRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Member member = findReservationMember(reservationRequest, loginMember);
-        Reservation reservation = reservationDao.save(reservationRequest, member.getName());
+        Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
+        Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
+        Reservation reservation = reservationRepository.save(
+                new Reservation(member.getName(), reservationRequest.getDate(), time, theme)
+        );
 
         return new ReservationResponse(
                 reservation.getId(),
@@ -32,11 +49,11 @@ public class ReservationService {
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(
                         it.getId(),
                         it.getName(),
@@ -49,14 +66,14 @@ public class ReservationService {
 
     private Member findReservationMember(ReservationRequest reservationRequest, LoginMember loginMember) {
         if (hasName(reservationRequest)) {
-            return memberDao.findByName(reservationRequest.getName());
+            return memberRepository.findByName(reservationRequest.getName()).orElseThrow();
         }
 
         if (loginMember == null) {
             throw new UnauthorizedException();
         }
 
-        return memberDao.findById(loginMember.getId());
+        return memberRepository.findById(loginMember.getId()).orElseThrow();
     }
 
     private boolean hasName(ReservationRequest reservationRequest) {
