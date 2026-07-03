@@ -12,6 +12,7 @@ import roomescape.member.LoginMemberInfo;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ReservationController {
@@ -35,7 +36,7 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(
             @RequestBody ReservationRequest reservationRequest,
-            @LoginMember(required = false) LoginMemberInfo loginMember
+            @LoginMember Optional<LoginMemberInfo> loginMember
     ) {
         if (reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null

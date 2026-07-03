@@ -7,6 +7,7 @@ import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -18,21 +19,21 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest, LoginMemberInfo loginMember) {
+    public ReservationResponse save(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
         Member member = findReservationMember(reservationRequest, loginMember);
         Reservation reservation = reservationDao.save(reservationRequest, member.getName());
 
         return new ReservationResponse(reservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
-    private Member findReservationMember(ReservationRequest reservationRequest, LoginMemberInfo loginMember) {
+    private Member findReservationMember(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
         if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
             return memberDao.findByName(reservationRequest.getName());
         }
-        if (loginMember == null) {
+        if (loginMember.isEmpty()) {
             throw new AuthenticationException();
         }
-        return memberDao.findByEmail(loginMember.getEmail());
+        return memberDao.findByEmail(loginMember.get().getEmail());
     }
 
     public void deleteById(Long id) {

@@ -9,6 +9,10 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.AuthenticationException;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Optional;
+
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberService memberService;
@@ -22,7 +26,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(LoginMember.class)
-                && LoginMemberInfo.class.isAssignableFrom(parameter.getParameterType());
+                && (LoginMemberInfo.class.isAssignableFrom(parameter.getParameterType())
+                || isOptionalLoginMemberInfo(parameter));
     }
 
 
@@ -33,24 +38,40 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
-        LoginMember loginMember = parameter.getParameterAnnotation(LoginMember.class);
+        boolean optional = isOptionalLoginMemberInfo(parameter);
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null) {
-            return handleAuthenticationFailure(loginMember);
+            return handleAuthenticationFailure(optional);
         }
 
         try {
             String token = authCookieProvider.extractToken(request);
-            return memberService.checkLogin(token);
+            LoginMemberInfo loginMember = memberService.checkLogin(token);
+            if (optional) {
+                return Optional.of(loginMember);
+            }
+            return loginMember;
         } catch (RuntimeException e) {
-            return handleAuthenticationFailure(loginMember);
+            return handleAuthenticationFailure(optional);
         }
     }
 
-    private Object handleAuthenticationFailure(LoginMember loginMember) {
-        if (loginMember != null && !loginMember.required()) {
-            return null;
+    private Object handleAuthenticationFailure(boolean optional) {
+        if (optional) {
+            return Optional.empty();
         }
         throw new AuthenticationException();
+    }
+
+    private boolean isOptionalLoginMemberInfo(MethodParameter parameter) {
+        if (!Optional.class.isAssignableFrom(parameter.getParameterType())) {
+            return false;
+        }
+        Type genericParameterType = parameter.getGenericParameterType();
+        if (!(genericParameterType instanceof ParameterizedType parameterizedType)) {
+            return false;
+        }
+        Type actualType = parameterizedType.getActualTypeArguments()[0];
+        return LoginMemberInfo.class.getName().equals(actualType.getTypeName());
     }
 }
