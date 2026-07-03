@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -12,12 +11,12 @@ import roomescape.AuthenticationException;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private static final String TOKEN_COOKIE_NAME = "token";
-
     private final MemberService memberService;
+    private final AuthCookieProvider authCookieProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
+    public LoginMemberArgumentResolver(MemberService memberService, AuthCookieProvider authCookieProvider) {
         this.memberService = memberService;
+        this.authCookieProvider = authCookieProvider;
     }
 
     @Override
@@ -41,7 +40,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         }
 
         try {
-            String token = extractToken(request);
+            String token = authCookieProvider.extractToken(request);
             return memberService.checkLogin(token);
         } catch (RuntimeException e) {
             return handleAuthenticationFailure(loginMember);
@@ -51,20 +50,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     private Object handleAuthenticationFailure(LoginMember loginMember) {
         if (loginMember != null && !loginMember.required()) {
             return null;
-        }
-        throw new AuthenticationException();
-    }
-
-    private String extractToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new AuthenticationException();
-        }
-
-        for (Cookie cookie : cookies) {
-            if (TOKEN_COOKIE_NAME.equals(cookie.getName())) {
-                return cookie.getValue();
-            }
         }
         throw new AuthenticationException();
     }

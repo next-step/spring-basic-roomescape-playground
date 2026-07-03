@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +12,11 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private final MemberService memberService;
+    private final AuthCookieProvider authCookieProvider;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, AuthCookieProvider authCookieProvider) {
         this.memberService = memberService;
+        this.authCookieProvider = authCookieProvider;
     }
 
     @PostMapping("/members")
@@ -29,10 +30,7 @@ public class MemberController {
     public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         try {
             String token = memberService.login(memberRequest);
-            Cookie cookie = new Cookie("token", token);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            response.addCookie(cookie);
+            response.addCookie(authCookieProvider.createLoginCookie(token));
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(401).build();
@@ -46,11 +44,7 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", "");
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        response.addCookie(authCookieProvider.createLogoutCookie());
         return ResponseEntity.ok().build();
     }
 }
