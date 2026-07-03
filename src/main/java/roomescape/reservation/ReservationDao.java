@@ -1,22 +1,25 @@
 package roomescape.reservation;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
-import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     public List<Reservation> findAll() {
@@ -44,15 +47,12 @@ public class ReservationDao {
     }
 
     public Reservation save(ReservationRequest reservationRequest, String name) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, reservationRequest.getDate());
-            ps.setString(2, name);
-            ps.setLong(3, reservationRequest.getTheme());
-            ps.setLong(4, reservationRequest.getTime());
-            return ps;
-        }, keyHolder);
+        Number id = simpleJdbcInsert.executeAndReturnKey(Map.of(
+                "date", reservationRequest.getDate(),
+                "name", name,
+                "theme_id", reservationRequest.getTheme(),
+                "time_id", reservationRequest.getTime()
+        ));
 
         Time time = jdbcTemplate.queryForObject("SELECT * FROM time WHERE id = ?",
                 (rs, rowNum) -> new Time(rs.getLong("id"), rs.getString("time_value")),
@@ -63,7 +63,7 @@ public class ReservationDao {
                 reservationRequest.getTheme());
 
         return new Reservation(
-                keyHolder.getKey().longValue(),
+                id.longValue(),
                 name,
                 reservationRequest.getDate(),
                 time,
