@@ -44,4 +44,10 @@ public class ReservationService {
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
+
+    public List<ReservationMineResponse> findMine(LoginMemberInfo loginMember) {
+        return reservationDao.findByMemberName(loginMember.getName()).stream()
+                .map(it -> new ReservationMineResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
+                .toList();
+    }
 }

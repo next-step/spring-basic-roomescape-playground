@@ -78,6 +78,31 @@ public class ReservationDao {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
+    public List<Reservation> findByMemberName(String name) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
+                        "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
+                        "ti.id AS time_id, ti.time_value AS time_value " +
+                        "FROM reservation r " +
+                        "JOIN theme t ON r.theme_id = t.id " +
+                        "JOIN time ti ON r.time_id = ti.id " +
+                        "WHERE r.name = :name",
+                Map.of("name", name),
+                (rs, rowNum) -> new Reservation(
+                        rs.getLong("reservation_id"),
+                        rs.getString("reservation_name"),
+                        rs.getString("reservation_date"),
+                        new Time(
+                                rs.getLong("time_id"),
+                                rs.getString("time_value")
+                        ),
+                        new Theme(
+                                rs.getLong("theme_id"),
+                                rs.getString("theme_name"),
+                                rs.getString("theme_description")
+                        )));
+    }
+
     public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
