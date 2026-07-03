@@ -1,9 +1,12 @@
 package roomescape.member;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public class MemberDao {
@@ -27,29 +30,36 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
     }
 
+    public Optional<Member> findById(Long id) {
+        return jdbcTemplate.query(
+                "SELECT * FROM member WHERE id = ?",
+                rowMapper(),
+                id
+        ).stream().findFirst();
+    }
+
     public Member findByEmailAndPassword(String email, String password) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
+                rowMapper(),
                 email, password
         );
     }
 
-    public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
+    public Optional<Member> findByName(String name) {
+        return jdbcTemplate.query(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
+                rowMapper(),
                 name
+        ).stream().findFirst();
+    }
+
+    private RowMapper<Member> rowMapper() {
+        return (resultSet, rowNum) -> new Member(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("email"),
+                resultSet.getString("role")
         );
     }
 }
