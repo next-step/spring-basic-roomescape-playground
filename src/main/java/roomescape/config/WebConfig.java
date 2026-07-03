@@ -3,7 +3,8 @@ package roomescape.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.LoginMemberArgumentResolver;
+import roomescape.auth.web.CheckAdminInterceptor;
+import roomescape.auth.web.LoginMemberArgumentResolver;
 
 import java.util.List;
 
