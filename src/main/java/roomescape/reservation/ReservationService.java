@@ -3,6 +3,7 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import roomescape.login.LoginMember;
 
 @Service
 public class ReservationService {
@@ -12,10 +13,22 @@ public class ReservationService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
+        String finalName = reservationRequest.getName();
+        if (finalName == null && loginMember != null) {
+            finalName = loginMember.getName();
+        }
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        ReservationRequest newRequest = new ReservationRequest(
+                finalName,
+                reservationRequest.getDate(),
+                reservationRequest.getTheme(),
+                reservationRequest.getTime()
+        );
+        
+        Reservation reservation = reservationDao.save(newRequest);
+
+        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {

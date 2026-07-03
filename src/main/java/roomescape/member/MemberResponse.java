@@ -1,5 +1,8 @@
 package roomescape.member;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MemberResponse {
     private Long id;
     private String name;
@@ -9,6 +12,10 @@ public class MemberResponse {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    public MemberResponse(String name) {
+        this.name = name;
     }
 
     public Long getId() {
