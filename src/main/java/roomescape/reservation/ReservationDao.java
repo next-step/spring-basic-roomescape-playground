@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.Theme;
@@ -13,10 +14,12 @@ import java.util.Map;
 public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
+    public ReservationDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -76,15 +79,15 @@ public class ReservationDao {
     }
 
     public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
-        return jdbcTemplate.query(
+        return namedParameterJdbcTemplate.query(
                 "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
                         "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
                         "ti.id AS time_id, ti.time_value AS time_value " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
-                        "JOIN time ti ON r.time_id = ti.id" +
-                        "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
+                        "JOIN time ti ON r.time_id = ti.id " +
+                        "WHERE r.date = :date AND r.theme_id = :themeId",
+                Map.of("date", date, "themeId", themeId),
                 (rs, rowNum) -> new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
@@ -101,15 +104,15 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
-        return jdbcTemplate.query(
+        return namedParameterJdbcTemplate.query(
                 "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
                         "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
                         "ti.id AS time_id, ti.time_value AS time_value " +
                         "FROM reservation r " +
                         "JOIN theme t ON r.theme_id = t.id " +
                         "JOIN time ti ON r.time_id = ti.id " +
-                        "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
+                        "WHERE r.date = :date AND r.theme_id = :themeId",
+                Map.of("date", date, "themeId", themeId),
                 (rs, rowNum) -> new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
