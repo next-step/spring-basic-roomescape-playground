@@ -35,13 +35,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public MemberResponse parseMember(String token) {
+    public LoginMemberInfo parseMember(String token) {
         try {
             Map<String, Object> claims = parseClaims(token);
             Long id = Long.valueOf(claims.get("id").toString());
             String name = claims.get("name").toString();
             String email = claims.get("sub").toString();
-            return new MemberResponse(id, name, email);
+            return new LoginMemberInfo(id, name, email);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid token");
         }

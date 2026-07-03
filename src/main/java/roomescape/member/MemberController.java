@@ -40,8 +40,8 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity checkLogin(@LoginMember MemberResponse member) {
-        return ResponseEntity.ok(member);
+    public ResponseEntity checkLogin(@LoginMember LoginMemberInfo member) {
+        return ResponseEntity.ok(new MemberResponse(member.getId(), member.getName(), member.getEmail()));
     }
 
     @PostMapping("/logout")

@@ -2,9 +2,9 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.AuthenticationException;
+import roomescape.member.LoginMemberInfo;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
-import roomescape.member.MemberResponse;
 
 import java.util.List;
 
@@ -18,14 +18,14 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest, MemberResponse loginMember) {
+    public ReservationResponse save(ReservationRequest reservationRequest, LoginMemberInfo loginMember) {
         Member member = findReservationMember(reservationRequest, loginMember);
         Reservation reservation = reservationDao.save(reservationRequest, member.getName());
 
         return new ReservationResponse(reservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
-    private Member findReservationMember(ReservationRequest reservationRequest, MemberResponse loginMember) {
+    private Member findReservationMember(ReservationRequest reservationRequest, LoginMemberInfo loginMember) {
         if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
             return memberDao.findByName(reservationRequest.getName());
         }

@@ -27,7 +27,7 @@ public class MemberService {
         }
     }
 
-    public MemberResponse checkLogin(String token) {
+    public LoginMemberInfo checkLogin(String token) {
         return jwtTokenProvider.parseMember(token);
     }
 }

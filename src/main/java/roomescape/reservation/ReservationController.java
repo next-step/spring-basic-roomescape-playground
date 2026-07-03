@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
-import roomescape.member.MemberResponse;
+import roomescape.member.LoginMemberInfo;
 
 import java.net.URI;
 import java.util.List;
@@ -30,7 +30,7 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(
             @RequestBody ReservationRequest reservationRequest,
-            @LoginMember(required = false) MemberResponse loginMember
+            @LoginMember(required = false) LoginMemberInfo loginMember
     ) {
         if (reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
