@@ -24,7 +24,8 @@ public class MemberController {
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login") // URL 경로
+    // HTTP 요청형식
     public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         try {
             String token = memberService.login(memberRequest);

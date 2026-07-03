@@ -25,7 +25,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         return parameter.hasParameterAnnotation(LoginMember.class)
                 && MemberResponse.class.isAssignableFrom(parameter.getParameterType());
     }
-    // 커밋테스트4
 
 
     @Override
