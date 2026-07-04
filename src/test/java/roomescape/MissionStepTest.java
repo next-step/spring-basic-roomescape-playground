@@ -106,4 +106,19 @@ public class MissionStepTest {
 
         return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
     }
+
+    @Test
+    void 오단계() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
+    }
+}
 }
