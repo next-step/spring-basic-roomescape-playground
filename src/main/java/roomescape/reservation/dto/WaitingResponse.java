@@ -1,6 +1,10 @@
 package roomescape.reservation.dto;
 
 public record WaitingResponse(
-        int waitingNumber
+        Long id,
+        Long waitingNumber
 ) {
+    public Long getId() {
+        return id;
+    }
 }

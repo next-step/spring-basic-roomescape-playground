@@ -48,15 +48,4 @@ public class Reservation {
     public void setStatus(ReservationStatus status) {
         this.status = status;
     }
-
-    public int refreshStatus() {
-        if (this.status != ReservationStatus.PENDING) return 0;
-
-        int rank = this.inventory.getReservations().indexOf(this);
-        if (rank != 0) {
-            this.status.setPendingStatus(rank);
-        }
-
-        return rank;
-    }
 }

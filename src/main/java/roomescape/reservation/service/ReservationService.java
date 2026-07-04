@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.exception.NoSuchReservationException;
 import roomescape.reservation.model.Date;
 import roomescape.member.model.Member;
 import roomescape.member.service.MemberService;
@@ -24,6 +25,7 @@ import roomescape.time.model.Time;
 import roomescape.time.service.TimeService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -53,7 +55,7 @@ public class ReservationService {
         Inventory inventory = inventoryRepository.findByDateAndTimeAndTheme(date, time, theme)
                 .orElseGet(() -> inventoryRepository.save(new Inventory(date, time, theme)));
 
-        if (!inventory.getReservations().isEmpty()) throw new AlreadyBookedTimeReservationException();
+        if (reservationRepository.existsByInventoryAndStatus(inventory, ReservationStatus.CONFIRMED)) throw new AlreadyBookedTimeReservationException();
         ReservationStatus status = ReservationStatus.CONFIRMED;
 
         Reservation reservation = new Reservation(member, inventory, status);
@@ -81,10 +83,10 @@ public class ReservationService {
         ReservationStatus status = ReservationStatus.PENDING;
 
         Reservation reservation = new Reservation(member, inventory, status);
-        int waitingNumber = reservation.refreshStatus();
-        reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        Long waitingNumber = getWaitingNumber(savedReservation);
 
-        return new WaitingResponse(waitingNumber);
+        return new WaitingResponse(savedReservation.getId(), waitingNumber);
     }
 
     public List<AvailableTime> getAvailableTime(String dateValue, Long themeId) {
@@ -103,8 +105,15 @@ public class ReservationService {
                 .toList();
     }
 
-    public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+    @Transactional
+    public void deleteReservationById(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(NoSuchReservationException::new);
+        Inventory inventory = reservation.getInventory();
+
+        Optional<Reservation> nextOptionalReservation = reservationRepository.findFirstByInventoryAndStatus(inventory, ReservationStatus.PENDING);
+        nextOptionalReservation.ifPresent(nextReservation -> nextReservation.setStatus(ReservationStatus.CONFIRMED));
+
+        reservationRepository.delete(reservation);
     }
 
     public List<ReservationResponse> findAll() {
@@ -114,12 +123,7 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> getMyReservations(Long memberId) {
-        Member member = memberService.loadMemberEntity(memberId);
-        List<Reservation> myReservations = reservationRepository.findByMember(member);
-
-        for(Reservation myReservation:myReservations) {
-            myReservation.refreshStatus();
-        }
+        List<Reservation> myReservations = reservationRepository.findDetailedReservations(memberId);
 
         return myReservations.stream()
                 .map(reservation -> new MyReservationResponse(
@@ -127,8 +131,24 @@ public class ReservationService {
                         reservation.getInventory().getTheme().getName(),
                         reservation.getInventory().getDate().getValue(),
                         reservation.getInventory().getTime().getValue(),
-                        reservation.getStatus().toString())
+                        getReservationStatus(reservation))
                 )
                 .toList();
+    }
+
+    private String getReservationStatus(Reservation reservation) {
+        if (reservation.getStatus() == ReservationStatus.CONFIRMED) {
+            return reservation.getStatus().toString();
+        }
+
+        return getWaitingNumber(reservation) + "번째 예약대기";
+    }
+
+    private Long getWaitingNumber(Reservation reservation) {
+        return reservationRepository.countEarlierReservations(
+                reservation.getInventory().getId(),
+                ReservationStatus.PENDING,
+                reservation.getId()
+        ) + 1;
     }
 }

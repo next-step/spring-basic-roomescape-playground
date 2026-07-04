@@ -14,11 +14,10 @@ public enum ReservationStatus {
         return status;
     }
 
-    public void setPendingStatus(int rank) {
+    public void setPendingStatus(Long rank) {
         if (!this.equals(PENDING)) return;
 
         this.status = String.valueOf(rank) + "번째로 예약대기";
-
     }
 
     @Override
