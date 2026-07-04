@@ -9,12 +9,13 @@ import roomescape.member.Member;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Date;
 
 @Component
 public class JwtProvider {
 
     private final Key secretKey;
-
+    private final int expireTime=3600*1000;
     public JwtProvider(@Value("${roomescape.auth.jwt.secret}") String secretKeyString) {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
     }
@@ -24,6 +25,7 @@ public class JwtProvider {
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
+                .setExpiration(new Date(System.currentTimeMillis()+expireTime))
                 .signWith(secretKey)
                 .compact();
     }
