@@ -71,3 +71,6 @@ INSERT INTO reservation (name, date, time_id, theme_id, member_id)
 VALUES ('어드민', '2024-03-01', 1, 1, 1),
        ('어드민', '2024-03-01', 2, 2, 1),
        ('어드민', '2024-03-01', 3, 3, 1);
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('브라운', '2024-03-01', 1, 2);

@@ -2,27 +2,26 @@ package roomescape.waiting;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Optional;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
 
-@Repository
+import java.util.List;
+
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
     @Query("SELECT new roomescape.waiting.WaitingWithRank(" +
             "    w, " +
             "    (SELECT COUNT(w2) " +
             "     FROM Waiting w2 " +
-            "     WHERE w2.theme.id = w.theme.id " +
+            "     WHERE w2.theme = w.theme " +
             "       AND w2.date = w.date " +
-            "       AND w2.time.id = w.time.id " +
+            "       AND w2.time = w.time " +
             "       AND w2.id < w.id)) " +
             "FROM Waiting w " +
             "WHERE w.memberId = :memberId")
-    List<WaitingWithRank> findWaitingsWithRankByMemberId(@Param("memberId") Long memberId);
+    List<WaitingWithRank> findWaitingsWithRankByMemberId(Long memberId);
 
-    boolean existsByDateAndTimeIdAndThemeIdAndMemberId(String date, Long timeId, Long themeId, Long memberId);
+    boolean existsByMemberIdAndDateAndTimeAndTheme(Long memberId, String date, Time time, Theme theme);
 
-    Optional<Waiting> findByIdAndMemberId(Long id, Long memberId);
+    long countByDateAndTimeAndTheme(String date, Time time, Theme theme);
 }

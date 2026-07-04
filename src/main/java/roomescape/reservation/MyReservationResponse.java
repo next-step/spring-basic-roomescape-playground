@@ -3,13 +3,12 @@ package roomescape.reservation;
 import roomescape.waiting.WaitingWithRank;
 
 public class MyReservationResponse {
+    private static final String RESERVATION_STATUS = "예약";
     private Long id;
     private String theme;
     private String date;
     private String time;
     private String status;
-
-    public MyReservationResponse() {}
 
     public MyReservationResponse(Long id, String theme, String date, String time, String status) {
         this.id = id;
@@ -25,7 +24,7 @@ public class MyReservationResponse {
                 reservation.getTheme().getName(),
                 reservation.getDate(),
                 reservation.getTime().getValue(),
-                "예약"
+                RESERVATION_STATUS
         );
     }
 
@@ -35,7 +34,7 @@ public class MyReservationResponse {
                 waitingWithRank.getWaiting().getTheme().getName(),
                 waitingWithRank.getWaiting().getDate(),
                 waitingWithRank.getWaiting().getTime().getValue(),
-                (waitingWithRank.getCount() + 1) + "번째 예약대기"
+                (waitingWithRank.getRank() + 1) + "번째 예약대기"
         );
     }
 

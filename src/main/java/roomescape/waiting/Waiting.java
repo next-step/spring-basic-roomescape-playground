@@ -16,7 +16,7 @@ public class Waiting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long memberId; // Member 객체 대신 ID 값만 직접 저장
+    private Long memberId;
     private String date;
 
     @ManyToOne(fetch = FetchType.LAZY)
