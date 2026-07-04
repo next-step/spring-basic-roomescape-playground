@@ -3,7 +3,7 @@ package roomescape.login;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.JwtProvider;
 import roomescape.member.Member;
@@ -11,6 +11,7 @@ import roomescape.member.MemberDao;
 
 import java.util.Arrays;
 
+@Component
 public class LoginInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
@@ -33,14 +34,6 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
         return true;
-    }
-
-    private HttpServletRequest getRequest(NativeWebRequest nativeWebRequest) {
-        HttpServletRequest httpServletRequest = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
-        if (httpServletRequest == null) {
-            throw new IllegalStateException("request is not https");
-        }
-        return httpServletRequest;
     }
 
     private Cookie[] getCookies(HttpServletRequest httpServletRequest) {
