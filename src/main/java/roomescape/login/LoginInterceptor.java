@@ -5,20 +5,30 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.JwtProvider;
 import roomescape.member.Member;
+import roomescape.member.MemberDao;
 
 import java.util.Arrays;
 
 public class LoginInterceptor implements HandlerInterceptor {
+
+    private final JwtProvider jwtProvider;
+    private final MemberDao memberDao;
+
+    public LoginInterceptor(JwtProvider jwtProvider, MemberDao memberDao) {
+        this.jwtProvider = jwtProvider;
+        this.memberDao = memberDao;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        HttpServletRequest request = getRequest(webRequest);
         Cookie[] cookies = getCookies(request);
 
         String token = extractToken(cookies);
         Long memberId = jwtProvider.getMemberId(token);
         Member member = memberDao.findById(memberId);
-        if (member == null || !member.getRole.equeals("ADMIN")) {
+        if (member == null || !member.getRole().equals("ADMIN")) {
             response.setStatus(401);
             return false;
         }
