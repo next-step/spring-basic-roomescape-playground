@@ -8,8 +8,11 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.WaitingWithRank;
 import roomescape.login.LoginMember;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,13 +23,16 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository,
-                              TimeRepository timeRepository, ThemeRepository themeRepository) {
+                              TimeRepository timeRepository, ThemeRepository themeRepository,
+                              WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     @Transactional
@@ -41,10 +47,11 @@ public class ReservationService {
             }
         }
 
-        Time time = timeRepository.findById(reservationRequest.getTime())
-                .orElseThrow(() -> new IllegalArgumentException());
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
-                .orElseThrow(() -> new IllegalArgumentException());
+        reservationRepository.findByDateAndThemeIdAndTimeId(reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime())
+                .ifPresent(r -> { throw new IllegalArgumentException(); });
+
+        Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow(IllegalArgumentException::new);
+        Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow(IllegalArgumentException::new);
 
         Reservation reservation = new Reservation(finalName, reservationRequest.getDate(), member, time, theme);
         Reservation saved = reservationRepository.save(reservation);
@@ -67,14 +74,25 @@ public class ReservationService {
         if (loginMember == null) {
             throw new IllegalArgumentException();
         }
-        return reservationRepository.findByMemberId(loginMember.getId()).stream()
-                .map(it -> new MyReservationResponse(
-                        it.getId(),
-                        it.getTheme().getName(),
-                        it.getDate(),
-                        it.getTime().getValue(),
-                        "예약"
-                ))
-                .toList();
+
+        List<MyReservationResponse> result = new ArrayList<>();
+
+        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.getId());
+        for (Reservation r : reservations) {
+            result.add(new MyReservationResponse(r.getId(), r.getTheme().getName(), r.getDate(), r.getTime().getValue(), "예약"));
+        }
+
+        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId());
+        for (WaitingWithRank w : waitings) {
+            result.add(new MyReservationResponse(
+                    w.getWaiting().getId(),
+                    w.getWaiting().getTheme().getName(),
+                    w.getWaiting().getDate(),
+                    w.getWaiting().getTime().getValue(),
+                    w.getRank() + "번째 예약대기"
+            ));
+        }
+
+        return result;
     }
 }
