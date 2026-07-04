@@ -36,6 +36,10 @@ public class TimeService {
         return timeRepository.findAll();
     }
 
+    public Time findById(Long id) {
+        return timeRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    }
+
     @Transactional
     public Time save(Time time) {
         return timeRepository.save(time);

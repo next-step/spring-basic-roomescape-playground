@@ -7,7 +7,7 @@ import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
-import roomescape.time.TimeRepository;
+import roomescape.time.TimeService;
 import roomescape.waiting.WaitingRepository;
 import roomescape.waiting.WaitingWithRank;
 import roomescape.login.LoginMember;
@@ -21,16 +21,16 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
-    private final TimeRepository timeRepository;
+    private final TimeService timeService;
     private final ThemeRepository themeRepository;
     private final WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository,
-                              TimeRepository timeRepository, ThemeRepository themeRepository,
+                              TimeService timeService, ThemeRepository themeRepository,
                               WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
-        this.timeRepository = timeRepository;
+        this.timeService = timeService;
         this.themeRepository = themeRepository;
         this.waitingRepository = waitingRepository;
     }
@@ -50,7 +50,7 @@ public class ReservationService {
         reservationRepository.findByDateAndThemeIdAndTimeId(reservationRequest.getDate(), reservationRequest.getTheme(), reservationRequest.getTime())
                 .ifPresent(r -> { throw new IllegalArgumentException(); });
 
-        Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow(IllegalArgumentException::new);
+        Time time = timeService.findById(reservationRequest.getTime());
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow(IllegalArgumentException::new);
 
         Reservation reservation = new Reservation(finalName, reservationRequest.getDate(), member, time, theme);
