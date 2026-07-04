@@ -1,7 +1,6 @@
 package roomescape.login;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,17 +41,4 @@ public class LoginController {
         MemberResponse memberResponse = loginService.checkLogin(memberId);
         return ResponseEntity.ok(memberResponse);
     }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            throw new RuntimeException("Invalid cookies");
-        }
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        throw new RuntimeException("Token not found");
-    }
-
 }
