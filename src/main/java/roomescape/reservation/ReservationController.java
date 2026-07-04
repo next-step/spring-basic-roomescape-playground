@@ -47,9 +47,6 @@ public class ReservationController {
 
     @GetMapping("/reservations-mine")
     public ResponseEntity<List<MyReservationResponse>> mine(LoginMember loginMember) {
-        if (loginMember == null) {
-            return ResponseEntity.status(401).build();
-        }
         return ResponseEntity.ok(reservationService.findByMember(loginMember));
     }
 }

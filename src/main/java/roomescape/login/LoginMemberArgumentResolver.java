@@ -29,17 +29,21 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String token = extractTokenFromCookie(cookies);
 
         if (token.isBlank()) {
-            return null;
+            throw new UnauthorizedException();
         }
 
-        Claims claims = TokenProvider.extractClaims(token);
+        try {
+            Claims claims = TokenProvider.extractClaims(token);
 
-        Long id = Long.valueOf(claims.getSubject());
-        String name = claims.get("name", String.class);
-        String email = claims.get("email", String.class);
-        String role = claims.get("role", String.class);
+            Long id = Long.valueOf(claims.getSubject());
+            String name = claims.get("name", String.class);
+            String email = claims.get("email", String.class);
+            String role = claims.get("role", String.class);
 
-        return new LoginMember(id, name, email, role);
+            return new LoginMember(id, name, email, role);
+        } catch (Exception e) {
+            throw new UnauthorizedException();
+        }
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
