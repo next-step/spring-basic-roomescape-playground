@@ -15,7 +15,7 @@ public class JwtProvider {
 
     private final Key secretKey;
 
-    public JwtProvider(@Value("${jwt.secret}") String secretKeyString) {
+    public JwtProvider(@Value("${roomescape.auth.jwt.secret}") String secretKeyString) {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
     }
 
