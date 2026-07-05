@@ -36,7 +36,6 @@ public class TokenProvider {
                 .setIssuedAt(now)
                 .setExpiration(expireAt)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .serializeToJsonWith(new io.jsonwebtoken.gson.io.GsonSerializer<>())
                 .compact();
     }
 
