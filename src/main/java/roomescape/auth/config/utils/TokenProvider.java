@@ -1,6 +1,7 @@
 package roomescape.auth.config.utils;
 
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -16,14 +17,19 @@ import java.util.Map;
 public class TokenProvider {
 
     private static final long EXPIRATION_TIME = 3600000; // 1시간
+    private final Key signingKey;
+    private final JwtParser jwtParser;
 
     @Value("${jwt.secret}")
     private String SECRET_KEY_STRING;
 
-    // SHA만쓰면 해커가 위조해도 서버가 모름. HMAC은 서버에 문자열 두고 그걸 합쳐서 생성해보는거라 해커가 토큰 바꾼거 잡아낼 수 있음
-    private Key getSigningKey() {
+    public TokenProvider(Key signingKey, JwtParser jwtParser) {
         byte[] keyBytes = SECRET_KEY_STRING.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
+        this.signingKey = Keys.hmacShaKeyFor(keyBytes);
+
+        this.jwtParser = Jwts.parserBuilder()
+                .setSigningKey(this.signingKey)
+                .build();
     }
 
     public String createToken(String subject, Map<String, Object> claims) {
@@ -35,19 +41,14 @@ public class TokenProvider {
                 .setSubject(subject)
                 .setIssuedAt(now)
                 .setExpiration(expireAt)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token);
-
+            jwtParser.parseClaimsJws(token);
             return true;
-
         } catch (JwtException | IllegalArgumentException e) {
             throw new IllegalArgumentException("유효하지 않은 토큰이에요. 다시 로그인해 주세요!");
         }
@@ -57,7 +58,7 @@ public class TokenProvider {
     public String getPayload(String token) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+                    .setSigningKey(signingKey)
                     .build()
                     .parseClaimsJws(token)
                     .getBody()
@@ -70,7 +71,7 @@ public class TokenProvider {
 
     public String getRoleFromPayload(String token) {
         return (String) Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
