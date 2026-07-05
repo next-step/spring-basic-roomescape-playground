@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.member.Role;
 
 public class AdminInterceptor implements HandlerInterceptor {
 
@@ -21,8 +22,8 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        String role = tokenService.getRoleFromToken(token);
-        if (!role.equals("ADMIN")) {
+        Role role = tokenService.getRoleFromToken(token);
+        if (role != Role.ADMIN) {
             response.setStatus(403);
             return false;
         }
