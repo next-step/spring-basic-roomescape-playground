@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
@@ -51,7 +52,7 @@ public class ReservationService {
         boolean alreadyReserved = reservationRepository.existsByDateAndTime_IdAndTheme_Id(
                 reservationRequest.getDate(), reservationRequest.getTime(), reservationRequest.getTheme());
         if (alreadyReserved) {
-            throw new IllegalStateException("이미 예약이 존재하는 시간입니다. 예약 대기를 이용해주세요.");
+            throw new DuplicateReservationException("이미 예약이 존재하는 시간입니다. 예약 대기를 이용해주세요.");
         }
     }
 
@@ -92,7 +93,7 @@ public class ReservationService {
                         it.getWaiting().getTheme().getName(),
                         it.getWaiting().getDate(),
                         it.getWaiting().getTime().getTime(),
-                        (it.getRank() + 1) + "번째 예약대기"))
+                        it.getStatusText()))
                 .toList();
 
         return Stream.concat(reservations.stream(), waitings.stream()).toList();
