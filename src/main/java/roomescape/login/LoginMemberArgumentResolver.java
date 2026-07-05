@@ -9,6 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.JwtProvider;
+import roomescape.exception.TokenNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
@@ -64,7 +65,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 .filter(cookie -> "token".equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("token is not found in cookies"));
+                .orElseThrow(TokenNotFoundException::new);
         return token;
     }
 
