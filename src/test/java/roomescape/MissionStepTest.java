@@ -7,11 +7,15 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.config.utils.TokenProvider;
 import roomescape.member.Role;
 import roomescape.reservation.DTO.ReservationResponse;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,8 +1,21 @@
 package roomescape.time;
 
+import jakarta.persistence.*;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+
+@Entity
+@Table(name = "reservation_time")
 public class Time {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "time_value")
     private String value;
+
+    @Column(name = "deleted")
+    private boolean isDeleted = false;
 
     public Time(Long id, String value) {
         this.id = id;
@@ -13,8 +26,7 @@ public class Time {
         this.value = value;
     }
 
-    public Time() {
-
+    protected Time() {
     }
 
     public Long getId() {
@@ -23,5 +35,9 @@ public class Time {
 
     public String getValue() {
         return value;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
     }
 }

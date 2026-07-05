@@ -9,27 +9,27 @@ import java.util.List;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, MemberResponse member) {
         String reservatorName = reservationRequest.getName() != null ? reservationRequest.getName() : member.getName();
 
         ReservationRequest newReservation = new ReservationRequest(reservatorName, reservationRequest.getDate(), reservationRequest.getTime(), reservationRequest.getTheme());
-        Reservation reservation = reservationDao.save(newReservation);
+        Reservation reservation = reservationRepository.save(newReservation);
 
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
