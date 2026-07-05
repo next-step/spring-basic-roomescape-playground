@@ -16,4 +16,8 @@ public class WaitingWithRank {
     public Long getRank() {
         return rank;
     }
+
+    public String getStatusText() {
+        return (rank + 1) + "번째 예약대기";
+    }
 }
