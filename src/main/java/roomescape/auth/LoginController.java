@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.exception.AuthenticationException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.member.MemberResponse;
@@ -23,7 +24,7 @@ public class LoginController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request,
                                       HttpServletResponse response) {
         Member member = memberRepository.findByEmailAndPassword(request.getEmail(), request.getPassword())
-                .orElseThrow(() -> new IllegalArgumentException("잘못된 이메일 또는 비밀번호입니다."));
+                .orElseThrow(() -> new AuthenticationException("잘못된 이메일 또는 비밀번호입니다."));
         String token = tokenService.createToken(member);
 
         Cookie cookie = new Cookie("token", token);
