@@ -20,11 +20,8 @@ public class TokenProvider {
     private final Key signingKey;
     private final JwtParser jwtParser;
 
-    @Value("${jwt.secret}")
-    private String SECRET_KEY_STRING;
-
-    public TokenProvider(Key signingKey, JwtParser jwtParser) {
-        byte[] keyBytes = SECRET_KEY_STRING.getBytes(StandardCharsets.UTF_8);
+    public TokenProvider(@Value("${jwt.secret}") String secretKeyString) {
+        byte[] keyBytes = secretKeyString.getBytes(StandardCharsets.UTF_8);
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
 
         this.jwtParser = Jwts.parserBuilder()
