@@ -25,6 +25,7 @@ public class AuthController {
         return ResponseEntity.ok(new LoggedInUserResponse(member.getName()));
     }
 
+    @Public
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
         String token = authService.login(request);
