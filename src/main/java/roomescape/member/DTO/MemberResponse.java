@@ -1,10 +1,12 @@
 package roomescape.member.DTO;
 
+import roomescape.member.Role;
+
 public class MemberResponse {
     private Long id;
     private String name;
     private String email;
-    private String role;
+    private Role role;
 
     public MemberResponse(Long id, String name, String email) {
         this.id = id;
@@ -14,7 +16,7 @@ public class MemberResponse {
 
     // role이 필요한 경우 대비 
     // role은 일단 인터셉터에서 써야해서 추가함.
-    public MemberResponse(Long id, String name, String email, String role) {
+    public MemberResponse(Long id, String name, String email, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -33,7 +35,7 @@ public class MemberResponse {
         return email;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 }

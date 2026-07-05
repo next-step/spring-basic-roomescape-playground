@@ -5,6 +5,7 @@ import roomescape.auth.DTO.LoginRequest;
 import roomescape.auth.config.utils.TokenProvider;
 import roomescape.member.DTO.MemberResponse;
 import roomescape.member.MemberService;
+import roomescape.member.Role;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class AuthService {
         }
 
         String name = response.getName();
-        String role = response.getRole();
+        Role role = response.getRole();
         return tokenProvider.createToken(response.getEmail(), name, role);
     }
 

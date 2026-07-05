@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.member.Role;
 
 import java.security.Key;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +30,7 @@ public class TokenProvider {
                 .build();
     }
 
-    public String createToken(String subject, String name, String role) {
+    public String createToken(String subject, String name, Role role) {
         Date now = new Date();
         Date expireAt = new Date(now.getTime() + EXPIRATION_TIME);
 

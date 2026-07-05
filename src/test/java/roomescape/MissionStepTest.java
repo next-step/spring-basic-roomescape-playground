@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.config.utils.TokenProvider;
+import roomescape.member.Role;
 import roomescape.reservation.DTO.ReservationResponse;
 
 import java.util.HashMap;
@@ -60,7 +61,7 @@ public class MissionStepTest {
     @DisplayName("예약 생성시 request에 name이 없을 경우 인증정보로 name을 잘 불러와 예약을 생성하는지 테스트한다. ")
     @Test
     void testStep2() {
-        String token = tokenProvider.createToken("admin@email.com", "", "GUEST");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+        String token = tokenProvider.createToken("admin@email.com", "", Role.GUEST);  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2028-03-01");
@@ -95,7 +96,7 @@ public class MissionStepTest {
     @Test
     @DisplayName("어드민 권한이 없는 유저가 /admin 경로로 접근하는 것을 잘 막는지 테스트")
     void testStep3() {
-        String brownToken = tokenProvider.createToken("brown@email.com", "tester", "GUEST");
+        String brownToken = tokenProvider.createToken("brown@email.com", "tester", Role.GUEST);
 
         RestAssured.given().log().all()
                 .cookie("token", brownToken)
@@ -103,7 +104,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(401);
 
-        String adminToken = tokenProvider.createToken("admin@email.com", "tester", "ADMIN");
+        String adminToken = tokenProvider.createToken("admin@email.com", "tester", Role.ADMIN);
 
         RestAssured.given().log().all()
                 .cookie("token", adminToken)

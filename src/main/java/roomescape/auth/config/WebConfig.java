@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.config.interceptors.AdminInterceptor;
 import roomescape.auth.config.interceptors.AuthInterceptor;
 import roomescape.auth.config.utils.TokenProvider;
 import roomescape.member.MemberService;
@@ -29,9 +28,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthInterceptor(tokenProvider, memberService)).order(1);
-        registry.addInterceptor(new AdminInterceptor())
-                .addPathPatterns("/admin/**")
-                .order(2);
+        registry.addInterceptor(new AuthInterceptor(tokenProvider, memberService));
     }
 }
