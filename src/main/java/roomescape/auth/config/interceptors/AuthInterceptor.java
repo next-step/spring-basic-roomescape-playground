@@ -42,6 +42,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             String email = tokenProvider.getPayload(token);
             MemberResponse member = memberService.findByEmail(email);
             request.setAttribute("member", member);
+            request.setAttribute("email", email);
         } catch (Exception e) {
             System.err.println("인증 처리 중 오류가 발생했어요. : " + e.getMessage());
         }
