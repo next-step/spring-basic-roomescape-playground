@@ -27,9 +27,9 @@ public class AuthService {
             throw new IllegalArgumentException("일치하는 회원 정보가 없어요!");
         }
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("name", response.getName());
-        return tokenProvider.createToken(response.getEmail(), claims);
+        String name = response.getName();
+        String role = response.getRole();
+        return tokenProvider.createToken(response.getEmail(), name, role);
     }
 
     public void logout() {

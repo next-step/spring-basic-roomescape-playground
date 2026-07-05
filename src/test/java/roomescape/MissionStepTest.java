@@ -61,7 +61,7 @@ public class MissionStepTest {
     @DisplayName("예약 생성시 request에 name이 없을 경우 인증정보로 name을 잘 불러와 예약을 생성하는지 테스트한다. ")
     @Test
     void testStep2() {
-        String token = tokenProvider.createToken("admin@email.com", "", Role.GUEST);  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+        String token = tokenProvider.createToken("admin@email.com", Map.of("password", "password"));  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2028-03-01");
