@@ -29,9 +29,11 @@ public class TokenProvider {
                 .build();
     }
 
-    public String createToken(String subject, Map<String, Object> claims) {
+    public String createToken(String subject, String name, String role) {
         Date now = new Date();
         Date expireAt = new Date(now.getTime() + EXPIRATION_TIME);
+
+        Map<String, Object> claims = Map.of("role", role, "name", name);
 
         return Jwts.builder()
                 .setClaims(claims)
