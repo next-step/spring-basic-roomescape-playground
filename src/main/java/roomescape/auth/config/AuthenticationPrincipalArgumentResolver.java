@@ -30,22 +30,11 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        String email = (String) request.getAttribute("email");
 
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            return null;
+        if (email == null) {
+            throw new RuntimeException("먼저 로그인을 해주세요!");
         }
-
-        Cookie tokenCookie = Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("토큰 쿠키를 찾을 수 없습니다."));
-
-        String token = tokenCookie.getValue();
-
-        tokenProvider.validateToken(token);
-        String email = tokenProvider.getPayload(token);
 
         return memberService.findByEmail(email);
     }
