@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
