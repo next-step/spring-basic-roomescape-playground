@@ -1,23 +1,25 @@
-package roomescape.member;
+package roomescape.member.DTO;
 
-public class Member {
+import roomescape.member.Role;
+
+public class MemberResponse {
     private Long id;
     private String name;
     private String email;
-    private String password;
     private Role role;
 
-    public Member(Long id, String name, String email, Role role) {
+    public MemberResponse(Long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.role = role;
     }
 
-    public Member(String name, String email, String password, Role role) {
+    // role이 필요한 경우 대비 
+    // role은 일단 인터셉터에서 써야해서 추가함.
+    public MemberResponse(Long id, String name, String email, Role role) {
+        this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
         this.role = role;
     }
 
@@ -31,10 +33,6 @@ public class Member {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public Role getRole() {

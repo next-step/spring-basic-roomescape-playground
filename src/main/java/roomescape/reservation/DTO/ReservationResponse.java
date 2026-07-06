@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.DTO;
 
 public class ReservationResponse {
     private Long id;

@@ -5,6 +5,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class MemberDao {
     private JdbcTemplate jdbcTemplate;
@@ -20,11 +22,11 @@ public class MemberDao {
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
-            ps.setString(4, member.getRole());
+            ps.setObject(4, member.getRole());
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
+        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public Member findByEmailAndPassword(String email, String password) {
@@ -34,10 +36,23 @@ public class MemberDao {
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
-                        rs.getString("role")
+                        Role.from(rs.getString("role"))
                 ),
                 email, password
         );
+    }
+
+    public Optional<Member> findByEmail(String email) {
+        return jdbcTemplate.query(
+                "SELECT id, name, email, role FROM member where email = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        Role.from(rs.getString("role"))
+                ),
+                email
+        ).stream().findFirst();
     }
 
     public Member findByName(String name) {
@@ -47,7 +62,7 @@ public class MemberDao {
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
-                        rs.getString("role")
+                        Role.from(rs.getString("role"))
                 ),
                 name
         );
