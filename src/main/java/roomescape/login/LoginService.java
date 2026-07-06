@@ -27,4 +27,11 @@ public class LoginService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
+    public Member findById(Long id) {
+        Member member = memberDao.findById(id);
+
+        return member;
+    }
+
+
 }
