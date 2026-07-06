@@ -15,17 +15,28 @@ import java.util.Date;
 public class JwtProvider {
 
     private final Key secretKey;
-    private final int expireTime=3600*1000;
+    private final int expireAccessTime=30*60*1000;
+    private final long expireRefreshTime=14L*24*60*60*1000;
+
     public JwtProvider(@Value("${roomescape.auth.jwt.secret}") String secretKeyString) {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(Member member) {
+    public String createAccessToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
-                .setExpiration(new Date(System.currentTimeMillis()+expireTime))
+                .setExpiration(new Date(System.currentTimeMillis()+expireAccessTime))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String createRefreshToken(Member member){
+        return Jwts.builder()
+                .setSubject(member.getId().toString())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis()+expireRefreshTime))
                 .signWith(secretKey)
                 .compact();
     }
