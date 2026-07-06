@@ -46,7 +46,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     private String extractToken(Cookie[] cookies) {
         String token = Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
+                .filter(cookie -> "accessToken".equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("token is not found in cookies"));
