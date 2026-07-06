@@ -29,6 +29,6 @@ public class AuthService {
         Long memberId = tokenProvider.getLoginMemberId(token);
         Member member = memberDao.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(AuthErrorCode.UNAUTHENTICATED_ACCESS));
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole().name());
     }
 }
