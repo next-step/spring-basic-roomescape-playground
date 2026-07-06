@@ -4,14 +4,26 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private final MemberDao memberDao;
 
     public MemberService(MemberDao memberDao) {
         this.memberDao = memberDao;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberDao.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
+
+    public Member login(String email, String password) {
+        return memberDao.findByEmailAndPassword(email, password);
+    }
+
+    public Member findById(Long id) {
+        return memberDao.findById(id);
+    }
+
+    public Member findByName(String name) {
+        return memberDao.findByName(name);
     }
 }
