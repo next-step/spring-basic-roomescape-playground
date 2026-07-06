@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.AdminOnly;
 
 import java.net.URI;
 import java.util.List;
@@ -20,6 +21,7 @@ public class ThemeController {
     }
 
     @PostMapping("/themes")
+    @AdminOnly
     public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
         Theme newTheme = themeDao.save(theme);
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
@@ -31,6 +33,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/themes/{id}")
+    @AdminOnly
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeDao.deleteById(id);
         return ResponseEntity.noContent().build();

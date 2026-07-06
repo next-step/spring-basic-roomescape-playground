@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.AdminOnly;
 
 import java.net.URI;
 import java.util.List;
@@ -26,6 +27,7 @@ public class TimeController {
     }
 
     @PostMapping("/times")
+    @AdminOnly
     public ResponseEntity<Time> create(@RequestBody Time time) {
         if (time.getValue() == null || time.getValue().isEmpty()) {
             throw new RuntimeException();
@@ -36,6 +38,7 @@ public class TimeController {
     }
 
     @DeleteMapping("/times/{id}")
+    @AdminOnly
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         timeService.deleteById(id);
         return ResponseEntity.noContent().build();

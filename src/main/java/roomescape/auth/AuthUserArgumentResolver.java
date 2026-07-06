@@ -15,18 +15,18 @@ import java.lang.reflect.Type;
 import java.util.Optional;
 
 @Component
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberService memberService;
     private final AuthCookieProvider authCookieProvider;
 
-    public LoginMemberArgumentResolver(MemberService memberService, AuthCookieProvider authCookieProvider) {
+    public AuthUserArgumentResolver(MemberService memberService, AuthCookieProvider authCookieProvider) {
         this.memberService = memberService;
         this.authCookieProvider = authCookieProvider;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginMember.class)
+        return parameter.hasParameterAnnotation(AuthUser.class)
                 && (LoginMemberInfo.class.isAssignableFrom(parameter.getParameterType())
                 || isOptionalLoginMemberInfo(parameter));
     }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AuthCookieProvider;
-import roomescape.auth.LoginMember;
+import roomescape.auth.AuthUser;
 import roomescape.auth.LoginMemberInfo;
 
 import java.net.URI;
@@ -43,7 +43,7 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity checkLogin(@LoginMember LoginMemberInfo member) {
+    public ResponseEntity checkLogin(@AuthUser LoginMemberInfo member) {
         return ResponseEntity.ok(new MemberResponse(member.getId(), member.getName(), member.getEmail()));
     }
 

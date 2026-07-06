@@ -42,7 +42,8 @@ public class JwtTokenProvider {
             Long id = Long.valueOf(claims.get("id").toString());
             String name = claims.get("name").toString();
             String email = claims.get("sub").toString();
-            return new LoginMemberInfo(id, name, email);
+            String role = claims.get("role").toString();
+            return new LoginMemberInfo(id, name, email, role);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid token");
         }
