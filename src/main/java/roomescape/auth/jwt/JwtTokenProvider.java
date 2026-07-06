@@ -1,5 +1,6 @@
 package roomescape.auth.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -41,13 +42,27 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Long getLoginMemberId(String accessToken) {
+    public Long getLoginMemberId(String token) {
+        return Long.valueOf(
+                parseClaims(token).getSubject()
+        );
+    }
+
+    public String getLoginMemberName(String token) {
+        return parseClaims(token).get("name", String.class);
+    }
+
+    public String getLoginMemberRole(String token) {
+        return parseClaims(token).get("role", String.class);
+    }
+
+    private Claims parseClaims(String token) {
         try {
-            return Long.valueOf(Jwts.parserBuilder()
+            return Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
-                    .parseClaimsJws(accessToken)
-                    .getBody().getSubject());
+                    .parseClaimsJws(token)
+                    .getBody();
         } catch (SignatureException | MalformedJwtException | UnsupportedJwtException e) {
             throw new ApplicationException(AuthErrorCode.INVALID_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
