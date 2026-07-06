@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.auth;
 
 public class LoginMemberInfo {
     private final Long id;

@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.AuthCookieProvider;
+import roomescape.auth.LoginMember;
+import roomescape.auth.LoginMemberInfo;
 
 import java.net.URI;
 

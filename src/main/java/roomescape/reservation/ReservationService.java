@@ -2,7 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.AuthenticationException;
-import roomescape.member.LoginMemberInfo;
+import roomescape.auth.LoginMemberInfo;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 

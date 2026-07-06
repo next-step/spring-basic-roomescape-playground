@@ -2,6 +2,8 @@ package roomescape.member;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.LoginMemberInfo;
 
 @Service
 public class MemberService {

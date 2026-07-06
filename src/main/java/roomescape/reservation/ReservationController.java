@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.LoginMember;
-import roomescape.member.LoginMemberInfo;
+import roomescape.auth.LoginMember;
+import roomescape.auth.LoginMemberInfo;
 
 import java.net.URI;
 import java.util.List;

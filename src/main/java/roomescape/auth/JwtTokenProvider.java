@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.auth;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import roomescape.member.Member;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
