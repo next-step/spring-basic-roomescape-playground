@@ -39,7 +39,7 @@ public class MissionStepTest {
 
     @Test
     void 이단계() {
-        String token = createToken("admin@email.com","password");
+        String token = createToken("admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
@@ -48,7 +48,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
-                .cookie("token", token)
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
                 .then().log().all()
@@ -61,7 +61,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
                 .body(params)
-                .cookie("token", token)
+                .cookie("accessToken", token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
                 .then().log().all()
@@ -92,7 +92,7 @@ public class MissionStepTest {
         String brownToken = createToken("brown@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("token", brownToken)
+                .cookie("accessToken", brownToken)
                 .get("/admin")
                 .then().log().all()
                 .statusCode(401);
@@ -100,7 +100,7 @@ public class MissionStepTest {
         String adminToken = createToken("admin@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("accessToken", adminToken)
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
