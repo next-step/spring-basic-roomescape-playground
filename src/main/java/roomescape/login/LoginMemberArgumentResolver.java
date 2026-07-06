@@ -35,7 +35,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = getRequest(webRequest);
         Cookie[] cookies = getCookies(request);
 
-        String token = extractToken(cookies);
+        String token = extractToken(cookies,"accessToken");
 
         Long memberId = jwtProvider.getMemberId(token);
 
@@ -60,13 +60,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         return cookies;
     }
 
-    private String extractToken(Cookie[] cookies) {
-        String token = Arrays.stream(cookies)
-                .filter(cookie -> "token".equals(cookie.getName()))
+    private String extractToken(Cookie[] cookies,String cookieName) {
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookieName.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElseThrow(TokenNotFoundException::new);
-        return token;
     }
 
 }
