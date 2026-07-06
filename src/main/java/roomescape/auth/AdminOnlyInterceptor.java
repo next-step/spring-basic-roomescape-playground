@@ -18,22 +18,27 @@ public class AdminOnlyInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (!(handler instanceof HandlerMethod handlerMethod) || !hasAdminOnly(handlerMethod)) {
             return true;
         }
 
-        try {
-            String token = authCookieProvider.extractToken(request);
-            LoginMemberInfo loginMember = memberService.checkLogin(token);
-            if (loginMember.isAdmin()) {
-                return true;
-            }
-        } catch (RuntimeException e) {
+        LoginMemberInfo member = findMember(request);
+        if (member == null || !member.getRole().equals("ADMIN")) {
+            response.setStatus(401);
+            return false;
         }
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return false;
+        return true;
+    }
+
+    private LoginMemberInfo findMember(HttpServletRequest request) {
+        try {
+            String token = authCookieProvider.extractToken(request);
+            return memberService.checkLogin(token);
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
 
     private boolean hasAdminOnly(HandlerMethod handlerMethod) {
