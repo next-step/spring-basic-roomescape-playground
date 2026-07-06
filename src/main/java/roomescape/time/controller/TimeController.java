@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.dto.AvailableTime;
 import roomescape.time.domain.Time;
+import roomescape.time.dto.AvailableTime;
 import roomescape.time.service.TimeService;
 
 import java.net.URI;
