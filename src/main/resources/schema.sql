@@ -36,6 +36,7 @@ CREATE TABLE reservation
     date     VARCHAR(255) NOT NULL,
     name     VARCHAR(255) NOT NULL,
     is_waiting BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     time_id  BIGINT,
     theme_id BIGINT,
     member_id BIGINT,
@@ -46,8 +47,8 @@ CREATE TABLE reservation
 );
 
 INSERT INTO member (name, email, password, role)
-VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
-       ('브라운', 'brown@email.com', 'password', 'USER');
+VALUES ('어드민', 'admin@email.com', '$2y$10$ckdTHSv/P9CMwOnAoTDqkevxvLQSWW0IhPobz6gh/L36F4/aR/aM6', 'ADMIN'),
+       ('브라운', 'brown@email.com', '$2y$10$ckdTHSv/P9CMwOnAoTDqkevxvLQSWW0IhPobz6gh/L36F4/aR/aM6', 'USER');
 
 INSERT INTO theme (name, description)
 VALUES ('테마1', '테마1입니다.'),

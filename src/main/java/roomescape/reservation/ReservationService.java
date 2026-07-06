@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.auth.UnauthorizedException;
 import roomescape.member.MemberRepository;
@@ -83,8 +84,17 @@ public class ReservationService {
         );
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+
+        if (reservation.isWaiting()) {
+            throw new IllegalArgumentException("예약이 아닙니다.");
+        }
+
+        confirmFirstWaiting(reservation);
+        reservationRepository.delete(reservation);
     }
 
     public void deleteWaitingById(Long id, Long memberId) {
@@ -95,11 +105,8 @@ public class ReservationService {
             throw new IllegalArgumentException("대기 예약이 아닙니다.");
         }
 
-        if (!reservation.getMember().getId().equals(memberId)) {
-            throw new UnauthorizedException("본인의 대기 예약만 취소할 수 있습니다.");
-        }
-
-        reservationRepository.deleteById(id);
+        validateWaitingOwner(reservation, memberId);
+        reservationRepository.delete(reservation);
     }
 
     public List<ReservationResponse> findAll() {
@@ -123,7 +130,7 @@ public class ReservationService {
 
     private int getWaitingPosition(Reservation reservation) {
         List<Reservation> waitings = reservationRepository
-                .findByDateAndTheme_IdAndIsWaitingTrueOrderByTime_TimeValueAscIdAsc(
+                .findByDateAndTheme_IdAndIsWaitingTrueOrderByTime_TimeValueAscCreatedAtAsc(
                         reservation.getDate(),
                         reservation.getTheme().getId()
                 );
@@ -135,5 +142,18 @@ public class ReservationService {
         }
 
         throw new IllegalArgumentException("대기 순서를 찾을 수 없습니다.");
+    }
+
+    private void confirmFirstWaiting(Reservation reservation) {
+        reservationRepository.findFirstByDateAndTheme_IdAndIsWaitingTrueOrderByTime_TimeValueAscCreatedAtAsc(
+                reservation.getDate(),
+                reservation.getTheme().getId()
+        ).ifPresent(Reservation::confirm);
+    }
+
+    private void validateWaitingOwner(Reservation reservation, Long memberId) {
+        if (!reservation.isOwnedBy(memberId)) {
+            throw new UnauthorizedException("본인의 대기 예약만 취소할 수 있습니다.");
+        }
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
@@ -22,6 +23,9 @@ public class Reservation {
     @Column(name = "is_waiting", nullable = false)
     private boolean isWaiting = false;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
     private Time time;
@@ -41,9 +45,17 @@ public class Reservation {
         this.name = name;
         this.date = date;
         this.isWaiting = isWaiting;
+        this.createdAt = LocalDateTime.now();
         this.time = time;
         this.theme = theme;
         this.member = member;
+    }
+
+    @PrePersist
+    private void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     public Long getId() {
@@ -62,6 +74,10 @@ public class Reservation {
         return isWaiting;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public Time getTime() {
         return time;
     }
@@ -72,5 +88,13 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    public void confirm() {
+        this.isWaiting = false;
+    }
+
+    public boolean isOwnedBy(Long memberId) {
+        return member != null && member.getId().equals(memberId);
     }
 }
