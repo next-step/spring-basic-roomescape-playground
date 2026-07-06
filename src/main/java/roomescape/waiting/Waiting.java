@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,26 +8,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
-@Table(name = "reservation")
-public class Reservation {
+@Table(name = "waiting")
+public class Waiting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private Long memberId;
 
     @Column(nullable = false)
     private String date;
-
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
 
     @ManyToOne
     @JoinColumn(name = "time_id")
@@ -37,47 +32,26 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
+    protected Waiting() {
+    }
+
+    public Waiting(Long memberId, String date, Time time, Theme theme) {
+        this.memberId = memberId;
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Reservation(String name, String date, Time time, Theme theme) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Reservation(String name, String date, Member member, Time time, Theme theme) {
-        this.name = name;
-        this.date = date;
-        this.member = member;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Reservation() {
-
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Long getMemberId() {
+        return memberId;
     }
 
     public String getDate() {
         return date;
-    }
-
-    public Member getMember() {
-        return member;
     }
 
     public Time getTime() {
