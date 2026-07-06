@@ -1,9 +1,7 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +15,10 @@ public class LoginController {
 
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
-    private final CookieExtractor cookieExtractor;
 
     public LoginController(MemberService memberService, JwtProvider jwtProvider, CookieExtractor cookieExtractor) {
         this.memberService = memberService;
         this.jwtProvider = jwtProvider;
-        this.cookieExtractor = cookieExtractor;
     }
 
     @PostMapping("/login")
@@ -45,20 +41,9 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
-
-        String token = cookieExtractor.extractTokenFromCookie(request.getCookies());
-
-        if (token.isBlank()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Long memberId = jwtProvider.extractMemberId(token);
-
-        Member member = memberService.findById(memberId);
-
+    public ResponseEntity<LoginCheckResponse> checkLogin(LoginMember loginMember) {
         return ResponseEntity.ok(
-                new LoginCheckResponse(member.getName())
+                new LoginCheckResponse(loginMember.name())
         );
     }
 }
