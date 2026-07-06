@@ -29,28 +29,26 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, Member loginMember) {
-        Member member;
-        if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
-            member = memberRepository.findByName(reservationRequest.getName())
-                    .orElseThrow(() -> new MemberNotFoundException(reservationRequest.getName() + " 회원을 찾을 수 없습니다."));
-        } else {
-            member = loginMember;
-        }
-
         Time time = timeRepository.findById(reservationRequest.getTime())
                 .orElseThrow(() -> new IllegalArgumentException("예약 시간을 찾을 수 없습니다."));
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("테마를 찾을 수 없습니다."));
 
-        Reservation reservation = reservationRepository.save(
-                new Reservation(member.getName(), reservationRequest.getDate(), time, theme));
+        Reservation reservation;
+        if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
+            reservation = new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme);
+        } else {
+            reservation = new Reservation(loginMember, reservationRequest.getDate(), time, theme);
+        }
+
+        Reservation saved = reservationRepository.save(reservation);
 
         return new ReservationResponse(
-                reservation.getId(),
-                member.getName(),
-                reservation.getTheme().getName(),
-                reservation.getDate(),
-                reservation.getTime().getValue()
+                saved.getId(),
+                resolveName(saved),
+                saved.getTheme().getName(),
+                saved.getDate(),
+                saved.getTime().getValue()
         );
     }
 
@@ -62,5 +60,23 @@ public class ReservationService {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservations(Member loginMember) {
+        return reservationRepository.findByMember_Id(loginMember.getId()).stream()
+                .map(it -> new MyReservationResponse(
+                        it.getId(),
+                        it.getTheme().getName(),
+                        it.getDate(),
+                        it.getTime().getValue(),
+                        "예약"))
+                .toList();
+    }
+
+    private String resolveName(Reservation reservation) {
+        if (reservation.getMember() != null) {
+            return reservation.getMember().getName();
+        }
+        return reservation.getName();
     }
 }
