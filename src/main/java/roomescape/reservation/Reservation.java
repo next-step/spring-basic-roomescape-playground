@@ -13,7 +13,7 @@ import roomescape.time.Time;
 
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "unique_date_time_theme", columnNames = {"date", "\"time_id\"", "theme_id"})
+        @UniqueConstraint(name = "uq_reservation_date_time_theme", columnNames = {"date", "\"time_id\"", "theme_id"})
 })
 public class Reservation {
     @Id
