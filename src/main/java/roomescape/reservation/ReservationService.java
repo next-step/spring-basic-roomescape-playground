@@ -1,5 +1,8 @@
 package roomescape.reservation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.AuthenticationException;
 import roomescape.NotFoundException;
@@ -14,6 +17,8 @@ import java.util.Optional;
 
 @Service
 public class ReservationService {
+    private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
+
     private ReservationDao reservationDao;
     private MemberDao memberDao;
     private TimeDao timeDao;
@@ -44,13 +49,23 @@ public class ReservationService {
     }
 
     private Member findReservationMember(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
-        if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
-            return memberDao.findByName(reservationRequest.getName());
+        try {
+            if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
+                return memberDao.findByName(reservationRequest.getName());
+            }
+            if (loginMember.isEmpty()) {
+                throw new AuthenticationException();
+            }
+            return memberDao.findByEmail(loginMember.get().getEmail());
+        } catch (EmptyResultDataAccessException e) {
+            log.warn(
+                    "Reservation member not found. name={}, loginEmail={}",
+                    reservationRequest.getName(),
+                    loginMember.map(LoginMemberInfo::getEmail).orElse(null),
+                    e
+            );
+            throw new NotFoundException("존재하지 않는 회원입니다.", e);
         }
-        if (loginMember.isEmpty()) {
-            throw new AuthenticationException();
-        }
-        return memberDao.findByEmail(loginMember.get().getEmail());
     }
 
     public void deleteById(Long id) {
