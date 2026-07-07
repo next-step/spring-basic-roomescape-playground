@@ -63,8 +63,8 @@ public class ReservationDao {
         );
     }
 
-    public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+    public boolean deleteById(Long id) {
+        return jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id) > 0;
     }
 
     public List<Reservation> findByMemberName(String name) {

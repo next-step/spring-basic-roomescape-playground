@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AdminOnly;
 
+import roomescape.NotFoundException;
+
 import java.net.URI;
 import java.util.List;
 
@@ -35,7 +37,9 @@ public class ThemeController {
     @DeleteMapping("/themes/{id}")
     @AdminOnly
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeDao.deleteById(id);
+        if (!themeDao.deleteById(id)) {
+            throw new NotFoundException("존재하지 않는 테마입니다.");
+        }
         return ResponseEntity.noContent().build();
     }
 }

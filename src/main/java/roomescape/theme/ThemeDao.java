@@ -35,7 +35,16 @@ public class ThemeDao {
         return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription());
     }
 
-    public void deleteById(Long id) {
-        jdbcTemplate.update("UPDATE theme SET deleted = true WHERE id = ?", id);
+    public boolean deleteById(Long id) {
+        return jdbcTemplate.update("UPDATE theme SET deleted = true WHERE id = ? AND deleted = false", id) > 0;
+    }
+
+    public boolean existsById(Long id) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM theme WHERE id = ? AND deleted = false",
+                Integer.class,
+                id
+        );
+        return count != null && count > 0;
     }
 }

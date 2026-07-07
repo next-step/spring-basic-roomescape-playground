@@ -2,9 +2,12 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.AuthenticationException;
+import roomescape.NotFoundException;
 import roomescape.auth.LoginMemberInfo;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.theme.ThemeDao;
+import roomescape.time.TimeDao;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,17 +16,31 @@ import java.util.Optional;
 public class ReservationService {
     private ReservationDao reservationDao;
     private MemberDao memberDao;
+    private TimeDao timeDao;
+    private ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, MemberDao memberDao, TimeDao timeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.memberDao = memberDao;
+        this.timeDao = timeDao;
+        this.themeDao = themeDao;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
+        validateReservationTarget(reservationRequest);
         Member member = findReservationMember(reservationRequest, loginMember);
         Reservation reservation = reservationDao.save(reservationRequest, member.getName());
 
         return new ReservationResponse(reservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+    }
+
+    private void validateReservationTarget(ReservationRequest reservationRequest) {
+        if (!themeDao.existsById(reservationRequest.getTheme())) {
+            throw new NotFoundException("존재하지 않는 테마입니다.");
+        }
+        if (!timeDao.existsById(reservationRequest.getTime())) {
+            throw new NotFoundException("존재하지 않는 시간입니다.");
+        }
     }
 
     private Member findReservationMember(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
@@ -37,7 +54,9 @@ public class ReservationService {
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        if (!reservationDao.deleteById(id)) {
+            throw new NotFoundException("존재하지 않는 예약입니다.");
+        }
     }
 
     public List<ReservationResponse> findAll() {

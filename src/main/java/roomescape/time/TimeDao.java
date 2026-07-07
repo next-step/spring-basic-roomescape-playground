@@ -35,7 +35,16 @@ public class TimeDao {
         return new Time(keyHolder.getKey().longValue(), time.getValue());
     }
 
-    public void deleteById(Long id) {
-        jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ?", id);
+    public boolean deleteById(Long id) {
+        return jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ? AND deleted = false", id) > 0;
+    }
+
+    public boolean existsById(Long id) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM time WHERE id = ? AND deleted = false",
+                Integer.class,
+                id
+        );
+        return count != null && count > 0;
     }
 }

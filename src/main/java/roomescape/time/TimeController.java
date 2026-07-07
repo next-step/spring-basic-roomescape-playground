@@ -30,7 +30,7 @@ public class TimeController {
     @AdminOnly
     public ResponseEntity<Time> create(@RequestBody Time time) {
         if (time.getValue() == null || time.getValue().isEmpty()) {
-            throw new RuntimeException();
+            throw new IllegalArgumentException("시간 값은 필수입니다.");
         }
 
         Time newTime = timeService.save(time);
