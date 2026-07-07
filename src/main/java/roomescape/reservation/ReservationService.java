@@ -40,7 +40,7 @@ public class ReservationService {
                 new Reservation(member, reservationRequest.date(), time, theme));
 
         return new ReservationResponse(reservation.getId(), reservationRequest.name(),
-                theme.getName(), reservation.getDate(), time.getValue());
+                reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     @Transactional

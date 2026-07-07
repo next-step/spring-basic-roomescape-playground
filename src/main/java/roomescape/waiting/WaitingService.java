@@ -40,7 +40,8 @@ public class WaitingService {
 
         Waiting waiting = waitingRepository.save(new Waiting(member, waitingRequest.date(), time, theme, order));
 
-        return new WaitingResponse(waiting.getId(), theme.getName(), waiting.getDate(), time.getValue(), order);
+        return new WaitingResponse(waiting.getId(), waiting.getTheme().getName(), waiting.getDate(),
+                waiting.getTime().getValue(), waiting.getOrder());
     }
 
     public List<MyReservationResponse> findMyWaitings(Member member) {
