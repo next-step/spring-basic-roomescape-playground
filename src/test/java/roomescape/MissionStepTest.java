@@ -68,6 +68,78 @@ public class MissionStepTest {
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
+    @Test
+    void 같은_멱등성_키로_예약을_생성하면_중복_생성하지_않는다() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-02");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> firstResponse = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .header("Idempotency-Key", "reservation-key-1")
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract();
+
+        ExtractableResponse<Response> secondResponse = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .header("Idempotency-Key", "reservation-key-1")
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract();
+
+        assertThat(secondResponse.as(ReservationResponse.class).getId())
+                .isEqualTo(firstResponse.as(ReservationResponse.class).getId());
+
+        ExtractableResponse<Response> listResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+
+        assertThat(listResponse.jsonPath().getList("$")).hasSize(4);
+    }
+
+    @Test
+    void 같은_멱등성_키로_다른_예약을_생성하면_충돌한다() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-02");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .header("Idempotency-Key", "reservation-key-2")
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        params.put("time", "2");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .header("Idempotency-Key", "reservation-key-2")
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(409);
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);

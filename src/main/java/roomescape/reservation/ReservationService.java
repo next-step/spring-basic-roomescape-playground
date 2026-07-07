@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.AuthenticationException;
+import roomescape.ConflictException;
 import roomescape.NotFoundException;
 import roomescape.auth.LoginMemberInfo;
 import roomescape.member.Member;
@@ -13,7 +14,9 @@ import roomescape.theme.ThemeDao;
 import roomescape.time.TimeDao;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class ReservationService {
@@ -23,6 +26,7 @@ public class ReservationService {
     private MemberDao memberDao;
     private TimeDao timeDao;
     private ThemeDao themeDao;
+    private final Map<String, IdempotencyRecord> idempotencyRecords = new ConcurrentHashMap<>();
 
     public ReservationService(ReservationDao reservationDao, MemberDao memberDao, TimeDao timeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
@@ -32,6 +36,36 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
+        return save(reservationRequest, loginMember, Optional.empty());
+    }
+
+    public ReservationResponse save(
+            ReservationRequest reservationRequest,
+            Optional<LoginMemberInfo> loginMember,
+            Optional<String> idempotencyKey
+    ) {
+        Optional<String> key = idempotencyKey.map(String::trim).filter(it -> !it.isBlank());
+        if (key.isEmpty()) {
+            return createReservation(reservationRequest, loginMember);
+        }
+
+        ReservationFingerprint fingerprint = ReservationFingerprint.from(reservationRequest, loginMember);
+        synchronized (idempotencyRecords) {
+            IdempotencyRecord record = idempotencyRecords.get(key.get());
+            if (record != null) {
+                if (!record.fingerprint().equals(fingerprint)) {
+                    throw new ConflictException("동일한 Idempotency-Key로 다른 요청을 처리할 수 없습니다.");
+                }
+                return record.response();
+            }
+
+            ReservationResponse response = createReservation(reservationRequest, loginMember);
+            idempotencyRecords.put(key.get(), new IdempotencyRecord(fingerprint, response));
+            return response;
+        }
+    }
+
+    private ReservationResponse createReservation(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
         validateReservationTarget(reservationRequest);
         Member member = findReservationMember(reservationRequest, loginMember);
         Reservation reservation = reservationDao.save(reservationRequest, member.getName());
@@ -84,5 +118,20 @@ public class ReservationService {
         return reservationDao.findByMemberName(loginMember.getName()).stream()
                 .map(it -> new ReservationMineResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
                 .toList();
+    }
+
+    private record ReservationFingerprint(String name, String loginEmail, String date, Long theme, Long time) {
+        private static ReservationFingerprint from(ReservationRequest request, Optional<LoginMemberInfo> loginMember) {
+            return new ReservationFingerprint(
+                    request.getName(),
+                    loginMember.map(LoginMemberInfo::getEmail).orElse(null),
+                    request.getDate(),
+                    request.getTheme(),
+                    request.getTime()
+            );
+        }
+    }
+
+    private record IdempotencyRecord(ReservationFingerprint fingerprint, ReservationResponse response) {
     }
 }
