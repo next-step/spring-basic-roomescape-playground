@@ -17,6 +17,11 @@ public class ExceptionController {
         return error(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
     }
 
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationException(AuthorizationException e) {
+        return error(HttpStatus.FORBIDDEN, "관리자 권한이 필요합니다.");
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         log.warn("Resource not found: {}", e.getMessage());
