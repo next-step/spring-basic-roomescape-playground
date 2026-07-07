@@ -136,9 +136,15 @@ function onReservationButtonClick() {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(reservationData)
     })
         .then(response => {
+          if (response.status === 401) {
+            alert("Please login before making a reservation.");
+            window.location.href = "/login";
+            throw new Error('Authentication required');
+          }
           if (!response.ok) throw new Error('Reservation failed');
           return response.json();
         })
@@ -147,6 +153,7 @@ function onReservationButtonClick() {
           window.location.href = "/";
         })
         .catch(error => {
+          if (error.message === 'Authentication required') return;
           alert("An error occurred while making the reservation.");
           console.error(error);
         });
@@ -172,9 +179,15 @@ function onWaitButtonClick() {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(reservationData)
     })
         .then(response => {
+          if (response.status === 401) {
+            alert("Please login before making the reservation.");
+            window.location.href = "/login";
+            throw new Error('Authentication required');
+          }
           if (!response.ok) throw new Error('Reservation failed');
           return response.json();
         })
@@ -183,6 +196,7 @@ function onWaitButtonClick() {
           window.location.href = "/";
         })
         .catch(error => {
+          if (error.message === 'Authentication required') return;
           alert("An error occurred while making the reservation.");
           console.error(error);
         });
