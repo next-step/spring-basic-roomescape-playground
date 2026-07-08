@@ -14,7 +14,7 @@ public class LoginService {
     }
 
     public Member login(String email, String password) {
-        Member member = memberRepository.findByEmailAndPasword(email, password)
+        Member member = memberRepository.findByEmailAndPassword(email, password)
                 .orElseThrow();
 
         return member;
