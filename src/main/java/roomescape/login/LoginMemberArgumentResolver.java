@@ -17,11 +17,11 @@ import java.util.Arrays;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberRepository memberDao;
+    private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
-    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberRepository memberDao) {
-        this.memberDao = memberDao;
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
         this.jwtProvider = jwtProvider;
     }
 
@@ -39,7 +39,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         Long memberId = jwtProvider.getMemberId(token);
 
-        Member member = memberDao.findById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow();
 
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }

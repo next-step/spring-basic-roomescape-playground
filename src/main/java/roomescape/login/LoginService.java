@@ -7,28 +7,29 @@ import roomescape.member.MemberResponse;
 
 @Service
 public class LoginService {
-    private final MemberRepository memberDao;
+    private final MemberRepository memberRepository;
 
     public LoginService(MemberRepository memberDao) {
-        this.memberDao = memberDao;
+        this.memberRepository = memberDao;
     }
 
     public Member login(String email, String password) {
-        Member member = memberDao.findByEmailAndPassword(email, password);
-        if (member == null) {
-            throw new RuntimeException("Invalid email or password");
-        }
+        Member member = memberRepository.findByEmailAndPasword(email, password)
+                .orElseThrow();
+
         return member;
     }
 
     public MemberResponse checkLogin(Long memberId) {
 
-        Member member = memberDao.findById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow();
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public Member findById(Long id) {
-        Member member = memberDao.findById(id);
+        Member member = memberRepository.findById(id)
+                .orElseThrow();
 
         return member;
     }
