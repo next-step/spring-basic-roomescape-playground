@@ -15,11 +15,11 @@ import java.util.Arrays;
 public class LoginInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
-    private final MemberRepository memberDao;
+    private final MemberRepository memberRepository;
 
-    public LoginInterceptor(JwtProvider jwtProvider, MemberRepository memberDao) {
+    public LoginInterceptor(JwtProvider jwtProvider, MemberRepository memberRepository) {
         this.jwtProvider = jwtProvider;
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -28,8 +28,9 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         String token = extractToken(cookies);
         Long memberId = jwtProvider.getMemberId(token);
-        Member member = memberDao.findById(memberId);
-        if (member == null || !member.getRole().equals("ADMIN")) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow();
+        if (!member.getRole().equals("ADMIN")) {
             response.setStatus(401);
             return false;
         }
