@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.domain.LoginMember;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.jwt.JwtTokenProvider;
+import roomescape.exception.ApplicationException;
 import roomescape.member.domain.Member;
+import roomescape.member.exception.MemberErrorCode;
 import roomescape.member.repository.MemberDao;
 
 @Service
@@ -19,7 +21,8 @@ public class AuthService {
     }
 
     public String login(LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
+        Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
+                .orElseThrow(() -> new ApplicationException(MemberErrorCode.LOGIN_FAILED));
         return tokenProvider.createAccessToken(member);
     }
 

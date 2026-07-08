@@ -40,12 +40,12 @@ public class MemberDao {
         ).stream().findFirst();
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.queryForObject(
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        return jdbcTemplate.query(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
                 rowMapper(),
                 email, password
-        );
+        ).stream().findFirst();
     }
 
     public Optional<Member> findByName(String name) {
