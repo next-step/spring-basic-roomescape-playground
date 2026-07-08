@@ -29,7 +29,7 @@ public class MemberDao {
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), Role.ADMIN);
+        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public Optional<Member> findById(Long id) {
