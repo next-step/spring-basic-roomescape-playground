@@ -10,15 +10,17 @@ import java.util.Optional;
 @Component
 public class CookieUtil {
 
+    private static final String TOKEN = "token";
+
     public void setCookie(HttpServletResponse response, String accessToken) {
-        Cookie cookie = new Cookie("token", accessToken);
+        Cookie cookie = new Cookie(TOKEN, accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
 
     public void expireCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", "");
+        Cookie cookie = new Cookie(TOKEN, "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
@@ -26,8 +28,10 @@ public class CookieUtil {
     }
 
     public Optional<String> extractToken(Cookie[] cookies) {
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("token"))
+        Cookie[] safeCookies = Optional.ofNullable(cookies).orElse(new Cookie[0]);
+
+        return Arrays.stream(safeCookies)
+                .filter(cookie -> cookie.getName().equals(TOKEN))
                 .map(Cookie::getValue)
                 .findFirst();
     }
