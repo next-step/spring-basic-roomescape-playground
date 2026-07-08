@@ -8,20 +8,21 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.CookieManager;
 import roomescape.JwtProvider;
+import roomescape.exception.TokenNotFoundException;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
+
+import java.util.Arrays;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberDao memberDao;
+    private final MemberRepository memberDao;
     private final JwtProvider jwtProvider;
-    private final CookieManager cookieManager;
-    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberDao memberDao,CookieManager cookieManager) {
+
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberRepository memberDao) {
         this.memberDao = memberDao;
         this.jwtProvider = jwtProvider;
-        this.cookieManager=cookieManager;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = getRequest(webRequest);
         Cookie[] cookies = getCookies(request);
 
-        String token = cookieManager.extractToken(cookies,"accessToken");
+        String token = extractToken(cookies,"accessToken");
 
         Long memberId = jwtProvider.getMemberId(token);
 
@@ -57,6 +58,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new IllegalStateException("cookie is not exist");
         }
         return cookies;
+    }
+
+    private String extractToken(Cookie[] cookies,String cookieName) {
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookieName.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(TokenNotFoundException::new);
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
 import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import java.util.HashMap;
 import java.util.Map;
