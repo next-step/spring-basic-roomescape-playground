@@ -8,15 +8,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final TokenService tokenService;
 
-    public LoginMemberArgumentResolver(MemberDao memberDao, TokenService tokenService) {
-        this.memberDao = memberDao;
+    public LoginMemberArgumentResolver(MemberRepository memberRepository, TokenService tokenService) {
+        this.memberRepository = memberRepository;
         this.tokenService = tokenService;
     }
 
@@ -31,7 +31,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = extractTokenFromCookie(request.getCookies());
         Long memberId = tokenService.getMemberIdFromToken(token);
-        Member member = memberDao.findById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
