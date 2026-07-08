@@ -32,7 +32,7 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Member member = memberRepository.getReferenceByName(reservationRequest.name());
+        Member member = memberRepository.findByName(reservationRequest.name());
         Time time = timeRepository.getReferenceById(reservationRequest.time());
         Theme theme = themeRepository.getReferenceById(reservationRequest.theme());
 

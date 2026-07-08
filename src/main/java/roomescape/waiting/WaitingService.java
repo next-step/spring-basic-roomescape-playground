@@ -33,7 +33,7 @@ public class WaitingService {
     }
 
     public WaitingResponse save(WaitingRequest waitingRequest) {
-        Member member = memberRepository.getReferenceByName(waitingRequest.name());
+        Member member = memberRepository.findByName(waitingRequest.name());
         Time time = timeRepository.getReferenceById(waitingRequest.time());
         Theme theme = themeRepository.getReferenceById(waitingRequest.theme());
         Long order = waitingRepository.countByDateAndTimeAndTheme(waitingRequest.date(), time, theme) + 1;
