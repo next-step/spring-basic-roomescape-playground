@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.JwtProvider;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 import java.util.Arrays;
 
@@ -15,9 +15,9 @@ import java.util.Arrays;
 public class LoginInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
-    private final MemberDao memberDao;
+    private final MemberRepository memberDao;
 
-    public LoginInterceptor(JwtProvider jwtProvider, MemberDao memberDao) {
+    public LoginInterceptor(JwtProvider jwtProvider, MemberRepository memberDao) {
         this.jwtProvider = jwtProvider;
         this.memberDao = memberDao;
     }

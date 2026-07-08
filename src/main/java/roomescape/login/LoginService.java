@@ -2,14 +2,14 @@ package roomescape.login;
 
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.member.MemberResponse;
 
 @Service
 public class LoginService {
-    private final MemberDao memberDao;
+    private final MemberRepository memberDao;
 
-    public LoginService(MemberDao memberDao) {
+    public LoginService(MemberRepository memberDao) {
         this.memberDao = memberDao;
     }
 

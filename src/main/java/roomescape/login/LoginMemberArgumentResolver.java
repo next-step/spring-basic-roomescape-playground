@@ -11,16 +11,16 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.JwtProvider;
 import roomescape.exception.TokenNotFoundException;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 import java.util.Arrays;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberDao memberDao;
+    private final MemberRepository memberDao;
     private final JwtProvider jwtProvider;
 
-    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberDao memberDao) {
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberRepository memberDao) {
         this.memberDao = memberDao;
         this.jwtProvider = jwtProvider;
     }
