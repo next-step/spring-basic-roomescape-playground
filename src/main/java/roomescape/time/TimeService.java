@@ -8,16 +8,16 @@ import java.util.List;
 
 @Service
 public class TimeService {
-    private TimeRepository timeRepository;
-    private ReservationRepository reservationDao;
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public TimeService(TimeRepository timeDao, ReservationRepository reservationDao) {
+    public TimeService(TimeRepository timeDao, ReservationRepository reservationRepository) {
         this.timeRepository = timeDao;
-        this.reservationDao = reservationDao;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
         List<Time> times = timeRepository.findAll();
 
         return times.stream()
