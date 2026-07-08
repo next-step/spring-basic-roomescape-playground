@@ -6,11 +6,11 @@ import roomescape.token.JwtTokenProvider;
 
 @Service
 public class MemberService {
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+        this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -26,7 +26,7 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(
+        Member member = memberRepository.save(
                 new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(),
                         MemberRole.USER.toString()));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
@@ -40,7 +40,7 @@ public class MemberService {
 
     private Member getMemberByName(String name) {
         try {
-            return memberDao.findByName(name);
+            return memberRepository.findByName(name);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("이름이 틀렸습니다");
         }
@@ -48,7 +48,7 @@ public class MemberService {
 
     private Member getMemberByEmailAndPassword(String email, String password) {
         try {
-            return memberDao.findByEmailAndPassword(email, password);
+            return memberRepository.findByEmailAndPassword(email, password);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("이메일 또는 패스워드가 틀렸습니다");
         }

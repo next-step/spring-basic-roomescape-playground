@@ -3,6 +3,8 @@ package roomescape.reservation;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,14 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.loginmember.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRole;
+import roomescape.waiting.WaitingService;
 
 @RestController
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final WaitingService waitingService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, WaitingService waitingService) {
         this.reservationService = reservationService;
+        this.waitingService = waitingService;
     }
 
     private static ReservationRequest checkRequestName(ReservationRequest reservationRequest, Member member) {
@@ -59,6 +64,12 @@ public class ReservationController {
         ReservationResponse reservation = reservationService.save(request);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> getMyReservations(@LoginMember Member member) {
+        return Stream.concat(reservationService.findMyReservations(member).stream(),
+                waitingService.findMyWaitings(member).stream()).collect(Collectors.toList());
     }
 
     @DeleteMapping("/reservations/{id}")
