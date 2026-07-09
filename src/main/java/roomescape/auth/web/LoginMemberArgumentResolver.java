@@ -34,7 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
-        String token = tokenExtractor.extractToken(
+        String token = tokenExtractor.extractAccessToken(
                 request.getCookies()
         );
 

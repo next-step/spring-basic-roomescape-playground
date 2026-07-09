@@ -22,7 +22,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = tokenExtractor.extractToken(
+        String token = tokenExtractor.extractAccessToken(
                 request.getCookies()
         );
 

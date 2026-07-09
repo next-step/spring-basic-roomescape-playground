@@ -15,8 +15,13 @@ public class TokenExtractor {
         this.cookieUtil = cookieUtil;
     }
 
-    public String extractToken(Cookie[] cookies) {
-        return cookieUtil.extractToken(cookies)
+    public String extractAccessToken(Cookie[] cookies) {
+        return cookieUtil.extractAccessToken(cookies)
+                .orElseThrow(() -> new ApplicationException(AuthErrorCode.UNAUTHENTICATED_ACCESS));
+    }
+
+    public String extractRefreshToken(Cookie[] cookies) {
+        return cookieUtil.extractRefreshToken(cookies)
                 .orElseThrow(() -> new ApplicationException(AuthErrorCode.UNAUTHENTICATED_ACCESS));
     }
 }
