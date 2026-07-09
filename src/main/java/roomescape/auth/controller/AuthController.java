@@ -1,5 +1,6 @@
 package roomescape.auth.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.domain.LoginMember;
 import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
+import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.web.Login;
+import roomescape.auth.web.TokenExtractor;
 import roomescape.util.CookieUtil;
 
 @RestController
@@ -19,17 +22,31 @@ public class AuthController {
 
     private final AuthService authService;
     private final CookieUtil cookieUtil;
+    private final TokenExtractor tokenExtractor;
 
-    public AuthController(AuthService authService, CookieUtil cookieUtil) {
+    public AuthController(AuthService authService, CookieUtil cookieUtil, TokenExtractor tokenExtractor) {
         this.authService = authService;
         this.cookieUtil = cookieUtil;
+        this.tokenExtractor = tokenExtractor;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest,
                                       HttpServletResponse response) {
-        String token = authService.login(loginRequest);
-        cookieUtil.setCookie(response, token);
+        TokenResponse tokenResponse = authService.login(loginRequest);
+        cookieUtil.setAccessTokenCookie(response, tokenResponse.accessToken());
+        cookieUtil.setRefreshTokenCookie(response, tokenResponse.refreshToken());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login/refresh")
+    public ResponseEntity<Void> loginByRefreshToken(HttpServletRequest request,
+                                                    HttpServletResponse response) {
+        String refreshToken = tokenExtractor.extractRefreshToken(request.getCookies());
+        String newAccessToken = authService.reissue(refreshToken);
+
+        cookieUtil.setAccessTokenCookie(response, newAccessToken);
+
         return ResponseEntity.ok().build();
     }
 
@@ -39,8 +56,10 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        cookieUtil.expireCookie(response);
+    public ResponseEntity<Void> logout(@Login LoginMember loginMember, HttpServletResponse response) {
+        authService.logout(loginMember.id());
+        cookieUtil.expireAccessTokenCookie(response);
+        cookieUtil.expireRefreshTokenCookie(response);
         return ResponseEntity.ok().build();
     }
 }
