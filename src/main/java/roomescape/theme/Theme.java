@@ -1,11 +1,24 @@
 package roomescape.theme;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+@Entity
+@SQLDelete(sql = "UPDATE theme SET deleted = true WHERE id = ?")
+@Where(clause = "deleted = false")
 public class Theme {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;
+    private boolean deleted = false;
 
-    public Theme() {
+    protected Theme() {
     }
 
     public Theme(Long id, String name, String description) {
@@ -29,5 +42,9 @@ public class Theme {
 
     public String getDescription() {
         return description;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
     }
 }

@@ -27,7 +27,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
+    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
         if ((reservationRequest.getName() == null && loginMember == null)
                 || reservationRequest.getDate() == null
                 || reservationRequest.getTheme() == null
@@ -36,13 +36,17 @@ public class ReservationController {
         }
 
         ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
-
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> mine(LoginMember loginMember) {
+        return ResponseEntity.ok(reservationService.findByMember(loginMember));
     }
 }

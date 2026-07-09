@@ -8,8 +8,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.member.Member;
-import roomescape.member.MemberDao;
 import roomescape.token.TokenProvider;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -31,17 +29,21 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String token = extractTokenFromCookie(cookies);
 
         if (token.isBlank()) {
-            return null;
+            throw new UnauthorizedException();
         }
 
-        Claims claims = TokenProvider.extractClaims(token);
+        try {
+            Claims claims = TokenProvider.extractClaims(token);
 
-        Long id = Long.valueOf(claims.getSubject());
-        String name = claims.get("name", String.class);
-        String email = claims.get("email", String.class);
-        String role = claims.get("role", String.class);
+            Long id = Long.valueOf(claims.getSubject());
+            String name = claims.get("name", String.class);
+            String email = claims.get("email", String.class);
+            String role = claims.get("role", String.class);
 
-        return new LoginMember(id, name, email, role);
+            return new LoginMember(id, name, email, role);
+        } catch (Exception e) {
+            throw new UnauthorizedException();
+        }
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
