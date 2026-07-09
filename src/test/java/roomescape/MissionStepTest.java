@@ -18,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
+    private static String ACCESS_TOKEN = "access-token";
+
     @Test
     void 일단계() {
         Map<String, String> params = new HashMap<>();
@@ -48,7 +50,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
-                .cookie("token", token)
+                .cookie(ACCESS_TOKEN, token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
                 .then().log().all()
@@ -61,7 +63,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
                 .body(params)
-                .cookie("token", token)
+                .cookie(ACCESS_TOKEN, token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
                 .then().log().all()
@@ -76,7 +78,7 @@ public class MissionStepTest {
         String brownToken = createToken("brown@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("token", brownToken)
+                .cookie(ACCESS_TOKEN, brownToken)
                 .get("/admin")
                 .then().log().all()
                 .statusCode(403);
@@ -84,7 +86,7 @@ public class MissionStepTest {
         String adminToken = createToken("admin@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie(ACCESS_TOKEN, adminToken)
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -101,6 +103,6 @@ public class MissionStepTest {
                 .when().post("/login")
                 .then().extract();
 
-        return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+        return response.cookie(ACCESS_TOKEN);
     }
 }
