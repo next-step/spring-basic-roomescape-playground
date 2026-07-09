@@ -20,22 +20,36 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final Key secretKey;
-    private final long expiration;
+    private final long accessTokenExpiration;
+    private final long refreshTokenExpiration;
 
     public JwtTokenProvider(JwtTokenProperty tokenProperty) {
         this.secretKey = Keys.hmacShaKeyFor(
                 Base64.getDecoder().decode(tokenProperty.secretKey()));
-        this.expiration = tokenProperty.expiration();
+        this.accessTokenExpiration = tokenProperty.accessTokenExpiration();
+        this.refreshTokenExpiration = tokenProperty.refreshTokenExpiration();
     }
 
     public String createAccessToken(Member member) {
         Date now = new Date();
-        Date expiredTime = new Date(now.getTime() + expiration);
+        Date expiredTime = new Date(now.getTime() + accessTokenExpiration);
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
+                .setIssuedAt(now)
+                .setExpiration(expiredTime)
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String createRefreshToken(Member member) {
+        Date now = new Date();
+        Date expiredTime = new Date(now.getTime() + refreshTokenExpiration);
+
+        return Jwts.builder()
+                .setSubject(member.getId().toString())
                 .setIssuedAt(now)
                 .setExpiration(expiredTime)
                 .signWith(secretKey)
@@ -64,7 +78,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (SignatureException | MalformedJwtException | UnsupportedJwtException e) {
-            throw new ApplicationException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+            throw new ApplicationException(AuthErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
             throw new ApplicationException(AuthErrorCode.ACCESS_TOKEN_EXPIRED);
         } catch (IllegalArgumentException e) {
