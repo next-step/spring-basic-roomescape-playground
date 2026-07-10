@@ -10,11 +10,11 @@ import roomescape.member.MemberService;
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final CookieExtractor cookieExtractor;
+    private final CookieManager cookieExtractor;
     private final JwtProvider jwtProvider;
     private final MemberService memberService;
 
-    public AdminInterceptor(CookieExtractor cookieExtractor, JwtProvider jwtProvider, MemberService memberService) {
+    public AdminInterceptor(CookieManager cookieExtractor, JwtProvider jwtProvider, MemberService memberService) {
         this.cookieExtractor = cookieExtractor;
         this.jwtProvider = jwtProvider;
         this.memberService = memberService;
