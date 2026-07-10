@@ -3,6 +3,7 @@ package roomescape.login;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,8 @@ public class LoginController {
 
         accessCookie.setHttpOnly(true);
         accessCookie.setPath("/");
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setPath("/");
         httpresponse.addCookie(accessCookie);
         httpresponse.addCookie(refreshCookie);
 
@@ -47,6 +50,9 @@ public class LoginController {
     public ResponseEntity<Void> refresh(HttpServletRequest request,HttpServletResponse response){
         Cookie[] cookies= request.getCookies();
 
+        if(cookies == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         String refreshToken=extractToken(cookies,"refreshToken");
 
         Long memberId = jwtProvider.getMemberId(refreshToken);
@@ -56,7 +62,8 @@ public class LoginController {
         String accessToken=jwtProvider.createAccessToken(member);
 
         Cookie cookie=new Cookie("accessToken",accessToken);
-
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
