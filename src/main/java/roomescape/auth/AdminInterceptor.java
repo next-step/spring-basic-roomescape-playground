@@ -33,7 +33,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         Member member = memberService.findById(memberId);
 
         if (!member.getRole().equals("ADMIN")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
 
