@@ -16,9 +16,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
-    private final CookieExtractor cookieExtractor;
+    private final CookieManager cookieExtractor;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtProvider jwtProvider, CookieExtractor cookieExtractor) {
+    public LoginMemberArgumentResolver(MemberService memberService, JwtProvider jwtProvider, CookieManager cookieExtractor) {
         this.memberService = memberService;
         this.jwtProvider = jwtProvider;
         this.cookieExtractor = cookieExtractor;

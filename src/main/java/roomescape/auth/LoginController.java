@@ -16,7 +16,7 @@ public class LoginController {
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
 
-    public LoginController(MemberService memberService, JwtProvider jwtProvider, CookieExtractor cookieExtractor) {
+    public LoginController(MemberService memberService, JwtProvider jwtProvider) {
         this.memberService = memberService;
         this.jwtProvider = jwtProvider;
     }

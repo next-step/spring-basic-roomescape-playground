@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
+import roomescape.exception.ForbiddenException;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 
@@ -57,7 +58,7 @@ public class ReservationService {
         }
 
         if (!loginMember.name().equals(request.name())) {
-            throw new IllegalArgumentException("다른 사용자의 이름으로 예약할 수 없습니다.");
+            throw new ForbiddenException("다른 사용자의 이름으로 예약할 수 없습니다.");
         }
 
         return memberService.findById(loginMember.id());
