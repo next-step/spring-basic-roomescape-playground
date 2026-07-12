@@ -25,14 +25,14 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity createMember(@RequestBody MemberRequest memberRequest) {
+    public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
         MemberResponse member = memberService.createMember(memberRequest);
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
 
     @PostMapping("/login") // URL 경로
     // HTTP 요청형식
-    public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         LoginTokens tokens = memberService.login(memberRequest);
         response.addCookie(authCookieProvider.createAccessTokenCookie(tokens.accessToken()));
         response.addCookie(authCookieProvider.createRefreshTokenCookie(tokens.refreshToken()));
@@ -41,7 +41,7 @@ public class MemberController {
     }
 
     @PostMapping("/token/refresh")
-    public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = authCookieProvider.extractRefreshToken(request);
         String accessToken = memberService.refreshAccessToken(refreshToken);
         response.addCookie(authCookieProvider.createAccessTokenCookie(accessToken));
@@ -49,12 +49,12 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity checkLogin(@AuthUser LoginMemberInfo member) {
+    public ResponseEntity<MemberResponse> checkLogin(@AuthUser LoginMemberInfo member) {
         return ResponseEntity.ok(new MemberResponse(member.id(), member.name(), member.email()));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
         response.addCookie(authCookieProvider.createLogoutAccessTokenCookie());
         response.addCookie(authCookieProvider.createLogoutRefreshTokenCookie());
         response.addCookie(authCookieProvider.createLogoutCookie());
