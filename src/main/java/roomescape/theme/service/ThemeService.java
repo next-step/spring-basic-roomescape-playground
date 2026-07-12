@@ -41,6 +41,7 @@ public class ThemeService {
                 .toList();
     }
 
+    @Transactional
     public void deleteById(Long id) {
         themeRepository.deleteById(id);
     }
