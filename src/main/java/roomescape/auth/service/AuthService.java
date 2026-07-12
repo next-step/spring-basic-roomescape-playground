@@ -1,6 +1,7 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.domain.LoginMember;
 import roomescape.auth.domain.RefreshToken;
 import roomescape.auth.dto.LoginRequest;
@@ -14,6 +15,7 @@ import roomescape.member.exception.MemberErrorCode;
 import roomescape.member.repository.MemberDao;
 
 @Service
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final MemberDao memberDao;
@@ -26,6 +28,7 @@ public class AuthService {
         this.tokenProvider = tokenProvider;
     }
 
+    @Transactional
     public TokenResponse login(LoginRequest loginRequest) {
         Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.LOGIN_FAILED));
@@ -33,6 +36,7 @@ public class AuthService {
         return createTokens(member);
     }
 
+    @Transactional
     public TokenResponse reissue(String refreshToken) {
         refreshTokenDao.findByToken(refreshToken)
                 .orElseThrow(() -> new ApplicationException(AuthErrorCode.INVALID_TOKEN));
@@ -43,9 +47,9 @@ public class AuthService {
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         return createTokens(member);
-
     }
 
+    @Transactional
     public void logout(Long memberId) {
         refreshTokenDao.deleteByMemberId(memberId);
     }

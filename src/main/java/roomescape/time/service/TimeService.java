@@ -1,6 +1,7 @@
 package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.time.domain.Time;
@@ -10,6 +11,7 @@ import roomescape.time.repository.TimeDao;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class TimeService {
     private TimeDao timeDao;
     private ReservationDao reservationDao;
@@ -37,10 +39,12 @@ public class TimeService {
         return timeDao.findAll();
     }
 
+    @Transactional
     public Time save(Time time) {
         return timeDao.save(time);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         timeDao.deleteById(id);
     }

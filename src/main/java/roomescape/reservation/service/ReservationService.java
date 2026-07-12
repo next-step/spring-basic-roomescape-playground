@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.domain.LoginMember;
 import roomescape.exception.ApplicationException;
 import roomescape.member.exception.MemberErrorCode;
@@ -13,6 +14,7 @@ import roomescape.reservation.repository.ReservationDao;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
     private ReservationDao reservationDao;
     private MemberDao memberDao;
@@ -22,6 +24,7 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
+    @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         String name = resolveName(reservationRequest, loginMember);
 
@@ -30,6 +33,7 @@ public class ReservationService {
         return new ReservationResponse(reservation.getId(), name, reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
+    @Transactional
     public void deleteById(Long id) {
         reservationDao.deleteById(id);
     }
