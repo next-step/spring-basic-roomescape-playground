@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.MemberRepository;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.domain.member.Member;
 import roomescape.domain.theme.Theme;
@@ -19,28 +20,37 @@ public class ReservationService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final WaitingRepository waitingRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
+    public ReservationService(ReservationRepository reservationRepository
+            , TimeRepository timeRepository
+            , ThemeRepository themeRepository
+            , WaitingRepository waitingRepository
+            , MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.waitingRepository = waitingRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTime()))
+                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
 
     public List<MyReservationResponse> findMyReservationsAll(Member loginMember) {
 
-        List<MyReservationResponse> myReservationResponses = reservationRepository.findByName(loginMember.getName()).stream()
+        Member member = memberRepository.findById(loginMember.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+
+        List<MyReservationResponse> myReservationResponses = reservationRepository.findByName(member.getName()).stream()
                 .map(it -> new MyReservationResponse(
                         it.getId(),
                         it.getTheme().getName(),
                         it.getDate(),
-                        it.getTime().getTime(),
+                        it.getTime().getValue(),
                         "예약"))
                 .toList();
 
@@ -51,7 +61,7 @@ public class ReservationService {
                         it.getWaiting().getId(),
                         it.getWaiting().getTheme().getName(),
                         it.getWaiting().getDate(),
-                        it.getWaiting().getTime().getTime(),
+                        it.getWaiting().getTime().getValue(),
                         it.getRank() + 1 + "번째 예약대기"
                 )))
                 .toList();
@@ -61,26 +71,29 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
+    public ReservationResponse save(ReservationRequest reservationRequest, Member loginMember) {
         Time time = timeRepository.findById(Long.parseLong(reservationRequest.getTime()))
                 .orElseThrow(() -> new IllegalArgumentException("해당 시간이 존재하지 않습니다."));
 
         Theme theme = themeRepository.findById(Long.parseLong(reservationRequest.getTheme()))
                 .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
 
+        Member member = memberRepository.findById(loginMember.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 Id를 가진 사용자가 존재하지 않습니다."));
+
         Reservation reservation = reservationRepository.save(new Reservation(
-                reservationRequest.getName(),
+                member.getName(),
                 reservationRequest.getDate(),
                 time,
                 theme,
-                null));
+                member));
 
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getTheme().getName(),
                 reservation.getDate(),
-                reservation.getTime().getTime());
+                reservation.getTime().getValue());
     }
 
     public void checkReservationRequest(ReservationRequest reservationRequest) {
@@ -91,15 +104,7 @@ public class ReservationService {
         }
     }
 
-    public void checkNameExistence(ReservationRequest reservationRequest, Member loginMember) {
-        if (reservationRequest.getName() == null) {
-            reservationRequest.setName(loginMember.getName());
-        }
-    }
-
     public void validateReservationRequest(ReservationRequest reservationRequest) {
-        if (reservationRequest.getName() == null)
-            throw new IllegalArgumentException("해당 이름을 가진 사용자가 존재하지 않습니다.");
         if (reservationRequest.getDate() == null)
             throw new IllegalArgumentException("해당 날짜가 존재하지 않습니다.");
         if (reservationRequest.getTheme() == null)

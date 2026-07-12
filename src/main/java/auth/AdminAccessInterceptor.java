@@ -1,4 +1,4 @@
-package roomescape.authentication;
+package auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthorizationException;
-import roomescape.domain.member.Member;
+import roomescape.service.AuthService;
 
 import java.util.Arrays;
 
@@ -21,16 +21,11 @@ public class AdminAccessInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = extractTokenFromCookies(request.getCookies());
+        authService.validateToken(token);
 
-        String email = authService.getEmailFromToken(token);
-        Member member = authService.findLoginMemberByEmail(email);
+        String role = authService.extractRole(token);
 
-        if (member == null) {
-            response.setStatus(401);
-            return false;
-        }
-
-        if (!"ADMIN".equals(member.getRole())) {
+        if (!"ADMIN".equals(role)) {
             response.setStatus(401);
             response.getWriter().write("권한이 없습니다.");
             return false;

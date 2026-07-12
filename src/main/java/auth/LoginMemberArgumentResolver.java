@@ -1,19 +1,18 @@
-package roomescape.authentication;
+package auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.exception.AuthorizationException;
 import roomescape.domain.member.Member;
+import roomescape.exception.AuthorizationException;
+import roomescape.service.AuthService;
 
 import java.util.Arrays;
 
-@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final AuthService authService;
 
@@ -34,12 +33,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         String token = extractTokenFromCookies(request.getCookies());
+        authService.validateToken(token);
 
-        authService.verifyToken(token);
+        Long id = authService.extractMemberId(token);
 
-        String email = authService.getEmailFromToken(token);
-
-        return authService.findLoginMemberByEmail(email);
+        return authService.findMemberById(id);
     }
 
     private String extractTokenFromCookies(Cookie[] cookies) {
