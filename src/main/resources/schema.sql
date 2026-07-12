@@ -1,11 +1,3 @@
-CREATE TABLE refresh_token (
-    id          BIGINT          NOT NULL AUTO_INCREMENT,
-    member_id   BIGINT          NOT NULL,
-    token       VARCHAR(500)    NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (member_id) REFERENCES member (id)
-);
-
 INSERT INTO member (name, email, password, role)
 VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
        ('브라운', 'brown@email.com', 'password', 'USER');

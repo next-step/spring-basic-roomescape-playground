@@ -2,12 +2,12 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.LoginMember;
-import roomescape.auth.domain.RefreshToken;
+import roomescape.auth.entity.RefreshTokenEntity;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.exception.AuthErrorCode;
 import roomescape.auth.jwt.JwtTokenProvider;
-import roomescape.auth.repository.RefreshTokenDao;
+import roomescape.auth.repository.RefreshTokenRepository;
 import roomescape.exception.ApplicationException;
 import roomescape.member.entity.Member;
 import roomescape.member.exception.MemberErrorCode;
@@ -17,12 +17,12 @@ import roomescape.member.repository.MemberRepository;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final RefreshTokenDao refreshTokenDao;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider tokenProvider;
 
-    public AuthService(MemberRepository memberRepository, RefreshTokenDao refreshTokenDao, JwtTokenProvider tokenProvider) {
+    public AuthService(MemberRepository memberRepository, RefreshTokenRepository refreshTokenRepository, JwtTokenProvider tokenProvider) {
         this.memberRepository = memberRepository;
-        this.refreshTokenDao = refreshTokenDao;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.tokenProvider = tokenProvider;
     }
 
@@ -30,15 +30,12 @@ public class AuthService {
         Member member = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.LOGIN_FAILED));
 
-        String accessToken = tokenProvider.createAccessToken(member);
-        String refreshToken = tokenProvider.createRefreshToken(member);
-        refreshTokenDao.save(new RefreshToken(member.getId(), refreshToken));
-
-        return new TokenResponse(accessToken, refreshToken);
+        return createTokens(member);
     }
 
-    public String reissue(String refreshToken) {
-        refreshTokenDao.findByToken(refreshToken)
+    @Transactional
+    public TokenResponse reissue(String refreshToken) {
+        refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new ApplicationException(AuthErrorCode.INVALID_TOKEN));
 
         Long memberId = tokenProvider.getLoginMemberId(refreshToken);
@@ -46,12 +43,11 @@ public class AuthService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        return tokenProvider.createAccessToken(member);
-
+        return createTokens(member);
     }
 
     public void logout(Long memberId) {
-        refreshTokenDao.deleteByMemberId(memberId);
+        refreshTokenRepository.deleteByMemberId(memberId);
     }
 
     public LoginMember findAuthenticatedMember(String token) {
@@ -60,5 +56,15 @@ public class AuthService {
         String memberRole = tokenProvider.getLoginMemberRole(token);
 
         return new LoginMember(memberId, memberName, memberRole);
+    }
+
+    private TokenResponse createTokens(Member member) {
+        String accessToken = tokenProvider.createAccessToken(member);
+        String refreshToken = tokenProvider.createRefreshToken(member);
+
+        refreshTokenRepository.deleteByMemberId(member.getId());
+        refreshTokenRepository.save(new RefreshTokenEntity(member, refreshToken));
+
+        return new TokenResponse(accessToken, refreshToken);
     }
 }
