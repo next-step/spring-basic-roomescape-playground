@@ -1,6 +1,5 @@
 package roomescape.login;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -31,10 +30,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
+        String token = CookieUtil.extractToken(request.getCookies());
+        if (token == null) {
             return null;
         }
-        return loginService.getByToken(cookies);
+        return loginService.getByToken(token);
     }
 }
