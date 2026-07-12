@@ -26,14 +26,9 @@ public class RefreshTokenEntity {
     public RefreshTokenEntity() {
     }
 
-    public RefreshTokenEntity(Long id, Member member, String token) {
-        this.id = id;
+    public RefreshTokenEntity(Member member, String token) {
         this.member = member;
         this.token = token;
-    }
-
-    public RefreshTokenEntity(Member member, String token) {
-        this(null, member, token);
     }
 
     public Long getId() {

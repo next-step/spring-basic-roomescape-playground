@@ -34,14 +34,6 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(Long id, Member member, LocalDate date, Time time, Theme theme) {
-        this.id = id;
-        this.member = member;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
     public Reservation(Member member, LocalDate date, Time time, Theme theme) {
         this.member = member;
         this.date = date;

@@ -23,11 +23,6 @@ public class Time {
 
     public Time() {}
 
-    public Time(Long id, String value) {
-        this.id = id;
-        this.timeValue = value;
-    }
-
     public Time(String value) {
         this.timeValue = value;
     }
