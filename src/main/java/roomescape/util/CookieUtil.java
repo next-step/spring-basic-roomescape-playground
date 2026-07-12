@@ -29,11 +29,11 @@ public class CookieUtil {
     }
 
     public void expireAccessTokenCookie(HttpServletResponse response) {
-        response.addCookie(expireCookie(ACCESS_TOKEN));
+        response.addCookie(expireCookie(ACCESS_TOKEN, ACCESS_TOKEN_PATH));
     }
 
     public void expireRefreshTokenCookie(HttpServletResponse response) {
-        response.addCookie(expireCookie(REFRESH_TOKEN));
+        response.addCookie(expireCookie(REFRESH_TOKEN, REFRESH_TOKEN_PATH));
     }
 
     public Optional<String> extractAccessToken(Cookie[] cookies) {
@@ -51,10 +51,10 @@ public class CookieUtil {
         return cookie;
     }
 
-    private Cookie expireCookie(String name) {
+    private Cookie expireCookie(String name, String path) {
         Cookie cookie = new Cookie(name, "");
         cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        cookie.setPath(path);
         cookie.setMaxAge(0);
 
         return cookie;
