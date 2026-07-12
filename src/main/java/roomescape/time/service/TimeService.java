@@ -23,7 +23,6 @@ public class TimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    @Transactional
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(LocalDate.parse(date), themeId);
         List<Time> times = timeRepository.findAll();
@@ -48,11 +47,13 @@ public class TimeService {
                 .toList();
     }
 
+    @Transactional
     public TimeResponse create(Time time) {
         Time savedTime = timeRepository.save(time);
         return new TimeResponse(savedTime.getId(), savedTime.getTimeValue());
     }
 
+    @Transactional
     public void deleteById(Long id) {
         timeRepository.deleteById(id);
     }
