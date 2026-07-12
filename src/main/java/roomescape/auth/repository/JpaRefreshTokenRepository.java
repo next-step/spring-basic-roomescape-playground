@@ -2,7 +2,7 @@ package roomescape.auth.repository;
 
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
-import roomescape.auth.entity.RefreshTokenEntity;
+import roomescape.auth.entity.RefreshToken;
 
 import java.util.Optional;
 
@@ -16,25 +16,25 @@ public class JpaRefreshTokenRepository implements RefreshTokenRepository {
     }
 
     @Override
-    public void save(RefreshTokenEntity refreshTokenEntity) {
-        entityManager.persist(refreshTokenEntity);
+    public void save(RefreshToken refreshToken) {
+        entityManager.persist(refreshToken);
     }
 
     @Override
-    public Optional<RefreshTokenEntity> findByMemberId(Long memberId) {
+    public Optional<RefreshToken> findByMemberId(Long memberId) {
         String jpql = "SELECT rt FROM refresh_token rt WHERE rt.member.id = :memberId";
 
-        return entityManager.createQuery(jpql, RefreshTokenEntity.class)
+        return entityManager.createQuery(jpql, RefreshToken.class)
                 .setParameter("memberId", memberId)
                 .getResultStream()
                 .findFirst();
     }
 
     @Override
-    public Optional<RefreshTokenEntity> findByToken(String token) {
+    public Optional<RefreshToken> findByToken(String token) {
         String jpql = "SELECT rt FROM refresh_token rt WHERE rt.token = :token";
 
-        return entityManager.createQuery(jpql, RefreshTokenEntity.class)
+        return entityManager.createQuery(jpql, RefreshToken.class)
                 .setParameter("token", token)
                 .getResultStream()
                 .findFirst();

@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import roomescape.member.entity.Member;
 
 @Entity(name = "refresh_token")
-public class RefreshTokenEntity {
+public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +23,10 @@ public class RefreshTokenEntity {
     @Column(nullable = false, length = 500)
     private String token;
 
-    public RefreshTokenEntity() {
+    public RefreshToken() {
     }
 
-    public RefreshTokenEntity(Member member, String token) {
+    public RefreshToken(Member member, String token) {
         this.member = member;
         this.token = token;
     }

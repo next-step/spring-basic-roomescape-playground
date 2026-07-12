@@ -3,7 +3,7 @@ package roomescape.auth.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.domain.LoginMember;
-import roomescape.auth.entity.RefreshTokenEntity;
+import roomescape.auth.entity.RefreshToken;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.exception.AuthErrorCode;
@@ -67,7 +67,7 @@ public class AuthService {
         String refreshToken = tokenProvider.createRefreshToken(member);
 
         refreshTokenRepository.deleteByMemberId(member.getId());
-        refreshTokenRepository.save(new RefreshTokenEntity(member, refreshToken));
+        refreshTokenRepository.save(new RefreshToken(member, refreshToken));
 
         return new TokenResponse(accessToken, refreshToken);
     }

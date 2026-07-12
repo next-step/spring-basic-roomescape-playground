@@ -1,16 +1,16 @@
 package roomescape.auth.repository;
 
-import roomescape.auth.entity.RefreshTokenEntity;
+import roomescape.auth.entity.RefreshToken;
 
 import java.util.Optional;
 
 public interface RefreshTokenRepository {
 
-    void save(RefreshTokenEntity refreshTokenEntity);
+    void save(RefreshToken refreshToken);
 
-    Optional<RefreshTokenEntity> findByToken(String token);
+    Optional<RefreshToken> findByToken(String token);
 
-    Optional<RefreshTokenEntity> findByMemberId(Long memberId);
+    Optional<RefreshToken> findByMemberId(Long memberId);
 
     void deleteByMemberId(Long memberId);
 }
