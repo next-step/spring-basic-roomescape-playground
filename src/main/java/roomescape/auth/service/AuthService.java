@@ -30,14 +30,10 @@ public class AuthService {
         Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.LOGIN_FAILED));
 
-        String accessToken = tokenProvider.createAccessToken(member);
-        String refreshToken = tokenProvider.createRefreshToken(member);
-        refreshTokenDao.save(new RefreshToken(member.getId(), refreshToken));
-
-        return new TokenResponse(accessToken, refreshToken);
+        return createTokens(member);
     }
 
-    public String reissue(String refreshToken) {
+    public TokenResponse reissue(String refreshToken) {
         refreshTokenDao.findByToken(refreshToken)
                 .orElseThrow(() -> new ApplicationException(AuthErrorCode.INVALID_TOKEN));
 
@@ -46,7 +42,7 @@ public class AuthService {
         Member member = memberDao.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        return tokenProvider.createAccessToken(member);
+        return createTokens(member);
 
     }
 
@@ -60,5 +56,15 @@ public class AuthService {
         String memberRole = tokenProvider.getLoginMemberRole(token);
 
         return new LoginMember(memberId, memberName, memberRole);
+    }
+
+    private TokenResponse createTokens(Member member) {
+        String accessToken = tokenProvider.createAccessToken(member);
+        String refreshToken = tokenProvider.createRefreshToken(member);
+
+        refreshTokenDao.deleteByMemberId(member.getId());
+        refreshTokenDao.save(new RefreshToken(member.getId(), refreshToken));
+
+        return new TokenResponse(accessToken, refreshToken);
     }
 }

@@ -39,7 +39,7 @@ CREATE TABLE reservation
 
 CREATE TABLE refresh_token (
     id          BIGINT          NOT NULL AUTO_INCREMENT,
-    member_id   BIGINT          NOT NULL,
+    member_id   BIGINT          NOT NULL UNIQUE,
     token       VARCHAR(500)    NOT NULL,
     PRIMARY KEY (id)
 );

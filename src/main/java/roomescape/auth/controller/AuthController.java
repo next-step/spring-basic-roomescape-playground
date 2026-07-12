@@ -34,8 +34,8 @@ public class AuthController {
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest,
                                       HttpServletResponse response) {
         TokenResponse tokenResponse = authService.login(loginRequest);
-        cookieUtil.setAccessTokenCookie(response, tokenResponse.accessToken());
-        cookieUtil.setRefreshTokenCookie(response, tokenResponse.refreshToken());
+        setTokenCookies(response, tokenResponse);
+
         return ResponseEntity.ok().build();
     }
 
@@ -43,9 +43,9 @@ public class AuthController {
     public ResponseEntity<Void> loginByRefreshToken(HttpServletRequest request,
                                                     HttpServletResponse response) {
         String refreshToken = tokenExtractor.extractRefreshToken(request.getCookies());
-        String newAccessToken = authService.reissue(refreshToken);
 
-        cookieUtil.setAccessTokenCookie(response, newAccessToken);
+        TokenResponse tokenResponse = authService.reissue(refreshToken);
+        setTokenCookies(response, tokenResponse);
 
         return ResponseEntity.ok().build();
     }
@@ -61,5 +61,10 @@ public class AuthController {
         cookieUtil.expireAccessTokenCookie(response);
         cookieUtil.expireRefreshTokenCookie(response);
         return ResponseEntity.ok().build();
+    }
+
+    private void setTokenCookies(HttpServletResponse response, TokenResponse tokenResponse) {
+        cookieUtil.setAccessTokenCookie(response, tokenResponse.accessToken());
+        cookieUtil.setRefreshTokenCookie(response, tokenResponse.refreshToken());
     }
 }
