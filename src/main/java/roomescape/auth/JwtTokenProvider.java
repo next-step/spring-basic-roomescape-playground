@@ -17,18 +17,32 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
     private static final String SECRET_KEY = "roomescape-secret-key-for-jwt-token";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 30;
+    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 7;
     private static final Key SIGNING_KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
     public String createToken(Member member) {
+        return createAccessToken(member);
+    }
+
+    public String createAccessToken(Member member) {
+        return createToken(member, TokenType.ACCESS, ACCESS_TOKEN_EXPIRATION_TIME);
+    }
+
+    public String createRefreshToken(Member member) {
+        return createToken(member, TokenType.REFRESH, REFRESH_TOKEN_EXPIRATION_TIME);
+    }
+
+    private String createToken(Member member, TokenType tokenType, long expirationTime) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
+        Date expiration = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
                 .setSubject(member.getEmail())
                 .claim("id", member.getId())
                 .claim("name", member.getName())
                 .claim("role", member.getRole().name())
+                .claim("type", tokenType.name())
                 .setIssuedAt(now)
                 .setExpiration(expiration)
                 .signWith(SIGNING_KEY, SignatureAlgorithm.HS256)
@@ -36,8 +50,21 @@ public class JwtTokenProvider {
     }
 
     public LoginMemberInfo parseMember(String token) {
+        return parseAccessToken(token);
+    }
+
+    public LoginMemberInfo parseAccessToken(String token) {
+        return parseMember(token, TokenType.ACCESS);
+    }
+
+    public LoginMemberInfo parseRefreshToken(String token) {
+        return parseMember(token, TokenType.REFRESH);
+    }
+
+    private LoginMemberInfo parseMember(String token, TokenType expectedTokenType) {
         try {
             Claims claims = parseClaims(token);
+            validateTokenType(claims, expectedTokenType);
             Long id = claims.get("id", Number.class).longValue();
             String name = claims.get("name").toString();
             String email = claims.getSubject();
@@ -45,6 +72,13 @@ public class JwtTokenProvider {
             return new LoginMemberInfo(id, name, email, role);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid token");
+        }
+    }
+
+    private void validateTokenType(Claims claims, TokenType expectedTokenType) {
+        TokenType tokenType = TokenType.from(claims.get("type").toString());
+        if (tokenType != expectedTokenType) {
+            throw new IllegalArgumentException("Invalid token type");
         }
     }
 

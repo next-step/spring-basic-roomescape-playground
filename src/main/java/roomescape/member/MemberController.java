@@ -1,6 +1,6 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AuthCookieProvider;
 import roomescape.auth.AuthUser;
 import roomescape.auth.LoginMemberInfo;
+import roomescape.auth.LoginTokens;
 
 import java.net.URI;
 
@@ -32,9 +33,18 @@ public class MemberController {
     @PostMapping("/login") // URL 경로
     // HTTP 요청형식
     public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
-        String token = memberService.login(memberRequest);
-        Cookie cookie = authCookieProvider.createLoginCookie(token);
-        response.addCookie(cookie);
+        LoginTokens tokens = memberService.login(memberRequest);
+        response.addCookie(authCookieProvider.createAccessTokenCookie(tokens.getAccessToken()));
+        response.addCookie(authCookieProvider.createRefreshTokenCookie(tokens.getRefreshToken()));
+        response.addCookie(authCookieProvider.createLoginCookie(tokens.getAccessToken()));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/token/refresh")
+    public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = authCookieProvider.extractRefreshToken(request);
+        String accessToken = memberService.refreshAccessToken(refreshToken);
+        response.addCookie(authCookieProvider.createAccessTokenCookie(accessToken));
         return ResponseEntity.ok().build();
     }
 
@@ -45,8 +55,9 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = authCookieProvider.createLogoutCookie();
-        response.addCookie(cookie);
+        response.addCookie(authCookieProvider.createLogoutAccessTokenCookie());
+        response.addCookie(authCookieProvider.createLogoutRefreshTokenCookie());
+        response.addCookie(authCookieProvider.createLogoutCookie());
 
         return ResponseEntity.ok().build();
     }

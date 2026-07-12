@@ -46,7 +46,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         }
 
         try {
-            String token = authCookieProvider.extractToken(request);
+            String token = authCookieProvider.extractAccessToken(request);
             LoginMemberInfo loginMember = memberService.checkLogin(token);
             if (optional) {
                 return Optional.of(loginMember);

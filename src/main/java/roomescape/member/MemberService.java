@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.AuthenticationException;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.LoginMemberInfo;
+import roomescape.auth.LoginTokens;
 
 @Service
 public class MemberService {
@@ -21,16 +22,29 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public String login(MemberRequest memberRequest) {
+    public LoginTokens login(MemberRequest memberRequest) {
         try {
             Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
-            return jwtTokenProvider.createToken(member);
+            return new LoginTokens(
+                    jwtTokenProvider.createAccessToken(member),
+                    jwtTokenProvider.createRefreshToken(member)
+            );
         } catch (EmptyResultDataAccessException e) {
             throw new AuthenticationException();
         }
     }
 
     public LoginMemberInfo checkLogin(String token) {
-        return jwtTokenProvider.parseMember(token);
+        return jwtTokenProvider.parseAccessToken(token);
+    }
+
+    public String refreshAccessToken(String refreshToken) {
+        try {
+            LoginMemberInfo loginMember = jwtTokenProvider.parseRefreshToken(refreshToken);
+            Member member = memberDao.findByEmail(loginMember.getEmail());
+            return jwtTokenProvider.createAccessToken(member);
+        } catch (EmptyResultDataAccessException | IllegalArgumentException e) {
+            throw new AuthenticationException();
+        }
     }
 }
