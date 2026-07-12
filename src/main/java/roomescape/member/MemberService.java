@@ -2,6 +2,7 @@ package roomescape.member;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.AuthenticationException;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.LoginMemberInfo;
 
@@ -25,7 +26,7 @@ public class MemberService {
             Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
             return jwtTokenProvider.createToken(member);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("Invalid email or password");
+            throw new AuthenticationException();
         }
     }
 

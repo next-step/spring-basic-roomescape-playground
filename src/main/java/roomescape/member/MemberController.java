@@ -32,14 +32,10 @@ public class MemberController {
     @PostMapping("/login") // URL 경로
     // HTTP 요청형식
     public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
-        try {
-            String token = memberService.login(memberRequest);
-            Cookie cookie = authCookieProvider.createLoginCookie(token);
-            response.addCookie(cookie);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(401).build();
-        }
+        String token = memberService.login(memberRequest);
+        Cookie cookie = authCookieProvider.createLoginCookie(token);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
