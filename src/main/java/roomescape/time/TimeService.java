@@ -23,10 +23,10 @@ public class TimeService {
 
         return times.stream()
                 .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getValue(),
+                        time.id(),
+                        time.value(),
                         reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
+                                .anyMatch(reservation -> reservation.time().id().equals(time.id()))
                 ))
                 .toList();
     }

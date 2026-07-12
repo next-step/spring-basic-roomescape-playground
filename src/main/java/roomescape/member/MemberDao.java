@@ -17,14 +17,14 @@ public class MemberDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             var ps = connection.prepareStatement("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, member.getName());
-            ps.setString(2, member.getEmail());
-            ps.setString(3, member.getPassword());
-            ps.setString(4, member.getRole().name());
+            ps.setString(1, member.name());
+            ps.setString(2, member.email());
+            ps.setString(3, member.password());
+            ps.setString(4, member.role().name());
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), member.getRole());
+        return new Member(keyHolder.getKey().longValue(), member.name(), member.email(), member.role());
     }
 
     public Member findByEmailAndPassword(String email, String password) {

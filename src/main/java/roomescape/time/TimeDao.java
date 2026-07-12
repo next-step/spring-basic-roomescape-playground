@@ -28,11 +28,11 @@ public class TimeDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         this.jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO time(time_value) VALUES (?)", new String[]{"id"});
-            ps.setString(1, time.getValue());
+            ps.setString(1, time.value());
             return ps;
         }, keyHolder);
 
-        return new Time(keyHolder.getKey().longValue(), time.getValue());
+        return new Time(keyHolder.getKey().longValue(), time.value());
     }
 
     public boolean deleteById(Long id) {

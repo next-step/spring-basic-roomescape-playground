@@ -27,12 +27,12 @@ public class ThemeDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             var ps = connection.prepareStatement("INSERT INTO theme(name, description) VALUES (?, ?)", new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
+            ps.setString(1, theme.name());
+            ps.setString(2, theme.description());
             return ps;
         }, keyHolder);
 
-        return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription());
+        return new Theme(keyHolder.getKey().longValue(), theme.name(), theme.description());
     }
 
     public boolean deleteById(Long id) {

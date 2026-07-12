@@ -38,10 +38,10 @@ public class JwtTokenProvider {
         Date expiration = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
-                .setSubject(member.getEmail())
-                .claim("id", member.getId())
-                .claim("name", member.getName())
-                .claim("role", member.getRole().name())
+                .setSubject(member.email())
+                .claim("id", member.id())
+                .claim("name", member.name())
+                .claim("role", member.role().name())
                 .claim("type", tokenType.name())
                 .setIssuedAt(now)
                 .setExpiration(expiration)

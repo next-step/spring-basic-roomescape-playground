@@ -29,12 +29,12 @@ public class TimeController {
     @PostMapping("/times")
     @AdminOnly
     public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
+        if (time.value() == null || time.value().isEmpty()) {
             throw new IllegalArgumentException("시간 값은 필수입니다.");
         }
 
         Time newTime = timeService.save(time);
-        return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
+        return ResponseEntity.created(URI.create("/times/" + newTime.id())).body(newTime);
     }
 
     @DeleteMapping("/times/{id}")

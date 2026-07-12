@@ -68,9 +68,9 @@ public class ReservationService {
     private ReservationResponse createReservation(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
         validateReservationTarget(reservationRequest);
         Member member = findReservationMember(reservationRequest, loginMember);
-        Reservation reservation = reservationDao.save(reservationRequest, member.getName());
+        Reservation reservation = reservationDao.save(reservationRequest, member.name());
 
-        return new ReservationResponse(reservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(reservation.id(), member.name(), reservation.theme().name(), reservation.date(), reservation.time().value());
     }
 
     private void validateReservationTarget(ReservationRequest reservationRequest) {
@@ -110,13 +110,13 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(it -> new ReservationResponse(it.id(), it.name(), it.theme().name(), it.date(), it.time().value()))
                 .toList();
     }
 
     public List<ReservationMineResponse> findMine(LoginMemberInfo loginMember) {
         return reservationDao.findByMemberName(loginMember.name()).stream()
-                .map(it -> new ReservationMineResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
+                .map(it -> new ReservationMineResponse(it.id(), it.theme().name(), it.date(), it.time().value(), "예약"))
                 .toList();
     }
 
