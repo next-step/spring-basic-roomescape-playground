@@ -9,25 +9,25 @@ import roomescape.auth.exception.AuthErrorCode;
 import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.auth.repository.RefreshTokenDao;
 import roomescape.exception.ApplicationException;
-import roomescape.member.domain.Member;
+import roomescape.member.entity.Member;
 import roomescape.member.exception.MemberErrorCode;
-import roomescape.member.repository.MemberDao;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class AuthService {
 
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final RefreshTokenDao refreshTokenDao;
     private final JwtTokenProvider tokenProvider;
 
-    public AuthService(MemberDao memberDao, RefreshTokenDao refreshTokenDao, JwtTokenProvider tokenProvider) {
-        this.memberDao = memberDao;
+    public AuthService(MemberRepository memberRepository, RefreshTokenDao refreshTokenDao, JwtTokenProvider tokenProvider) {
+        this.memberRepository = memberRepository;
         this.refreshTokenDao = refreshTokenDao;
         this.tokenProvider = tokenProvider;
     }
 
     public TokenResponse login(LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.LOGIN_FAILED));
 
         String accessToken = tokenProvider.createAccessToken(member);
@@ -43,7 +43,7 @@ public class AuthService {
 
         Long memberId = tokenProvider.getLoginMemberId(refreshToken);
 
-        Member member = memberDao.findById(memberId)
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         return tokenProvider.createAccessToken(member);

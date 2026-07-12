@@ -1,47 +1,59 @@
 package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.time.domain.Time;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.dto.AvailableTime;
-import roomescape.time.repository.TimeDao;
+import roomescape.time.dto.TimeResponse;
+import roomescape.time.entity.Time;
+import roomescape.time.repository.TimeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class TimeService {
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
+    private TimeRepository timeRepository;
+    private ReservationRepository reservationRepository;
 
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
+    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
+        this.timeRepository = timeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
+    @Transactional
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(LocalDate.parse(date), themeId);
+        List<Time> times = timeRepository.findAll();
 
         return times.stream()
                 .map(time -> new AvailableTime(
                         time.getId(),
-                        time.getValue(),
+                        time.getTimeValue(),
                         reservations.stream()
                                 .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
                 ))
                 .toList();
     }
 
-    public List<Time> findAll() {
-        return timeDao.findAll();
+    public List<TimeResponse> findAll() {
+        return timeRepository.findAll()
+                .stream()
+                .map(time -> new TimeResponse(
+                        time.getId(),
+                        time.getTimeValue()
+                ))
+                .toList();
     }
 
-    public Time save(Time time) {
-        return timeDao.save(time);
+    public TimeResponse create(Time time) {
+        Time savedTime = timeRepository.save(time);
+        return new TimeResponse(savedTime.getId(), savedTime.getTimeValue());
     }
 
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        timeRepository.deleteById(id);
     }
 }
