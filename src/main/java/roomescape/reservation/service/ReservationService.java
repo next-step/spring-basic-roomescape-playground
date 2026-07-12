@@ -110,8 +110,10 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(NoSuchReservationException::new);
         Inventory inventory = reservation.getInventory();
 
-        Optional<Reservation> nextOptionalReservation = reservationRepository.findFirstByInventoryAndStatus(inventory, ReservationStatus.PENDING);
-        nextOptionalReservation.ifPresent(nextReservation -> nextReservation.setStatus(ReservationStatus.CONFIRMED));
+        if (reservation.getStatus() == ReservationStatus.CONFIRMED) {
+            Optional<Reservation> nextOptionalReservation = reservationRepository.findFirstByInventoryAndStatus(inventory, ReservationStatus.PENDING);
+            nextOptionalReservation.ifPresent(nextReservation -> nextReservation.setStatus(ReservationStatus.CONFIRMED));
+        }
 
         reservationRepository.delete(reservation);
     }
