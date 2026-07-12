@@ -90,12 +90,12 @@ public class ReservationService {
             if (loginMember.isEmpty()) {
                 throw new AuthenticationException();
             }
-            return memberDao.findByEmail(loginMember.get().getEmail());
+            return memberDao.findByEmail(loginMember.get().email());
         } catch (EmptyResultDataAccessException e) {
             log.warn(
                     "Reservation member not found. name={}, loginEmail={}",
                     reservationRequest.getName(),
-                    loginMember.map(LoginMemberInfo::getEmail).orElse(null),
+                    loginMember.map(LoginMemberInfo::email).orElse(null),
                     e
             );
             throw new NotFoundException("존재하지 않는 회원입니다.", e);
@@ -115,7 +115,7 @@ public class ReservationService {
     }
 
     public List<ReservationMineResponse> findMine(LoginMemberInfo loginMember) {
-        return reservationDao.findByMemberName(loginMember.getName()).stream()
+        return reservationDao.findByMemberName(loginMember.name()).stream()
                 .map(it -> new ReservationMineResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
                 .toList();
     }
@@ -124,7 +124,7 @@ public class ReservationService {
         private static ReservationFingerprint from(ReservationRequest request, Optional<LoginMemberInfo> loginMember) {
             return new ReservationFingerprint(
                     request.getName(),
-                    loginMember.map(LoginMemberInfo::getEmail).orElse(null),
+                    loginMember.map(LoginMemberInfo::email).orElse(null),
                     request.getDate(),
                     request.getTheme(),
                     request.getTime()

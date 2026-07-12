@@ -41,7 +41,7 @@ public class MemberService {
     public String refreshAccessToken(String refreshToken) {
         try {
             LoginMemberInfo loginMember = jwtTokenProvider.parseRefreshToken(refreshToken);
-            Member member = memberDao.findByEmail(loginMember.getEmail());
+            Member member = memberDao.findByEmail(loginMember.email());
             return jwtTokenProvider.createAccessToken(member);
         } catch (EmptyResultDataAccessException | IllegalArgumentException e) {
             throw new AuthenticationException();

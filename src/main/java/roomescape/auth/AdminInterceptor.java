@@ -29,7 +29,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         try {
             String token = authCookieProvider.extractAccessToken(request);
             LoginMemberInfo loginMember = memberService.checkLogin(token);
-            if (MemberRole.ADMIN == loginMember.getRole()) {
+            if (MemberRole.ADMIN == loginMember.role()) {
                 return true;
             }
             throw new AuthorizationException();

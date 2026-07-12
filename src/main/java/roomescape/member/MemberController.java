@@ -34,9 +34,9 @@ public class MemberController {
     // HTTP 요청형식
     public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         LoginTokens tokens = memberService.login(memberRequest);
-        response.addCookie(authCookieProvider.createAccessTokenCookie(tokens.getAccessToken()));
-        response.addCookie(authCookieProvider.createRefreshTokenCookie(tokens.getRefreshToken()));
-        response.addCookie(authCookieProvider.createLoginCookie(tokens.getAccessToken()));
+        response.addCookie(authCookieProvider.createAccessTokenCookie(tokens.accessToken()));
+        response.addCookie(authCookieProvider.createRefreshTokenCookie(tokens.refreshToken()));
+        response.addCookie(authCookieProvider.createLoginCookie(tokens.accessToken()));
         return ResponseEntity.ok().build();
     }
 
@@ -50,7 +50,7 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity checkLogin(@AuthUser LoginMemberInfo member) {
-        return ResponseEntity.ok(new MemberResponse(member.getId(), member.getName(), member.getEmail()));
+        return ResponseEntity.ok(new MemberResponse(member.id(), member.name(), member.email()));
     }
 
     @PostMapping("/logout")
