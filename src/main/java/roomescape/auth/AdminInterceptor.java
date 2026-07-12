@@ -8,11 +8,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.AuthenticationException;
 import roomescape.AuthorizationException;
 import roomescape.member.MemberService;
+import roomescape.member.MemberRole;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
-    private static final String ADMIN_ROLE = "ADMIN";
-
     private final AuthCookieProvider authCookieProvider;
     private final MemberService memberService;
 
@@ -30,7 +29,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         try {
             String token = authCookieProvider.extractToken(request);
             LoginMemberInfo loginMember = memberService.checkLogin(token);
-            if (ADMIN_ROLE.equals(loginMember.getRole())) {
+            if (MemberRole.ADMIN == loginMember.getRole()) {
                 return true;
             }
             throw new AuthorizationException();

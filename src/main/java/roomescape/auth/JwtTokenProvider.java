@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
+import roomescape.member.MemberRole;
 
 import java.security.Key;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +28,7 @@ public class JwtTokenProvider {
                 .setSubject(member.getEmail())
                 .claim("id", member.getId())
                 .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .claim("role", member.getRole().name())
                 .setIssuedAt(now)
                 .setExpiration(expiration)
                 .signWith(SIGNING_KEY, SignatureAlgorithm.HS256)
@@ -40,7 +41,7 @@ public class JwtTokenProvider {
             Long id = claims.get("id", Number.class).longValue();
             String name = claims.get("name").toString();
             String email = claims.getSubject();
-            String role = claims.get("role").toString();
+            MemberRole role = MemberRole.from(claims.get("role").toString());
             return new LoginMemberInfo(id, name, email, role);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid token");
