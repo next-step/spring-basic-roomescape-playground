@@ -3,6 +3,7 @@ package roomescape.reservation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -15,16 +16,16 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         return entityManager.createQuery(
-                        "select r from Reservation r join fetch r.theme join fetch r.time",
+                        "select r from Reservation r join fetch r.member join fetch r.theme join fetch r.time",
                         Reservation.class
                 )
                 .getResultList();
     }
 
-    public Reservation save(ReservationRequest reservationRequest, String name) {
-        Time time = entityManager.getReference(Time.class, reservationRequest.getTime());
-        Theme theme = entityManager.getReference(Theme.class, reservationRequest.getTheme());
-        Reservation reservation = new Reservation(name, reservationRequest.getDate(), time, theme);
+    public Reservation save(String date, Member member, Long timeId, Long themeId) {
+        Time time = entityManager.getReference(Time.class, timeId);
+        Theme theme = entityManager.getReference(Theme.class, themeId);
+        Reservation reservation = new Reservation(date, member, time, theme);
         entityManager.persist(reservation);
         return reservation;
     }
@@ -38,12 +39,13 @@ public class ReservationDao {
         return true;
     }
 
-    public List<Reservation> findByMemberName(String name) {
+    public List<Reservation> findByMemberId(Long memberId) {
         return entityManager.createQuery(
-                        "select r from Reservation r join fetch r.theme join fetch r.time where r.name = :name",
+                        "select r from Reservation r join fetch r.member join fetch r.theme join fetch r.time "
+                                + "where r.member.id = :memberId",
                         Reservation.class
                 )
-                .setParameter("name", name)
+                .setParameter("memberId", memberId)
                 .getResultList();
     }
 
@@ -53,7 +55,7 @@ public class ReservationDao {
 
     public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
         return entityManager.createQuery(
-                        "select r from Reservation r join fetch r.theme join fetch r.time "
+                        "select r from Reservation r join fetch r.member join fetch r.theme join fetch r.time "
                                 + "where r.date = :date and r.theme.id = :themeId",
                         Reservation.class
                 )

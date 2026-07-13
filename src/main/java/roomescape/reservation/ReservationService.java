@@ -72,9 +72,14 @@ public class ReservationService {
     private ReservationResponse createReservation(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
         validateReservationTarget(reservationRequest);
         Member member = findReservationMember(reservationRequest, loginMember);
-        Reservation reservation = reservationDao.save(reservationRequest, member.name());
+        Reservation reservation = reservationDao.save(
+                reservationRequest.getDate(),
+                member,
+                reservationRequest.getTime(),
+                reservationRequest.getTheme()
+        );
 
-        return new ReservationResponse(reservation.id(), member.name(), reservation.theme().name(), reservation.date(), reservation.time().value());
+        return toResponse(reservation);
     }
 
     private void validateReservationTarget(ReservationRequest reservationRequest) {
@@ -115,14 +120,24 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.id(), it.name(), it.theme().name(), it.date(), it.time().value()))
+                .map(this::toResponse)
                 .toList();
     }
 
     public List<ReservationMineResponse> findMine(LoginMemberInfo loginMember) {
-        return reservationDao.findByMemberName(loginMember.name()).stream()
+        return reservationDao.findByMemberId(loginMember.id()).stream()
                 .map(it -> new ReservationMineResponse(it.id(), it.theme().name(), it.date(), it.time().value(), "예약"))
                 .toList();
+    }
+
+    private ReservationResponse toResponse(Reservation reservation) {
+        return new ReservationResponse(
+                reservation.id(),
+                reservation.member().name(),
+                reservation.theme().name(),
+                reservation.date(),
+                reservation.time().value()
+        );
     }
 
     private record ReservationFingerprint(String name, String loginEmail, String date, Long theme, Long time) {
