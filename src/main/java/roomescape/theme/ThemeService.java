@@ -26,8 +26,8 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(Long id) {
-        if (!themeDao.deleteById(id)) {
-            throw new NotFoundException("존재하지 않는 테마입니다.");
-        }
+        Theme theme = themeDao.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+        theme.delete();
     }
 }

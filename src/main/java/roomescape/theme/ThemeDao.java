@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ThemeDao {
@@ -24,13 +25,12 @@ public class ThemeDao {
         return theme;
     }
 
-    public boolean deleteById(Long id) {
+    public Optional<Theme> findById(Long id) {
         Theme theme = entityManager.find(Theme.class, id);
         if (theme == null || theme.deleted()) {
-            return false;
+            return Optional.empty();
         }
-        theme.delete();
-        return true;
+        return Optional.of(theme);
     }
 
     public boolean existsById(Long id) {
