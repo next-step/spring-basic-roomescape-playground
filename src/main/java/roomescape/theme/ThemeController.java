@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 public class ThemeController {
-    private ThemeRepository themeRepository;
+    private final ThemeRepository themeRepository;
 
     public ThemeController(ThemeRepository themeDao) {
         this.themeRepository = themeDao;

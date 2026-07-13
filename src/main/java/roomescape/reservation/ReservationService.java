@@ -13,8 +13,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberService memberService;
 
-    public ReservationService(ReservationRepository reservationDao, MemberService memberService) {
-        this.reservationRepository = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository, MemberService memberService) {
+        this.reservationRepository = reservationRepository;
         this.memberService = memberService;
     }
 
@@ -62,5 +62,19 @@ public class ReservationService {
         }
 
         return memberService.findById(loginMember.id());
+    }
+
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+
+        return reservationRepository.findByMemberId(loginMember.id())
+                .stream()
+                .map(reservation -> new MyReservationResponse(
+                        reservation.getId(),
+                        reservation.getTheme().getName(),
+                        reservation.getDate(),
+                        reservation.getTime().getValue(),
+                        "예약"
+                ))
+                .toList();
     }
 }

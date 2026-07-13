@@ -10,3 +10,12 @@ VALUES ('10:00', false),
        ('16:00', false),
        ('18:00', false),
        ('20:00', false);
+
+INSERT INTO member (name, email, password, role)
+VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN'),
+       ('브라운', 'brown@email.com', 'password', 'USER');
+
+INSERT INTO reservation (member_id, name, date, time_id, theme_id)
+VALUES (1, '어드민', '2024-03-01', 1, 1),
+       (1, '어드민', '2024-03-01', 2, 2),
+       (1, '어드민', '2024-03-01', 3, 3);
