@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.exception.ForbiddenException;
@@ -9,6 +10,7 @@ import roomescape.member.MemberService;
 import java.util.List;
 
 @Service
+@Transactional
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberService memberService;
@@ -24,13 +26,7 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.save(request, member);
 
-        return new ReservationResponse(
-                reservation.getId(),
-                member.getName(),
-                reservation.getTheme().getName(),
-                reservation.getDate(),
-                reservation.getTime().getValue()
-        );
+        return ReservationResponse.from(reservation);
     }
 
     public void deleteById(Long id) {
@@ -38,8 +34,9 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationRepository.findAll()
+                .stream()
+                .map(ReservationResponse::from)
                 .toList();
     }
 
@@ -68,13 +65,7 @@ public class ReservationService {
 
         return reservationRepository.findByMemberId(loginMember.id())
                 .stream()
-                .map(reservation -> new MyReservationResponse(
-                        reservation.getId(),
-                        reservation.getTheme().getName(),
-                        reservation.getDate(),
-                        reservation.getTime().getValue(),
-                        "예약"
-                ))
+                .map(MyReservationResponse::from)
                 .toList();
     }
 }

@@ -7,4 +7,14 @@ public record MyReservationResponse(
         String time,
         String status
 ) {
+
+    public static MyReservationResponse from(Reservation reservation) {
+        return new MyReservationResponse(
+                reservation.getId(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue(),
+                "예약"
+        );
+    }
 }

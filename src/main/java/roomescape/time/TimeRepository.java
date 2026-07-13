@@ -2,14 +2,12 @@ package roomescape.time;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Transactional
 public class TimeRepository {
 
     @PersistenceContext

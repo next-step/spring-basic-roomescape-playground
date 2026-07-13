@@ -1,5 +1,6 @@
 package roomescape.time;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
@@ -7,6 +8,7 @@ import roomescape.reservation.ReservationRepository;
 import java.util.List;
 
 @Service
+@Transactional
 public class TimeService {
     private final TimeRepository timeRepository;
     private final ReservationRepository reservationRepository;

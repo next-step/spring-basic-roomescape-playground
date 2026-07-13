@@ -2,7 +2,6 @@ package roomescape.reservation;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
@@ -11,7 +10,6 @@ import roomescape.time.Time;
 import java.util.List;
 
 @Repository
-@Transactional
 public class ReservationRepository {
 
     @PersistenceContext
