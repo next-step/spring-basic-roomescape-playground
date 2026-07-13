@@ -14,6 +14,7 @@
 - 쿠키의 토큰으로 로그인 사용자 정보를 조회합니다 (`GET /login/check`).
 - 로그아웃 시 `token` 쿠키를 만료시킵니다.
 - `HandlerMethodArgumentResolver`(`LoginMemberArgumentResolver`)로 컨트롤러에 로그인 사용자(`LoginMember`)를 주입합니다.
+- '/admin/**'은 ADMIN 권한을 가진 사용자만 접근 가능합니다.
 
 ### 예외 처리
 - `ErrorCode` 인터페이스로 예외 상황별 HTTP 상태 코드와 메시지를 관리합니다. (`AuthErrorCode`, `MemberErrorCode` 구현)
@@ -23,58 +24,87 @@
 ## 프로젝트 구조
 ```
 roomescape/
-├── RoomescapeApplication.java        # 메인 진입점
-├── PageController.java               # 뷰(HTML) 페이지 라우팅
+├── RoomescapeApplication.java               # 메인 진입점
+├── PageController.java                      # 뷰(HTML) 페이지 라우팅
 │
-├── auth/                             # 인증/인가 (JWT)
-│   ├── AuthController.java           # 로그인/로그아웃/로그인체크 API
-│   ├── AuthService.java
-│   ├── AuthErrorCode.java
-│   ├── JwtTokenProvider.java         # JWT 토큰 생성/검증
-│   ├── JwtTokenProperty.java         # JWT 설정값 (@ConfigurationProperties)
-│   ├── LoginMemberArgumentResolver.java  # @LoginMember 주입
-│   ├── LoginMember.java              # 인증된 사용자 정보
-│   ├── LoginRequest.java
-│   └── LoginCheckResponse.java
+├── auth/                                    # 인증/인가 (JWT)
+│   ├── controller/
+│   │   └── AuthController.java              # 로그인/로그아웃/로그인체크 API
+│   ├── service/
+│   │   └── AuthService.java
+│   ├── domain/
+│   │   └── LoginMember.java                 # 인증된 사용자 정보
+│   ├── dto/
+│   │   ├── LoginRequest.java
+│   │   └── LoginCheckResponse.java
+│   ├── exception/
+│   │   └── AuthErrorCode.java
+│   ├── jwt/                                 # JWT 토큰 메커니즘
+│   │   ├── JwtTokenProvider.java            # 토큰 생성/검증
+│   │   └── JwtTokenProperty.java            # JWT 설정값 (@ConfigurationProperties)
+│   └── web/                                 # 웹 계층 확장(인증/인가 글루)
+│       ├── Login.java                       # @Login 커스텀 애노테이션
+│       ├── LoginMemberArgumentResolver.java # @Login LoginMember 주입
+│       └── CheckAdminInterceptor.java       # 관리자 권한 검증 인터셉터
 │
-├── member/                           # 회원
-│   ├── Member.java                   # 도메인/엔티티
-│   ├── MemberController.java
-│   ├── MemberService.java
-│   ├── MemberDao.java                # JdbcTemplate 기반 DAO
-│   ├── MemberRequest.java
-│   └── MemberResponse.java
+├── member/                                  # 회원
+│   ├── controller/
+│   │   └── MemberController.java
+│   ├── service/
+│   │   └── MemberService.java
+│   ├── domain/
+│   │   ├── Member.java                      # 도메인/엔티티
+│   │   └── Role.java                        # 권한 enum (ADMIN/USER, isAdmin())
+│   ├── dto/
+│   │   ├── MemberRequest.java
+│   │   └── MemberResponse.java
+│   ├── exception/
+│   │   └── MemberErrorCode.java
+│   └── repository/
+│       └── MemberDao.java
 │
-├── reservation/                      # 예약 (핵심 도메인)
-│   ├── Reservation.java
-│   ├── ReservationController.java
-│   ├── ReservationService.java
-│   ├── ReservationDao.java
-│   ├── ReservationRequest.java
-│   └── ReservationResponse.java
+├── reservation/                             # 예약 (핵심 도메인)
+│   ├── controller/
+│   │   └── ReservationController.java
+│   ├── service/
+│   │   └── ReservationService.java
+│   ├── domain/
+│   │   └── Reservation.java
+│   ├── dto/
+│   │   ├── ReservationRequest.java
+│   │   └── ReservationResponse.java
+│   └── repository/
+│       └── ReservationDao.java
 │
-├── theme/                            # 테마
-│   ├── Theme.java
-│   ├── ThemeController.java
-│   └── ThemeDao.java                 # ※ Service 없음
+├── theme/                                   # 테마
+│   ├── controller/
+│   │   └── ThemeController.java
+│   ├── domain/
+│   │   └── Theme.java
+│   └── repository/
+│       └── ThemeDao.java
 │
-├── time/                             # 예약 시간
-│   ├── Time.java
-│   ├── AvailableTime.java            # 예약 가능 시간 표현
-│   ├── TimeController.java
-│   ├── TimeService.java
-│   └── TimeDao.java
+├── time/                                    # 예약 시간
+│   ├── controller/
+│   │   └── TimeController.java
+│   ├── service/
+│   │   └── TimeService.java
+│   ├── domain/
+│   │   └── Time.java
+│   ├── dto/
+│   │   └── AvailableTime.java               # 예약 가능 시간 응답 모델
+│   └── repository/
+│       └── TimeDao.java
 │
 ├── config/
-│   └── WebConfig.java                # ArgumentResolver 등록
+│   └── WebConfig.java                       # ArgumentResolver + Interceptor 등록
 │
-├── exception/                        # 전역 예외 처리
-│   ├── GlobalExceptionHandler.java   # @RestControllerAdvice
+├── exception/                               # 전역 예외 처리 (공통)
+│   ├── GlobalExceptionHandler.java          # @RestControllerAdvice
 │   ├── ApplicationException.java
-│   ├── ErrorCode.java                # 인터페이스 (auth의 AuthErrorCode가 구현)
+│   ├── ErrorCode.java                       # 인터페이스 (AuthErrorCode/MemberErrorCode가 구현)
 │   └── ErrorResponse.java
 │
 └── util/
-└── CookieUtil.java               # 쿠키 추출/생성 헬퍼
-
+    └── CookieUtil.java                      # 쿠키 추출/생성 헬퍼
 ```
