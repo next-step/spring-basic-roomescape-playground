@@ -37,7 +37,7 @@ public class JpaThemeRepository implements ThemeRepository {
 
     @Override
     public void deleteById(Long id) {
-        Theme theme = entityManager.find(Theme.class, id);
-        entityManager.remove(theme);
+        findById(id)
+                .ifPresent(entityManager::remove);
     }
 }

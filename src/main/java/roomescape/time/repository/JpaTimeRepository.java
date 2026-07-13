@@ -37,7 +37,7 @@ public class JpaTimeRepository implements TimeRepository {
 
     @Override
     public void deleteById(Long id) {
-        Time time = entityManager.find(Time.class, id);
-        entityManager.remove(time);
+        findById(id)
+                .ifPresent(entityManager::remove);
     }
 }
