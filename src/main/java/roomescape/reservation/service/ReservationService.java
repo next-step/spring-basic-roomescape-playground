@@ -76,7 +76,7 @@ public class ReservationService {
                         reservation.getTheme().getName(),
                         reservation.getDate().toString(),
                         reservation.getTime().getTimeValue(),
-                        "예약`"
+                        "예약"
                 ))
                 .toList();
     }
