@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.AuthenticationException;
 import roomescape.ConflictException;
 import roomescape.NotFoundException;
@@ -19,13 +20,14 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
     private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
 
-    private ReservationDao reservationDao;
-    private MemberDao memberDao;
-    private TimeDao timeDao;
-    private ThemeDao themeDao;
+    private final ReservationDao reservationDao;
+    private final MemberDao memberDao;
+    private final TimeDao timeDao;
+    private final ThemeDao themeDao;
     private final Map<String, IdempotencyRecord> idempotencyRecords = new ConcurrentHashMap<>();
 
     public ReservationService(ReservationDao reservationDao, MemberDao memberDao, TimeDao timeDao, ThemeDao themeDao) {
@@ -35,10 +37,12 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
+    @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
         return save(reservationRequest, loginMember, Optional.empty());
     }
 
+    @Transactional
     public ReservationResponse save(
             ReservationRequest reservationRequest,
             Optional<LoginMemberInfo> loginMember,
@@ -102,6 +106,7 @@ public class ReservationService {
         }
     }
 
+    @Transactional
     public void deleteById(Long id) {
         if (!reservationDao.deleteById(id)) {
             throw new NotFoundException("존재하지 않는 예약입니다.");

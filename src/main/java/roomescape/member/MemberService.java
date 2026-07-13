@@ -2,12 +2,14 @@ package roomescape.member;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.AuthenticationException;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.LoginMemberInfo;
 import roomescape.auth.LoginTokens;
 
 @Service
+@Transactional(readOnly = true)
 public class MemberService {
     private final MemberDao memberDao;
     private final JwtTokenProvider jwtTokenProvider;
@@ -17,6 +19,7 @@ public class MemberService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), MemberRole.USER));
         return new MemberResponse(member.id(), member.name(), member.email());
