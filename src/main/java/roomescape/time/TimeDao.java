@@ -1,50 +1,45 @@
 package roomescape.time;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
 public class TimeDao {
-    private final JdbcTemplate jdbcTemplate;
-
-    public TimeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<Time> findAll() {
-        return jdbcTemplate.query(
-                "SELECT * FROM time WHERE deleted = false",
-                (rs, rowNum) -> new Time(
-                        rs.getLong("id"),
-                        rs.getString("time_value")));
+        return entityManager.createQuery(
+                        "select t from Time t where t.deleted = false",
+                        Time.class
+                )
+                .getResultList();
     }
 
     public Time save(Time time) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        this.jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO time(time_value) VALUES (?)", new String[]{"id"});
-            ps.setString(1, time.value());
-            return ps;
-        }, keyHolder);
-
-        return new Time(keyHolder.getKey().longValue(), time.value());
+        entityManager.persist(time);
+        return time;
     }
 
     public boolean deleteById(Long id) {
-        return jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ? AND deleted = false", id) > 0;
+        Time time = entityManager.find(Time.class, id);
+        if (time == null || time.deleted()) {
+            return false;
+        }
+        time.delete();
+        return true;
     }
 
     public boolean existsById(Long id) {
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM time WHERE id = ? AND deleted = false",
-                Integer.class,
-                id
-        );
-        return count != null && count > 0;
+        Long count = entityManager.createQuery(
+                        "select count(t) from Time t where t.id = :id and t.deleted = false",
+                        Long.class
+                )
+                .setParameter("id", id)
+                .getSingleResult();
+        return count > 0;
     }
 }

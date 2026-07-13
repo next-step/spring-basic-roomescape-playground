@@ -1,68 +1,58 @@
 package roomescape.member;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class MemberDao {
-    private JdbcTemplate jdbcTemplate;
-
-    public MemberDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public Member save(Member member) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, member.name());
-            ps.setString(2, member.email());
-            ps.setString(3, member.password());
-            ps.setString(4, member.role().name());
-            return ps;
-        }, keyHolder);
-
-        return new Member(keyHolder.getKey().longValue(), member.name(), member.email(), member.role());
+        entityManager.persist(member);
+        return member;
     }
 
     public Member findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        MemberRole.from(rs.getString("role"))
-                ),
-                email, password
-        );
+        try {
+            return entityManager.createQuery(
+                            "select m from Member m where m.email = :email and m.password = :password",
+                            Member.class
+                    )
+                    .setParameter("email", email)
+                    .setParameter("password", password)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            throw new EmptyResultDataAccessException(1);
+        }
     }
 
     public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE name = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        MemberRole.from(rs.getString("role"))
-                ),
-                name
-        );
+        try {
+            return entityManager.createQuery(
+                            "select m from Member m where m.name = :name",
+                            Member.class
+                    )
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            throw new EmptyResultDataAccessException(1);
+        }
     }
 
     public Member findByEmail(String email) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        MemberRole.from(rs.getString("role"))
-                ),
-                email
-        );
+        try {
+            return entityManager.createQuery(
+                            "select m from Member m where m.email = :email",
+                            Member.class
+                    )
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            throw new EmptyResultDataAccessException(1);
+        }
     }
 }
