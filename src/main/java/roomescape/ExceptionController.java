@@ -1,5 +1,6 @@
 package roomescape;
 
+import lombok.Getter;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,7 @@ public class ExceptionController {
                 .body(new ErrorResponse(status.value(), message));
     }
 
+    @Getter
     public static class ErrorResponse {
         private final int statusCode;
         private final String message;
@@ -59,14 +61,6 @@ public class ExceptionController {
         public ErrorResponse(int statusCode, String message) {
             this.statusCode = statusCode;
             this.message = message;
-        }
-
-        public int getStatusCode() {
-            return statusCode;
-        }
-
-        public String getMessage() {
-            return message;
         }
     }
 }
