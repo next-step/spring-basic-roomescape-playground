@@ -3,12 +3,10 @@ package roomescape.theme;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
-@Transactional(readOnly = true)
 public class ThemeDao {
     @PersistenceContext
     private EntityManager entityManager;
@@ -21,13 +19,11 @@ public class ThemeDao {
                 .getResultList();
     }
 
-    @Transactional
     public Theme save(Theme theme) {
         entityManager.persist(theme);
         return theme;
     }
 
-    @Transactional
     public boolean deleteById(Long id) {
         Theme theme = entityManager.find(Theme.class, id);
         if (theme == null || theme.deleted()) {

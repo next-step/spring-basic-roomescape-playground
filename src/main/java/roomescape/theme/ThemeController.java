@@ -9,37 +9,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AdminOnly;
 
-import roomescape.NotFoundException;
-
 import java.net.URI;
 import java.util.List;
 
 @RestController
 public class ThemeController {
-    private ThemeDao themeDao;
+    private final ThemeService themeService;
 
-    public ThemeController(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
     }
 
     @PostMapping("/themes")
     @AdminOnly
     public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
-        Theme newTheme = themeDao.save(theme);
+        Theme newTheme = themeService.save(theme);
         return ResponseEntity.created(URI.create("/themes/" + newTheme.id())).body(newTheme);
     }
 
     @GetMapping("/themes")
     public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeDao.findAll());
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @DeleteMapping("/themes/{id}")
     @AdminOnly
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        if (!themeDao.deleteById(id)) {
-            throw new NotFoundException("존재하지 않는 테마입니다.");
-        }
+        themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
