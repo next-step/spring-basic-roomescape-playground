@@ -1,7 +1,6 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.dto.AuthResult;
 import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.MemberInfo;
-import roomescape.member.MemberRequest;
+import roomescape.member.dto.MemberRequest;
 
 import java.net.URI;
 

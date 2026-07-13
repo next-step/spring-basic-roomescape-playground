@@ -113,8 +113,8 @@ class AuthenticationTest {
         String requestBody = """
                 {
                     "date": "2024-03-02",
-                    "theme": 1,
-                    "time": 1
+                    "themeId": 1,
+                    "timeId": 1
                 }
                 """;
 

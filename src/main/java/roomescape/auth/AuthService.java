@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.AuthResult;
 import roomescape.auth.dto.MemberInfo;
-import roomescape.member.MemberRequest;
-import roomescape.member.MemberResponse;
-import roomescape.member.MemberService;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.service.MemberService;
 
 @Service
 public class AuthService {
