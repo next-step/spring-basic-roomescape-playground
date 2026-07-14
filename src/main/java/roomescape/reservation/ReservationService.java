@@ -18,7 +18,7 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest, MemberResponse member) {
         String reservatorName = reservationRequest.getName() != null ? reservationRequest.getName() : member.getName();
 
-        ReservationRequest newReservation = new ReservationRequest(reservatorName, reservationRequest.getDate(), reservationRequest.getTime(), reservationRequest.getTheme());
+        ReservationRequest newReservation = new Reservation(reservatorName, reservationRequest.getDate(), reservationRequest.getTime(), reservationRequest.getTheme());
         Reservation reservation = reservationRepository.save(newReservation);
 
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
@@ -29,8 +29,14 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationRepository.findAllWithFetch().stream()
+                .map(it -> new ReservationResponse(
+                        it.getId(),
+                        it.getName(),
+                        it.getTheme().getName(),
+                        it.getDate(),
+                        it.getTime().getValue()
+                ))
                 .toList();
     }
 

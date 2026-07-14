@@ -1,10 +1,9 @@
 package roomescape.time;
 
 import jakarta.persistence.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Entity
-@Table(name = "reservation_time")
+@Table(name = "time")
 public class Time {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
