@@ -9,7 +9,7 @@ import roomescape.auth.AuthUserArgumentResolver;
 
 import java.util.List;
 
-@Configuration
+@Configuration // Spring MVC 설정을 추가함
 public class WebConfig implements WebMvcConfigurer {
     private final AuthUserArgumentResolver authUserArgumentResolver;
     private final AdminInterceptor adminInterceptor;

@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.AuthenticationException;
-import roomescape.AuthorizationException;
+import roomescape.exception.AuthenticationException;
+import roomescape.exception.AuthorizationException;
 import roomescape.member.MemberService;
 import roomescape.member.MemberRole;
 

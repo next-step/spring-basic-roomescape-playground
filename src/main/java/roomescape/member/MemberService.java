@@ -3,7 +3,7 @@ package roomescape.member;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.AuthenticationException;
+import roomescape.exception.AuthenticationException;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.LoginMemberInfo;
 import roomescape.auth.LoginTokens;

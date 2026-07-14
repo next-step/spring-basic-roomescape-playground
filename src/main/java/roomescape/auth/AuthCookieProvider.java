@@ -3,7 +3,7 @@ package roomescape.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
-import roomescape.AuthenticationException;
+import roomescape.exception.AuthenticationException;
 
 @Component
 public class AuthCookieProvider {
