@@ -5,7 +5,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Entity
-@SQLDelete(sql = "UPDATE theme SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE time SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 @Table(name = "time")
 public class Time {
