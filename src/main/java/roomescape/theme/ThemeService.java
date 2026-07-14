@@ -2,6 +2,7 @@ package roomescape.theme;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class ThemeService {
     @Transactional
     public void deleteById(Long id) {
         Theme theme = themeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
         theme.delete();
     }
 }

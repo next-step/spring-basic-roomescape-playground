@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.ConflictException;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
 import roomescape.auth.LoginMemberInfo;
 import roomescape.member.Member;
@@ -58,7 +59,7 @@ public class ReservationService {
             IdempotencyRecord record = idempotencyRecords.get(key.get());
             if (record != null) {
                 if (!record.fingerprint().equals(fingerprint)) {
-                    throw new ConflictException("동일한 Idempotency-Key로 다른 요청을 처리할 수 없습니다.");
+                    throw new ConflictException(ErrorCode.IDEMPOTENCY_KEY_CONFLICT);
                 }
                 return record.response();
             }
@@ -84,10 +85,10 @@ public class ReservationService {
 
     private void validateReservationTarget(ReservationRequest reservationRequest) {
         if (!themeDao.existsById(reservationRequest.getTheme())) {
-            throw new NotFoundException("존재하지 않는 테마입니다.");
+            throw new NotFoundException(ErrorCode.THEME_NOT_FOUND);
         }
         if (!timeDao.existsById(reservationRequest.getTime())) {
-            throw new NotFoundException("존재하지 않는 시간입니다.");
+            throw new NotFoundException(ErrorCode.TIME_NOT_FOUND);
         }
     }
 
@@ -107,14 +108,14 @@ public class ReservationService {
                     loginMember.map(LoginMemberInfo::email).orElse(null),
                     e
             );
-            throw new NotFoundException("존재하지 않는 회원입니다.", e);
+            throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND, e);
         }
     }
 
     @Transactional
     public void deleteById(Long id) {
         if (!reservationDao.deleteById(id)) {
-            throw new NotFoundException("존재하지 않는 예약입니다.");
+            throw new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND);
         }
     }
 

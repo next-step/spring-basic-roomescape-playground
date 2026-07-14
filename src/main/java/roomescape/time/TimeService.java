@@ -2,6 +2,7 @@ package roomescape.time;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationDao;
@@ -45,7 +46,7 @@ public class TimeService {
     @Transactional
     public void deleteById(Long id) {
         if (!timeDao.deleteById(id)) {
-            throw new NotFoundException("존재하지 않는 시간입니다.");
+            throw new NotFoundException(ErrorCode.TIME_NOT_FOUND);
         }
     }
 }

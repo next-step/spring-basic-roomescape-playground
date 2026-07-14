@@ -1,11 +1,19 @@
 package roomescape.exception;
 
 public class NotFoundException extends RuntimeException {
-    public NotFoundException(String message) {
-        super(message);
+    private final ErrorCode errorCode;
+
+    public NotFoundException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 
-    public NotFoundException(String message, Throwable cause) {
-        super(message, cause);
+    public NotFoundException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode.getMessage(), cause);
+        this.errorCode = errorCode;
+    }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
 }
