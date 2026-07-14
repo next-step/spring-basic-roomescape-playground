@@ -33,4 +33,10 @@ public class ReservationService {
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
+
+    public List<ReservationResponse> getMyReservations(String email) {
+        return reservationRepository.findByMemberEmail(email).stream()
+                .map(it -> new ReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), it.getStatus()))
+                .toList();
+    }
 }
