@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 public class ThemeController {
-    private ThemeRepository timeRepository;
+    private final ThemeRepository timeRepository;
 
     public ThemeController(ThemeRepository themeRepository) {
         this.timeRepository = themeRepository;
@@ -27,6 +27,7 @@ public class ThemeController {
 
     @GetMapping("/themes")
     public ResponseEntity<List<Theme>> list() {
+
         return ResponseEntity.ok(timeRepository.findAll());
     }
 
