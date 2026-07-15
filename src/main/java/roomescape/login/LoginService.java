@@ -24,7 +24,17 @@ public class LoginService {
     public MemberResponse checkLogin(Long memberId) {
 
         Member member = memberDao.findById(memberId);
+        if (member == null) {
+            throw new RuntimeException("Invalid email or password");
+        }
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
+
+    public Member findById(Long id) {
+        Member member = memberDao.findById(id);
+
+        return member;
+    }
+
 
 }
