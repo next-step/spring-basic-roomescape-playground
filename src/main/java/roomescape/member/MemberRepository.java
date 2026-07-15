@@ -31,7 +31,7 @@ public class MemberRepository {
 
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         List<Member> members = entityManager.createQuery(
-                        "SELECT m FROM Member WHERE m.email= :email AND m.password =:password",
+                        "SELECT m FROM Member m WHERE m.email= :email AND m.password =:password",
                         Member.class
                 ).setParameter("email", email)
                 .setParameter("password", password)
