@@ -18,7 +18,10 @@ public class JpaReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String jpql = "SELECT r FROM reservation AS r";
+        String jpql = "SELECT r FROM reservation AS r " +
+                "JOIN FETCH r.member " +
+                "JOIN FETCH r.theme " +
+                "JOIN FETCH r.time";
 
         return entityManager.createQuery(jpql, Reservation.class)
                 .getResultList();
@@ -26,7 +29,10 @@ public class JpaReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByMemberId(Long memberId) {
-        String jpql = "SELECT r FROM reservation AS r WHERE r.member.id = :memberId";
+        String jpql = "SELECT r FROM reservation AS r " +
+                "JOIN FETCH r.theme " +
+                "JOIN FETCH r.time " +
+                "WHERE r.member.id = :memberId";
 
         return entityManager.createQuery(jpql, Reservation.class)
                 .setParameter("memberId", memberId)
