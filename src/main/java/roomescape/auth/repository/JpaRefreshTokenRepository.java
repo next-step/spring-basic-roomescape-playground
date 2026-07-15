@@ -45,4 +45,9 @@ public class JpaRefreshTokenRepository implements RefreshTokenRepository {
         findByMemberId(memberId)
                 .ifPresent(entityManager::remove);
     }
+
+    @Override
+    public void flush() {
+        entityManager.flush();
+    }
 }
