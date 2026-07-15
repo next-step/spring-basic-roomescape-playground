@@ -25,11 +25,11 @@ public class JpaReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByMemberId(Long memerId) {
+    public List<Reservation> findAllByMemberId(Long memberId) {
         String jpql = "SELECT r FROM reservation AS r WHERE r.member.id = :memberId";
 
         return entityManager.createQuery(jpql, Reservation.class)
-                .setParameter("memberId", memerId)
+                .setParameter("memberId", memberId)
                 .getResultList();
     }
 

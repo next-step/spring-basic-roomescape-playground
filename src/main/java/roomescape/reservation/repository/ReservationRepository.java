@@ -9,7 +9,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    List<Reservation> findAllByMemberId(Long memerId);
+    List<Reservation> findAllByMemberId(Long memberId);
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 
