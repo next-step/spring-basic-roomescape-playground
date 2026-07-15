@@ -14,12 +14,14 @@ import roomescape.exception.TokenNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 
+import java.util.Arrays;
+
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
-
-    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberRepository memberRepository) {
+    private final CookieManager cookieManager;
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberRepository memberRepository,CookieManager cookieManager) {
         this.memberRepository = memberRepository;
         this.jwtProvider = jwtProvider;
         this.cookieManager=cookieManager;
