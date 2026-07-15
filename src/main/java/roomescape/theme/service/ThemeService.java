@@ -19,6 +19,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public ThemeResponse create(ThemeRequest request) {
         Theme theme = new Theme(request.name(), request.description());
         Theme savedTheme = themeRepository.save(theme);
