@@ -8,12 +8,11 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.CookieManager;
 import roomescape.JwtProvider;
 import roomescape.exception.TokenNotFoundException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
-
-import java.util.Arrays;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -23,6 +22,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
         this.jwtProvider = jwtProvider;
+        this.cookieManager=cookieManager;
     }
 
     @Override
