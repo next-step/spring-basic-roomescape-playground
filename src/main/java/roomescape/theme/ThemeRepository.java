@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ThemeRepository  {
@@ -22,6 +23,11 @@ public class ThemeRepository  {
                 "SELECT t FROM Theme t",
                 Theme.class
         ).getResultList();
+    }
+    public Optional<Theme> findById(Long id){
+        return Optional.ofNullable(
+                entityManager.find(Theme.class,id)
+        );
     }
     public void deleteById(Long id){
         Theme theme = entityManager.find(Theme.class,id);

@@ -37,5 +37,19 @@ public class ReservationRepository {
             entityManager.remove(reservation);
         }
     }
+
+    public List<Reservation> findByDateAndThemeId(String date, Long themeId){
+        return entityManager.createQuery(
+                """
+                SELECT r
+                FROM Reservation r
+                WHERE r.date =:date
+                    AND r.theme.id=:themeId
+                """,
+                Reservation.class
+        ).setParameter("date",date)
+                .setParameter("themeId",themeId)
+                .getResultList();
+    }
 }
 
