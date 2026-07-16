@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import roomescape.member.Member;
+import roomescape.reservation.dto.ReservationRequest;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 

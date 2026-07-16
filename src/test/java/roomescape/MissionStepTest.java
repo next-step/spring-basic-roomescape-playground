@@ -7,8 +7,8 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.MyReservationResponse;
-import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.dto.MyReservationResponse;
+import roomescape.reservation.dto.ReservationResponse;
 
 import java.util.HashMap;
 import java.util.List;

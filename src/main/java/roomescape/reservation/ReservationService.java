@@ -6,6 +6,9 @@ import roomescape.auth.LoginMember;
 import roomescape.exception.ForbiddenException;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
+import roomescape.reservation.dto.MyReservationResponse;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 
 import java.util.List;
 
