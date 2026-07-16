@@ -1,6 +1,7 @@
 package roomescape.reservation.dto;
 
 import roomescape.reservation.Reservation;
+import roomescape.reservation.ReservationStatus;
 
 public record MyReservationResponse(
         Long reservationId,
@@ -16,7 +17,7 @@ public record MyReservationResponse(
                 reservation.getTheme().getName(),
                 reservation.getDate(),
                 reservation.getTime().getValue(),
-                "예약"
+                ReservationStatus.RESERVED.getValue()
         );
     }
 }
