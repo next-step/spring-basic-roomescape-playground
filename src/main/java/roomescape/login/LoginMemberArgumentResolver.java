@@ -11,15 +11,15 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.CookieManager;
 import roomescape.JwtProvider;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
     private final CookieManager cookieManager;
-    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberDao memberDao,CookieManager cookieManager) {
-        this.memberDao = memberDao;
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberRepository memberRepository,CookieManager cookieManager) {
+        this.memberRepository = memberRepository;
         this.jwtProvider = jwtProvider;
         this.cookieManager=cookieManager;
     }
@@ -38,7 +38,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         Long memberId = jwtProvider.getMemberId(token);
 
-        Member member = memberDao.findById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow();
 
         return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
@@ -58,5 +59,4 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         }
         return cookies;
     }
-
 }
