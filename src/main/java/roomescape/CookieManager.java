@@ -8,8 +8,6 @@ import java.util.Arrays;
 
 @Component
 public class CookieManager {
-
-
     public String extractToken(Cookie[] cookies, String cookieName) {
         return Arrays.stream(cookies)
                 .filter(cookie -> cookieName.equals(cookie.getName()))

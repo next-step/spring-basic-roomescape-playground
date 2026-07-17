@@ -5,28 +5,29 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.CookieManager;
 import roomescape.JwtProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
-
-import java.util.Arrays;
 
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
+    private final CookieManager cookieManager;
 
-    public LoginInterceptor(JwtProvider jwtProvider, MemberRepository memberRepository) {
+    public LoginInterceptor(JwtProvider jwtProvider, MemberRepository memberRepository, CookieManager cookieManager) {
         this.jwtProvider = jwtProvider;
         this.memberRepository = memberRepository;
+        this.cookieManager = cookieManager;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = getCookies(request);
 
-        String token = extractToken(cookies);
+        String token = cookieManager.extractToken(cookies,"accessToken");
         Long memberId = jwtProvider.getMemberId(token);
         Member member = memberRepository.findById(memberId)
                 .orElseThrow();
@@ -43,14 +44,5 @@ public class LoginInterceptor implements HandlerInterceptor {
             throw new IllegalStateException("cookie is not exist");
         }
         return cookies;
-    }
-
-    private String extractToken(Cookie[] cookies) {
-        String token = Arrays.stream(cookies)
-                .filter(cookie -> "accessToken".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("token is not found in cookies"));
-        return token;
     }
 }
