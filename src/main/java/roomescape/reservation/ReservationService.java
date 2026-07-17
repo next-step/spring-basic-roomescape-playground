@@ -36,6 +36,7 @@ public class ReservationService {
                 time,
                 theme
         );
+        reservationRepository.save(reservation);
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getTime_value());
     }
 
