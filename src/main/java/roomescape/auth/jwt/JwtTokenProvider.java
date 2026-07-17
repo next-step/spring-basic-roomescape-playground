@@ -10,7 +10,7 @@ import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
 import roomescape.auth.exception.AuthErrorCode;
 import roomescape.exception.ApplicationException;
-import roomescape.member.domain.Member;
+import roomescape.member.entity.Member;
 
 import java.security.Key;
 import java.util.Base64;

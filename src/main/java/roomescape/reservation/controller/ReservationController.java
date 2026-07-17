@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.domain.LoginMember;
 import roomescape.auth.web.Login;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -31,9 +32,16 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
+    @GetMapping("/reservations-mine")
+    public ResponseEntity<List<MyReservationResponse>> getUserReservations(@Login LoginMember loginMember) {
+        List<MyReservationResponse> responseList = reservationService.findReservationsByMember(loginMember);
+
+        return ResponseEntity.ok(responseList);
+    }
+
     @PostMapping("/reservations")
     public ResponseEntity create(@Valid @RequestBody ReservationRequest reservationRequest, @Login LoginMember loginMember) {
-        ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);
+        ReservationResponse reservation = reservationService.create(reservationRequest, loginMember);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }

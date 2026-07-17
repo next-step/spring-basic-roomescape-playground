@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.domain.Time;
 import roomescape.time.dto.AvailableTime;
+import roomescape.time.dto.TimeRequest;
+import roomescape.time.dto.TimeResponse;
+import roomescape.time.entity.Time;
 import roomescape.time.service.TimeService;
 
 import java.net.URI;
@@ -24,17 +26,17 @@ public class TimeController {
     }
 
     @GetMapping("/times")
-    public List<Time> list() {
+    public List<TimeResponse> list() {
         return timeService.findAll();
     }
 
     @PostMapping("/times")
-    public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
+    public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest timeRequest) {
+        if (timeRequest.getValue() == null || timeRequest.getValue().isEmpty()) {
             throw new RuntimeException();
         }
 
-        Time newTime = timeService.save(time);
+        TimeResponse newTime = timeService.create(new Time(timeRequest.getValue()));
         return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
     }
 
