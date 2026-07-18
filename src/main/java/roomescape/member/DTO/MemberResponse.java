@@ -14,7 +14,7 @@ public class MemberResponse {
         this.email = email;
     }
 
-    // role이 필요한 경우 대비 
+    // role이 필요한 경우 대비
     // role은 일단 인터셉터에서 써야해서 추가함.
     public MemberResponse(Long id, String name, String email, Role role) {
         this.id = id;

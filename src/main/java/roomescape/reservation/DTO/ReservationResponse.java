@@ -1,11 +1,14 @@
 package roomescape.reservation.DTO;
 
+import roomescape.reservation.ReservationStatus;
+
 public class ReservationResponse {
     private Long id;
     private String name;
     private String theme;
     private String date;
     private String time;
+    private ReservationStatus status;
 
     public ReservationResponse(Long id, String name, String theme, String date, String time) {
         this.id = id;
@@ -13,6 +16,14 @@ public class ReservationResponse {
         this.theme = theme;
         this.date = date;
         this.time = time;
+    }
+
+    public ReservationResponse(Long id, String theme, String date, String time, ReservationStatus Status) {
+        this.id = id;
+        this.theme = theme;
+        this.date = date;
+        this.time = time;
+        this.status = status;
     }
 
     public Long getId() {
@@ -33,5 +44,9 @@ public class ReservationResponse {
 
     public String getTime() {
         return time;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
     }
 }

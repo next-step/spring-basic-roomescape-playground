@@ -7,13 +7,18 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.config.utils.TokenProvider;
 import roomescape.member.Role;
 import roomescape.reservation.DTO.ReservationResponse;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +66,7 @@ public class MissionStepTest {
     @DisplayName("예약 생성시 request에 name이 없을 경우 인증정보로 name을 잘 불러와 예약을 생성하는지 테스트한다. ")
     @Test
     void testStep2() {
-        String token = tokenProvider.createToken("admin@email.com", "", Role.GUEST);  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+        String token = tokenProvider.createToken("admin@email.com", Map.of("password", "password"));  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
         params.put("date", "2028-03-01");

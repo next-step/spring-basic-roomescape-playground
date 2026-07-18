@@ -1,8 +1,24 @@
 package roomescape.time;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+@Entity
+@SQLDelete(sql = "UPDATE time SET deleted = true WHERE id = ?")
+@Where(clause = "deleted = false")
+@Table(name = "time")
 public class Time {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "time_value")
     private String value;
+
+    @Column(name = "deleted")
+    private boolean isDeleted = false;
 
     public Time(Long id, String value) {
         this.id = id;
@@ -13,8 +29,7 @@ public class Time {
         this.value = value;
     }
 
-    public Time() {
-
+    protected Time() {
     }
 
     public Long getId() {
@@ -23,5 +38,9 @@ public class Time {
 
     public String getValue() {
         return value;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
     }
 }
