@@ -2,6 +2,8 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.login.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -14,11 +16,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,ThemeRepository themeRepository,TimeRepository timeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository, TimeRepository timeRepository, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
-        this.themeRepository=themeRepository;
-        this.timeRepository=timeRepository;
+        this.themeRepository = themeRepository;
+        this.timeRepository = timeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
@@ -27,11 +31,13 @@ public class ReservationService {
             name = loginMember.name();
         }
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
-                        .orElseThrow();
-        Time time=timeRepository.findById(reservationRequest.getTime())
-                        .orElseThrow();
-        Reservation reservation =new Reservation(
-                name,
+                .orElseThrow();
+        Time time = timeRepository.findById(reservationRequest.getTime())
+                .orElseThrow();
+        Member member= memberRepository.findByName(name)
+                .orElseThrow();
+        Reservation reservation = new Reservation(
+                member,
                 reservationRequest.getDate(),
                 time,
                 theme
