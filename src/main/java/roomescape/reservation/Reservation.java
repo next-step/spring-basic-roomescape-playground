@@ -51,7 +51,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return member.getName();
     }
 
     public String getDate() {
