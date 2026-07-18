@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
+import roomescape.member.Role;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
@@ -32,7 +33,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         Long memberId = jwtProvider.extractMemberId(token);
         Member member = memberService.findById(memberId);
 
-        if (!member.getRole().equals("ADMIN")) {
+        if (!(member.getRole() == Role.ADMIN)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }

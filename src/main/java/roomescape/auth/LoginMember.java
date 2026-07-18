@@ -1,9 +1,11 @@
 package roomescape.auth;
 
+import roomescape.member.Role;
+
 public record LoginMember(
         Long id,
         String name,
         String email,
-        String role
+        Role role
 ) {
 }
