@@ -1,8 +1,8 @@
 package roomescape.reservation;
 
+import jakarta.persistence.NoResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AuthenticationException;
@@ -101,7 +101,7 @@ public class ReservationService {
                 throw new AuthenticationException();
             }
             return memberDao.findByEmail(loginMember.get().email());
-        } catch (EmptyResultDataAccessException e) {
+        } catch (NoResultException e) {
             log.warn(
                     "Reservation member not found. name={}, loginEmail={}",
                     reservationRequest.getName(),

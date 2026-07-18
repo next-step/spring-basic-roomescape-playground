@@ -1,6 +1,6 @@
 package roomescape.member;
 
-import org.springframework.dao.EmptyResultDataAccessException;
+import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AuthenticationException;
@@ -32,7 +32,7 @@ public class MemberService {
                     jwtTokenProvider.createAccessToken(member),
                     jwtTokenProvider.createRefreshToken(member)
             );
-        } catch (EmptyResultDataAccessException e) {
+        } catch (NoResultException e) {
             throw new AuthenticationException();
         }
     }
@@ -50,7 +50,7 @@ public class MemberService {
             LoginMemberInfo loginMember = jwtTokenProvider.parseRefreshToken(refreshToken);
             Member member = memberDao.findByEmail(loginMember.email());
             return jwtTokenProvider.createAccessToken(member);
-        } catch (EmptyResultDataAccessException | IllegalArgumentException e) {
+        } catch (NoResultException | IllegalArgumentException e) {
             throw new AuthenticationException();
         }
     }
