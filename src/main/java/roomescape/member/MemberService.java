@@ -38,7 +38,11 @@ public class MemberService {
     }
 
     public LoginMemberInfo checkLogin(String token) {
-        return jwtTokenProvider.parseAccessToken(token);
+        try {
+            return jwtTokenProvider.parseAccessToken(token);
+        } catch (IllegalArgumentException e) {
+            throw new AuthenticationException();
+        }
     }
 
     public String refreshAccessToken(String refreshToken) {
