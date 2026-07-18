@@ -1,20 +1,25 @@
 package roomescape.reservation;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.exception.ForbiddenException;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
+import roomescape.reservation.dto.MyReservationResponse;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ReservationService {
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
     private final MemberService memberService;
 
-    public ReservationService(ReservationDao reservationDao, MemberService memberService) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository, MemberService memberService) {
+        this.reservationRepository = reservationRepository;
         this.memberService = memberService;
     }
 
@@ -22,24 +27,19 @@ public class ReservationService {
 
         Member member = resolveReservationMember(request, loginMember);
 
-        Reservation reservation = reservationDao.save(request, member);
+        Reservation reservation = reservationRepository.save(request, member);
 
-        return new ReservationResponse(
-                reservation.getId(),
-                member.getName(),
-                reservation.getTheme().getName(),
-                reservation.getDate(),
-                reservation.getTime().getValue()
-        );
+        return ReservationResponse.from(reservation);
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationRepository.findAll()
+                .stream()
+                .map(ReservationResponse::from)
                 .toList();
     }
 
@@ -62,5 +62,13 @@ public class ReservationService {
         }
 
         return memberService.findById(loginMember.id());
+    }
+
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+
+        return reservationRepository.findByMemberId(loginMember.id())
+                .stream()
+                .map(MyReservationResponse::from)
+                .toList();
     }
 }
