@@ -1,74 +1,100 @@
 package roomescape.auth;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
+import roomescape.member.MemberRole;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Date;
-import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
-    private static final String SECRET_KEY = "roomescape-secret-key-for-jwt-token";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 30;
+    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 7;
+
+    private final Key signingKey;
+
+    public JwtTokenProvider(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+        this.signingKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String createToken(Member member) {
+        return createAccessToken(member);
+    }
+
+    public String createAccessToken(Member member) {
+        return createToken(member, TokenType.ACCESS, ACCESS_TOKEN_EXPIRATION_TIME);
+    }
+
+    public String createRefreshToken(Member member) {
+        return createToken(member, TokenType.REFRESH, REFRESH_TOKEN_EXPIRATION_TIME);
+    }
+
+    private String createToken(Member member, TokenType tokenType, long expirationTime) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
+        Date expiration = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
-                .setSubject(member.getEmail())
-                .claim("id", member.getId())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .setSubject(member.email())
+                .claim("id", member.id())
+                .claim("name", member.name())
+                .claim("role", member.role().name())
+                .claim("type", tokenType.name())
                 .setIssuedAt(now)
                 .setExpiration(expiration)
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public LoginMemberInfo parseMember(String token) {
+        return parseAccessToken(token);
+    }
+
+    public LoginMemberInfo parseAccessToken(String token) {
+        return parseMember(token, TokenType.ACCESS);
+    }
+
+    public LoginMemberInfo parseRefreshToken(String token) {
+        return parseMember(token, TokenType.REFRESH);
+    }
+
+    private LoginMemberInfo parseMember(String token, TokenType expectedTokenType) {
         try {
-            Map<String, Object> claims = parseClaims(token);
-            Long id = Long.valueOf(claims.get("id").toString());
+            Claims claims = parseClaims(token);
+            validateTokenType(claims, expectedTokenType);
+            Long id = claims.get("id", Number.class).longValue();
             String name = claims.get("name").toString();
-            String email = claims.get("sub").toString();
-            return new LoginMemberInfo(id, name, email);
+            String email = claims.getSubject();
+            MemberRole role = MemberRole.from(claims.get("role").toString());
+            return new LoginMemberInfo(id, name, email, role);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid token");
         }
     }
 
-    private Map<String, Object> parseClaims(String token) throws Exception {
-        String[] parts = token.split("\\.");
-        if (parts.length != 3 || !isValidSignature(parts)) {
-            throw new IllegalArgumentException("Invalid token");
+    private void validateTokenType(Claims claims, TokenType expectedTokenType) {
+        TokenType tokenType = TokenType.from(claims.get("type").toString());
+        if (tokenType != expectedTokenType) {
+            throw new IllegalArgumentException("Invalid token type");
         }
-
-        String payload = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        Map<String, Object> claims = OBJECT_MAPPER.readValue(payload, new TypeReference<>() {
-        });
-        Number expiration = (Number) claims.get("exp");
-        if (expiration.longValue() < System.currentTimeMillis() / 1000) {
-            throw new IllegalArgumentException("Expired token");
-        }
-        return claims;
     }
 
-    private boolean isValidSignature(String[] parts) throws Exception {
-        Mac mac = Mac.getInstance("HmacSHA256");
-        mac.init(new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-        byte[] signature = mac.doFinal((parts[0] + "." + parts[1]).getBytes(StandardCharsets.UTF_8));
-        String encodedSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signature);
-        return encodedSignature.equals(parts[2]);
+    private Claims parseClaims(String token) {
+        return jwtParser()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    private JwtParser jwtParser() {
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build();
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.AdminOnly;
 
 import java.net.URI;
 import java.util.List;
@@ -26,16 +27,18 @@ public class TimeController {
     }
 
     @PostMapping("/times")
+    @AdminOnly
     public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
-            throw new RuntimeException();
+        if (time.value() == null || time.value().isEmpty()) {
+            throw new IllegalArgumentException("시간 값은 필수입니다.");
         }
 
         Time newTime = timeService.save(time);
-        return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
+        return ResponseEntity.created(URI.create("/times/" + newTime.id())).body(newTime);
     }
 
     @DeleteMapping("/times/{id}")
+    @AdminOnly
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         timeService.deleteById(id);
         return ResponseEntity.noContent().build();
