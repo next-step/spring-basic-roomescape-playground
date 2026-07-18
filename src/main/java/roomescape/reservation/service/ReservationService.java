@@ -11,11 +11,13 @@ import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.exception.ReservationErrorCode;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.entity.Time;
 import roomescape.time.repository.TimeRepository;
+import roomescape.waiting.repository.WaitingRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,13 +25,16 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
+
     private final ReservationRepository reservationRepository;
+    private final WaitingRepository waitingRepository;
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
+        this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
@@ -37,12 +42,14 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(ReservationRequest request, LoginMember loginMember) {
-        Member member = resolveMember(request, loginMember);
         LocalDate date = LocalDate.parse(request.getDate());
         Time time = timeRepository.findById(request.getTime())
                 .orElseThrow();
         Theme theme = themeRepository.findById(request.getTheme())
                 .orElseThrow();
+        validateDuplicateReservation(date, time, theme);
+
+        Member member = resolveMember(request, loginMember);
 
         Reservation reservation = new Reservation(member, date, time, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -94,5 +101,11 @@ public class ReservationService {
 
         return memberRepository.findById(loginMember.id())
                 .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    private void validateDuplicateReservation(LocalDate date, Time time, Theme theme) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(date, time, theme)) {
+            throw new ApplicationException(ReservationErrorCode.DUPLICATE_RESERVATION);
+        }
     }
 }
