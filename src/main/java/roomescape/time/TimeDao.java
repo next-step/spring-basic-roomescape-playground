@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TimeDao {
@@ -24,6 +25,14 @@ public class TimeDao {
         return time;
     }
 
+    public Optional<Time> findById(Long id) {
+        Time time = entityManager.find(Time.class, id);
+        if (time == null || time.deleted()) {
+            return Optional.empty();
+        }
+        return Optional.of(time);
+    }
+
     public boolean deleteById(Long id) {
         Time time = entityManager.find(Time.class, id);
         if (time == null || time.deleted()) {
@@ -33,13 +42,4 @@ public class TimeDao {
         return true;
     }
 
-    public boolean existsById(Long id) {
-        Long count = entityManager.createQuery(
-                        "select count(t) from Time t where t.id = :id and t.deleted = false",
-                        Long.class
-                )
-                .setParameter("id", id)
-                .getSingleResult();
-        return count > 0;
-    }
 }

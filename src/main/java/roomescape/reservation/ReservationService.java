@@ -11,7 +11,9 @@ import roomescape.exception.NotFoundException;
 import roomescape.auth.LoginMemberInfo;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.theme.Theme;
 import roomescape.theme.ThemeDao;
+import roomescape.time.Time;
 import roomescape.time.TimeDao;
 
 import java.util.List;
@@ -70,25 +72,27 @@ public class ReservationService {
     }
 
     private ReservationResponse createReservation(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
-        validateReservationTarget(reservationRequest);
         Member member = findReservationMember(reservationRequest, loginMember);
+        Theme theme = findTheme(reservationRequest.getTheme());
+        Time time = findTime(reservationRequest.getTime());
         Reservation reservation = reservationDao.save(
                 reservationRequest.getDate(),
                 member,
-                reservationRequest.getTime(),
-                reservationRequest.getTheme()
+                time,
+                theme
         );
 
         return toResponse(reservation);
     }
 
-    private void validateReservationTarget(ReservationRequest reservationRequest) {
-        if (!themeDao.existsById(reservationRequest.getTheme())) {
-            throw new NotFoundException(ErrorCode.THEME_NOT_FOUND);
-        }
-        if (!timeDao.existsById(reservationRequest.getTime())) {
-            throw new NotFoundException(ErrorCode.TIME_NOT_FOUND);
-        }
+    private Theme findTheme(Long themeId) {
+        return themeDao.findById(themeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
+    }
+
+    private Time findTime(Long timeId) {
+        return timeDao.findById(timeId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND));
     }
 
     private Member findReservationMember(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {

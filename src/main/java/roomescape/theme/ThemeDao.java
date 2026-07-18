@@ -33,13 +33,4 @@ public class ThemeDao {
         return Optional.of(theme);
     }
 
-    public boolean existsById(Long id) {
-        Long count = entityManager.createQuery(
-                        "select count(t) from Theme t where t.id = :id and t.deleted = false",
-                        Long.class
-                )
-                .setParameter("id", id)
-                .getSingleResult();
-        return count > 0;
-    }
 }

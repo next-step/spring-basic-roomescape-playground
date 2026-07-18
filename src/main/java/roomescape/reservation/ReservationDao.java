@@ -22,9 +22,7 @@ public class ReservationDao {
                 .getResultList();
     }
 
-    public Reservation save(String date, Member member, Long timeId, Long themeId) {
-        Time time = entityManager.getReference(Time.class, timeId);
-        Theme theme = entityManager.getReference(Theme.class, themeId);
+    public Reservation save(String date, Member member, Time time, Theme theme) {
         Reservation reservation = new Reservation(date, member, time, theme);
         entityManager.persist(reservation);
         return reservation;
