@@ -1,17 +1,9 @@
 package roomescape.time.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import roomescape.time.entity.Time;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface TimeRepository {
-
-    List<Time> findAll();
-
-    Optional<Time> findById(Long id);
-
-    Time save(Time time);
-
-    void deleteById(Long id);
+@Repository
+public interface TimeRepository extends JpaRepository<Time, Long> {
 }
