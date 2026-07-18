@@ -1,7 +1,6 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -88,22 +87,9 @@ public class JwtTokenProvider {
     }
 
     private Claims parseClaims(String token) {
-        if (!isValidSignature(token)) {
-            throw new IllegalArgumentException("Invalid token");
-        }
-
         return jwtParser()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    private boolean isValidSignature(String token) {
-        try {
-            jwtParser().parseClaimsJws(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
     }
 
     private JwtParser jwtParser() {
