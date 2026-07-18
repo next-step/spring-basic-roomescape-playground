@@ -1,12 +1,13 @@
 package roomescape.member;
 
-import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AuthenticationException;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.auth.LoginMemberInfo;
 import roomescape.auth.LoginTokens;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.NotFoundException;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,15 +27,13 @@ public class MemberService {
     }
 
     public LoginTokens login(MemberRequest memberRequest) {
-        try {
-            Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
-            return new LoginTokens(
-                    jwtTokenProvider.createAccessToken(member),
-                    jwtTokenProvider.createRefreshToken(member)
-            );
-        } catch (NoResultException e) {
-            throw new AuthenticationException();
-        }
+        Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword())
+                .orElseThrow(AuthenticationException::new);
+
+        return new LoginTokens(
+                jwtTokenProvider.createAccessToken(member),
+                jwtTokenProvider.createRefreshToken(member)
+        );
     }
 
     public LoginMemberInfo checkLogin(String token) {
@@ -48,9 +47,10 @@ public class MemberService {
     public String refreshAccessToken(String refreshToken) {
         try {
             LoginMemberInfo loginMember = jwtTokenProvider.parseRefreshToken(refreshToken);
-            Member member = memberDao.findByEmail(loginMember.email());
+            Member member = memberDao.findByEmail(loginMember.email())
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
             return jwtTokenProvider.createAccessToken(member);
-        } catch (NoResultException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new AuthenticationException();
         }
     }

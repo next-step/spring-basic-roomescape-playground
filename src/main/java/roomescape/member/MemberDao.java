@@ -4,6 +4,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class MemberDao {
     @PersistenceContext
@@ -14,31 +16,37 @@ public class MemberDao {
         return member;
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
         return entityManager.createQuery(
                         "select m from Member m where m.email = :email and m.password = :password",
                         Member.class
                 )
                 .setParameter("email", email)
                 .setParameter("password", password)
-                .getSingleResult();
+                .getResultList()
+                .stream()
+                .findFirst();
     }
 
-    public Member findByName(String name) {
+    public Optional<Member> findByName(String name) {
         return entityManager.createQuery(
                         "select m from Member m where m.name = :name",
                         Member.class
                 )
                 .setParameter("name", name)
-                .getSingleResult();
+                .getResultList()
+                .stream()
+                .findFirst();
     }
 
-    public Member findByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         return entityManager.createQuery(
                         "select m from Member m where m.email = :email",
                         Member.class
                 )
                 .setParameter("email", email)
-                .getSingleResult();
+                .getResultList()
+                .stream()
+                .findFirst();
     }
 }

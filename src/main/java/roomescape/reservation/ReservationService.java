@@ -1,6 +1,5 @@
 package roomescape.reservation;
 
-import jakarta.persistence.NoResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -93,23 +92,26 @@ public class ReservationService {
     }
 
     private Member findReservationMember(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
-        try {
-            if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
-                return memberDao.findByName(reservationRequest.getName());
-            }
-            if (loginMember.isEmpty()) {
-                throw new AuthenticationException();
-            }
-            return memberDao.findByEmail(loginMember.get().email());
-        } catch (NoResultException e) {
+        Optional<Member> member = findMember(reservationRequest, loginMember);
+        if (member.isEmpty()) {
             log.warn(
                     "Reservation member not found. name={}, loginEmail={}",
                     reservationRequest.getName(),
-                    loginMember.map(LoginMemberInfo::email).orElse(null),
-                    e
+                    loginMember.map(LoginMemberInfo::email).orElse(null)
             );
-            throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND, e);
+            throw new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
         }
+        return member.get();
+    }
+
+    private Optional<Member> findMember(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
+        if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
+            return memberDao.findByName(reservationRequest.getName());
+        }
+        if (loginMember.isEmpty()) {
+            throw new AuthenticationException();
+        }
+        return memberDao.findByEmail(loginMember.get().email());
     }
 
     @Transactional
