@@ -126,15 +126,11 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                .map(this::toResponse)
-                .toList();
+        return reservationDao.findAll();
     }
 
     public List<ReservationMineResponse> findMine(LoginMemberInfo loginMember) {
-        return reservationDao.findByMemberId(loginMember.id()).stream()
-                .map(it -> new ReservationMineResponse(it.id(), it.theme().name(), it.date(), it.time().value(), "예약"))
-                .toList();
+        return reservationDao.findByMemberId(loginMember.id());
     }
 
     private ReservationResponse toResponse(Reservation reservation) {

@@ -14,10 +14,14 @@ public class ReservationDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<Reservation> findAll() {
+    public List<ReservationResponse> findAll() {
         return entityManager.createQuery(
-                        "select r from Reservation r join fetch r.member join fetch r.theme join fetch r.time",
-                        Reservation.class
+                        "select new roomescape.reservation.ReservationResponse(r.id, m.name, th.name, r.date, t.value) "
+                                + "from Reservation r "
+                                + "join r.member m "
+                                + "join r.theme th "
+                                + "join r.time t",
+                        ReservationResponse.class
                 )
                 .getResultList();
     }
@@ -37,25 +41,25 @@ public class ReservationDao {
         return true;
     }
 
-    public List<Reservation> findByMemberId(Long memberId) {
+    public List<ReservationMineResponse> findByMemberId(Long memberId) {
         return entityManager.createQuery(
-                        "select r from Reservation r join fetch r.member join fetch r.theme join fetch r.time "
+                        "select new roomescape.reservation.ReservationMineResponse(r.id, th.name, r.date, t.value, '예약') "
+                                + "from Reservation r "
+                                + "join r.theme th "
+                                + "join r.time t "
                                 + "where r.member.id = :memberId",
-                        Reservation.class
+                        ReservationMineResponse.class
                 )
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
 
-    public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
-        return findByDateAndThemeId(date, themeId);
-    }
-
-    public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
+    public List<Long> findReservedTimeIdsByDateAndThemeId(String date, Long themeId) {
         return entityManager.createQuery(
-                        "select r from Reservation r join fetch r.member join fetch r.theme join fetch r.time "
+                        "select t.id from Reservation r "
+                                + "join r.time t "
                                 + "where r.date = :date and r.theme.id = :themeId",
-                        Reservation.class
+                        Long.class
                 )
                 .setParameter("date", date)
                 .setParameter("themeId", themeId)

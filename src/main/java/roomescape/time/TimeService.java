@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.ErrorCode;
 import roomescape.exception.NotFoundException;
-import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationDao;
 
 import java.util.List;
@@ -21,15 +20,14 @@ public class TimeService {
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
+        List<Long> reservedTimeIds = reservationDao.findReservedTimeIdsByDateAndThemeId(date, themeId);
         List<Time> times = timeDao.findAll();
 
         return times.stream()
                 .map(time -> new AvailableTime(
                         time.id(),
                         time.value(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.time().id().equals(time.id()))
+                        reservedTimeIds.contains(time.id())
                 ))
                 .toList();
     }
