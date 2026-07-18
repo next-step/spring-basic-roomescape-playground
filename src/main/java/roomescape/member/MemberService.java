@@ -1,8 +1,10 @@
 package roomescape.member;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
 
