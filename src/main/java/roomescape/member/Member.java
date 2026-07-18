@@ -25,16 +25,11 @@ public class Member {
     protected Member() {
     }
 
-    public Member(Long id, String name, String email, String password, MemberRole role) {
-        this.id = id;
+    public Member(String name, String email, String password, MemberRole role) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
-    }
-
-    public Member(String name, String email, String password, MemberRole role) {
-        this(null, name, email, password, role);
     }
 
     public Long id() {
