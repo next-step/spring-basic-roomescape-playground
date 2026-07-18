@@ -52,7 +52,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
                 return Optional.of(loginMember);
             }
             return loginMember;
-        } catch (RuntimeException e) {
+        } catch (AuthenticationException e) {
             return handleAuthenticationFailure(optional);
         }
     }
