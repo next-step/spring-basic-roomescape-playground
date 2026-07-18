@@ -6,6 +6,7 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.Member;
 import roomescape.member.MemberRole;
@@ -16,10 +17,14 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
-    private static final String SECRET_KEY = "roomescape-secret-key-for-jwt-token";
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 30;
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 7;
-    private static final Key SIGNING_KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+
+    private final Key signingKey;
+
+    public JwtTokenProvider(@Value("${roomescape.auth.jwt.secret}") String secretKey) {
+        this.signingKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String createToken(Member member) {
         return createAccessToken(member);
@@ -45,7 +50,7 @@ public class JwtTokenProvider {
                 .claim("type", tokenType.name())
                 .setIssuedAt(now)
                 .setExpiration(expiration)
-                .signWith(SIGNING_KEY, SignatureAlgorithm.HS256)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -103,7 +108,7 @@ public class JwtTokenProvider {
 
     private JwtParser jwtParser() {
         return Jwts.parserBuilder()
-                .setSigningKey(SIGNING_KEY)
+                .setSigningKey(signingKey)
                 .build();
     }
 }
