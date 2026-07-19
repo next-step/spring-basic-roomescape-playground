@@ -71,7 +71,7 @@ public class LoginController {
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> checkLogin(LoginMember loginMember) {
-        Long memberId = loginMember.id();
+        Long memberId = loginMember.getId();
         MemberResponse memberResponse = loginService.checkLogin(memberId);
         return ResponseEntity.ok(memberResponse);
     }
