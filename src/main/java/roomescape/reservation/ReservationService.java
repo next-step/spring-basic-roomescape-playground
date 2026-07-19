@@ -14,7 +14,9 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,17 +26,21 @@ public class ReservationService {
     private final MemberService memberService;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
+    private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, MemberService memberService, ThemeRepository themeRepository, TimeRepository timeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, MemberService memberService, ThemeRepository themeRepository, TimeRepository timeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberService = memberService;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(ReservationRequest request, LoginMember loginMember) {
 
         Member member = resolveReservationMember(request, loginMember);
+
+        validateReservation(request);
 
         Theme theme = themeRepository.findById(request.theme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
@@ -89,9 +95,33 @@ public class ReservationService {
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
 
-        return reservationRepository.findByMemberId(loginMember.id())
-                .stream()
-                .map(MyReservationResponse::from)
-                .toList();
+        List<MyReservationResponse> reservations =
+                reservationRepository.findByMemberId(loginMember.id())
+                        .stream()
+                        .map(MyReservationResponse::from)
+                        .toList();
+
+        List<MyReservationResponse> waitings =
+                waitingRepository.findWaitingsWithRankByMemberId(loginMember.id())
+                        .stream()
+                        .map(MyReservationResponse::from)
+                        .toList();
+
+        List<MyReservationResponse> result = new ArrayList<>();
+
+        result.addAll(reservations);
+        result.addAll(waitings);
+
+        return result;
+    }
+
+    private void validateReservation(ReservationRequest request) {
+
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                request.date(),
+                request.time(),
+                request.theme())) {
+            throw new IllegalArgumentException("이미 예약된 일정입니다.");
+        }
     }
 }
