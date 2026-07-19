@@ -67,5 +67,13 @@ public class WaitingService {
                 request.theme())) {
             throw new IllegalArgumentException("이미 예약 대기 중입니다.");
         }
+
+        if (reservationRepository.existsByMemberIdAndDateAndTimeIdAndThemeId(
+                member.getId(),
+                request.date(),
+                request.time(),
+                request.theme())) {
+            throw new IllegalArgumentException("본인이 예약한 일정은 예약 대기할 수 없습니다.");
+        }
     }
 }
