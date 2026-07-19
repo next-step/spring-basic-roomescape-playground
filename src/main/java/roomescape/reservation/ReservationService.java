@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.login.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -28,13 +29,13 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         String name = reservationRequest.getName();
         if (name == null) {
-            name = loginMember.name();
+            name = loginMember.getName();
         }
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
                 .orElseThrow();
         Time time = timeRepository.findById(reservationRequest.getTime())
                 .orElseThrow();
-        Member member= memberRepository.findByName(name)
+        Member member = memberRepository.findByName(name)
                 .orElseThrow();
         Reservation reservation = new Reservation(
                 member,
@@ -58,7 +59,20 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getMember(),it.getName(), it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getTimeValue()))
+                .map(it -> new ReservationResponse(it.getMember(), it.getName(), it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getTimeValue()))
+                .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservations(LoginMember member) {
+        return reservationRepository.findByMemberId(member.getId())
+                .stream()
+                .map(reservation -> new MyReservationResponse(
+                        reservation.getId(),
+                        reservation.getTheme().getName(),
+                        reservation.getDate(),
+                        reservation.getTime().getTimeValue(),
+                        "예약"
+                ))
                 .toList();
     }
 }

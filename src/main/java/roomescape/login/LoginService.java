@@ -9,8 +9,8 @@ import roomescape.member.MemberResponse;
 public class LoginService {
     private final MemberRepository memberRepository;
 
-    public LoginService(MemberRepository memberDao) {
-        this.memberRepository = memberDao;
+    public LoginService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public Member login(String email, String password) {

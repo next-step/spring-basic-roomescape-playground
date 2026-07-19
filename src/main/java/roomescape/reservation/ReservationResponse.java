@@ -10,7 +10,7 @@ public class ReservationResponse {
     private final String time;
     private final String name;
 
-    public ReservationResponse(Member member,String name,Long id, String theme, String date, String time) {
+    public ReservationResponse(Member member, String name, Long id, String theme, String date, String time) {
         this.member = member;
         this.theme = theme;
         this.date = date;

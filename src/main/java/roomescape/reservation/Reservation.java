@@ -16,7 +16,7 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private final String date;
+    private String date;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -24,11 +24,14 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "time_id")
-    private final Time time;
+    private Time time;
     @ManyToOne
     @JoinColumn(name = "theme_id")
-    private final Theme theme;
+    private Theme theme;
 
+    protected Reservation(){
+
+    }
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
         this.id = id;
         this.name = name;
@@ -49,7 +52,7 @@ public class Reservation {
     }
 
     public Long getId() {
-        return member.getId();
+        return id;
     }
 
     public String getName() {

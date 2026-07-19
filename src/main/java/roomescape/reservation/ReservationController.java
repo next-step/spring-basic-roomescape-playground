@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.login.LoginMember;
+import roomescape.reservation.dto.MyReservationResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -43,5 +44,10 @@ public class ReservationController {
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> reservationMine(LoginMember member) {
+        return reservationService.findMyReservations(member);
     }
 }

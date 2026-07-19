@@ -41,7 +41,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Member member = memberRepository.findById(memberId)
                 .orElseThrow();
 
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        return new LoginMember(memberId, member.getName(), member.getEmail(), member.getPassword(),member.getRole());
     }
 
     private HttpServletRequest getRequest(NativeWebRequest nativeWebRequest) {
