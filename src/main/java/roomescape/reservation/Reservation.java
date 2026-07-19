@@ -19,14 +19,14 @@ public class Reservation {
     private final String date;
 
     @ManyToOne
-    @JoinColumn(name="member_id")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name ="time_id")
+    @JoinColumn(name = "time_id")
     private final Time time;
     @ManyToOne
-    @JoinColumn(name ="theme_id")
+    @JoinColumn(name = "theme_id")
     private final Theme theme;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
@@ -38,16 +38,18 @@ public class Reservation {
     }
 
     public Reservation(Member member, String date, Time time, Theme theme) {
-        this.member=member;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Member getMember(){ return member; }
+    public Member getMember() {
+        return member;
+    }
 
     public Long getId() {
-        return id;
+        return member.getId();
     }
 
     public String getName() {

@@ -43,7 +43,13 @@ public class ReservationService {
                 theme
         );
         reservationRepository.save(reservation);
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getTimeValue());
+        return new ReservationResponse(
+                reservation.getMember(),
+                reservation.getName(),
+                reservation.getId(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getTimeValue());
     }
 
     public void deleteById(Long id) {
@@ -52,7 +58,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getTimeValue()))
+                .map(it -> new ReservationResponse(it.getMember(),it.getName(), it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getTimeValue()))
                 .toList();
     }
 }

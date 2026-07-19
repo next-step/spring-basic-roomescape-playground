@@ -1,26 +1,30 @@
 package roomescape.reservation;
 
-public class ReservationResponse {
-    private Long id;
-    private String name;
-    private String theme;
-    private String date;
-    private String time;
+import roomescape.member.Member;
 
-    public ReservationResponse(Long id, String name, String theme, String date, String time) {
-        this.id = id;
-        this.name = name;
+public class ReservationResponse {
+    private final Long id;
+    private final Member member;
+    private final String theme;
+    private final String date;
+    private final String time;
+    private final String name;
+
+    public ReservationResponse(Member member,String name,Long id, String theme, String date, String time) {
+        this.member = member;
         this.theme = theme;
         this.date = date;
         this.time = time;
-    }
-
-    public Long getId() {
-        return id;
+        this.name= name;
+        this.id= id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public Long getId(){
+        return id;
     }
 
     public String getTheme() {
