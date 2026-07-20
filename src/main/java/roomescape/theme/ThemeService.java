@@ -17,7 +17,7 @@ public class ThemeService {
     }
 
     public List<Theme> findAll() {
-        return themeDao.findAll();
+        return themeDao.findAllByDeletedFalse();
     }
 
     @Transactional
@@ -27,7 +27,7 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(Long id) {
-        Theme theme = themeDao.findById(id)
+        Theme theme = themeDao.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
         theme.delete();
     }

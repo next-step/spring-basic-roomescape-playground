@@ -1,36 +1,11 @@
 package roomescape.theme;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public class ThemeDao {
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public List<Theme> findAll() {
-        return entityManager.createQuery(
-                        "select t from Theme t where t.deleted = false",
-                        Theme.class
-                )
-                .getResultList();
-    }
-
-    public Theme save(Theme theme) {
-        entityManager.persist(theme);
-        return theme;
-    }
-
-    public Optional<Theme> findById(Long id) {
-        Theme theme = entityManager.find(Theme.class, id);
-        if (theme == null || theme.deleted()) {
-            return Optional.empty();
-        }
-        return Optional.of(theme);
-    }
-
+public interface ThemeDao extends JpaRepository<Theme, Long> {
+    List<Theme> findAllByDeletedFalse();
+    Optional<Theme> findByIdAndDeletedFalse(Long id);
 }

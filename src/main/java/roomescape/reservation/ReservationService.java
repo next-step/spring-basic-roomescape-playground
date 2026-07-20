@@ -76,22 +76,19 @@ public class ReservationService {
         Theme theme = findTheme(reservationRequest.getTheme());
         Time time = findTime(reservationRequest.getTime());
         Reservation reservation = reservationDao.save(
-                reservationRequest.getDate(),
-                member,
-                time,
-                theme
+                new Reservation(reservationRequest.getDate(), member, time, theme)
         );
 
         return toResponse(reservation);
     }
 
     private Theme findTheme(Long themeId) {
-        return themeDao.findById(themeId)
+        return themeDao.findByIdAndDeletedFalse(themeId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.THEME_NOT_FOUND));
     }
 
     private Time findTime(Long timeId) {
-        return timeDao.findById(timeId)
+        return timeDao.findByIdAndDeletedFalse(timeId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND));
     }
 
@@ -120,13 +117,14 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id) {
-        if (!reservationDao.deleteById(id)) {
+        if (!reservationDao.existsById(id)) {
             throw new NotFoundException(ErrorCode.RESERVATION_NOT_FOUND);
         }
+        reservationDao.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll();
+        return reservationDao.findAllResponses();
     }
 
     public List<ReservationMineResponse> findMine(LoginMemberInfo loginMember) {

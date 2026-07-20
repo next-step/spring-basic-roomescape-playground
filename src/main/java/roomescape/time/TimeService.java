@@ -43,8 +43,8 @@ public class TimeService {
 
     @Transactional
     public void deleteById(Long id) {
-        if (!timeDao.deleteById(id)) {
-            throw new NotFoundException(ErrorCode.TIME_NOT_FOUND);
-        }
+        Time time = timeDao.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND));
+        time.delete();
     }
 }
