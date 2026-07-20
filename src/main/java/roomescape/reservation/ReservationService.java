@@ -83,14 +83,14 @@ public class ReservationService {
 
         waitingRepository.findWaitingsWithRankByMemberId(member.getId())
                 .forEach(waitingWithRank ->{
-                    Waiting waiting = waitingWithRank.getWaiting();
+                    Waiting waiting = waitingWithRank.waiting();
 
                     result.add(new MyReservationResponse(
                             waiting.getId(),
                             waiting.getTheme().getName(),
                             waiting.getDate(),
                             waiting.getTime().getTimeValue(),
-                            (waitingWithRank.getRank()+1+"번째 예약대기")
+                            (waitingWithRank.rank()+1+"번째 예약대기")
                     ));
                 });
         return result;
