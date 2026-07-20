@@ -17,7 +17,6 @@ import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.entity.Time;
 import roomescape.time.repository.TimeRepository;
-import roomescape.waiting.repository.WaitingRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,14 +26,12 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final WaitingRepository waitingRepository;
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
-        this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
