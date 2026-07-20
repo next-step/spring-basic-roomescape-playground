@@ -8,7 +8,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.exception.AuthenticationException;
-import roomescape.member.MemberService;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -16,11 +15,11 @@ import java.util.Optional;
 
 @Component
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberService memberService;
+    private final AuthTokenService authTokenService;
     private final AuthCookieProvider authCookieProvider;
 
-    public AuthUserArgumentResolver(MemberService memberService, AuthCookieProvider authCookieProvider) {
-        this.memberService = memberService;
+    public AuthUserArgumentResolver(AuthTokenService authTokenService, AuthCookieProvider authCookieProvider) {
+        this.authTokenService = authTokenService;
         this.authCookieProvider = authCookieProvider;
     }
 
@@ -47,7 +46,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
         try {
             String token = authCookieProvider.extractAccessToken(request);
-            LoginMemberInfo loginMember = memberService.checkLogin(token);
+            LoginMemberInfo loginMember = authTokenService.parseAccessToken(token);
             if (optional) {
                 return Optional.of(loginMember);
             }

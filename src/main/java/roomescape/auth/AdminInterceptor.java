@@ -6,17 +6,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.exception.AuthorizationException;
-import roomescape.member.MemberService;
 import roomescape.member.MemberRole;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
     private final AuthCookieProvider authCookieProvider;
-    private final MemberService memberService;
+    private final AuthTokenService authTokenService;
 
-    public AdminInterceptor(AuthCookieProvider authCookieProvider, MemberService memberService) {
+    public AdminInterceptor(AuthCookieProvider authCookieProvider, AuthTokenService authTokenService) {
         this.authCookieProvider = authCookieProvider;
-        this.memberService = memberService;
+        this.authTokenService = authTokenService;
     }
 
     @Override
@@ -26,7 +25,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         String token = authCookieProvider.extractAccessToken(request);
-        LoginMemberInfo loginMember = memberService.checkLogin(token);
+        LoginMemberInfo loginMember = authTokenService.parseAccessToken(token);
         if (MemberRole.ADMIN == loginMember.role()) {
             return true;
         }
