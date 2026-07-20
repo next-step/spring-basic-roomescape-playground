@@ -2,11 +2,13 @@ package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ApplicationException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.dto.AvailableTime;
 import roomescape.time.dto.TimeResponse;
 import roomescape.time.entity.Time;
+import roomescape.time.exception.TimeErrorCode;
 import roomescape.time.repository.TimeRepository;
 
 import java.time.LocalDate;
@@ -55,6 +57,8 @@ public class TimeService {
 
     @Transactional
     public void deleteById(Long id) {
-        timeRepository.deleteById(id);
+        Time time = timeRepository.findById(id)
+                .orElseThrow(() -> new ApplicationException(TimeErrorCode.TIME_NOT_FOUND));
+        time.markDeleted();
     }
 }

@@ -32,6 +32,10 @@ public class Theme {
         this.description = description;
     }
 
+    public void markDeleted() {
+        this.deleted = true;
+    }
+
     public Long getId() {
         return id;
     }

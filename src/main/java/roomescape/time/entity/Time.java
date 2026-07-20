@@ -21,10 +21,15 @@ public class Time {
     @ColumnDefault("false")
     private Boolean deleted = false;
 
-    public Time() {}
+    public Time() {
+    }
 
     public Time(String value) {
         this.timeValue = value;
+    }
+
+    public void markDeleted() {
+        this.deleted = true;
     }
 
     public Long getId() {
