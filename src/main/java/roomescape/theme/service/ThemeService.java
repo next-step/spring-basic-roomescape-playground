@@ -34,7 +34,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findAll() {
-        return themeRepository.findAll()
+        return themeRepository.findAllByDeletedFalse()
                 .stream()
                 .map(theme -> new ThemeResponse(
                         theme.getId(),
