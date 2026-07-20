@@ -3,6 +3,7 @@ package roomescape.member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.AuthTokenService;
+import roomescape.auth.LoginMemberInfo;
 import roomescape.auth.LoginTokens;
 import roomescape.exception.AuthenticationException;
 
@@ -28,5 +29,12 @@ public class MemberService {
                 .orElseThrow(AuthenticationException::new);
 
         return authTokenService.createLoginTokens(member);
+    }
+
+    public String refreshAccessToken(String refreshToken) {
+        LoginMemberInfo tokenMember = authTokenService.parseRefreshToken(refreshToken);
+        Member member = memberDao.findById(tokenMember.id())
+                .orElseThrow(AuthenticationException::new);
+        return authTokenService.createAccessToken(member);
     }
 }

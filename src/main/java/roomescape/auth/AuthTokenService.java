@@ -21,20 +21,27 @@ public class AuthTokenService {
     }
 
     public LoginTokens createLoginTokens(Member member) {
-        LoginMemberInfo loginMember = new LoginMemberInfo(member.id(), member.name(), member.email(), member.role());
+        LoginMemberInfo loginMember = toLoginMemberInfo(member);
         return new LoginTokens(
                 createToken(loginMember, TokenType.ACCESS, ACCESS_TOKEN_EXPIRATION_TIME),
                 createToken(loginMember, TokenType.REFRESH, REFRESH_TOKEN_EXPIRATION_TIME)
         );
     }
 
+    public String createAccessToken(Member member) {
+        return createToken(toLoginMemberInfo(member), TokenType.ACCESS, ACCESS_TOKEN_EXPIRATION_TIME);
+    }
+
     public LoginMemberInfo parseAccessToken(String token) {
         return parseMember(token, TokenType.ACCESS);
     }
 
-    public String refreshAccessToken(String refreshToken) {
-        LoginMemberInfo loginMember = parseMember(refreshToken, TokenType.REFRESH);
-        return createToken(loginMember, TokenType.ACCESS, ACCESS_TOKEN_EXPIRATION_TIME);
+    public LoginMemberInfo parseRefreshToken(String token) {
+        return parseMember(token, TokenType.REFRESH);
+    }
+
+    private LoginMemberInfo toLoginMemberInfo(Member member) {
+        return new LoginMemberInfo(member.id(), member.name(), member.email(), member.role());
     }
 
     private String createToken(LoginMemberInfo member, TokenType tokenType, long expirationTime) {

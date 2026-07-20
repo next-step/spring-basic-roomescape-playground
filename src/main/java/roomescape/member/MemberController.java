@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AuthCookieProvider;
 import roomescape.auth.AuthUser;
-import roomescape.auth.AuthTokenService;
 import roomescape.auth.LoginMemberInfo;
 import roomescape.auth.LoginTokens;
 
@@ -19,13 +18,10 @@ import java.net.URI;
 public class MemberController {
     private final MemberService memberService;
     private final AuthCookieProvider authCookieProvider;
-    private final AuthTokenService authTokenService;
 
-    public MemberController(MemberService memberService, AuthCookieProvider authCookieProvider,
-                            AuthTokenService authTokenService) {
+    public MemberController(MemberService memberService, AuthCookieProvider authCookieProvider) {
         this.memberService = memberService;
         this.authCookieProvider = authCookieProvider;
-        this.authTokenService = authTokenService;
     }
 
     @PostMapping("/members")
@@ -47,7 +43,7 @@ public class MemberController {
     @PostMapping("/token/refresh")
     public ResponseEntity<Void> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = authCookieProvider.extractRefreshToken(request);
-        String accessToken = authTokenService.refreshAccessToken(refreshToken);
+        String accessToken = memberService.refreshAccessToken(refreshToken);
         response.addCookie(authCookieProvider.createAccessTokenCookie(accessToken));
         return ResponseEntity.ok().build();
     }
