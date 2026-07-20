@@ -43,12 +43,12 @@ public class TestDataLoader implements CommandLineRunner {
                 new Theme("테마3", "테마3입니다.")
         ));
         List<Time> times = timeDao.saveAll(List.of(
-                new Time(null, "10:00"),
-                new Time(null, "12:00"),
-                new Time(null, "14:00"),
-                new Time(null, "16:00"),
-                new Time(null, "18:00"),
-                new Time(null, "20:00")
+                new Time("10:00"),
+                new Time("12:00"),
+                new Time("14:00"),
+                new Time("16:00"),
+                new Time("18:00"),
+                new Time("20:00")
         ));
 
         Member admin = members.get(0);

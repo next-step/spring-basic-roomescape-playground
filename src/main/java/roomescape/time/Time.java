@@ -22,8 +22,7 @@ public class Time {
     public Time() {
     }
 
-    public Time(Long id, String value) {
-        this.id = id;
+    public Time(String value) {
         this.value = value;
         this.deleted = false;
     }
@@ -34,10 +33,6 @@ public class Time {
 
     public String value() {
         return value;
-    }
-
-    public boolean deleted() {
-        return deleted;
     }
 
     public void delete() {

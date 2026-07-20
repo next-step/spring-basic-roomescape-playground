@@ -32,16 +32,11 @@ public class Reservation {
     protected Reservation() {
     }
 
-    public Reservation(Long id, String date, Member member, Time time, Theme theme) {
-        this.id = id;
+    public Reservation(String date, Member member, Time time, Theme theme) {
         this.date = date;
         this.member = member;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Reservation(String date, Member member, Time time, Theme theme) {
-        this(null, date, member, time, theme);
     }
 
     public Long id() {
@@ -64,23 +59,4 @@ public class Reservation {
         return theme;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public Time getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
 }

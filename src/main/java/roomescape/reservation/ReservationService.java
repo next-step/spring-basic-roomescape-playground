@@ -44,11 +44,6 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse save(ReservationRequest reservationRequest, Optional<LoginMemberInfo> loginMember) {
-        return save(reservationRequest, loginMember, Optional.empty());
-    }
-
-    @Transactional
     public ReservationResponse save(
             ReservationRequest reservationRequest,
             Optional<LoginMemberInfo> loginMember,

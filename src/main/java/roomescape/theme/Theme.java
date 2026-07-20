@@ -21,15 +21,10 @@ public class Theme {
     public Theme() {
     }
 
-    public Theme(Long id, String name, String description) {
-        this.id = id;
+    public Theme(String name, String description) {
         this.name = name;
         this.description = description;
         this.deleted = false;
-    }
-
-    public Theme(String name, String description) {
-        this(null, name, description);
     }
 
     public Long id() {
@@ -38,14 +33,6 @@ public class Theme {
 
     public String name() {
         return name;
-    }
-
-    public String description() {
-        return description;
-    }
-
-    public boolean deleted() {
-        return deleted;
     }
 
     public void delete() {

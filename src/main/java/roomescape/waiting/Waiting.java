@@ -40,10 +40,6 @@ public class Waiting {
         return id;
     }
 
-    public Long memberId() {
-        return memberId;
-    }
-
     public String date() {
         return date;
     }

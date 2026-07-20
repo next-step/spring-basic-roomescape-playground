@@ -44,27 +44,8 @@ public class Member {
         return email;
     }
 
-    public String password() {
-        return password;
-    }
-
     public MemberRole role() {
         return role;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public MemberRole getRole() {
-        return role;
-    }
 }

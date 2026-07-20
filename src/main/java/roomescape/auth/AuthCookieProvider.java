@@ -51,10 +51,6 @@ public class AuthCookieProvider {
         return cookie;
     }
 
-    public String extractToken(HttpServletRequest request) {
-        return extractAccessToken(request);
-    }
-
     public String extractAccessToken(HttpServletRequest request) {
         return extractToken(request, ACCESS_TOKEN_COOKIE_NAME, LEGACY_TOKEN_COOKIE_NAME);
     }
