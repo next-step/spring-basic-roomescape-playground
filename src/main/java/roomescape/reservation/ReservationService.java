@@ -9,7 +9,10 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.Waiting;
+import roomescape.waiting.WaitingRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,12 +21,14 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
     private final MemberRepository memberRepository;
+    private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository, TimeRepository timeRepository, MemberRepository memberRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ThemeRepository themeRepository, TimeRepository timeRepository, MemberRepository memberRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
         this.memberRepository = memberRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
@@ -64,15 +69,30 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember member) {
-        return reservationRepository.findByMemberId(member.getId())
-                .stream()
-                .map(reservation -> new MyReservationResponse(
+        List<MyReservationResponse> result = new ArrayList<>();
+        reservationRepository.findByMemberId(member.getId())
+                .forEach(reservation ->
+                    result.add(new MyReservationResponse(
                         reservation.getId(),
                         reservation.getTheme().getName(),
                         reservation.getDate(),
                         reservation.getTime().getTimeValue(),
                         "예약"
                 ))
-                .toList();
+        );
+
+        waitingRepository.findWaitingsWithRankByMemberId(member.getId())
+                .forEach(waitingWithRank ->{
+                    Waiting waiting = waitingWithRank.getWaiting();
+
+                    result.add(new MyReservationResponse(
+                            waiting.getId(),
+                            waiting.getTheme().getName(),
+                            waiting.getDate(),
+                            waiting.getTime().getTimeValue(),
+                            (waitingWithRank.getRank()+1+"번째 예약대기")
+                    ));
+                });
+        return result;
     }
 }
