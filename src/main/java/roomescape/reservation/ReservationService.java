@@ -15,6 +15,7 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeDao;
 import roomescape.time.Time;
 import roomescape.time.TimeDao;
+import roomescape.waiting.WaitingService;
 
 import java.util.List;
 import java.util.Map;
@@ -30,13 +31,16 @@ public class ReservationService {
     private final MemberDao memberDao;
     private final TimeDao timeDao;
     private final ThemeDao themeDao;
+    private final WaitingService waitingService;
     private final Map<String, IdempotencyRecord> idempotencyRecords = new ConcurrentHashMap<>();
 
-    public ReservationService(ReservationDao reservationDao, MemberDao memberDao, TimeDao timeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao, MemberDao memberDao, TimeDao timeDao,
+                              ThemeDao themeDao, WaitingService waitingService) {
         this.reservationDao = reservationDao;
         this.memberDao = memberDao;
         this.timeDao = timeDao;
         this.themeDao = themeDao;
+        this.waitingService = waitingService;
     }
 
     @Transactional
@@ -128,7 +132,9 @@ public class ReservationService {
     }
 
     public List<ReservationMineResponse> findMine(LoginMemberInfo loginMember) {
-        return reservationDao.findByMemberId(loginMember.id());
+        List<ReservationMineResponse> result = new java.util.ArrayList<>(reservationDao.findByMemberId(loginMember.id()));
+        result.addAll(waitingService.findMine(loginMember.id()));
+        return result;
     }
 
     private ReservationResponse toResponse(Reservation reservation) {

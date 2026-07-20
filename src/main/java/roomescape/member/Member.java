@@ -64,10 +64,6 @@ public class Member {
         return email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public MemberRole getRole() {
         return role;
     }
