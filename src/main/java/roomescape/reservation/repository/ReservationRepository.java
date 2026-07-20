@@ -22,7 +22,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findAll();
 
     @Query("SELECT r FROM reservation r " +
-            "JOIN FETCH r.member " +
             "JOIN FETCH r.time " +
             "JOIN FETCH r.theme " +
             "WHERE r.member.id = :memberId")
