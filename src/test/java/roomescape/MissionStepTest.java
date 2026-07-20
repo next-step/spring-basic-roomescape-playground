@@ -152,10 +152,10 @@ public class MissionStepTest {
 
         // 예약 대기 상태 확인
         String status = myReservations.stream()
-                .filter(it -> it.getId() == waiting.getId())
-                .filter(it -> !it.getStatus().equals("예약"))
+                .filter(it -> it.id() == waiting.getId())
+                .filter(it -> !it.status().equals("예약"))
                 .findFirst()
-                .map(it -> it.getStatus())
+                .map(it -> it.status())
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
