@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
-    private static String ACCESS_TOKEN = "access-token";
+    private final static String ACCESS_TOKEN = "access-token";
 
     @Test
     void 일단계() {
@@ -46,7 +46,7 @@ public class MissionStepTest {
         String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", "2025-03-01");
         params.put("time", "1");
         params.put("theme", "1");
 
@@ -61,10 +61,14 @@ public class MissionStepTest {
         assertThat(response.statusCode()).isEqualTo(201);
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
 
-        params.put("name", "브라운");
+        Map<String, String> reservationParamsByAdmin = new HashMap<>();
+        reservationParamsByAdmin.put("name", "브라운");
+        reservationParamsByAdmin.put("date", "2025-04-01");
+        reservationParamsByAdmin.put("time", "1");
+        reservationParamsByAdmin.put("theme", "1");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
-                .body(params)
+                .body(reservationParamsByAdmin)
                 .cookie(ACCESS_TOKEN, token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
