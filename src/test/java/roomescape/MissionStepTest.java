@@ -6,9 +6,11 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import jwt.JwtUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservation.ReservationResponse;
 import roomescape.reservation.ReservationMineResponse;
 import roomescape.waiting.WaitingResponse;
@@ -21,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
+
 
 public class MissionStepTest {
 
@@ -208,6 +212,14 @@ public class MissionStepTest {
     void 칠단계() {
         Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
         assertThat(componentAnnotation).isNull();
+    }
+
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
+
+    @Test
+    void 팔단계() {
+        assertThat(secretKey).isNotBlank();
     }
 
 }
