@@ -42,13 +42,7 @@ public class WaitingService {
     public List<MyReservationResponse> findWaitingsByMember(LoginMember loginMember) {
         return waitingRepository.findWaitingsWithRankByMemberId(loginMember.id())
                 .stream()
-                .map(wr -> new MyReservationResponse(
-                        wr.getWaiting().getId(),
-                        wr.getWaiting().getTheme().getName(),
-                        wr.getWaiting().getDate().toString(),
-                        wr.getWaiting().getTime().getTimeValue(),
-                        (wr.getRank() + 1) + "번째 예약대기"
-                ))
+                .map(MyReservationResponse::fromWaitingWithRank)
                 .toList();
     }
 
@@ -65,10 +59,10 @@ public class WaitingService {
         long existingCount = waitingRepository.countByDateAndTimeAndTheme(date, time, theme);
 
         Waiting waiting = waitingRepository.save(
-                new Waiting(date, member, time, theme)
+                Waiting.of(date, member, time, theme)
         );
 
-        return new WaitingResponse(waiting.getId(), existingCount + 1);
+        return WaitingResponse.of(waiting, existingCount);
     }
 
     @Transactional

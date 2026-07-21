@@ -60,7 +60,7 @@ public class MissionStepTest {
                 .extract();
 
         assertThat(response.statusCode()).isEqualTo(201);
-        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+        assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
 
         Map<String, String> reservationParamsByAdmin = new HashMap<>();
         reservationParamsByAdmin.put("name", "브라운");
@@ -77,7 +77,7 @@ public class MissionStepTest {
                 .extract();
 
         assertThat(adminResponse.statusCode()).isEqualTo(201);
-        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+        assertThat(adminResponse.as(ReservationResponse.class).name()).isEqualTo("브라운");
     }
 
     @Test
@@ -144,10 +144,10 @@ public class MissionStepTest {
 
         // 예약 대기 상태 확인
         String status = myReservations.stream()
-                .filter(it -> it.getId() == waiting.getId())
-                .filter(it -> !it.getStatus().equals("예약"))
+                .filter(it -> it.id() == waiting.id())
+                .filter(it -> !it.status().equals("예약"))
                 .findFirst()
-                .map(it -> it.getStatus())
+                .map(MyReservationResponse::status)
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");

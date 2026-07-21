@@ -30,22 +30,14 @@ public class TimeService {
         List<Time> times = timeRepository.findAll();
 
         return times.stream()
-                .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getTimeValue(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
-                ))
+                .map(time -> AvailableTime.of(time, reservations))
                 .toList();
     }
 
     public List<TimeResponse> findAll() {
         return timeRepository.findAllByDeletedAtNull()
                 .stream()
-                .map(time -> new TimeResponse(
-                        time.getId(),
-                        time.getTimeValue()
-                ))
+                .map(TimeResponse::from)
                 .toList();
     }
 

@@ -42,6 +42,10 @@ public class Waiting {
         this.theme = theme;
     }
 
+    public static Waiting of (LocalDate date, Member member, Time time, Theme theme) {
+        return new Waiting(date, member, time, theme);
+    }
+
     public Long getId() {
         return id;
     }

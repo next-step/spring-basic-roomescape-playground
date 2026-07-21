@@ -39,16 +39,16 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(ReservationRequest request, LoginMember loginMember) {
-        LocalDate date = LocalDate.parse(request.getDate());
-        Time time = timeRepository.findById(request.getTime())
+        LocalDate date = LocalDate.parse(request.date());
+        Time time = timeRepository.findById(request.time())
                 .orElseThrow();
-        Theme theme = themeRepository.findById(request.getTheme())
+        Theme theme = themeRepository.findById(request.theme())
                 .orElseThrow();
         validateDuplicateReservation(date, time, theme);
 
         Member member = getTargetMember(request, loginMember);
 
-        Reservation reservation = new Reservation(member, date, time, theme);
+        Reservation reservation = Reservation.of(member, date, time, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return new ReservationResponse(
@@ -62,24 +62,15 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(
-                        it.getId(),
-                        it.getMember().getName(),
-                        it.getDate().toString(),
-                        it.getTime().getTimeValue(),
-                        it.getTheme().getName()
-                ))
+                .map(ReservationResponse::from)
                 .toList();
     }
 
     public List<MyReservationResponse> findReservationsByMember(LoginMember loginMember) {
         return reservationRepository.findAllByMemberId(loginMember.id())
                 .stream()
-                .map(reservation -> new MyReservationResponse(
-                        reservation.getId(),
-                        reservation.getTheme().getName(),
-                        reservation.getDate().toString(),
-                        reservation.getTime().getTimeValue(),
+                .map(reservation -> MyReservationResponse.fromReservation(
+                        reservation,
                         "예약"
                 ))
                 .toList();
@@ -91,8 +82,8 @@ public class ReservationService {
     }
 
     private Member getTargetMember(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
-            return memberRepository.findByName(reservationRequest.getName())
+        if (reservationRequest.name() != null && !reservationRequest.name().isBlank()) {
+            return memberRepository.findByName(reservationRequest.name())
                     .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
         }
 

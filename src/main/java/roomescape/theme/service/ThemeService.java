@@ -23,24 +23,16 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse create(ThemeRequest request) {
-        Theme theme = new Theme(request.name(), request.description());
+        Theme theme = Theme.from(request);
         Theme savedTheme = themeRepository.save(theme);
 
-        return new ThemeResponse(
-                savedTheme.getId(),
-                savedTheme.getName(),
-                savedTheme.getDescription()
-        );
+        return ThemeResponse.from(savedTheme);
     }
 
     public List<ThemeResponse> findAll() {
         return themeRepository.findAllByDeletedAtNull()
                 .stream()
-                .map(theme -> new ThemeResponse(
-                        theme.getId(),
-                        theme.getName(),
-                        theme.getDescription()
-                ))
+                .map(ThemeResponse::from)
                 .toList();
     }
 

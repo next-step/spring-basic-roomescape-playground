@@ -52,7 +52,7 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(@Login LoginMember loginMember) {
-        return ResponseEntity.ok(new LoginCheckResponse(loginMember.name()));
+        return ResponseEntity.ok(LoginCheckResponse.from(loginMember));
     }
 
     @PostMapping("/logout")

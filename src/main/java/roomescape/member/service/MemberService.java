@@ -19,7 +19,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponse create(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        Member member = memberRepository.save(Member.from(memberRequest, Role.USER));
+        return MemberResponse.from(member);
     }
 }

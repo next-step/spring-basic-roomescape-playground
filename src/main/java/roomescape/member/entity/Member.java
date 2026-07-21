@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import roomescape.member.dto.MemberRequest;
 
 @Entity(name = "member")
 public class Member {
@@ -35,6 +36,15 @@ public class Member {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public static Member from(MemberRequest request, Role role) {
+        return new Member(
+                request.name(),
+                request.email(),
+                request.password(),
+                role
+        );
     }
 
     public Long getId() {

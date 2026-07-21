@@ -32,6 +32,10 @@ public class RefreshToken {
         this.token = token;
     }
 
+    public static RefreshToken of(Member member, String token) {
+        return new RefreshToken(member, token);
+    }
+
     public Long getId() {
         return id;
     }

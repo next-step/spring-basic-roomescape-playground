@@ -45,6 +45,15 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public static Reservation of(Member member, LocalDate date, Time time, Theme theme) {
+        return new Reservation(
+                member,
+                date,
+                time,
+                theme
+        );
+    }
+
     public Long getId() {
         return id;
     }

@@ -68,8 +68,8 @@ public class AuthService {
 
         refreshTokenRepository.deleteByMemberId(member.getId());
         refreshTokenRepository.flush();
-        refreshTokenRepository.save(new RefreshToken(member, refreshToken));
+        refreshTokenRepository.save(RefreshToken.of(member, refreshToken));
 
-        return new TokenResponse(accessToken, refreshToken);
+        return TokenResponse.of(accessToken, refreshToken);
     }
 }
