@@ -3,7 +3,7 @@ package roomescape.reservation.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.domain.LoginMember;
-import roomescape.exception.ApplicationException;
+import roomescape.global.exception.ApplicationException;
 import roomescape.member.entity.Member;
 import roomescape.member.exception.MemberErrorCode;
 import roomescape.member.repository.MemberRepository;

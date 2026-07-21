@@ -7,7 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.domain.LoginMember;
 import roomescape.auth.exception.AuthErrorCode;
 import roomescape.auth.service.AuthService;
-import roomescape.exception.ApplicationException;
+import roomescape.global.exception.ApplicationException;
 
 @Component
 public class CheckAdminInterceptor implements HandlerInterceptor {

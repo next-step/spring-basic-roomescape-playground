@@ -15,7 +15,7 @@ import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.web.Login;
 import roomescape.auth.web.TokenExtractor;
-import roomescape.util.CookieUtil;
+import roomescape.global.util.CookieUtil;
 
 @RestController
 public class AuthController {

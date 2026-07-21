@@ -1,7 +1,7 @@
 package roomescape.auth.exception;
 
 import org.springframework.http.HttpStatus;
-import roomescape.exception.ErrorCode;
+import roomescape.global.exception.ErrorCode;
 
 public enum AuthErrorCode implements ErrorCode {
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),

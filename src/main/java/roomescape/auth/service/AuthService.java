@@ -9,7 +9,7 @@ import roomescape.auth.entity.RefreshToken;
 import roomescape.auth.exception.AuthErrorCode;
 import roomescape.auth.jwt.JwtTokenProvider;
 import roomescape.auth.repository.RefreshTokenRepository;
-import roomescape.exception.ApplicationException;
+import roomescape.global.exception.ApplicationException;
 import roomescape.member.entity.Member;
 import roomescape.member.exception.MemberErrorCode;
 import roomescape.member.repository.MemberRepository;

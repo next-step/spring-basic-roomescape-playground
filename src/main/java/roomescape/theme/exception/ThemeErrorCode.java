@@ -1,7 +1,7 @@
 package roomescape.theme.exception;
 
 import org.springframework.http.HttpStatus;
-import roomescape.exception.ErrorCode;
+import roomescape.global.exception.ErrorCode;
 
 public enum ThemeErrorCode implements ErrorCode {
 
