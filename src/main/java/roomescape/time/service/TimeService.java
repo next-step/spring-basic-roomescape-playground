@@ -40,7 +40,7 @@ public class TimeService {
     }
 
     public List<TimeResponse> findAll() {
-        return timeRepository.findAllByDeletedFalse()
+        return timeRepository.findAllByDeletedAtNull()
                 .stream()
                 .map(time -> new TimeResponse(
                         time.getId(),

@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface TimeRepository extends JpaRepository<Time, Long> {
 
-    List<Time> findAllByDeletedFalse();
+    List<Time> findAllByDeletedAtNull();
 }
