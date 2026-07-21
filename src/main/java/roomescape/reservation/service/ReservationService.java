@@ -46,7 +46,7 @@ public class ReservationService {
                 .orElseThrow();
         validateDuplicateReservation(date, time, theme);
 
-        Member member = resolveMember(request, loginMember);
+        Member member = getTargetMember(request, loginMember);
 
         Reservation reservation = new Reservation(member, date, time, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -90,7 +90,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    private Member resolveMember(ReservationRequest reservationRequest, LoginMember loginMember) {
+    private Member getTargetMember(ReservationRequest reservationRequest, LoginMember loginMember) {
         if (reservationRequest.getName() != null && !reservationRequest.getName().isBlank()) {
             return memberRepository.findByName(reservationRequest.getName())
                     .orElseThrow(() -> new ApplicationException(MemberErrorCode.MEMBER_NOT_FOUND));
