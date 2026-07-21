@@ -32,13 +32,6 @@ public class Reservation {
     protected Reservation(){
 
     }
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
 
     public Reservation(Member member, String date, Time time, Theme theme) {
         this.member = member;
