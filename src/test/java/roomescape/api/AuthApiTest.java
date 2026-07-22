@@ -4,11 +4,12 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import roomescape.DatabaseCleaner;
 import roomescape.auth.entity.RefreshToken;
 import roomescape.auth.repository.RefreshTokenRepository;
 
@@ -18,11 +19,21 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AuthApiTest {
 
     private final static String ACCESS_TOKEN = "access-token";
     private final static String REFRESH_TOKEN = "refresh-token";
+
+    @Autowired
+    RefreshTokenRepository repository;
+
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @BeforeEach
+    void setUp() {
+        databaseCleaner.clear();
+    }
 
     /*
     member
@@ -119,9 +130,6 @@ public class AuthApiTest {
         // then
         assertThat(response.statusCode()).isEqualTo(401);
     }
-
-    @Autowired
-    RefreshTokenRepository repository;
 
     @Test
     @DisplayName("로그인 성공 시, refresh token이 DB에 저장된다,")
