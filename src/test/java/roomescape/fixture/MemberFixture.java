@@ -6,10 +6,6 @@ import roomescape.member.entity.Role;
 @SuppressWarnings("NonAsciiCharacters")
 public class MemberFixture {
 
-    private static final Long 관리자1 = 1L;
-    private static final Long 멤버1 = 2L;
-    private static final Long 멤버2 = 3L;
-
     public static Member 관리자_관리자1_생성() {
         return new Member("admin1", "admin1@email.com", "password", Role.ADMIN);
     }
