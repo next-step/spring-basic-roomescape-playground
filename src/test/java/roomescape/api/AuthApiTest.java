@@ -9,9 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import roomescape.DatabaseCleaner;
 import roomescape.auth.entity.RefreshToken;
 import roomescape.auth.repository.RefreshTokenRepository;
+import roomescape.support.querycounter.QueryCounterTestConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@Import(QueryCounterTestConfig.class)
 public class AuthApiTest {
 
     private final static String ACCESS_TOKEN = "access-token";
