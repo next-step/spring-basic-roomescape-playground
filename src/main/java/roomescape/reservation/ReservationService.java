@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.exception.ForbiddenException;
@@ -56,7 +57,11 @@ public class ReservationService {
                 member
         );
 
-        reservationRepository.save(reservation);
+        try {
+            reservationRepository.save(reservation);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("이미 예약된 일정입니다.");
+        }
 
         return ReservationResponse.from(reservation);
     }
