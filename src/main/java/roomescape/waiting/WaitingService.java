@@ -1,6 +1,7 @@
 package roomescape.waiting;
 
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.member.Member;
@@ -42,7 +43,11 @@ public class WaitingService {
 
         Waiting waiting = new Waiting(member.getName(), waitingRequest.date(), time, theme, member);
 
-        waitingRepository.save(waiting);
+        try {
+            waitingRepository.save(waiting);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("이미 예약 대기 중입니다.");
+        }
 
         return WaitingResponse.from(waiting);
     }
