@@ -25,7 +25,11 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
                     WHERE w2.theme = w.theme
                       AND w2.date = w.date
                       AND w2.time = w.time
-                      AND w2.id < w.id
+                      AND w2.createdAt < w.createdAt
+                      OR (
+                          w2.createdAt = w.createdAt
+                          AND w2.id < w.id
+                      )
                 )
             )
             FROM Waiting w

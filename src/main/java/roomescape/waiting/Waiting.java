@@ -13,6 +13,8 @@ import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(
         uniqueConstraints = @UniqueConstraint(
@@ -34,6 +36,8 @@ public class Waiting {
 
     private String date;
 
+    private LocalDateTime createdAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
     private Time time;
@@ -49,12 +53,13 @@ public class Waiting {
     protected Waiting() {
     }
 
-    public Waiting(String name, String date, Time time, Theme theme, Member member) {
+    public Waiting(String name, String date, Time time, Theme theme, Member member, LocalDateTime createdAt) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -79,5 +84,9 @@ public class Waiting {
 
     public Member getMember() {
         return member;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }

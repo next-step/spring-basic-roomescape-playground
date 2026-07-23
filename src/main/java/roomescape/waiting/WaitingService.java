@@ -12,6 +12,8 @@ import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
+import java.time.LocalDateTime;
+
 @Service
 @Transactional
 public class WaitingService {
@@ -41,7 +43,7 @@ public class WaitingService {
         Time time = timeRepository.findById(waitingRequest.time())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
 
-        Waiting waiting = new Waiting(member.getName(), waitingRequest.date(), time, theme, member);
+        Waiting waiting = new Waiting(member.getName(), waitingRequest.date(), time, theme, member, LocalDateTime.now());
 
         try {
             waitingRepository.save(waiting);
