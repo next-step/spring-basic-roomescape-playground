@@ -50,7 +50,6 @@ public class ReservationService {
         );
         reservationRepository.save(reservation);
         return new ReservationResponse(
-                reservation.getMember(),
                 reservation.getName(),
                 reservation.getId(),
                 reservation.getTheme().getName(),
@@ -64,7 +63,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getMember(), it.getName(), it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getTimeValue()))
+                .map(it -> new ReservationResponse(it.getName(), it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getTimeValue()))
                 .toList();
     }
 
