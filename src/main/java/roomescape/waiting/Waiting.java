@@ -1,6 +1,7 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,17 +13,20 @@ import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(
         uniqueConstraints = @UniqueConstraint(
                 columnNames = {
+                        "member_id",
                         "date",
                         "time_id",
                         "theme_id"
                 }
         )
 )
-public class Reservation {
+public class Waiting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,36 +36,30 @@ public class Reservation {
 
     private String date;
 
-    @ManyToOne
+    private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id")
     private Time time;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    protected Reservation() {
+    protected Waiting() {
     }
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme, Member member) {
-        this.id = id;
+    public Waiting(String name, String date, Time time, Theme theme, Member member, LocalDateTime createdAt) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
-    }
-
-    public Reservation(String name, String date, Time time, Theme theme, Member member) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-        this.member = member;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -86,5 +84,9 @@ public class Reservation {
 
     public Member getMember() {
         return member;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }
