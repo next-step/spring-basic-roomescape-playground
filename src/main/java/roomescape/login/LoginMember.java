@@ -1,22 +1,15 @@
 package roomescape.login;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import lombok.Getter;
 
 
+@Getter
 public class LoginMember {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private String email;
-    private String password;
-    private String role;
-
-    protected LoginMember() {
-
-    }
+    private final Long id;
+    private final String name;
+    private final String email;
+    private final String password;
+    private final String role;
 
     public LoginMember(Long id, String name, String email, String password, String role) {
         this.id = id;
@@ -26,23 +19,4 @@ public class LoginMember {
         this.role = role;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getRole() {
-        return role;
-    }
 }
