@@ -31,20 +31,15 @@ public class Member {
     public Member() {
     }
 
-    public Member(String name, String email, String password, Role role) {
+    private Member(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    public static Member from(MemberRequest request, Role role) {
-        return new Member(
-                request.name(),
-                request.email(),
-                request.password(),
-                role
-        );
+    public static Member of(String name, String email, String password, Role role) {
+        return new Member(name, email, password, role);
     }
 
     public Long getId() {

@@ -36,7 +36,7 @@ public class TimeController {
             throw new RuntimeException();
         }
 
-        TimeResponse newTime = timeService.create(Time.from(timeRequest));
+        TimeResponse newTime = timeService.create(Time.from(timeRequest.value()));
         return ResponseEntity.created(URI.create("/times/" + newTime.id())).body(newTime);
     }
 

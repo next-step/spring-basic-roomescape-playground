@@ -15,7 +15,7 @@ public class ReservationFixture {
             Time time,
             Theme theme
     ) {
-        return new Reservation(member, LocalDate.now().plusDays(1), time, theme);
+        return Reservation.of(member, LocalDate.now().plusDays(1), time, theme);
     }
 
     public static Reservation 날짜_지정_예약_생성(
@@ -24,6 +24,6 @@ public class ReservationFixture {
             Time time,
             Theme theme
     ) {
-        return new Reservation(member, date, time, theme);
+        return Reservation.of(member, date, time, theme);
     }
 }
