@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
@@ -33,6 +34,7 @@ public class Waiting {
     protected Waiting(){
 
     }
+    @Builder
     public Waiting(Member member, String date, Theme theme, Time time) {
         this.member = member;
         this.date = date;

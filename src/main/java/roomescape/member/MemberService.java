@@ -11,13 +11,12 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member =
-                new Member(
-                        memberRequest.name(),
-                        memberRequest.email(),
-                        memberRequest.password(),
-                        "USER");
-
+        Member member = Member.builder()
+                        .name(memberRequest.name())
+                                .email(memberRequest.email())
+                                        .password(memberRequest.password())
+                                                .role("USER")
+                                                        .build();
         memberRepository.save(member);
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
