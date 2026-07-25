@@ -9,17 +9,17 @@ import java.util.Date;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+        this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
         //회원가입 요청을 받아서 회원을 만들고 응답데이터 반환
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "MEMBER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
@@ -27,7 +27,7 @@ public class MemberService {
         Member member = memberRepository.findByEmailAndPassword(
                 loginRequest.getEmail(),
                 loginRequest.getPassword()
-        );
+        ).orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
         return jwtTokenProvider.createToken(member);
     }
