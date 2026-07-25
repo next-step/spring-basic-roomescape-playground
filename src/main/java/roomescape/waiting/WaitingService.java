@@ -30,16 +30,16 @@ class WaitingService {
     }
 
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember){
-        Theme theme= themeRepository.findById(waitingRequest.getTheme())
+        Theme theme= themeRepository.findById(waitingRequest.theme())
                 .orElseThrow();
-        Time time=timeRepository.findById(waitingRequest.getTime())
+        Time time=timeRepository.findById(waitingRequest.time())
                 .orElseThrow();
         Member member=memberRepository.findById(loginMember.getId())
                 .orElseThrow();
 
         Waiting waiting = new Waiting(
                 member,
-                waitingRequest.getDate(),
+                waitingRequest.date(),
                 theme,
                 time
         );
