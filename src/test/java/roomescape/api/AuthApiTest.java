@@ -1,160 +1,115 @@
 package roomescape.api;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import roomescape.DatabaseCleaner;
 import roomescape.auth.entity.RefreshToken;
-import roomescape.auth.repository.RefreshTokenRepository;
-import roomescape.support.querycounter.QueryCounterTestConfig;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Import(QueryCounterTestConfig.class)
-public class AuthApiTest {
+@SuppressWarnings("NonAsciiCharacters")
+public class AuthApiTest extends ApiTest {
 
     private final static String ACCESS_TOKEN = "access-token";
     private final static String REFRESH_TOKEN = "refresh-token";
 
-    @Autowired
-    RefreshTokenRepository repository;
-
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @BeforeEach
-    void setUp() {
-        databaseCleaner.clear();
-    }
-
-    /*
-    member
-    +----+--------+------------------+----------+-------+
-    | id | name   | email            | password | role  |
-    +----+--------+------------------+----------+-------+
-    | 1  | 어드민  | admin@email.com  | password | ADMIN |
-    | 2  | 브라운  | brown@email.com  | password | USER  |
-    +----+--------+------------------+----------+-------+
-
-    time                        theme
-    +----+------------+        +----+--------+---------------+
-    | id | time_value |        | id | name   | description   |
-    +----+------------+        +----+--------+---------------+
-    | 1  | 10:00      |        | 1  | 테마1   | 테마1입니다.   |
-    | 2  | 12:00      |        | 2  | 테마2   | 테마2입니다.   |
-    | 3  | 14:00      |        | 3  | 테마3   | 테마3입니다.   |
-    | 4  | 16:00      |        +----+--------+---------------+
-    | 5  | 18:00      |
-    | 6  | 20:00      |
-    +----+------------+
-
-    reservation
-    +----+-----------+------------+---------+----------+
-    | id | member_id | date       | time_id | theme_id |
-    +----+-----------+------------+---------+----------+
-    | 1  | 1         | 2024-03-01 | 1       | 1        |
-    | 2  | 1         | 2024-03-01 | 2       | 2        |
-    | 3  | 1         | 2024-03-01 | 3       | 3        |
-    | 4  | 2         | 2024-03-01 | 1       | 2        |
-    +----+-----------+------------+---------+----------+
-    */
-
     @Test
-    @DisplayName("존재하는 계정으로 로그인 시, 200과 함께 access/refresh 토큰 쿠키가 발급된다.")
-    void loginSuccess_returnsTokenCookies() {
-        //given
-        Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract();
+    void 존재하는_계정으로_로그인하면_액세스_리프레시_토큰_쿠키가_발급된다() {
+        // given-when
+        ExtractableResponse<Response> response = 로그인_시도("admin@email.com", "password");
 
         // then
         String accessToken = response.cookie(ACCESS_TOKEN);
         String refreshToken = response.cookie(REFRESH_TOKEN);
-        assertThat(accessToken).isNotBlank();
-        assertThat(refreshToken).isNotBlank();
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(response.statusCode()).isEqualTo(200);
+            softAssertions.assertThat(accessToken).isNotBlank();
+            softAssertions.assertThat(refreshToken).isNotBlank();
+        });
     }
 
     @Test
-    @DisplayName("존재하지 않는 email로 로그인 시도 시, 401을 반환한다")
-    void login_withNonExistentEmail_returns401() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("email", "wrong@email.com");
-        params.put("password", "password");
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().log().all()
-                .extract();
+    void 존재하지_않는_이메일로_로그인하면_401을_반환한다() {
+        // given-when
+        ExtractableResponse<Response> response = 로그인_시도("wrong@email.com", "password");
 
         // then
         assertThat(response.statusCode()).isEqualTo(401);
     }
 
     @Test
-    @DisplayName("잘못된 password로 로그인 시도 시, 401을 반환한다")
-    void login_withWrongPassword_returns401() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "wrongPassword");
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().log().all()
-                .extract();
+    void 잘못된_비밀번호로_로그인하면_401을_반환한다() {
+        // given-when
+        ExtractableResponse<Response> response = 로그인_시도("wrong@email.com", "wrongPassword");
 
         // then
         assertThat(response.statusCode()).isEqualTo(401);
     }
 
     @Test
-    @DisplayName("로그인 성공 시, refresh token이 DB에 저장된다,")
-    void loginSuccess_savesRefreshTokenInDb() {
-        //given
-        Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
-
-        // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().log().all()
-                .statusCode(200)
-                .extract();
+    void 로그인에_성공하면_리프레시_토큰이_DB에_저장된다() {
+        // given-when
+        ExtractableResponse<Response> response = 로그인_시도("admin@email.com", "password");
 
         // then
         String refreshToken = response.cookie(REFRESH_TOKEN);
-        RefreshToken savedToken = repository.findByToken(refreshToken)
+        RefreshToken savedToken = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new AssertionError("저장된 Refresh Token이 없습니다."));
         assertThat(savedToken.getToken()).isEqualTo(refreshToken);
+    }
+
+    @Test
+    void 엑세스_토큰_재발급_시_리프레시_토큰도_새롭게_저장한다() {
+        // given
+        ExtractableResponse<Response> loginResponse = 로그인_시도("admin@email.com", "password");
+
+        String originalRefreshToken = loginResponse.cookie(REFRESH_TOKEN);
+        Long originalTokenId = refreshTokenRepository.findByToken(originalRefreshToken)
+                .orElseThrow().getId();
+
+        // when
+        ExtractableResponse<Response> reissueResponse = RestAssured.given().log().all()
+                .cookie(REFRESH_TOKEN, originalRefreshToken)
+                .when().post("/login/refresh")
+                .then().log().all()
+                .extract();
+
+        // then
+        String newRefreshToken = reissueResponse.cookie(REFRESH_TOKEN);
+        RefreshToken savedToken = refreshTokenRepository.findByToken(newRefreshToken)
+                .orElseThrow(() -> new AssertionError("재발급된 리프레시 토큰이 DB에 없습니다."));
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(reissueResponse.statusCode()).isEqualTo(200);
+            softAssertions.assertThat(newRefreshToken).isNotBlank();
+            softAssertions.assertThat(refreshTokenRepository.findById(originalTokenId)).isEmpty();
+            softAssertions.assertThat(savedToken.getId()).isNotEqualTo(originalTokenId);
+            softAssertions.assertThat(savedToken.getToken()).isEqualTo(newRefreshToken);
+        });
+    }
+
+    @Test
+    void 로그아웃하면_리프레시_토큰도_DB에서_제거된다() {
+        // given
+        ExtractableResponse<Response> loginResponse = 로그인_시도("admin@email.com", "password");
+
+        String accessToken = loginResponse.cookie(ACCESS_TOKEN);
+        String refreshToken = loginResponse.cookie(REFRESH_TOKEN);
+        Long tokenId = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow().getId();
+
+        // when
+        ExtractableResponse<Response> logoutResponse = RestAssured.given().log().all()
+                .cookie(ACCESS_TOKEN, accessToken)
+                .when().post("/logout")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(logoutResponse.statusCode()).isEqualTo(200);
+            softAssertions.assertThat(refreshTokenRepository.findById(tokenId)).isEmpty();
+        });
     }
 }

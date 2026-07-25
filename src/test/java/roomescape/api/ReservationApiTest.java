@@ -4,62 +4,53 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import roomescape.DatabaseCleaner;
-import roomescape.support.querycounter.QueryCounterTestConfig;
+import roomescape.reservation.dto.MyReservationResponse;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Import(QueryCounterTestConfig.class)
-public class ReservationApiTest {
+@SuppressWarnings("NonAsciiCharacters")
+public class ReservationApiTest extends ApiTest {
 
     private final static String ACCESS_TOKEN = "access-token";
 
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @BeforeEach
-    void setUp() {
-        databaseCleaner.clear();
-    }
-
     @Test
-    @DisplayName("로그인한 회원은 자신의 예약 목록을 조회할 수 있다")
-    void getReservations_withValidToken_returnsOwnReservations() {
+    void 로그인한_회원은_자신의_예약_목록을_조회할_수_있다() {
         // given
-        String accessToken = createToken("admin@email.com", "password");
+        ExtractableResponse<Response> loginResponse = 로그인_시도("admin@email.com", "password");
+        String accessToken = loginResponse.cookie(ACCESS_TOKEN);
 
-        // when-then
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .cookie(ACCESS_TOKEN, accessToken)
                 .when().get("/reservations-mine")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(3))
                 .extract();
+        List<MyReservationResponse> reservations = response.jsonPath().getList(".", MyReservationResponse.class);
+
+        // then
+        assertSoftly(softAssertions -> {
+            softAssertions.assertThat(response.statusCode()).isEqualTo(200);
+            softAssertions.assertThat(reservations).hasSize(3);
+        });
     }
 
-    private String createToken(String email, String password) {
-        Map<String, String> params = new HashMap<>();
-        params.put("email", email);
-        params.put("password", password);
-
+    @Test
+    void 인증_정보가_없으면_예약_목록을_조회할_수_없다() {
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().extract();
+                .when().get("/reservations-mine")
+                .then().log().all()
+                .extract();
 
-        return response.cookie(ACCESS_TOKEN);
+        // then
+        assertThat(response.statusCode()).isEqualTo(401);
     }
+
+
 }

@@ -1,0 +1,16 @@
+package roomescape.config;
+
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+public class DatabaseCleanerExtension implements BeforeEachCallback {
+
+
+    @Override
+    public void beforeEach(ExtensionContext extensionContext) throws Exception {
+        DatabaseCleaner databaseCleaner = SpringExtension.getApplicationContext(extensionContext)
+                .getBean(DatabaseCleaner.class);
+        databaseCleaner.clear();
+    }
+}
