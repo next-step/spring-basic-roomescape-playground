@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import roomescape.member.Member;
@@ -34,7 +35,7 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-
+    @Builder
     public Reservation(Member member, String date, Time time, Theme theme) {
         this.member = member;
         this.date = date;

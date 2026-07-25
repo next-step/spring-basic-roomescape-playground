@@ -42,12 +42,12 @@ public class ReservationService {
                 .orElseThrow();
         Member member = memberRepository.findByName(name)
                 .orElseThrow();
-        Reservation reservation = new Reservation(
-                member,
-                reservationRequest.date(),
-                time,
-                theme
-        );
+        Reservation reservation = Reservation.builder().
+                member(member)
+                .date(reservationRequest.date())
+                .time(time)
+                .theme(theme)
+                .build();
         reservationRepository.save(reservation);
         return new ReservationResponse(
                 reservation.getMember().getName(),
