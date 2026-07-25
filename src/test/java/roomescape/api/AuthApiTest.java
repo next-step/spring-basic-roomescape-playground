@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import roomescape.DatabaseCleaner;
+import roomescape.config.DatabaseCleaner;
 import roomescape.auth.entity.RefreshToken;
 import roomescape.auth.repository.RefreshTokenRepository;
 import roomescape.support.querycounter.QueryCounterTestConfig;

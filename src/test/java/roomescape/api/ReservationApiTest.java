@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import roomescape.DatabaseCleaner;
+import roomescape.config.DatabaseCleaner;
 import roomescape.support.querycounter.QueryCounterTestConfig;
 
 import java.util.HashMap;

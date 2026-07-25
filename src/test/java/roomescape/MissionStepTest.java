@@ -7,8 +7,13 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Component;
+import org.springframework.test.context.ActiveProfiles;
+import roomescape.auth.jwt.JwtTokenProvider;
+import roomescape.config.DatabaseCleaner;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.support.querycounter.QueryCounterTestConfig;
@@ -20,7 +25,9 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
 @Import(QueryCounterTestConfig.class)
 public class MissionStepTest {
 
@@ -164,6 +171,12 @@ public class MissionStepTest {
         assertThat(status).isEqualTo("1번째 예약대기");
     }
 
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtTokenProvider.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);
@@ -176,5 +189,13 @@ public class MissionStepTest {
                 .then().extract();
 
         return response.cookie(ACCESS_TOKEN);
+    }
+
+    @Value("${roomescape.auth.jwt.secret-key}")
+    private String secretKey;
+
+    @Test
+    void 팔단계() {
+        assertThat(secretKey).isNotBlank();
     }
 }
