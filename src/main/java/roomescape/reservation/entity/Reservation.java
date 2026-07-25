@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import roomescape.member.entity.Member;
@@ -16,6 +18,12 @@ import roomescape.time.entity.Time;
 import java.time.LocalDate;
 
 @Entity(name = "reservation")
+@Table(uniqueConstraints = {
+        @UniqueConstraint(
+                name = "uk_reservation_date_time_theme",
+                columnNames = {"date", "time_id", "theme_id"}
+        )
+})
 public class Reservation {
 
     @Id
