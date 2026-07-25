@@ -24,7 +24,7 @@ public class WaitingController {
         WaitingResponse waitingResponse= waitingService.save(waitingRequest,loginMember);
 
         return ResponseEntity
-                .created(URI.create("/waitings/"+ waitingResponse.getId()))
+                .created(URI.create("/waitings/"+ waitingResponse.id()))
                 .body(waitingResponse);
     }
 }

@@ -32,25 +32,25 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        String name = reservationRequest.getName();
+        String name = reservationRequest.name();
         if (name == null) {
             name = loginMember.getName();
         }
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
+        Theme theme = themeRepository.findById(reservationRequest.theme())
                 .orElseThrow();
-        Time time = timeRepository.findById(reservationRequest.getTime())
+        Time time = timeRepository.findById(reservationRequest.time())
                 .orElseThrow();
         Member member = memberRepository.findByName(name)
                 .orElseThrow();
         Reservation reservation = new Reservation(
                 member,
-                reservationRequest.getDate(),
+                reservationRequest.date(),
                 time,
                 theme
         );
         reservationRepository.save(reservation);
         return new ReservationResponse(
-                reservation.getName(),
+                reservation.getMember().getName(),
                 reservation.getId(),
                 reservation.getTheme().getName(),
                 reservation.getDate(),
@@ -63,7 +63,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getName(), it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getTimeValue()))
+                .map(it -> new ReservationResponse(it.getMember().getName(), it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getTimeValue()))
                 .toList();
     }
 

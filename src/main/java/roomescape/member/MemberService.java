@@ -13,9 +13,9 @@ public class MemberService {
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member =
                 new Member(
-                        memberRequest.getName(),
-                        memberRequest.getEmail(),
-                        memberRequest.getPassword(),
+                        memberRequest.name(),
+                        memberRequest.email(),
+                        memberRequest.password(),
                         "USER");
 
         memberRepository.save(member);

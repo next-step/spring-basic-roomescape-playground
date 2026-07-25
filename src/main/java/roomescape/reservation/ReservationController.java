@@ -30,9 +30,9 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity create(@RequestBody ReservationRequest reservationRequest, LoginMember loginMember) {
         if (
-                reservationRequest.getDate() == null
-                        || reservationRequest.getTheme() == null
-                        || reservationRequest.getTime() == null) {
+                reservationRequest.date() == null
+                        || reservationRequest.theme() == null
+                        || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
         ReservationResponse reservation = reservationService.save(reservationRequest, loginMember);

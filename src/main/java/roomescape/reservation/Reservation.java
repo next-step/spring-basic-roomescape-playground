@@ -6,11 +6,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Getter
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,38 +34,11 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    protected Reservation(){
-
-    }
 
     public Reservation(Member member, String date, Time time, Theme theme) {
         this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return member.getName();
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public Time getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
     }
 }
