@@ -9,12 +9,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.JwtUtils;
 
 public class AdminInterceptor implements HandlerInterceptor {
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public AdminInterceptor(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider =  jwtTokenProvider;
+    public AdminInterceptor(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -44,7 +45,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         try {
-            Claims claims = jwtTokenProvider.parseToken(token);
+            Claims claims = jwtUtils.parseToken(token);
 
             String role = claims.get("role", String.class);
 
