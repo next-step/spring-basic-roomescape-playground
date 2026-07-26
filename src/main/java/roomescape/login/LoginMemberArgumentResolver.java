@@ -1,5 +1,6 @@
 package roomescape.login;
 
+import auth.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -9,18 +10,17 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.CookieManager;
-import roomescape.JwtProvider;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberDao memberDao;
-    private final JwtProvider jwtProvider;
+    private final MemberRepository memberRepository;
+    private final JwtUtils jwtUtils;
     private final CookieManager cookieManager;
-    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberDao memberDao,CookieManager cookieManager) {
-        this.memberDao = memberDao;
-        this.jwtProvider = jwtProvider;
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils, MemberRepository memberRepository, CookieManager cookieManager) {
+        this.memberRepository = memberRepository;
+        this.jwtUtils = jwtUtils;
         this.cookieManager=cookieManager;
     }
 
@@ -36,11 +36,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         String token = cookieManager.extractToken(cookies,"accessToken");
 
-        Long memberId = jwtProvider.getMemberId(token);
+        Long memberId = jwtUtils.getMemberId(token);
 
-        Member member = memberDao.findById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow();
 
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        return new LoginMember(memberId, member.getName(), member.getEmail(), member.getPassword(),member.getRole());
     }
 
     private HttpServletRequest getRequest(NativeWebRequest nativeWebRequest) {
@@ -58,5 +59,4 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         }
         return cookies;
     }
-
 }
