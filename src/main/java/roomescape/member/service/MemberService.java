@@ -24,7 +24,7 @@ public class MemberService {
                 memberRequest.email(),
                 memberRequest.password(),
                 Role.USER
-                ));
+        ));
         return MemberResponse.from(member);
     }
 }

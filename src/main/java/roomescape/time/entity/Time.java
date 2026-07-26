@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import roomescape.global.entity.BaseSoftDeleteEntity;
-import roomescape.time.dto.TimeRequest;
 
 @Entity(name = "time")
 public class Time extends BaseSoftDeleteEntity {

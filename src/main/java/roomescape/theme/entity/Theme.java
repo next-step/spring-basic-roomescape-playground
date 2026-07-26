@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import roomescape.global.entity.BaseSoftDeleteEntity;
-import roomescape.theme.dto.ThemeRequest;
 
 @Entity(name = "theme")
 public class Theme extends BaseSoftDeleteEntity {

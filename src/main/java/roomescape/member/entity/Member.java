@@ -7,7 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import roomescape.member.dto.MemberRequest;
 
 @Entity(name = "member")
 public class Member {
