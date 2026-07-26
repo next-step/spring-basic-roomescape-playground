@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionController {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgument(IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> handleException(Exception e) {
-        return ResponseEntity.badRequest().build(); // 400
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

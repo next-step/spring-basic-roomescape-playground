@@ -1,28 +1,25 @@
 package roomescape.time;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import roomescape.reservation.ReservationRepository;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
-
 @RestController
 public class TimeController {
-    private TimeService timeService;
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public TimeController(TimeService timeService) {
-        this.timeService = timeService;
+    public TimeController(TimeRepository timeRepository,ReservationRepository reservationRepository) {
+        this.timeRepository = timeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @GetMapping("/times")
     public List<Time> list() {
-        return timeService.findAll();
+        return timeRepository.findByDeletedFalse();
     }
 
     @PostMapping("/times")
@@ -31,18 +28,25 @@ public class TimeController {
             throw new RuntimeException();
         }
 
-        Time newTime = timeService.save(time);
+        Time newTime = timeRepository.save(time);
         return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
     }
 
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        timeService.deleteById(id);
+        timeRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/available-times")
     public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date, @RequestParam Long themeId) {
-        return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
+        List<Time> times = timeRepository.findByDeletedFalse();
+        List<AvailableTime> result = new ArrayList<>();
+
+        for(Time t:times){
+            boolean isBooked = reservationRepository.existsByDateAndTimeAndTheme(date, t.getId(), themeId);
+            result.add(new AvailableTime(t.getId(), t.getValue(), isBooked));
+        }
+        return ResponseEntity.ok(result);
     }
 }
