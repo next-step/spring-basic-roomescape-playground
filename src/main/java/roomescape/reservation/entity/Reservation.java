@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import roomescape.member.entity.Member;
 import roomescape.theme.entity.Theme;
 import roomescape.time.entity.Time;
@@ -24,6 +26,7 @@ public class Reservation {
     private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,11 +38,20 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(Member member, LocalDate date, Time time, Theme theme) {
+    private Reservation(Member member, LocalDate date, Time time, Theme theme) {
         this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public static Reservation of(Member member, LocalDate date, Time time, Theme theme) {
+        return new Reservation(
+                member,
+                date,
+                time,
+                theme
+        );
     }
 
     public Long getId() {

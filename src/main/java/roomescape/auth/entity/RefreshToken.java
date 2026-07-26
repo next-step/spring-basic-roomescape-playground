@@ -27,9 +27,13 @@ public class RefreshToken {
     public RefreshToken() {
     }
 
-    public RefreshToken(Member member, String token) {
+    private RefreshToken(Member member, String token) {
         this.member = member;
         this.token = token;
+    }
+
+    public static RefreshToken of(Member member, String token) {
+        return new RefreshToken(member, token);
     }
 
     public Long getId() {

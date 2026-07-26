@@ -32,12 +32,12 @@ public class TimeController {
 
     @PostMapping("/times")
     public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest timeRequest) {
-        if (timeRequest.getValue() == null || timeRequest.getValue().isEmpty()) {
+        if (timeRequest.value() == null || timeRequest.value().isEmpty()) {
             throw new RuntimeException();
         }
 
-        TimeResponse newTime = timeService.create(new Time(timeRequest.getValue()));
-        return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
+        TimeResponse newTime = timeService.create(Time.from(timeRequest.value()));
+        return ResponseEntity.created(URI.create("/times/" + newTime.id())).body(newTime);
     }
 
     @DeleteMapping("/times/{id}")

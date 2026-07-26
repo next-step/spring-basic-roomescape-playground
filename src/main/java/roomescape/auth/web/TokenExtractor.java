@@ -3,8 +3,8 @@ package roomescape.auth.web;
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 import roomescape.auth.exception.AuthErrorCode;
-import roomescape.exception.ApplicationException;
-import roomescape.util.CookieUtil;
+import roomescape.global.exception.ApplicationException;
+import roomescape.global.util.CookieUtil;
 
 @Component
 public class TokenExtractor {

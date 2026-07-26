@@ -1,20 +1,16 @@
 package roomescape.time.dto;
 
-public class TimeResponse {
+import roomescape.time.entity.Time;
 
-    private final Long id;
-    private final String value;
+public record TimeResponse(
+        Long id,
+        String value
+) {
 
-    public TimeResponse(Long id, String value) {
-        this.id = id;
-        this.value = value;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getValue() {
-        return value;
+    public static TimeResponse from(Time time) {
+        return new TimeResponse(
+                time.getId(),
+                time.getTimeValue()
+        );
     }
 }
