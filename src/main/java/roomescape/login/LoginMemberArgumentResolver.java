@@ -1,5 +1,6 @@
 package roomescape.login;
 
+import auth.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -9,18 +10,17 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.CookieManager;
-import roomescape.JwtProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberRepository memberRepository;
-    private final JwtProvider jwtProvider;
+    private final JwtUtils jwtUtils;
     private final CookieManager cookieManager;
-    public LoginMemberArgumentResolver(JwtProvider jwtProvider, MemberRepository memberRepository,CookieManager cookieManager) {
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils, MemberRepository memberRepository, CookieManager cookieManager) {
         this.memberRepository = memberRepository;
-        this.jwtProvider = jwtProvider;
+        this.jwtUtils = jwtUtils;
         this.cookieManager=cookieManager;
     }
 
@@ -36,7 +36,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         String token = cookieManager.extractToken(cookies,"accessToken");
 
-        Long memberId = jwtProvider.getMemberId(token);
+        Long memberId = jwtUtils.getMemberId(token);
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow();

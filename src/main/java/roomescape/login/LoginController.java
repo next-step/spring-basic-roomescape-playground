@@ -1,5 +1,6 @@
 package roomescape.login;
 
+import auth.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,18 +11,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.CookieManager;
-import roomescape.JwtProvider;
 import roomescape.member.Member;
 import roomescape.member.MemberResponse;
 
 @RestController
 public class LoginController {
     private final LoginService loginService;
-    private final JwtProvider jwtProvider;
+    private final JwtUtils jwtUtils;
     private final CookieManager cookieManager;
 
-    public LoginController(LoginService loginService, JwtProvider jwtProvider, CookieManager cookieManager) {
-        this.jwtProvider = jwtProvider;
+    public LoginController(LoginService loginService, JwtUtils jwtUtils, CookieManager cookieManager) {
+        this.jwtUtils = jwtUtils;
         this.loginService = loginService;
         this.cookieManager = cookieManager;
     }
@@ -30,8 +30,8 @@ public class LoginController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpresponse) {
         Member member = loginService.login(loginRequest.email(), loginRequest.password());
 
-        String accessToken = jwtProvider.createAccessToken(member);
-        String refreshToken = jwtProvider.createRefreshToken(member);
+        String accessToken = jwtUtils.createAccessToken(member);
+        String refreshToken = jwtUtils.createRefreshToken(member);
 
         Cookie accessCookie = new Cookie("accessToken", accessToken);
         Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
@@ -55,11 +55,11 @@ public class LoginController {
         }
         String refreshToken = cookieManager.extractToken(cookies, "refreshToken");
 
-        Long memberId = jwtProvider.getMemberId(refreshToken);
+        Long memberId = jwtUtils.getMemberId(refreshToken);
 
         Member member = loginService.findById(memberId);
 
-        String accessToken = jwtProvider.createAccessToken(member);
+        String accessToken = jwtUtils.createAccessToken(member);
 
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);
