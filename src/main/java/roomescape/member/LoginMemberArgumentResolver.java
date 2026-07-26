@@ -6,19 +6,20 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.auth.JwtUtils;
 
 //컨트롤러의 매개변수를 자동으로 만들어주는 클래스
+@Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
+    private final JwtUtils jwtUtils;
 
-    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider,MemberRepository memberRepository){
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.memberRepository = memberRepository;
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils){
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -30,30 +31,28 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest(); //현재 HTTP 요청 가져오기
-        Cookie[] cookies = request.getCookies(); //쿠키 가져오기
+        String token = extractToken(request);
 
-        if (cookies == null) {
-            throw new IllegalArgumentException("토큰 쿠키가 존재하지 않습니다.");
+        if (token == null) {
+            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
         }
 
-        String token = "";
-        for (Cookie cookie : cookies) {
-            if ("token".equals(cookie.getName())) {//이름이 token인 쿠키 찾기
-                token = cookie.getValue(); //JWT 문자열 저장
+        Claims claims = jwtUtils.parseToken(token);
+        Long id = Long.parseLong(claims.getSubject());
+        String role = claims.get("role", String.class);
+        return new Member(id, role); // 필요한 id와 role만 가진 객체 반환
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
             }
         }
-
-        if(token.isBlank()){
-            throw new IllegalArgumentException("토큰 값이 비어있습니다.");
-        }
-
-        // 토큰 파싱하여 회원 정보 추출
-        Claims claims = jwtTokenProvider.parseToken(token);
-        //정보 꺼내기
-        Long id = Long.parseLong(claims.getSubject());
-
-        return memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        return null;
     }
 }
 //브라우저가 보낸 JWT 쿠키를 읽어서 그 안에 저장된 회원 정보를 Member 객체로 복원한 뒤, 컨트롤러의 Member loginMember 매개변수에 자동으로
