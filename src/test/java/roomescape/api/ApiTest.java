@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.auth.repository.RefreshTokenRepository;
 import roomescape.config.DatabaseCleanerExtension;
 import roomescape.member.repository.MemberRepository;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
 @ExtendWith(DatabaseCleanerExtension.class)
 @Import(QueryCounterTestConfig.class)
 @SuppressWarnings("NonAsciiCharacters")

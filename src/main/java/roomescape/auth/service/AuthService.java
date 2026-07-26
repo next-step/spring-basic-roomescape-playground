@@ -67,6 +67,7 @@ public class AuthService {
         String refreshToken = tokenProvider.createRefreshToken(member);
 
         refreshTokenRepository.deleteByMemberId(member.getId());
+        refreshTokenRepository.flush();
         refreshTokenRepository.save(RefreshToken.of(member, refreshToken));
 
         return TokenResponse.of(accessToken, refreshToken);

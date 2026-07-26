@@ -4,16 +4,15 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.auth.jwt.JwtTokenProvider;
-import roomescape.config.DatabaseCleaner;
+import roomescape.config.DatabaseCleanerExtension;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.support.querycounter.QueryCounterTestConfig;
@@ -29,17 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @Import(QueryCounterTestConfig.class)
+@ExtendWith(DatabaseCleanerExtension.class)
 public class MissionStepTest {
 
     private final static String ACCESS_TOKEN = "access-token";
-
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @BeforeEach
-    void setUp() {
-        databaseCleaner.clear();
-    }
 
     @Test
     void 일단계() {

@@ -26,7 +26,7 @@ public class DataLoader implements CommandLineRunner {
     private void createMember(String name, String email, String password, Role role) {
         if (!validateMemberExists(email)) {
             memberRepository.save(
-                    new Member(name, email, password, role)
+                    Member.of(name, email, password, role)
             );
         }
     }

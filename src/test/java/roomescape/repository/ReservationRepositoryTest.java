@@ -32,17 +32,18 @@ public class ReservationRepositoryTest extends RepositoryTest {
         Time time2 = 시간_시간2_생성();
         복수_시간_저장(time1, time2);
 
-        Theme theme = 테마_테마1_생성();
-        단일_테마_저장(theme);
+        Theme theme1 = 테마_테마1_생성();
+        Theme theme2 = 테마_테마2_생성();
+        복수_테마_저장(theme1, theme2);
 
         LocalDate date = LocalDate.now().plusDays(1);
 
         Reservation member1Reservation1 =
-                날짜_지정_예약_생성(member1, date, time1, theme);
+                날짜_지정_예약_생성(member1, date, time1, theme1);
         Reservation member1Reservation2 =
-                날짜_지정_예약_생성(member1, date, time2, theme);
+                날짜_지정_예약_생성(member1, date, time2, theme1);
         Reservation member2Reservation =
-                날짜_지정_예약_생성(member2, date, time1, theme);
+                날짜_지정_예약_생성(member2, date, time1, theme2);
         복수_예약_저장(
                 member1Reservation1,
                 member1Reservation2,
