@@ -4,17 +4,18 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import roomescape.auth.JwtUtils;
 
 import java.util.Date;
 
 @Service
 public class MemberService {
     private MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
-    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberRepository memberRepository, JwtUtils jwtUtils) {
         this.memberRepository = memberRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtils = jwtUtils;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -29,7 +30,7 @@ public class MemberService {
                 loginRequest.getPassword()
         ).orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
-        return jwtTokenProvider.createToken(member);
+        return jwtUtils.createToken(String.valueOf(member.getId()), member.getRole());
     }
 
 
