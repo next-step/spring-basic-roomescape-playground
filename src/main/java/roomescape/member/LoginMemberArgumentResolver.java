@@ -43,6 +43,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             }
         }
 
+        if(token.isBlank()){
+            throw new IllegalArgumentException("토큰 값이 비어있습니다.");
+        }
+
         // 토큰 파싱하여 회원 정보 추출
         Claims claims = jwtTokenProvider.parseToken(token);
         //정보 꺼내기
