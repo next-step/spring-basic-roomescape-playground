@@ -39,7 +39,7 @@ public class WaitingController {
             return ResponseEntity.badRequest().build();
         }
 
-        boolean isAlreadyWaiting = waitingRepository.existsByDateAndTimeAndTheme(request.getDate(), request.getTime(), request.getTheme(), loginMember.getId());
+        boolean isAlreadyWaiting = waitingRepository.existsByDateAndTimeAndThemeAndMemberId(request.getDate(), request.getTime(), request.getTheme(), loginMember.getId());
         if (isAlreadyWaiting) {
             return ResponseEntity.badRequest().build();
         }

@@ -20,5 +20,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByMemberId(@Param("memberId") Long memberId);
 
     //중복 예약 방지 검증하ㅣ기
-    boolean existsByDateAndTimeAndTheme(String date, Long timeId, Long themeId);
+    @Query("SELECT COUNT(r) > 0 FROM Reservation r WHERE r.date = :date AND r.time.id = :timeId AND r.theme.id = :themeId")
+    boolean existsByDateAndTimeAndTheme(@Param("date") String date, @Param("timeId") Long timeId, @Param("themeId") Long themeId);
 }

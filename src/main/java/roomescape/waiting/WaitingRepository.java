@@ -10,7 +10,11 @@ import java.util.List;
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
-    boolean existsByDateAndTimeAndTheme(String date, Long timeId, Long themeId, Long memberId);
+    @Query("SELECT COUNT(w) > 0 FROM Waiting w WHERE w.date = :date AND w.time.id = :timeId AND w.theme.id = :themeId")
+    boolean existsByDateAndTimeAndTheme(@Param("date") String date, Long timeId, @Param("timeId") Long themeId, @Param("themeId") Long memberId);
+
+    @Query("SELECT COUNT(w) > 0 FROM Waiting w WHERE w.date = :date AND w.time.id = :timeId AND w.theme.id = :themeId AND w.member.id = :memberId")
+    boolean existsByDateAndTimeAndThemeAndMemberId(@Param("date") String date, @Param("timeId") Long timeId, @Param("themeId") Long themeId, @Param("memberId") Long memberId);
 
     //미션 코드 참고해서 작성하기
     @Query("SELECT new roomescape.waiting.WaitingWithRank(" +

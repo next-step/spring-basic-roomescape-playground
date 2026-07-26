@@ -8,7 +8,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 @RestController
-@RequestMapping("/times")
 public class TimeController {
     private final TimeRepository timeRepository;
     private final ReservationRepository reservationRepository;
