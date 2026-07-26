@@ -8,18 +8,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.exception.UnauthorizedException;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberService memberService;
     private final JwtProvider jwtProvider;
     private final CookieManager cookieExtractor;
 
-    public LoginMemberArgumentResolver(MemberService memberService, JwtProvider jwtProvider, CookieManager cookieExtractor) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(JwtProvider jwtProvider, CookieManager cookieExtractor) {
         this.jwtProvider = jwtProvider;
         this.cookieExtractor = cookieExtractor;
     }
@@ -45,15 +41,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
-        Long memberId = jwtProvider.extractMemberId(token);
-
-        Member member = memberService.findById(memberId);
-
-        return new LoginMember(
-                member.getId(),
-                member.getName(),
-                member.getEmail(),
-                member.getRole()
-        );
+        return jwtProvider.extractLoginMember(token);
     }
 }
