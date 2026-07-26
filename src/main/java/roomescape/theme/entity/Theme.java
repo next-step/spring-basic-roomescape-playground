@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import roomescape.global.entity.BaseSoftDeleteEntity;
-import roomescape.theme.dto.ThemeRequest;
 
 @Entity(name = "theme")
 public class Theme extends BaseSoftDeleteEntity {
@@ -24,13 +23,13 @@ public class Theme extends BaseSoftDeleteEntity {
     public Theme() {
     }
 
-    public Theme(String name, String description) {
+    private Theme(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    public static Theme from(ThemeRequest request) {
-        return new Theme(request.name(), request.description());
+    public static Theme of(String name, String description) {
+        return new Theme(name, description);
     }
 
     public Long getId() {

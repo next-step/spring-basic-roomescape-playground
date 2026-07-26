@@ -27,7 +27,7 @@ public class RefreshToken {
     public RefreshToken() {
     }
 
-    public RefreshToken(Member member, String token) {
+    private RefreshToken(Member member, String token) {
         this.member = member;
         this.token = token;
     }

@@ -46,7 +46,7 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(Member member, LocalDate date, Time time, Theme theme) {
+    private Reservation(Member member, LocalDate date, Time time, Theme theme) {
         this.member = member;
         this.date = date;
         this.time = time;

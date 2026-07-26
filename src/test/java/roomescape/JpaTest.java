@@ -19,7 +19,7 @@ public class JpaTest {
 
     @Test
     void 사단계() {
-        Time time = new Time("10:00");
+        Time time = Time.from("10:00");
         entityManager.persist(time);
         entityManager.flush();
 

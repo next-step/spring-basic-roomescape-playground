@@ -23,7 +23,10 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse create(ThemeRequest request) {
-        Theme theme = Theme.from(request);
+        Theme theme = Theme.of(
+                request.name(),
+                request.description()
+        );
         Theme savedTheme = themeRepository.save(theme);
 
         return ThemeResponse.from(savedTheme);

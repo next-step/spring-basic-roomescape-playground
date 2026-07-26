@@ -19,7 +19,12 @@ public class MemberService {
 
     @Transactional
     public MemberResponse create(MemberRequest memberRequest) {
-        Member member = memberRepository.save(Member.from(memberRequest, Role.USER));
+        Member member = memberRepository.save(Member.of(
+                memberRequest.name(),
+                memberRequest.email(),
+                memberRequest.password(),
+                Role.USER
+        ));
         return MemberResponse.from(member);
     }
 }
