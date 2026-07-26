@@ -10,7 +10,10 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import roomescape.auth.JwtUtils;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.waiting.WaitingResponse;
 
@@ -23,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class MissionTest {
 
     @Value("${jwt.secret}")
@@ -91,5 +95,12 @@ public class MissionTest {
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    @Test
+    void 칠단계() {
+        // JwtUtils 클래스에 @Component 어노테이션이 없는지 확인 (null이어야 성공)
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 }
