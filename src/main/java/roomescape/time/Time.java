@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
 
 @Entity
@@ -14,6 +15,7 @@ public class Time {
     private Long id;
     private String timeValue;
 
+    @Builder
     public Time(Long id, String value) {
         this.id = id;
         this.timeValue = value;

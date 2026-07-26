@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
 
 @Entity
@@ -19,6 +20,7 @@ public class Theme {
     public Theme() {
     }
 
+    @Builder
     public Theme(Long id, String name, String description) {
         this.id = id;
         this.name = name;
