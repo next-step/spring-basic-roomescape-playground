@@ -31,7 +31,6 @@ public class MemberController {
     }
 
     @PostMapping("/login") // URL 경로
-    // HTTP 요청형식
     public ResponseEntity<Void> login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
         LoginTokens tokens = memberService.login(memberRequest);
         response.addCookie(authCookieProvider.createAccessTokenCookie(tokens.accessToken()));
