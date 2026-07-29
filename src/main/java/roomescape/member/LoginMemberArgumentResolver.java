@@ -17,9 +17,11 @@ import roomescape.auth.JwtUtils;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final JwtUtils jwtUtils;
+    private final MemberRepository memberRepository;
 
-    public LoginMemberArgumentResolver(JwtUtils jwtUtils){
+    public LoginMemberArgumentResolver(JwtUtils jwtUtils, MemberRepository memberRepository){
         this.jwtUtils = jwtUtils;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -39,8 +41,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         Claims claims = jwtUtils.parseToken(token);
         Long id = Long.parseLong(claims.getSubject());
-        String role = claims.get("role", String.class);
-        return new Member(id, role); // 필요한 id와 role만 가진 객체 반환
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
     private String extractToken(HttpServletRequest request) {

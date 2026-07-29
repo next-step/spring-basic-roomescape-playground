@@ -15,13 +15,15 @@ import java.util.List;
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final JwtUtils jwtUtils;
+    private final MemberRepository memberRepository;
 
-    public WebMvcConfiguration(JwtUtils jwtUtils){
+    public WebMvcConfiguration(JwtUtils jwtUtils, MemberRepository memberRepository){
         this.jwtUtils = jwtUtils;
+        this.memberRepository = memberRepository;
     }
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(jwtUtils));
+        resolvers.add(new LoginMemberArgumentResolver(jwtUtils, memberRepository));
     }
 
     @Override
