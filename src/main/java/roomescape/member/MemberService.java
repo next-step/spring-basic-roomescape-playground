@@ -1,10 +1,10 @@
 package roomescape.member;
 
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
 
@@ -12,6 +12,7 @@ public class MemberService {
         this.memberRepository = memberDao;
     }
 
+    @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
         Member member = memberRepository.save(new Member(memberRequest.name(), memberRequest.email(), memberRequest.password(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());

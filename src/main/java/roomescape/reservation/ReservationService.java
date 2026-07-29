@@ -1,8 +1,8 @@
 package roomescape.reservation;
 
-import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.auth.LoginMember;
 import roomescape.exception.ForbiddenException;
 import roomescape.member.Member;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberService memberService;
@@ -37,6 +37,7 @@ public class ReservationService {
         this.waitingRepository = waitingRepository;
     }
 
+    @Transactional
     public ReservationResponse save(ReservationRequest request, LoginMember loginMember) {
 
         Member member = resolveReservationMember(request, loginMember);
@@ -66,6 +67,7 @@ public class ReservationService {
         return ReservationResponse.from(reservation);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
     }
@@ -75,27 +77,6 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
-    }
-
-    private Member resolveReservationMember(ReservationRequest request, LoginMember loginMember) {
-
-        if (request.name() != null && request.name().isBlank()) {
-            throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
-        }
-
-        if (request.name() == null) {
-            return memberService.findById(loginMember.id());
-        }
-
-        if (loginMember.role() == Role.ADMIN) {
-            return memberService.findByName(request.name());
-        }
-
-        if (!loginMember.name().equals(request.name())) {
-            throw new ForbiddenException("다른 사용자의 이름으로 예약할 수 없습니다.");
-        }
-
-        return memberService.findById(loginMember.id());
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
@@ -118,6 +99,27 @@ public class ReservationService {
         result.addAll(waitings);
 
         return result;
+    }
+
+    private Member resolveReservationMember(ReservationRequest request, LoginMember loginMember) {
+
+        if (request.name() != null && request.name().isBlank()) {
+            throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
+        }
+
+        if (request.name() == null) {
+            return memberService.findById(loginMember.id());
+        }
+
+        if (loginMember.role() == Role.ADMIN) {
+            return memberService.findByName(request.name());
+        }
+
+        if (!loginMember.name().equals(request.name())) {
+            throw new ForbiddenException("다른 사용자의 이름으로 예약할 수 없습니다.");
+        }
+
+        return memberService.findById(loginMember.id());
     }
 
     private void validateReservation(ReservationRequest request) {
