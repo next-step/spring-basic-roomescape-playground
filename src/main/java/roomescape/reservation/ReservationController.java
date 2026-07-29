@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.waiting.WaitingRepository;
@@ -27,8 +29,8 @@ import java.util.stream.Collectors;
 public class ReservationController {
 
     private final ReservationRepository reservationRepository;
-    private final roomescape.member.MemberRepository memberRepository;
-    private final roomescape.theme.ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
+    private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
     private final WaitingRepository waitingRepository;
 
