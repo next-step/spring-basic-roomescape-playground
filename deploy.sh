@@ -10,7 +10,12 @@ git pull $REPO_URL
 
 echo "[INFO] 프로젝트 빌드"
 cd $REPOSITORY
-./gradlew build -x test
+./gradlew build
+
+if [ $? -ne 0 ]; then
+  echo "[ERROR] 빌드에 실패했습니다. 배포를 중단합니다."
+  exit 1
+fi
 
 echo "[INFO] 기존에 실행 중인 애플리케이션 PID 종료"
 CURRENT_PID=$(pgrep -f "$REPOSITORY/build/libs/*.jar")
