@@ -23,22 +23,22 @@ public class JwtProvider {
         Date now = new Date();
 
         return Jwts.builder()
-                .setSubject(member.getId().toString())
+                .subject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("role", member.getRole().name())
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expiration))
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + expiration))
                 .signWith(secretKey)
                 .compact();
     }
 
     public LoginMember extractLoginMember(String token) {
 
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
 
         return new LoginMember(
                 Long.valueOf(claims.getSubject()),
