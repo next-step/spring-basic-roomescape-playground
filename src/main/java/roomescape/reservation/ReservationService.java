@@ -17,6 +17,7 @@ import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.waiting.WaitingRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,6 +124,12 @@ public class ReservationService {
     }
 
     private void validateReservation(ReservationRequest request) {
+
+        LocalDate reservationDate = LocalDate.parse(request.date());
+
+        if (reservationDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("과거 날짜로는 예약할 수 없습니다.");
+        }
 
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(
                 request.date(),
