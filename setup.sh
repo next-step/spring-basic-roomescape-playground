@@ -7,8 +7,8 @@ PID_FILE="$REPOSITORY/app.pid"
 echo "[INFO] 시스템 패키지 업데이트"
 sudo apt update
 
-echo "[INFO] JDK 21 설치"
-sudo apt install -y openjdk-21-jdk
+echo "[INFO] JDK 17 설치"
+sudo apt install -y openjdk-17-jdk
 
 echo "[INFO] 프로젝트 디렉토리 생성 및 이동"
 mkdir -p $REPOSITORY
