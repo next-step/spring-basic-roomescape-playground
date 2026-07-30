@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import roomescape.member.entity.Member;
@@ -24,6 +26,8 @@ import java.time.LocalDate;
                 columnNames = {"date", "time_id", "theme_id"}
         )
 })
+@NoArgsConstructor
+@Getter
 public class Reservation {
 
     @Id
@@ -43,9 +47,6 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     private Theme theme;
 
-    public Reservation() {
-    }
-
     private Reservation(Member member, LocalDate date, Time time, Theme theme) {
         this.member = member;
         this.date = date;
@@ -60,25 +61,5 @@ public class Reservation {
                 time,
                 theme
         );
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public Time getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
     }
 }

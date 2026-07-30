@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomescape.member.entity.Member;
 import roomescape.theme.entity.Theme;
 import roomescape.time.entity.Time;
@@ -14,6 +16,8 @@ import roomescape.time.entity.Time;
 import java.time.LocalDate;
 
 @Entity(name = "waiting")
+@NoArgsConstructor
+@Getter
 public class Waiting {
 
     @Id
@@ -32,9 +36,6 @@ public class Waiting {
     @ManyToOne(fetch = FetchType.LAZY)
     private Theme theme;
 
-    protected Waiting() {
-    }
-
     public Waiting(LocalDate date, Member member, Time time, Theme theme) {
         this.date = date;
         this.member = member;
@@ -44,25 +45,5 @@ public class Waiting {
 
     public static Waiting of(LocalDate date, Member member, Time time, Theme theme) {
         return new Waiting(date, member, time, theme);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public Time getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
     }
 }

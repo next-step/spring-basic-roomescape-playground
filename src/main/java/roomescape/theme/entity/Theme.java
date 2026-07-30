@@ -5,9 +5,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomescape.global.entity.BaseSoftDeleteEntity;
 
 @Entity(name = "theme")
+@NoArgsConstructor
+@Getter
 public class Theme extends BaseSoftDeleteEntity {
 
     @Id
@@ -20,9 +24,6 @@ public class Theme extends BaseSoftDeleteEntity {
     @Column(nullable = false)
     private String description;
 
-    public Theme() {
-    }
-
     private Theme(String name, String description) {
         this.name = name;
         this.description = description;
@@ -30,17 +31,5 @@ public class Theme extends BaseSoftDeleteEntity {
 
     public static Theme of(String name, String description) {
         return new Theme(name, description);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }
