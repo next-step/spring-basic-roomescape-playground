@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPOSITORY=/home/ubuntu/app
+REPOSITORY=/c/Jun_/greedy/spring-basic-roomescape-playground
 REPO_URL="https://github.com/htdufhc-bit/spring-basic-roomescape-playground"
 PID_FILE="$REPOSITORY/app.pid"
 
