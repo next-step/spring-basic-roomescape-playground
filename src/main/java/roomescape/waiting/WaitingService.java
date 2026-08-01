@@ -38,7 +38,7 @@ public class WaitingService {
             throw new IllegalArgumentException("예약이 존재하지 않는 타임에는 대기를 신청할 수 없습니다.");
         }
 
-        boolean isAlreadyWaiting = waitingRepository.existsByDateAndTimeAndThemeAndMemberId(
+        boolean isAlreadyWaiting = waitingRepository.existsByDateAndTimeAndThemeAndMember(
                 request.getDate(), request.getTime(), request.getTheme(), loginMember.getId());
         if (isAlreadyWaiting) {
             throw new IllegalArgumentException("이미 대기를 신청한 타임입니다.");

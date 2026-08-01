@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
+import roomescape.reservation.ReservationRequest;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -35,9 +36,10 @@ public class WaitingTest {
         Theme theme = themeRepository.save(new Theme());
         Member member = memberRepository.save(new Member("test@email.com", "1234", "하은", "USER"));
 
-        waitingService.createWaiting("2024-03-01", time, theme, member);
+        ReservationRequest request = new ReservationRequest("하은", "2024-03-01", theme.getId(), time.getId());
+        waitingService.createWaiting(request, member);
 
-        assertThatThrownBy(() -> waitingService.createWaiting("2024-03-01", time, theme, member))
+        assertThatThrownBy(() -> waitingService.createWaiting(request, member))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 신청한 대기입니다.");
     }
