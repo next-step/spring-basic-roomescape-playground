@@ -21,7 +21,9 @@ if [ -z "$CURRENT_PID" ]; then
 else
   echo "[INFO] kill -15 $CURRENT_PID"
   kill -15 $CURRENT_PID
-  sleep 5
+    while kill -0 $CURRENT_PID 2>/dev/null; do
+      sleep 1
+  done
 fi
 
 echo "[INFO] 새 애플리케이션 실행"
