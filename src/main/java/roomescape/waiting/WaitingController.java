@@ -16,46 +16,21 @@ import java.net.URI;
 @RequestMapping("/waitings")
 public class WaitingController {
 
-    private final WaitingRepository waitingRepository;
-    private final ReservationRepository reservationRepository;
-    private final TimeRepository timeRepository;
-    private final ThemeRepository themeRepository;
+    private final WaitingService waitingService;
 
-    public WaitingController(WaitingRepository waitingRepository,
-                             ReservationRepository reservationRepository,
-                             TimeRepository timeRepository,
-                             ThemeRepository themeRepository) {
-        this.waitingRepository = waitingRepository;
-        this.reservationRepository = reservationRepository;
-        this.timeRepository = timeRepository;
-        this.themeRepository = themeRepository;
+    public WaitingController(WaitingService waitingService) {
+        this.waitingService = waitingService;
     }
 
     @PostMapping
     public ResponseEntity<WaitingResponse> create(@RequestBody ReservationRequest request, Member loginMember) {
-        boolean hasReservation = reservationRepository.existsByDateAndTimeAndTheme(request.getDate(), request.getTime(), request.getTheme());
-
-        if (!hasReservation) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        boolean isAlreadyWaiting = waitingRepository.existsByDateAndTimeAndThemeAndMemberId(request.getDate(), request.getTime(), request.getTheme(), loginMember.getId());
-        if (isAlreadyWaiting) {
-            return ResponseEntity.badRequest().build();
-        }
-        Time time = timeRepository.findById(request.getTime()).orElseThrow();
-        Theme theme = themeRepository.findById(request.getTheme()).orElseThrow();
-
-        Waiting waiting = new Waiting(request.getDate(), time, theme, loginMember);
-        Waiting saved = waitingRepository.save(waiting);
-
-        WaitingResponse response = new WaitingResponse(saved.getId(), saved.getDate(), theme.getName(), time.getValue());
-        return ResponseEntity.created(URI.create("/waitings/" + saved.getId())).body(response);
+        WaitingResponse response = waitingService.createWaiting(request, loginMember);
+        return ResponseEntity.created(URI.create("/waitings/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        waitingRepository.deleteById(id);
+        waitingService.deleteWaiting(id);
         return ResponseEntity.noContent().build();
     }
 

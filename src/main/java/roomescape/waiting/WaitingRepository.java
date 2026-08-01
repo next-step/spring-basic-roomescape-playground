@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import roomescape.member.Member;
+import roomescape.theme.Theme;
+import roomescape.time.Time;
 
 import java.util.List;
 
@@ -16,21 +19,18 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
             WHERE w.date = :date 
                 AND w.time.id = :timeId 
                 AND w.theme.id = :themeId
-            """)
-    boolean existsByDateAndTimeAndTheme(@Param("date") String date, Long timeId, @Param("timeId") Long themeId, @Param("themeId") Long memberId);
-
-    @Query("""
-            SELECT COUNT(w) > 0 
-            FROM Waiting w 
-            WHERE w.date = :date 
-                AND w.time.id = :timeId 
-                AND w.theme.id = :themeId 
                 AND w.member.id = :memberId
             """)
-    boolean existsByDateAndTimeAndThemeAndMemberId(@Param("date") String date, @Param("timeId") Long timeId, @Param("themeId") Long themeId, @Param("memberId") Long memberId);
+
+    boolean existsByDateAndTimeAndThemeAndMember(
+            @Param("date") String date,
+            @Param("timeId") Long timeId,
+            @Param("themeId") Long themeId,
+            @Param("memberId") Long memberId
+    );
 
     //미션 코드 참고해서 작성하기
-    @Query(value = """
+    @Query("""
             SELECT new roomescape.waiting.WaitingWithRank(
                 w,
                 (SELECT COUNT(w2)

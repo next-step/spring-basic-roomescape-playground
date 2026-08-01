@@ -1,23 +1,44 @@
 package roomescape;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 import roomescape.waiting.Waiting;
+import roomescape.waiting.WaitingService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+@SpringBootTest
+@Transactional
 public class WaitingTest {
+
+    @Autowired
+    private WaitingService waitingService;
+    @Autowired
+    private TimeRepository timeRepository;
+    @Autowired
+    private ThemeRepository themeRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+
     @Test
     void 동일한_조건의_대기_신청인지_확인_테스트() {
-        Time time = new Time();
-        Theme theme = new Theme();
-        Member member = new Member(1L, "MEMBER");
-        Waiting waiting = new Waiting("2024-03-01", time, theme, member);
+        Time time = timeRepository.save(new Time());
+        Theme theme = themeRepository.save(new Theme());
+        Member member = memberRepository.save(new Member("test@email.com", "1234", "하은", "USER"));
 
-        boolean isSame = waiting.isSameWaiting("2024-03-01", time, theme, member);
+        waitingService.createWaiting("2024-03-01", time, theme, member);
 
-        assertThat(isSame).isTrue();
+        assertThatThrownBy(() -> waitingService.createWaiting("2024-03-01", time, theme, member))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 신청한 대기입니다.");
     }
 }
