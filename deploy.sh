@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -euo pipefail # 명령어 하나라도 실패하면 즉시 스크립트 중단
 # deploy.sh 파일이 있는 프로젝트 루트로 이동
 REPOSITORY="$(cd "$(dirname "$0")" && pwd)"
 cd "$REPOSITORY" || exit 1
@@ -14,7 +14,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "[INFO] 기존에 실행 중인 애플리케이션 PID 종료"
-CURRENT_PID=$(pgrep -f "$REPOSITORY/build/libs/.*\.jar")
+CURRENT_PID=$(pgrep -f "$REPOSITORY/build/libs/.*\.jar" || true)
 
 if [ -z "$CURRENT_PID" ]; then
   echo "[INFO] 종료할 애플리케이션이 없습니다."
