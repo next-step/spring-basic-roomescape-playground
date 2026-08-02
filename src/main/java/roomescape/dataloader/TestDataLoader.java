@@ -13,6 +13,8 @@ import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
+import java.time.LocalDate;
+
 @Profile("test")
 @Component
 public class TestDataLoader implements CommandLineRunner {
@@ -30,6 +32,7 @@ public class TestDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         Member admin = memberRepository.save(
                 new Member("어드민", "admin@email.com", "password", Role.ADMIN)
@@ -50,7 +53,7 @@ public class TestDataLoader implements CommandLineRunner {
         reservationRepository.save(
                 new Reservation(
                         admin.getName(),
-                        "2024-03-01",
+                        tomorrow.toString(),
                         time1,
                         theme,
                         admin
@@ -60,7 +63,7 @@ public class TestDataLoader implements CommandLineRunner {
         reservationRepository.save(
                 new Reservation(
                         admin.getName(),
-                        "2024-03-02",
+                        tomorrow.plusDays(1).toString(),
                         time2,
                         theme,
                         admin
@@ -70,7 +73,7 @@ public class TestDataLoader implements CommandLineRunner {
         reservationRepository.save(
                 new Reservation(
                         admin.getName(),
-                        "2024-03-03",
+                        tomorrow.plusDays(2).toString(),
                         time3,
                         theme,
                         admin

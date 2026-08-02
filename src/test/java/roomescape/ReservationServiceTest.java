@@ -20,6 +20,7 @@ import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -58,7 +59,7 @@ public class ReservationServiceTest {
     @Test
     void 예약을_생성한다() {
         ReservationRequest request =
-                new ReservationRequest(null, "2027-08-01", 1L, 1L);
+                new ReservationRequest(null, tomorrow(), 1L, 1L);
 
         when(memberService.findById(1L)).thenReturn(member);
         when(themeRepository.findById(1L)).thenReturn(Optional.of(theme));
@@ -72,7 +73,7 @@ public class ReservationServiceTest {
     @Test
     void 존재하지_않는_테마면_예외가_발생한다() {
         ReservationRequest request =
-                new ReservationRequest(null, "2027-08-01", 1L, 1L);
+                new ReservationRequest(null, tomorrow(), 1L, 1L);
 
         when(memberService.findById(1L)).thenReturn(member);
         when(themeRepository.findById(1L)).thenReturn(Optional.empty());
@@ -86,7 +87,7 @@ public class ReservationServiceTest {
     @Test
     void 존재하지_않는_시간이면_예외가_발생한다() {
         ReservationRequest request =
-                new ReservationRequest(null, "2027-08-01", 1L, 1L);
+                new ReservationRequest(null, tomorrow(), 1L, 1L);
 
         when(memberService.findById(1L)).thenReturn(member);
         when(themeRepository.findById(1L)).thenReturn(Optional.of(theme));
@@ -101,12 +102,12 @@ public class ReservationServiceTest {
     @Test
     void 이미_예약된_일정이면_예외가_발생한다() {
         ReservationRequest request =
-                new ReservationRequest(null, "2027-08-01", 1L, 1L);
+                new ReservationRequest(null, tomorrow(), 1L, 1L);
 
         when(memberService.findById(1L)).thenReturn(member);
 
         when(reservationRepository.existsByDateAndTimeIdAndThemeId(
-                "2027-08-01", 1L, 1L))
+                tomorrow(), 1L, 1L))
                 .thenReturn(true);
 
         assertThatThrownBy(() ->
@@ -118,7 +119,7 @@ public class ReservationServiceTest {
     @Test
     void 이름이_공백이면_예외가_발생한다() {
         ReservationRequest request =
-                new ReservationRequest(" ", "2027-08-01", 1L, 1L);
+                new ReservationRequest(" ", tomorrow(), 1L, 1L);
 
         assertThatThrownBy(() ->
                 reservationService.save(request, loginMember))
@@ -129,7 +130,7 @@ public class ReservationServiceTest {
     @Test
     void 다른_사용자의_이름으로_예약하면_예외가_발생한다() {
         ReservationRequest request =
-                new ReservationRequest("철수", "2027-08-01", 1L, 1L);
+                new ReservationRequest("철수", tomorrow(), 1L, 1L);
 
         assertThatThrownBy(() ->
                 reservationService.save(request, loginMember))
@@ -146,7 +147,7 @@ public class ReservationServiceTest {
                 new Member("철수", "test@test.com", "1234", Role.USER);
 
         ReservationRequest request =
-                new ReservationRequest("철수", "2027-08-01", 1L, 1L);
+                new ReservationRequest("철수", tomorrow(), 1L, 1L);
 
         when(memberService.findByName("철수")).thenReturn(targetMember);
         when(themeRepository.findById(1L)).thenReturn(Optional.of(theme));
@@ -167,5 +168,9 @@ public class ReservationServiceTest {
                 reservationService.save(request, loginMember))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("과거 날짜로는 예약할 수 없습니다.");
+    }
+
+    private String tomorrow() {
+        return LocalDate.now().plusDays(1).toString();
     }
 }
