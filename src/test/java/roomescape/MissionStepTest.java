@@ -6,11 +6,15 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import roomescape.auth.JwtProvider;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.waiting.WaitingResponse;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class MissionStepTest {
 
     @Test
@@ -55,7 +60,7 @@ public class MissionStepTest {
         String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", LocalDate.now().plusDays(10).toString());
         params.put("time", "1");
         params.put("theme", "1");
 
@@ -71,6 +76,7 @@ public class MissionStepTest {
         assertThat(response.as(ReservationResponse.class).name()).isEqualTo("어드민");
 
         params.put("name", "브라운");
+        params.put("time", "2");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
                 .body(params)
@@ -143,7 +149,7 @@ public class MissionStepTest {
         String brownToken = createToken("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("time", "1");
         params.put("theme", "1");
 
@@ -176,5 +182,11 @@ public class MissionStepTest {
                 .orElse(null);
 
         assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtProvider.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
     }
 }

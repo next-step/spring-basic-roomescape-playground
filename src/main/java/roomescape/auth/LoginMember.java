@@ -5,7 +5,6 @@ import roomescape.member.Role;
 public record LoginMember(
         Long id,
         String name,
-        String email,
         Role role
 ) {
 }

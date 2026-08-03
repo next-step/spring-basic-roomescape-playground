@@ -1,14 +1,14 @@
 package roomescape.time;
 
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class TimeService {
     private final TimeRepository timeRepository;
     private final ReservationRepository reservationRepository;
@@ -36,10 +36,12 @@ public class TimeService {
         return timeRepository.findAll();
     }
 
+    @Transactional
     public Time save(Time time) {
         return timeRepository.save(time);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         timeRepository.deleteById(id);
     }
