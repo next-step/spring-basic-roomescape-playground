@@ -1,6 +1,7 @@
 package roomescape.waiting;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.Member;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class WaitingService {
 
     private final WaitingRepository waitingRepository;
@@ -22,12 +24,6 @@ public class WaitingService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public WaitingService(WaitingRepository waitingRepository, ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
-        this.waitingRepository = waitingRepository;
-        this.reservationRepository = reservationRepository;
-        this.timeRepository = timeRepository;
-        this.themeRepository = themeRepository;
-    }
 
     @Transactional
     public WaitingResponse createWaiting(ReservationRequest request, Member loginMember) {

@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.Member;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -26,18 +28,6 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
     private final WaitingRepository waitingRepository;
-
-    public ReservationService(ReservationRepository reservationRepository,
-                              MemberRepository memberRepository,
-                              ThemeRepository themeRepository,
-                              TimeRepository timeRepository,
-                              WaitingRepository waitingRepository) {
-        this.reservationRepository = reservationRepository;
-        this.memberRepository = memberRepository;
-        this.themeRepository = themeRepository;
-        this.timeRepository = timeRepository;
-        this.waitingRepository = waitingRepository;
-    }
 
     public List<Reservation> findAll() {
         return reservationRepository.findAllWithFetchJoin();
