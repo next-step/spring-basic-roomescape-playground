@@ -13,15 +13,6 @@ import java.util.List;
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
-    @Query("""
-            SELECT COUNT(w) > 0 
-            FROM Waiting w 
-            WHERE w.date = :date 
-                AND w.time.id = :timeId 
-                AND w.theme.id = :themeId
-                AND w.member.id = :memberId
-            """)
-
     boolean existsByDateAndTimeAndThemeAndMember(
             @Param("date") String date,
             @Param("timeId") Long timeId,
