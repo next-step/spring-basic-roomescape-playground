@@ -39,9 +39,9 @@ public class TimeService {
         List<Time> times = timeRepository.findByDeletedFalse();
         List<AvailableTime> result = new ArrayList<>();
 
-        for (Time t : times) {
-            boolean isBooked = reservationRepository.existsByDateAndTimeAndTheme(date, t.getId(), themeId);
-            result.add(new AvailableTime(t.getId(), t.getValue(), isBooked));
+        for (Time time: times) {
+            boolean isBooked = reservationRepository.existsByDateAndTimeAndTheme(date, time.getId(), themeId);
+            result.add(new AvailableTime(time.getId(), time.getValue(), isBooked));
         }
         return result;
     }
