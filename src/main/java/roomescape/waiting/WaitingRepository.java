@@ -13,11 +13,11 @@ import java.util.List;
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
-    boolean existsByDateAndTimeAndThemeAndMember(
-            @Param("date") String date,
-            @Param("timeId") Long timeId,
-            @Param("themeId") Long themeId,
-            @Param("memberId") Long memberId
+    boolean existsByDateAndTimeIdAndThemeIdAndMemberId(
+            String date,
+            Long timeId,
+            Long themeId,
+            Long memberId
     );
 
     //미션 코드 참고해서 작성하기
