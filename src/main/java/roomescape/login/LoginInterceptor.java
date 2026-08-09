@@ -8,32 +8,41 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.CookieManager;
 import roomescape.JwtProvider;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
 
     private final JwtProvider jwtProvider;
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final CookieManager cookieManager;
 
-    public LoginInterceptor(JwtProvider jwtProvider, MemberDao memberDao, CookieManager cookieManager) {
+    public LoginInterceptor(JwtProvider jwtProvider, MemberRepository memberRepository, CookieManager cookieManager) {
         this.jwtProvider = jwtProvider;
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
         this.cookieManager = cookieManager;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Cookie[] cookies = request.getCookies();
+        Cookie[] cookies = getCookies(request);
 
-        String token = cookieManager.extractToken(cookies, "accessToken");
+        String token = cookieManager.extractToken(cookies,"accessToken");
         Long memberId = jwtProvider.getMemberId(token);
-        Member member = memberDao.findById(memberId);
-        if (member == null || !member.getRole().equals("ADMIN")) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow();
+        if (!member.getRole().equals("ADMIN")) {
             response.setStatus(401);
             return false;
         }
         return true;
+    }
+
+    private Cookie[] getCookies(HttpServletRequest httpServletRequest) {
+        Cookie[] cookies = httpServletRequest.getCookies();
+        if (cookies == null) {
+            throw new IllegalStateException("cookie is not exist");
+        }
+        return cookies;
     }
 }

@@ -2,28 +2,26 @@
 
 안녕하세요. 세종대학교 그리디 백엔드 4기 이채현입니다.
 
+이번주는 꽤나 여유로워서 많은 시간을 투자할 수 있을 것 같아요! 많은 피드백 부탁드립니다.!!!
+
 
 ---
-##  Spring MVC 미션 3단계 - 관리자 기능
+##  Spring JPA 4-6단계 Entity Manager-> JPA
 
-어드민 페이지 진입은 admin 권한이 있는 사람만 할 수 있도록 제한한다.
-만약 진입 권한이 없다면 401 코드를 응답하도록 한다.
+entity매니저를 사용해서 repository 수정
+jpa 전환 및 내 예약 구성코드를 생성함.
+
 
 ---
 ### 고민한 내용 🤔
+EntityManager를 JPA로 바꾸려면 어떠한 형식을 가져야 하는가 고민했습니다.
 
-- HandlerInterceptor에서 기본적으로 preHandle/postHandle/afterCompletion으로 나뉘어져있던데,
-이번의 경우에는 admin페이지 접속만을 확인하면 되는거라서 preHandle만을 사용했습니다.
-이경우에는 postHandle과 afterCompletion을 어떻게 구성하면 좋을지..? 알고 싶네요.
+사용해보니, JPA가 EntityManager보다 더 적은 메서드를 쓰고도 충분히 구현되는 것 같습니다.!
+
+실무에서는 JPA를 더 많이 사용하게 될 것 같은데, EntityManager를 사용하게 되는 경우도 있나요?
 
 
-- WebConfig 같은 경우에는, admin 페이지를 접속할때의 role만을 확인해주면 되므로 /admin/***을 사용해주었습니다.
-
-- token 만료시간도 있어야할 것 같아서 expire_time을 이용해서,만료시간을 구현해보았습니다. 만료시간을 구현할 더 좋은
-방법이 있을지?? 궁금합니다.
-
-- token을 accessToken과 refreshToken으로 나눠서 구현해주었는데, 구현하다보니 너무 어려워서 제대로 구현된건지 잘 
-모르겠습니다.
-
+그리고 Entity에서 단순히 protected를 추가한 것 만으로, 테스트가 돌아가는 경우가 있는데
+이 protected의 의미를 잘 모르겠습니다.
 
 
