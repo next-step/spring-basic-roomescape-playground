@@ -1,37 +1,35 @@
 package roomescape.reservation.dto;
 
-public class MyReservationResponse {
-    private Long id;
-    private String theme;
-    private String date;
-    private String time;
-    private String status;
+import roomescape.reservation.entity.Reservation;
+import roomescape.waiting.dto.WaitingWithRank;
+import roomescape.waiting.entity.Waiting;
 
-    public MyReservationResponse(Long id, String theme, String date, String time, String status) {
-        this.id = id;
-        this.theme = theme;
-        this.date = date;
-        this.time = time;
-        this.status = status;
+public record MyReservationResponse(
+        Long id,
+        String theme,
+        String date,
+        String time,
+        String status
+) {
+
+    public static MyReservationResponse fromReservation(Reservation reservation, String status) {
+        return new MyReservationResponse(
+                reservation.getId(),
+                reservation.getTheme().getName(),
+                reservation.getDate().toString(),
+                reservation.getTime().getTimeValue(),
+                status
+        );
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTheme() {
-        return theme;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public String getStatus() {
-        return status;
+    public static MyReservationResponse fromWaitingWithRank(WaitingWithRank waitingWithRank) {
+        Waiting waiting = waitingWithRank.waiting();
+        return new MyReservationResponse(
+                waiting.getId(),
+                waiting.getTheme().getName(),
+                waiting.getDate().toString(),
+                waiting.getTime().getTimeValue(),
+                (waitingWithRank.rank() + 1) + "번째 예약대기"
+        );
     }
 }

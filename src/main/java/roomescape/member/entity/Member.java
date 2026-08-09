@@ -7,8 +7,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "member")
+@NoArgsConstructor
+@Getter
 public class Member {
 
     @Id
@@ -27,33 +31,14 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public Member() {
-    }
-
-    public Member(String name, String email, String password, Role role) {
+    private Member(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Role getRole() {
-        return role;
+    public static Member of(String name, String email, String password, Role role) {
+        return new Member(name, email, password, role);
     }
 }

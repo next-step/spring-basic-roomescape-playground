@@ -15,7 +15,7 @@ import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.auth.web.Login;
 import roomescape.auth.web.TokenExtractor;
-import roomescape.util.CookieUtil;
+import roomescape.global.util.CookieUtil;
 
 @RestController
 public class AuthController {
@@ -52,7 +52,7 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(@Login LoginMember loginMember) {
-        return ResponseEntity.ok(new LoginCheckResponse(loginMember.name()));
+        return ResponseEntity.ok(LoginCheckResponse.from(loginMember));
     }
 
     @PostMapping("/logout")

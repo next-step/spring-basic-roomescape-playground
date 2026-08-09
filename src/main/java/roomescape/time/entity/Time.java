@@ -5,10 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import roomescape.global.entity.BaseSoftDeleteEntity;
 
 @Entity(name = "time")
-public class Time {
+@NoArgsConstructor
+@Getter
+public class Time extends BaseSoftDeleteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,21 +21,11 @@ public class Time {
     @Column(length = 20, nullable = false)
     private String timeValue;
 
-    @Column(nullable = false)
-    @ColumnDefault("false")
-    private Boolean deleted = false;
-
-    public Time() {}
-
-    public Time(String value) {
+    private Time(String value) {
         this.timeValue = value;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTimeValue() {
-        return timeValue;
+    public static Time from(String timeValue) {
+        return new Time(timeValue);
     }
 }

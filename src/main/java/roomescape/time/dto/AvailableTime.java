@@ -1,25 +1,24 @@
 package roomescape.time.dto;
 
-public class AvailableTime {
-    private Long timeId;
-    private String time;
-    private boolean booked;
+import roomescape.reservation.entity.Reservation;
+import roomescape.time.entity.Time;
 
-    public AvailableTime(Long timeId, String time, boolean booked) {
-        this.timeId = timeId;
-        this.time = time;
-        this.booked = booked;
-    }
+import java.util.List;
 
-    public Long getTimeId() {
-        return timeId;
-    }
+public record AvailableTime(
+        Long id,
+        String time,
+        boolean booked
+) {
 
-    public String getTime() {
-        return time;
-    }
+    public static AvailableTime of(Time time, List<Reservation> reservations) {
+        boolean alreadyBooked = reservations.stream()
+                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()));
 
-    public boolean isBooked() {
-        return booked;
+        return new AvailableTime(
+                time.getId(),
+                time.getTimeValue(),
+                alreadyBooked
+        );
     }
 }

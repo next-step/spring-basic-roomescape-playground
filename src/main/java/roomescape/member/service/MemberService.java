@@ -11,7 +11,7 @@ import roomescape.member.repository.MemberRepository;
 @Service
 @Transactional(readOnly = true)
 public class MemberService {
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
@@ -19,7 +19,12 @@ public class MemberService {
 
     @Transactional
     public MemberResponse create(MemberRequest memberRequest) {
-        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        Member member = memberRepository.save(Member.of(
+                memberRequest.name(),
+                memberRequest.email(),
+                memberRequest.password(),
+                Role.USER
+        ));
+        return MemberResponse.from(member);
     }
 }

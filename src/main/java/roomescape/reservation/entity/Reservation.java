@@ -7,6 +7,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import roomescape.member.entity.Member;
 import roomescape.theme.entity.Theme;
 import roomescape.time.entity.Time;
@@ -14,6 +20,14 @@ import roomescape.time.entity.Time;
 import java.time.LocalDate;
 
 @Entity(name = "reservation")
+@Table(uniqueConstraints = {
+        @UniqueConstraint(
+                name = "uk_reservation_date_time_theme",
+                columnNames = {"date", "time_id", "theme_id"}
+        )
+})
+@NoArgsConstructor
+@Getter
 public class Reservation {
 
     @Id
@@ -24,6 +38,7 @@ public class Reservation {
     private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,33 +47,19 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     private Theme theme;
 
-    public Reservation() {
-    }
-
-    public Reservation(Member member, LocalDate date, Time time, Theme theme) {
+    private Reservation(Member member, LocalDate date, Time time, Theme theme) {
         this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public Time getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
+    public static Reservation of(Member member, LocalDate date, Time time, Theme theme) {
+        return new Reservation(
+                member,
+                date,
+                time,
+                theme
+        );
     }
 }

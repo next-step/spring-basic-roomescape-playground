@@ -2,11 +2,13 @@ package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.global.exception.ApplicationException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.dto.AvailableTime;
 import roomescape.time.dto.TimeResponse;
 import roomescape.time.entity.Time;
+import roomescape.time.exception.TimeErrorCode;
 import roomescape.time.repository.TimeRepository;
 
 import java.time.LocalDate;
@@ -15,8 +17,8 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class TimeService {
-    private TimeRepository timeRepository;
-    private ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
     public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
@@ -28,22 +30,14 @@ public class TimeService {
         List<Time> times = timeRepository.findAll();
 
         return times.stream()
-                .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getTimeValue(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
-                ))
+                .map(time -> AvailableTime.of(time, reservations))
                 .toList();
     }
 
     public List<TimeResponse> findAll() {
-        return timeRepository.findAll()
+        return timeRepository.findAllByDeletedAtNull()
                 .stream()
-                .map(time -> new TimeResponse(
-                        time.getId(),
-                        time.getTimeValue()
-                ))
+                .map(TimeResponse::from)
                 .toList();
     }
 
@@ -55,6 +49,8 @@ public class TimeService {
 
     @Transactional
     public void deleteById(Long id) {
-        timeRepository.deleteById(id);
+        Time time = timeRepository.findById(id)
+                .orElseThrow(() -> new ApplicationException(TimeErrorCode.TIME_NOT_FOUND));
+        time.markDeleted();
     }
 }

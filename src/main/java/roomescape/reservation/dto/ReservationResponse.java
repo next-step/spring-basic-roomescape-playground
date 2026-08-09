@@ -1,37 +1,22 @@
 package roomescape.reservation.dto;
 
-public class ReservationResponse {
-    private Long id;
-    private String name;
-    private String theme;
-    private String date;
-    private String time;
+import roomescape.reservation.entity.Reservation;
 
-    public ReservationResponse(Long id, String name, String date, String time, String theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.theme = theme;
-        this.time = time;
-    }
+public record ReservationResponse(
+        Long id,
+        String name,
+        String theme,
+        String date,
+        String time
+) {
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getTheme() {
-        return theme;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getTime() {
-        return time;
+    public static ReservationResponse from(Reservation reservation) {
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getMember().getName(),
+                reservation.getTheme().getName(),
+                reservation.getDate().toString(),
+                reservation.getTime().getTimeValue()
+        );
     }
 }

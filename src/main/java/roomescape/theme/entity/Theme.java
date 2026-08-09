@@ -5,10 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import roomescape.global.entity.BaseSoftDeleteEntity;
 
 @Entity(name = "theme")
-public class Theme {
+@NoArgsConstructor
+@Getter
+public class Theme extends BaseSoftDeleteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,27 +24,12 @@ public class Theme {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    @ColumnDefault("false")
-    private Boolean deleted = false;
-
-    public Theme() {
-    }
-
-    public Theme(String name, String description) {
+    private Theme(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
+    public static Theme of(String name, String description) {
+        return new Theme(name, description);
     }
 }

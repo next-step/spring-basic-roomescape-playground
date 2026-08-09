@@ -8,9 +8,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import roomescape.member.entity.Member;
 
 @Entity(name = "refresh_token")
+@NoArgsConstructor
+@Getter
 public class RefreshToken {
 
     @Id
@@ -24,23 +28,12 @@ public class RefreshToken {
     @Column(nullable = false, length = 500)
     private String token;
 
-    public RefreshToken() {
-    }
-
-    public RefreshToken(Member member, String token) {
+    private RefreshToken(Member member, String token) {
         this.member = member;
         this.token = token;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public String getToken() {
-        return token;
+    public static RefreshToken of(Member member, String token) {
+        return new RefreshToken(member, token);
     }
 }

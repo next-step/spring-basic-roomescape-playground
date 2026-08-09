@@ -7,27 +7,29 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import org.springframework.stereotype.Component;
 import roomescape.auth.exception.AuthErrorCode;
-import roomescape.exception.ApplicationException;
+import roomescape.global.exception.ApplicationException;
 import roomescape.member.entity.Member;
 
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
-@Component
 public class JwtTokenProvider {
 
     private final Key secretKey;
     private final long accessTokenExpiration;
     private final long refreshTokenExpiration;
 
-    public JwtTokenProvider(JwtTokenProperty tokenProperty) {
+    public JwtTokenProvider(
+            String secretKey,
+            long accessTokenExpiration,
+            long refreshTokenExpiration
+    ) {
         this.secretKey = Keys.hmacShaKeyFor(
-                Base64.getDecoder().decode(tokenProperty.secretKey()));
-        this.accessTokenExpiration = tokenProperty.accessTokenExpiration();
-        this.refreshTokenExpiration = tokenProperty.refreshTokenExpiration();
+                Base64.getDecoder().decode(secretKey));
+        this.accessTokenExpiration = accessTokenExpiration;
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
     public String createAccessToken(Member member) {

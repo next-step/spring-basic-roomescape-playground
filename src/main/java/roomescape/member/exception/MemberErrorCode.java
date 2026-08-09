@@ -1,7 +1,7 @@
 package roomescape.member.exception;
 
 import org.springframework.http.HttpStatus;
-import roomescape.exception.ErrorCode;
+import roomescape.global.exception.ErrorCode;
 
 public enum MemberErrorCode implements ErrorCode {
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),

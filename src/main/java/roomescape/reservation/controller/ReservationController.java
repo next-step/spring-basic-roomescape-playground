@@ -14,17 +14,21 @@ import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
+import roomescape.waiting.service.WaitingService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final WaitingService waitingService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, WaitingService waitingService) {
         this.reservationService = reservationService;
+        this.waitingService = waitingService;
     }
 
     @GetMapping("/reservations")
@@ -34,16 +38,20 @@ public class ReservationController {
 
     @GetMapping("/reservations-mine")
     public ResponseEntity<List<MyReservationResponse>> getUserReservations(@Login LoginMember loginMember) {
-        List<MyReservationResponse> responseList = reservationService.findReservationsByMember(loginMember);
-
-        return ResponseEntity.ok(responseList);
+        List<MyReservationResponse> responses = Stream.concat(
+                reservationService.findReservationsByMember(loginMember)
+                        .stream(),
+                waitingService.findWaitingsByMember(loginMember)
+                        .stream()
+        ).toList();
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/reservations")
     public ResponseEntity create(@Valid @RequestBody ReservationRequest reservationRequest, @Login LoginMember loginMember) {
         ReservationResponse reservation = reservationService.create(reservationRequest, loginMember);
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/reservations/{id}")
