@@ -13,13 +13,34 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    @Query("SELECT r FROM Reservation r JOIN FETCH r.time JOIN FETCH r.theme JOIN FETCH r.member")
+    @Query("""
+            SELECT r 
+            FROM Reservation r 
+            JOIN FETCH r.time 
+            JOIN FETCH r.theme 
+            JOIN FETCH r.member
+            """)
     List<Reservation> findAllWithFetchJoin();
 
-    @Query("SELECT r FROM Reservation r JOIN FETCH r.time JOIN FETCH r.theme JOIN FETCH r.member WHERE r.member.id = :memberId")
+    @Query("""
+            SELECT r 
+            FROM Reservation r 
+            JOIN FETCH r.time 
+            JOIN FETCH r.theme 
+            JOIN FETCH r.member 
+            WHERE r.member.id = :memberId
+            """)
+
+
     List<Reservation> findByMemberId(@Param("memberId") Long memberId);
 
     //중복 예약 방지 검증하ㅣ기
-    @Query("SELECT COUNT(r) > 0 FROM Reservation r WHERE r.date = :date AND r.time.id = :timeId AND r.theme.id = :themeId")
+    @Query("""
+            SELECT COUNT(r) > 0 
+            FROM Reservation r 
+            WHERE r.date = :date 
+                AND r.time.id = :timeId 
+                AND r.theme.id = :themeId
+            """)
     boolean existsByDateAndTimeAndTheme(@Param("date") String date, @Param("timeId") Long timeId, @Param("themeId") Long themeId);
 }

@@ -34,6 +34,12 @@ public class Waiting {
         this.theme = theme;
         this.member = member;
     }
+    public boolean isSameWaiting(String date, Time time, Theme theme, Member member) {
+        return this.date.equals(date)
+                && this.time.equals(time)
+                && this.theme.equals(theme)
+                && this.member.equals(member);
+    }
 
 
 }

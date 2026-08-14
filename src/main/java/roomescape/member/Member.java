@@ -32,4 +32,9 @@ public class Member {
         this.password = password;
         this.role = role;
     }
+
+    public Member(Long id, String role) {
+        this.id = id;
+        this.role = role;
+    }
 }
