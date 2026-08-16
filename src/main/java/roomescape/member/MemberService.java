@@ -1,35 +1,40 @@
 package roomescape.member;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import roomescape.auth.JwtTokenProvider;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.auth.AuthTokenService;
 import roomescape.auth.LoginMemberInfo;
+import roomescape.auth.LoginTokens;
+import roomescape.exception.AuthenticationException;
 
 @Service
+@Transactional(readOnly = true)
 public class MemberService {
     private final MemberDao memberDao;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthTokenService authTokenService;
 
-    public MemberService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberDao memberDao, AuthTokenService authTokenService) {
         this.memberDao = memberDao;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.authTokenService = authTokenService;
     }
 
+    @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), MemberRole.USER));
+        return new MemberResponse(member.id(), member.name(), member.email());
     }
 
-    public String login(MemberRequest memberRequest) {
-        try {
-            Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword());
-            return jwtTokenProvider.createToken(member);
-        } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("Invalid email or password");
-        }
+    public LoginTokens login(MemberRequest memberRequest) {
+        Member member = memberDao.findByEmailAndPassword(memberRequest.getEmail(), memberRequest.getPassword())
+                .orElseThrow(AuthenticationException::new);
+
+        return authTokenService.createLoginTokens(member);
     }
 
-    public LoginMemberInfo checkLogin(String token) {
-        return jwtTokenProvider.parseMember(token);
+    public String refreshAccessToken(String refreshToken) {
+        LoginMemberInfo tokenMember = authTokenService.parseRefreshToken(refreshToken);
+        Member member = memberDao.findById(tokenMember.id())
+                .orElseThrow(AuthenticationException::new);
+        return authTokenService.createAccessToken(member);
     }
 }

@@ -1,20 +1,18 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import lombok.Getter;
 
 @Getter
-public class ReservationMineResponse {
+public class WaitingResponse {
     private final Long id;
     private final String theme;
     private final String date;
     private final String time;
-    private final String status;
 
-    public ReservationMineResponse(Long id, String theme, String date, String time, String status) {
+    public WaitingResponse(Long id, String theme, String date, String time) {
         this.id = id;
         this.theme = theme;
         this.date = date;
         this.time = time;
-        this.status = status;
     }
 }

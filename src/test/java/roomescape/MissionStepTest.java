@@ -4,18 +4,28 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import jwt.JwtUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservation.ReservationResponse;
+import roomescape.reservation.ReservationMineResponse;
+import roomescape.waiting.WaitingResponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
+
+
 public class MissionStepTest {
 
     @Test
@@ -68,6 +78,78 @@ public class MissionStepTest {
         assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
 
+    @Test
+    void 같은_멱등성_키로_예약을_생성하면_중복_생성하지_않는다() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-02");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> firstResponse = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .header("Idempotency-Key", "reservation-key-1")
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract();
+
+        ExtractableResponse<Response> secondResponse = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .header("Idempotency-Key", "reservation-key-1")
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract();
+
+        assertThat(secondResponse.as(ReservationResponse.class).getId())
+                .isEqualTo(firstResponse.as(ReservationResponse.class).getId());
+
+        ExtractableResponse<Response> listResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+
+        assertThat(listResponse.jsonPath().getList("$")).hasSize(4);
+    }
+
+    @Test
+    void 같은_멱등성_키로_다른_예약을_생성하면_충돌한다() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-02");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .header("Idempotency-Key", "reservation-key-2")
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        params.put("time", "2");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .header("Idempotency-Key", "reservation-key-2")
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(409);
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);
@@ -82,6 +164,62 @@ public class MissionStepTest {
                 .extract();
 
         return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+    }
+
+
+    @Test
+    void 육단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 예약 대기 생성
+        WaitingResponse waiting = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        // 내 예약 목록 조회
+        List<ReservationMineResponse> myReservations = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", ReservationMineResponse.class);
+
+        // 예약 대기 상태 확인
+        String status = myReservations.stream()
+                .filter(it -> it.getId() == waiting.getId())
+                .filter(it -> !it.getStatus().equals("예약"))
+                .findFirst()
+                .map(it -> it.getStatus())
+                .orElse(null);
+
+        assertThat(status).isEqualTo("1번째 예약대기");
+    }
+
+
+    @Test
+    void 칠단계() {
+        Component componentAnnotation = JwtUtils.class.getAnnotation(Component.class);
+        assertThat(componentAnnotation).isNull();
+    }
+
+    @Value("${roomescape.auth.jwt.secret}")
+    private String secretKey;
+
+    @Test
+    void 팔단계() {
+        assertThat(secretKey).isNotBlank();
     }
 
 }

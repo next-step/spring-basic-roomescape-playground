@@ -1,15 +1,18 @@
 package roomescape.time;
 
 import org.springframework.stereotype.Service;
-import roomescape.reservation.Reservation;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.ErrorCode;
+import roomescape.exception.NotFoundException;
 import roomescape.reservation.ReservationDao;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class TimeService {
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
+    private final TimeDao timeDao;
+    private final ReservationDao reservationDao;
 
     public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
         this.timeDao = timeDao;
@@ -17,15 +20,14 @@ public class TimeService {
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
+        List<Long> reservedTimeIds = reservationDao.findReservedTimeIdsByDateAndThemeId(date, themeId);
         List<Time> times = timeDao.findAll();
 
         return times.stream()
                 .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getValue(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
+                        time.id(),
+                        time.value(),
+                        reservedTimeIds.contains(time.id())
                 ))
                 .toList();
     }
@@ -34,11 +36,15 @@ public class TimeService {
         return timeDao.findAll();
     }
 
+    @Transactional
     public Time save(Time time) {
         return timeDao.save(time);
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        Time time = timeDao.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TIME_NOT_FOUND));
+        time.delete();
     }
 }
