@@ -22,4 +22,10 @@ public class MemberService {
         Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
         return jwtTokenProvider.createToken(member);
     }
+
+    public LoginCheckResponse findMemberByToken(String token) {
+        Long memberId = jwtTokenProvider.getMemberId(token);
+        Member member = memberDao.findById(memberId);
+        return new LoginCheckResponse(member.getName());
+    }
 }
