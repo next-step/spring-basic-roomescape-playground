@@ -1,19 +1,16 @@
 package roomescape.member;
 
-public class MemberRequest {
-    private String name;
-    private String email;
-    private String password;
+import jakarta.validation.constraints.NotBlank;
 
-    public String getName() {
-        return name;
-    }
+public record MemberRequest (
+        @NotBlank(message = "이름 필드는 필수값입니다.")
+        String name,
 
-    public String getEmail() {
-        return email;
-    }
+        @NotBlank(message = "이메일 필드는 필수값입니다.")
+        String email,
 
-    public String getPassword() {
-        return password;
-    }
+        @NotBlank(message = "비밀번호 필드는 필수값입니다.")
+        String password
+) {
+
 }

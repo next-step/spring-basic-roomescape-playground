@@ -1,6 +1,8 @@
 package roomescape.time;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +16,7 @@ import java.util.List;
 
 @RestController
 public class TimeController {
-    private TimeService timeService;
+    private final TimeService timeService;
 
     public TimeController(TimeService timeService) {
         this.timeService = timeService;
@@ -26,13 +28,11 @@ public class TimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
-            throw new RuntimeException();
-        }
+    public ResponseEntity<TimeResponse> create(@Valid @RequestBody TimeRequest request) {
 
-        Time newTime = timeService.save(time);
-        return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
+        Time newTime = timeService.save(request.value());
+
+        return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(TimeResponse.from(newTime));
     }
 
     @DeleteMapping("/times/{id}")
