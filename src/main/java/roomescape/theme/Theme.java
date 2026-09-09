@@ -30,4 +30,14 @@ public class Theme {
     public String getDescription() {
         return description;
     }
+
+    private void validateFields(String name, String description) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Theme를 생성하기 위해 name은 필수 필드입니다. ");
+        }
+
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Theme를 생성하기 위해 description은 필수 필드입니다.");
+        }
+    }
 }

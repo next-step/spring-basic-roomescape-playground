@@ -10,11 +10,10 @@ public class Time {
     }
 
     public Time(String value) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("Time을 만들기 위해 value는 필수 필드입니다.");
+        }
         this.value = value;
-    }
-
-    public Time() {
-
     }
 
     public Long getId() {
