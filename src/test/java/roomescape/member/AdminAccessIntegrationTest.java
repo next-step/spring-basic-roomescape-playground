@@ -11,6 +11,7 @@ import roomescape.IntegrationTestSupport;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 
 class AdminAccessIntegrationTest extends IntegrationTestSupport {
     @Autowired
@@ -25,9 +26,13 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
         // when & then
         RestAssured.given().cookie("token", token)
                 .contentType("application/json").body(createRequest(path))
-                .when().post(path).then().statusCode(401);
+                .when().post(path).then().statusCode(401)
+                .body("code", equalTo("MEMBER_ADMIN_REQUIRED"))
+                .body("message", equalTo("관리자 권한이 필요합니다."));
         RestAssured.given().cookie("token", token)
-                .when().delete(path + "/-1").then().statusCode(401);
+                .when().delete(path + "/-1").then().statusCode(401)
+                .body("code", equalTo("MEMBER_ADMIN_REQUIRED"))
+                .body("message", equalTo("관리자 권한이 필요합니다."));
     }
 
     @ParameterizedTest
@@ -35,9 +40,13 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
     void 미로그인_사용자는_관리자_API로_생성하거나_삭제할_수_없다(String path) {
         // when & then
         RestAssured.given().contentType("application/json").body(createRequest(path))
-                .when().post(path).then().statusCode(401);
+                .when().post(path).then().statusCode(401)
+                .body("code", equalTo("MEMBER_LOGIN_REQUIRED"))
+                .body("message", equalTo("로그인이 필요합니다."));
         RestAssured.given()
-                .when().delete(path + "/-1").then().statusCode(401);
+                .when().delete(path + "/-1").then().statusCode(401)
+                .body("code", equalTo("MEMBER_LOGIN_REQUIRED"))
+                .body("message", equalTo("로그인이 필요합니다."));
     }
 
     @ParameterizedTest
@@ -103,7 +112,9 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
         RestAssured.given()
                 .cookie("token", token)
                 .when().get(path)
-                .then().statusCode(401);
+                .then().statusCode(401)
+                .body("code", equalTo("MEMBER_ADMIN_REQUIRED"))
+                .body("message", equalTo("관리자 권한이 필요합니다."));
     }
 
     @ParameterizedTest
@@ -112,7 +123,9 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
         // when & then
         RestAssured.given()
                 .when().get(path)
-                .then().statusCode(401);
+                .then().statusCode(401)
+                .body("code", equalTo("MEMBER_LOGIN_REQUIRED"))
+                .body("message", equalTo("로그인이 필요합니다."));
     }
 
     @Test

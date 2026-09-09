@@ -2,22 +2,23 @@ package roomescape.member.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
+import roomescape.member.LoginMember;
+import roomescape.member.provider.LoginMemberProvider;
+import roomescape.member.exception.MemberErrorCode;
+import roomescape.member.exception.MemberException;
 import roomescape.member.annotation.AdminOnly;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
+    private final LoginMemberProvider loginMemberProvider;
 
-    public AdminInterceptor(MemberService memberService) {
-        this.memberService = memberService;
+    public AdminInterceptor(LoginMemberProvider loginMemberProvider) {
+        this.loginMemberProvider = loginMemberProvider;
     }
 
     @Override
@@ -30,20 +31,9 @@ public class AdminInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        HttpSession session = request.getSession(false);
-
-        Long memberId = session == null ? null : (Long) session.getAttribute("memberId");
-
-        if (memberId == null) {
-            response.setStatus(401);
-            return false;
-        }
-
-        Member member = memberService.getMember(memberId);
-
-        if (!"ADMIN".equals(member.getRole())) {
-            response.setStatus(401);
-            return false;
+        LoginMember member = loginMemberProvider.getLoginMember(request);
+        if (!"ADMIN".equals(member.role())) {
+            throw new MemberException(MemberErrorCode.ADMIN_REQUIRED);
         }
 
         return true;
