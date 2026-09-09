@@ -8,8 +8,8 @@ import java.util.List;
 
 @Service
 public class TimeService {
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
+    private final TimeDao timeDao;
+    private final ReservationDao reservationDao;
 
     public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
         this.timeDao = timeDao;

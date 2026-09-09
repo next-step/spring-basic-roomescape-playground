@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 public class TimeController {
-    private TimeService timeService;
+    private final TimeService timeService;
 
     public TimeController(TimeService timeService) {
         this.timeService = timeService;
@@ -28,7 +28,7 @@ public class TimeController {
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
         if (time.getValue() == null || time.getValue().isEmpty()) {
-            throw new RuntimeException();
+            throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
         }
 
         Time newTime = timeService.save(time);
