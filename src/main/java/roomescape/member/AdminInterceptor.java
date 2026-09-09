@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -17,29 +16,17 @@ public class AdminInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) {
         try {
-            String token = extractTokenFromCookie(request.getCookies());
-            Member member = memberService.findMemberByToken(token);
+            String token = TokenCookieExtractor.extract(request.getCookies());
+            LoginMember loginMember = memberService.findLoginMemberByToken(token);
 
-            if (!"ADMIN".equals(member.getRole())) {
+            if (!loginMember.isAdmin()) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
             }
             return true;
-        } catch (Exception exception) {
+        } catch (IllegalArgumentException exception) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("로그인 토큰이 없습니다.");
     }
 }

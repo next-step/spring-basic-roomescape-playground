@@ -1,6 +1,5 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -30,20 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new IllegalArgumentException("HTTP 요청을 찾을 수 없습니다.");
         }
 
-        String token = extractTokenFromCookie(request.getCookies());
-        Member member = memberService.findMemberByToken(token);
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("로그인 토큰이 없습니다.");
+        String token = TokenCookieExtractor.extract(request.getCookies());
+        return memberService.findLoginMemberByToken(token);
     }
 }
