@@ -15,6 +15,7 @@ public class Theme {
     }
 
     public Theme(String name, String description) {
+        validateFields(name, description);
         this.name = name;
         this.description = description;
     }
@@ -33,7 +34,7 @@ public class Theme {
 
     private void validateFields(String name, String description) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Theme를 생성하기 위해 name은 필수 필드입니다. ");
+            throw new IllegalArgumentException("Theme를 생성하기 위해 name은 필수 필드입니다.");
         }
 
         if (description == null || description.isBlank()) {
