@@ -1,9 +1,9 @@
 package roomescape.member;
 
-public record LoginCheckResponse (
+public record LoginCheckResponse(
         String name
 ) {
-    public static LoginCheckResponse from(Member member) {
-        return new LoginCheckResponse(member.getName());
+    public static LoginCheckResponse from(LoginMember loginMember) {
+        return new LoginCheckResponse(loginMember.name());
     }
 }

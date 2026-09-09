@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.member.exception.MemberErrorCode;
-import roomescape.member.exception.MemberException;
 
 import java.net.URI;
 
@@ -64,18 +62,8 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(
-        HttpServletRequest request
+            LoginMember loginMember
     ) {
-        HttpSession session = request.getSession(false);
-
-        if (session == null) {throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);}
-
-        Long memberId = (Long) session.getAttribute("memberId");
-
-        if (memberId == null) {throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);}
-
-        Member member = memberService.getMember(memberId);
-
-        return ResponseEntity.ok().body(LoginCheckResponse.from(member));
+        return ResponseEntity.ok().body(LoginCheckResponse.from(loginMember));
     }
 }
