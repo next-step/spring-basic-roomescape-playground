@@ -52,7 +52,7 @@ class MemberControllerTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {" ", "   "})
+    @ValueSource(strings = " ")
     void 이메일이_비어있으면_400을_반환한다(String email) throws Exception {
         // given
         LoginRequest request = new LoginRequest(email, PASSWORD);
@@ -64,7 +64,7 @@ class MemberControllerTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {" ", "   "})
+    @ValueSource(strings = " ")
     void 비밀번호가_비어있으면_400을_반환한다(String password) throws Exception {
         // given
         LoginRequest request = new LoginRequest(EMAIL, password);

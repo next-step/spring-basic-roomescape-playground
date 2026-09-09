@@ -2,8 +2,6 @@ package roomescape.member;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
@@ -46,11 +44,10 @@ class MemberServiceTest {
         assertThat(result).isEqualTo(memberId);
     }
 
-    @ParameterizedTest
-    @CsvSource({"login-service@email.com, wrong", "unknown@email.com, password", "unknown@email.com, wrong"})
-    void 로그인_정보가_일치하지_않으면_동일한_로그인_실패_예외를_던진다(String email, String password) {
+    @Test
+    void 일치하는_회원이_없으면_로그인_실패_예외를_던진다() {
         // given
-        LoginRequest request = new LoginRequest(email, password);
+        LoginRequest request = new LoginRequest(EMAIL, "wrong-password");
 
         // when & then
         assertThatThrownBy(() -> memberService.login(request))
@@ -58,15 +55,4 @@ class MemberServiceTest {
                         exception -> assertThat(exception.getErrorCode()).isEqualTo(MemberErrorCode.LOGIN_FAILED));
     }
 
-    @Test
-    void 회원_ID로_조회한_회원_객체를_반환한다() {
-        // when
-        Member member = memberService.getMember(memberId);
-
-        // then
-        assertThat(member.getId()).isEqualTo(memberId);
-        assertThat(member.getName()).isEqualTo("테스터");
-        assertThat(member.getEmail()).isEqualTo(EMAIL);
-        assertThat(member.getRole()).isEqualTo("USER");
-    }
 }

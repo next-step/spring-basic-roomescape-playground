@@ -138,8 +138,11 @@ function onReservationButtonClick() {
       },
       body: JSON.stringify(reservationData)
     })
-        .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
+        .then(async response => {
+          if (!response.ok) {
+            const error = await response.json().catch(() => null);
+            throw new Error(error?.message || '예약 중 오류가 발생했습니다. 다시 시도해 주세요.');
+          }
           return response.json();
         })
         .then(data => {
@@ -147,7 +150,7 @@ function onReservationButtonClick() {
           window.location.href = "/";
         })
         .catch(error => {
-          alert("An error occurred while making the reservation.");
+          alert(error.message);
           console.error(error);
         });
   } else {

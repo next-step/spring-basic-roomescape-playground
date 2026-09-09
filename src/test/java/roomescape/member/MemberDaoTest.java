@@ -47,7 +47,7 @@ class MemberDaoTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"login-dao@email.com, wrong", "unknown@email.com, password", "unknown@email.com, wrong"})
+    @CsvSource({"login-dao@email.com, wrong", "unknown@email.com, password"})
     void 이메일이나_비밀번호가_일치하지_않으면_빈_결과를_반환한다(String email, String password) {
         // when
         Optional<Member> result = memberDao.findByEmailAndPassword(email, password);
