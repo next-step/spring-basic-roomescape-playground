@@ -23,7 +23,7 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
-        return reservationService.findAll();
+        return reservationService.findAll().stream().map(ReservationResponse::from).toList();
     }
 
     @PostMapping("/reservations")
@@ -34,9 +34,14 @@ public class ReservationController {
                 || reservationRequest.time() == null) {
             return ResponseEntity.badRequest().build();
         }
-        ReservationResponse reservation = reservationService.save(reservationRequest);
+        Reservation newReservation = reservationService.save(
+                reservationRequest.name(),
+                reservationRequest.date(),
+                reservationRequest.theme(),
+                reservationRequest.time()
+        );
 
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId())).body(ReservationResponse.from(newReservation));
     }
 
     @DeleteMapping("/reservations/{id}")

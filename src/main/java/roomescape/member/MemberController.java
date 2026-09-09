@@ -21,8 +21,8 @@ public class MemberController {
 
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> createMember(@Valid @RequestBody MemberRequest memberRequest) {
-        MemberResponse member = memberService.createMember(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
+        Member newMember = memberService.createMember(memberRequest.name(), memberRequest.email(), memberRequest.password());
+        return ResponseEntity.created(URI.create("/members/" + newMember.getId())).body(MemberResponse.from(newMember));
     }
 
     @PostMapping("/logout")
