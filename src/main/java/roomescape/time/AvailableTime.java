@@ -11,15 +11,7 @@ public class AvailableTime {
         this.booked = booked;
     }
 
-    public Long getTimeId() {
-        return timeId;
-    }
-
     public String getTime() {
         return time;
-    }
-
-    public boolean isBooked() {
-        return booked;
     }
 }
