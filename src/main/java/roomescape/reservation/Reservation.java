@@ -3,14 +3,16 @@ package roomescape.reservation;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+import java.time.LocalDate;
+
 public class Reservation {
     private Long id;
     private String name;
-    private String date;
+    private LocalDate date;
     private Time time;
     private Theme theme;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -18,8 +20,8 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
-        validateFields();
+    public Reservation(String name, LocalDate date, Time time, Theme theme) {
+        validateFields(name, date, time, theme);
         this.name = name;
         this.date = date;
         this.time = time;
@@ -34,7 +36,7 @@ public class Reservation {
         return name;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
@@ -46,13 +48,17 @@ public class Reservation {
         return theme;
     }
 
-    private void validateFields() {
+    private void validateFields(String name, LocalDate date, Time time, Theme theme) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Reservation을 만들기 위해 name은 필수 필드입니다.");
         }
 
-        if (date == null || date.isBlank()) {
+        if (date == null) {
             throw new IllegalArgumentException("Reservation을 만들기 위해 date는 필수 필드입니다.");
+        }
+
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Reservation은 현재, 혹은 과거의 날짜로 생성할 수 없습니다.");
         }
 
         if (time == null) {

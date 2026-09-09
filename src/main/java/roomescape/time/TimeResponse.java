@@ -1,8 +1,14 @@
 package roomescape.time;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalTime;
+
 public record TimeResponse(
         Long id,
-        String value
+
+        @JsonFormat(pattern = "HH:mm")
+        LocalTime value
 ) {
     public static TimeResponse from(Time time) {
         return new TimeResponse(time.getId(), time.getValue());

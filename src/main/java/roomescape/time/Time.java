@@ -1,16 +1,18 @@
 package roomescape.time;
 
+import java.time.LocalTime;
+
 public class Time {
     private Long id;
-    private String value;
+    private LocalTime value;
 
-    public Time(Long id, String value) {
+    public Time(Long id, LocalTime value) {
         this.id = id;
         this.value = value;
     }
 
-    public Time(String value) {
-        if (value == null || value.isBlank()) {
+    public Time(LocalTime value) {
+        if (value == null) {
             throw new IllegalArgumentException("Time을 만들기 위해 value는 필수 필드입니다.");
         }
         this.value = value;
@@ -20,7 +22,7 @@ public class Time {
         return id;
     }
 
-    public String getValue() {
+    public LocalTime getValue() {
         return value;
     }
 }

@@ -1,15 +1,21 @@
 package roomescape.reservation;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
 
 public record ReservationRequest (
 
         @NotBlank(message = "이름 필드는 필수값입니다.")
         String name,
 
-        @NotBlank(message = "날짜 필드는 필수값입니다.")
-        String date,
+        @NotNull(message = "날짜 필드는 필수값입니다.")
+        @FutureOrPresent(message = "날짜는 과거일 수 없습니다.")
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate date,
 
         @NotNull(message = "테마 필드는 필수값입니다.")
         Long theme,

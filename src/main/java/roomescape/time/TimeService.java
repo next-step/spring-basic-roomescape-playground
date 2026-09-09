@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationDao;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -17,7 +19,7 @@ public class TimeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<AvailableTime> getAvailableTime(String date, Long themeId) {
+    public List<AvailableTime> getAvailableTime(LocalDate date, Long themeId) {
         List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
         List<Time> times = timeDao.findAll();
 
@@ -36,7 +38,7 @@ public class TimeService {
     }
 
     @Transactional
-    public Time save(String value) {
+    public Time save(LocalTime value) {
         Time time = new Time(value);
         return timeDao.save(time);
     }

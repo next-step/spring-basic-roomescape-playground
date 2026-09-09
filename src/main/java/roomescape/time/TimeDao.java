@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -21,14 +22,14 @@ public class TimeDao {
                 "SELECT * FROM time WHERE deleted = false",
                 (rs, rowNum) -> new Time(
                         rs.getLong("id"),
-                        rs.getString("time_value")));
+                        rs.getObject("time_value", LocalTime.class)));
     }
 
     public Time save(Time time) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         this.jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO time(time_value) VALUES (?)", new String[]{"id"});
-            ps.setString(1, time.getValue());
+            ps.setObject(1, time.getValue());
             return ps;
         }, keyHolder);
 

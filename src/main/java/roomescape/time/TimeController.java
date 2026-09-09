@@ -1,7 +1,10 @@
 package roomescape.time;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
+@Validated
 @RestController
 public class TimeController {
     private final TimeService timeService;
@@ -23,8 +28,8 @@ public class TimeController {
     }
 
     @GetMapping("/times")
-    public List<Time> list() {
-        return timeService.findAll();
+    public List<TimeResponse> list() {
+        return timeService.findAll().stream().map(TimeResponse::from).toList();
     }
 
     @PostMapping("/times")
@@ -42,7 +47,10 @@ public class TimeController {
     }
 
     @GetMapping("/available-times")
-    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date, @RequestParam Long themeId) {
+    public ResponseEntity<List<AvailableTime>> availableTimes(
+            @RequestParam @FutureOrPresent(message = "날짜는 과거일 수 없습니다.") LocalDate date,
+            @RequestParam Long themeId
+    ) {
         return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
     }
 }

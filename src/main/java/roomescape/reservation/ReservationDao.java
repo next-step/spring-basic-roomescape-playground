@@ -8,6 +8,9 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository
@@ -31,10 +34,10 @@ public class ReservationDao {
                 (rs, rowNum) -> new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
-                        rs.getString("reservation_date"),
+                        rs.getObject("reservation_date", LocalDate.class),
                         new Time(
                                 rs.getLong("time_id"),
-                                rs.getString("time_value")
+                                rs.getObject("time_value", LocalTime.class)
                         ),
                         new Theme(
                                 rs.getLong("theme_id"),
@@ -43,11 +46,11 @@ public class ReservationDao {
                         )));
     }
 
-    public Reservation save(String name, String date, Long themeId, Long timeId) {
+    public Reservation save(String name, LocalDate date, Long themeId, Long timeId) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, date);
+            ps.setString(1, date.toString());
             ps.setString(2, name);
             ps.setLong(3, themeId);
             ps.setLong(4, timeId);
@@ -55,7 +58,7 @@ public class ReservationDao {
         }, keyHolder);
 
         Time time = jdbcTemplate.queryForObject("SELECT * FROM time WHERE id = ?",
-                (rs, rowNum) -> new Time(rs.getLong("id"), rs.getString("time_value")),
+                (rs, rowNum) -> new Time(rs.getLong("id"), rs.getObject("time_value", LocalTime.class)),
                 timeId);
 
         Theme theme = jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
@@ -75,7 +78,7 @@ public class ReservationDao {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
-    public List<Reservation> findReservationsByDateAndTheme(String date, Long themeId) {
+    public List<Reservation> findReservationsByDateAndTheme(LocalDate date, Long themeId) {
         return jdbcTemplate.query(
                 "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
                         "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
@@ -84,14 +87,14 @@ public class ReservationDao {
                         "JOIN theme t ON r.theme_id = t.id " +
                         "JOIN time ti ON r.time_id = ti.id" +
                         "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
+                new Object[]{date.toString(), themeId},
                 (rs, rowNum) -> new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
-                        rs.getString("reservation_date"),
+                        rs.getObject("reservation_date", LocalDate.class),
                         new Time(
                                 rs.getLong("time_id"),
-                                rs.getString("time_value")
+                                rs.getObject("time_value", LocalTime.class)
                         ),
                         new Theme(
                                 rs.getLong("theme_id"),
@@ -100,7 +103,7 @@ public class ReservationDao {
                         )));
     }
 
-    public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         return jdbcTemplate.query(
                 "SELECT r.id AS reservation_id, r.name as reservation_name, r.date as reservation_date, " +
                         "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
@@ -109,14 +112,14 @@ public class ReservationDao {
                         "JOIN theme t ON r.theme_id = t.id " +
                         "JOIN time ti ON r.time_id = ti.id " +
                         "WHERE r.date = ? AND r.theme_id = ?",
-                new Object[]{date, themeId},
+                new Object[]{date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), themeId},
                 (rs, rowNum) -> new Reservation(
                         rs.getLong("reservation_id"),
                         rs.getString("reservation_name"),
-                        rs.getString("reservation_date"),
+                        rs.getObject("reservation_date",  LocalDate.class),
                         new Time(
                                 rs.getLong("time_id"),
-                                rs.getString("time_value")
+                                rs.getObject("time_value", LocalTime.class)
                         ),
                         new Theme(
                                 rs.getLong("theme_id"),
