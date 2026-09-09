@@ -1,13 +1,16 @@
 package roomescape.member;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class MemberDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -27,16 +30,34 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        try {
+            Member member = jdbcTemplate.queryForObject(
+                    "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
+                    (rs, rowNum) -> new Member(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("role")
+                    ),
+                    email, password
+            );
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Member findById(Long id) {
         return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
+                "SELECT id, name, email, role FROM member WHERE id = ?",
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("role")
                 ),
-                email, password
+                id
         );
     }
 

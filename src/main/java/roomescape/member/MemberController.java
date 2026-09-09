@@ -3,17 +3,21 @@ package roomescape.member;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.exception.MemberErrorCode;
+import roomescape.member.exception.MemberException;
 
 import java.net.URI;
 
 @RestController
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -26,12 +30,52 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(
+            HttpServletRequest request,
+            HttpServletResponse response)
+    {
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+        }
+
         Cookie cookie = new Cookie("token", "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(
+            @Valid @RequestBody LoginRequest loginRequest,
+            HttpServletRequest request
+    ) {
+        Long memberId = memberService.login(loginRequest);
+
+        HttpSession session = request.getSession();
+        request.changeSessionId();
+        session.setAttribute("memberId", memberId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginCheckResponse> checkLogin(
+        HttpServletRequest request
+    ) {
+        HttpSession session = request.getSession(false);
+
+        if (session == null) {throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);}
+
+        Long memberId = (Long) session.getAttribute("memberId");
+
+        if (memberId == null) {throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);}
+
+        Member member = memberService.getMember(memberId);
+
+        return ResponseEntity.ok().body(LoginCheckResponse.from(member));
     }
 }
