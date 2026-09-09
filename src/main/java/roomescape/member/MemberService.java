@@ -32,7 +32,7 @@ public class MemberService {
                 .compact();
     }
 
-    public LoginCheckResponse checkLogin(String token) {
+    public Member findMemberByToken(String token) {
         String subject = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
                 .build()
@@ -40,7 +40,14 @@ public class MemberService {
                 .getBody()
                 .getSubject();
 
-        Member member = memberDao.findById(Long.valueOf(subject));
-        return new LoginCheckResponse(member.getName());
+        return memberDao.findById(Long.valueOf(subject));
+    }
+
+    public Member findById(Long id) {
+        return memberDao.findById(id);
+    }
+
+    public Member findByName(String name) {
+        return memberDao.findByName(name);
     }
 }
