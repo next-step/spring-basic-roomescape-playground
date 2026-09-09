@@ -13,7 +13,7 @@ import java.net.URI;
 
 @RestController
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -25,6 +25,24 @@ public class MemberController {
         return ResponseEntity.created(URI.create("/members/" + member.getId())).body(member);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        String token = memberService.login(loginRequest);
+
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
+        String token = extractTokenFromCookie(request.getCookies());
+        return ResponseEntity.ok(memberService.checkLogin(token));
+    }
+
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", "");
@@ -33,5 +51,19 @@ public class MemberController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new IllegalArgumentException("로그인 토큰이 없습니다.");
+        }
+
+        for (Cookie cookie : cookies) {
+            if ("token".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+
+        throw new IllegalArgumentException("로그인 토큰이 없습니다.");
     }
 }
