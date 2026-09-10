@@ -27,10 +27,10 @@ public class AuthService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public LoginCheckResponse findMemberByToken(String token) {
+    public LoginMember findMemberByToken(String token) {
         Long memberId = jwtTokenProvider.extractMemberId(token);
         Member member = memberDao.findById(memberId);
 
-        return new LoginCheckResponse(member.getName());
+        return new LoginMember(member.getName(), member.getRole());
     }
 }
