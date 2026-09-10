@@ -1,9 +1,12 @@
-package roomescape;
+package roomescape.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.global.auth.JwtTokenProvider;
+import roomescape.global.auth.LoginMemberArgumentResolver;
+import roomescape.global.auth.RoleInterceptor;
 
 import java.util.List;
 
@@ -11,7 +14,7 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private final String[] adminAllowedOrigins = {
-            "admin"
+            "/admin"
     };
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
