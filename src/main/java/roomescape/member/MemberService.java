@@ -5,8 +5,8 @@ import roomescape.auth.JwtTokenProvider;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
-    private JwtTokenProvider jwtTokenProvider;
+    private final MemberDao memberDao;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public MemberService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
         this.memberDao = memberDao;
@@ -23,9 +23,8 @@ public class MemberService {
         return jwtTokenProvider.createToken(member);
     }
 
-    public LoginCheckResponse findMemberByToken(String token) {
+    public Member findByToken(String token) {
         Long memberId = jwtTokenProvider.getMemberId(token);
-        Member member = memberDao.findById(memberId);
-        return new LoginCheckResponse(member.getName());
+        return memberDao.findById(memberId);
     }
 }
