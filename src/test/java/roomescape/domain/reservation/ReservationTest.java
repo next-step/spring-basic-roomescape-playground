@@ -1,7 +1,6 @@
 package roomescape.domain.reservation;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
