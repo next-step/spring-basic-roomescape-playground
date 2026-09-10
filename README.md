@@ -27,3 +27,9 @@
 - [x] `POST /reservations` 요청 시 `name`이 없으면 Cookie의 로그인 정보를 활용한다.
   - [x] `name`이 있으면 기존대로 `name`으로 예약을 생성한다. (관리자)
   - [x] `name`이 없으면 로그인한 멤버의 이름으로 예약을 생성한다. (로그인 사용자)
+
+## 3단계 - 관리자 기능
+
+- [x] `/admin/**` 진입은 `ADMIN` 권한이 있는 사람만 할 수 있다.
+  - [x] `HandlerInterceptor`를 활용하여 컨트롤러 진입 전에 Cookie의 role을 확인한다.
+  - [x] 권한이 없는 경우 `401 Unauthorized`로 응답한다.
