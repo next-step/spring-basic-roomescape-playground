@@ -5,16 +5,21 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class GlobalExceptionController {
+public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e) {
+        return ResponseEntity.status(401).body(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> handleRuntimeException(Exception e) {
+    public ResponseEntity<Void> handleException(Exception e) {
         e.printStackTrace();
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.internalServerError().build();
     }
 }
