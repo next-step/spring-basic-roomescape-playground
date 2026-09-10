@@ -45,6 +45,7 @@ class MemberDaoTest {
 
         // then
         assertThat(member.getName()).isEqualTo(savedMember.getName());
+        assertThat(member.getName()).isEqualTo(savedMember.getName());
     }
 
     @Test
@@ -61,6 +62,7 @@ class MemberDaoTest {
 
         // then
         assertThat(member.getEmail()).isEqualTo(savedMember.getEmail());
+        assertThat(member.getRole()).isEqualTo("USER");
     }
 
     @Test
@@ -77,5 +79,6 @@ class MemberDaoTest {
 
         // then
         assertThat(member.getEmail()).isEqualTo(savedMember.getEmail());
+        assertThat(member.getRole()).isEqualTo("USER");
     }
 }

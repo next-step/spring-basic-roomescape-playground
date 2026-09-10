@@ -39,20 +39,8 @@ public class MemberController {
 
     // 이미 위의 메서드를 통해 사용자가 로그인 한 상태에서 쿠키로 신원을 확인
     @GetMapping("/login/check")
-    public ResponseEntity login(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new UnauthorizedException("로그인이 필요합니다.");
-        }
-
-        String token = extractTokenFromCookie(cookies);
-        if (token.isEmpty()) {
-            throw new UnauthorizedException("로그인이 필요합니다.");
-        }
-
-        MemberResponse member = memberService.findMemberByToken(token);
-        LoginResponse response = new LoginResponse(member.getName());
-
+    public ResponseEntity login(LoginMember loginMember) {
+        LoginResponse response = new LoginResponse(loginMember.getName());
         return ResponseEntity.ok().body(response);
     }
 

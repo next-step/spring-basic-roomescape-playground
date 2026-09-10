@@ -84,10 +84,11 @@ class MemberServiceTest {
         given(memberDao.findById(1L)).willReturn(member);
 
         // when
-        MemberResponse response = memberService.findMemberByToken(token);
+        Member response = memberService.findMemberByToken(token);
 
         // then
         assertThat(response.getName()).isEqualTo("어드민");
         assertThat(response.getEmail()).isEqualTo("admin@email.com");
+        assertThat(response.getRole()).isEqualTo("ADMIN");
     }
 }

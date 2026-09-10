@@ -28,10 +28,8 @@ public class MemberService {
         }
     }
 
-    public MemberResponse findMemberByToken(String token) {
+    public Member findMemberByToken(String token) {
         long id = jwtTokenProvider.getMemberId(token);
-        Member member = memberDao.findById(id);
-
-        return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+        return memberDao.findById(id);
     }
 }
