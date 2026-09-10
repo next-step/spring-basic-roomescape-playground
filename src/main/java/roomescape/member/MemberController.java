@@ -34,4 +34,16 @@ public class MemberController {
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody MemberRequest memberRequest, HttpServletResponse response) {
+        String token = memberService.login(memberRequest.getEmail(), memberRequest.getPassword());
+
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
 }
