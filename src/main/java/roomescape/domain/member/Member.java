@@ -52,12 +52,20 @@ public class Member {
             throw new IllegalArgumentException("Member를 생성하기 위해 email은 필수 필드입니다.");
         }
 
+        if (!email.contains("@") || !email.endsWith(".com")) {
+            throw new IllegalArgumentException("Member.email 필드의 정규식이 올바르지 않습니다.");
+        }
+
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("Member를 생성하기 위해 password는 필수 필드입니다.");
         }
 
         if (role == null || role.isBlank()) {
             throw new IllegalArgumentException("Member를 생성하기 위해 role은 필수 필드입니다.");
+        }
+
+        if (!role.equals("USER") && !role.equals("ADMIN")) {
+            throw new IllegalArgumentException("잘못된 권한입니다.");
         }
 
     }
