@@ -1,7 +1,7 @@
-package roomescape.member;
+package roomescape.domain.member;
 
 import org.springframework.stereotype.Service;
-import roomescape.JwtTokenProvider;
+import roomescape.global.auth.JwtTokenProvider;
 
 @Service
 public class AuthService {

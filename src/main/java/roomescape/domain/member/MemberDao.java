@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.domain.member;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -45,7 +45,7 @@ public class MemberDao {
     public Optional<LoginMember> findLoginMemberById(Long memberId) {
         return Optional.ofNullable(jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE id = ?",
-                (rs, rowNum) -> new Member(
+                (rs, rowNum) -> new LoginMember(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),

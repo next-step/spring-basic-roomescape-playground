@@ -1,7 +1,8 @@
-package roomescape;
+package roomescape.global.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import roomescape.global.excpetion.UnauthorizedException;
 
 import java.util.Arrays;
 

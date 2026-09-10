@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.domain.reservation;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

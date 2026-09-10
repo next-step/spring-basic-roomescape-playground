@@ -1,8 +1,9 @@
-package roomescape;
+package roomescape.global.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.global.excpetion.UnauthorizedException;
 
 public class RoleInterceptor implements HandlerInterceptor {
 

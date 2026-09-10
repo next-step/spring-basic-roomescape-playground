@@ -1,4 +1,4 @@
-package roomescape.time;
+package roomescape.domain.time;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

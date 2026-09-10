@@ -1,9 +1,9 @@
-package roomescape.time;
+package roomescape.domain.time;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDao;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

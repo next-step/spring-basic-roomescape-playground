@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.domain.reservation;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.CookieTokenExtractor;
-import roomescape.JwtTokenProvider;
-import roomescape.member.AuthService;
+import roomescape.global.auth.CookieTokenExtractor;
+import roomescape.domain.member.AuthService;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController

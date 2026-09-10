@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.global.excpetion;
 
 public class UnauthorizedException extends RuntimeException {
     public UnauthorizedException() {

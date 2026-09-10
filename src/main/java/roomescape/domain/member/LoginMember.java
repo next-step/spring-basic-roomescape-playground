@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.domain.member;
 
 public class LoginMember {
 

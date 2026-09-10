@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.global.excpetion;
 
 import java.util.Map;
 

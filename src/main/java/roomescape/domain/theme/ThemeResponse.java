@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.domain.theme;
 
 public record ThemeResponse(
         Long id,

@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.global.excpetion;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

@@ -1,8 +1,8 @@
-package roomescape.member;
+package roomescape.domain.member;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.NotFoundException;
+import roomescape.global.excpetion.NotFoundException;
 
 import java.util.Map;
 

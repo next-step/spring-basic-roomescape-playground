@@ -1,4 +1,4 @@
-package roomescape.time;
+package roomescape.domain.time;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

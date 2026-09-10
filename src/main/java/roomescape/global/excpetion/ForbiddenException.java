@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.global.excpetion;
 
 public class ForbiddenException extends RuntimeException {
     public ForbiddenException() {
