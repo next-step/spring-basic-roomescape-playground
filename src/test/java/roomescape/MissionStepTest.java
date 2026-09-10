@@ -113,4 +113,28 @@ public class MissionStepTest {
         assertThat(response.statusCode()).isEqualTo(201);
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("브라운");
     }
+
+    @Test
+    @DisplayName("어드민 권한이 없으면 어드민 페이지 접근 시 401을 응답한다")
+    void test_어드민_권한이_없으면_어드민_페이지_접근_차단() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    @DisplayName("어드민 권한이 있으면 어드민 페이지에 접근할 수 있다")
+    void test_어드민_권한이_있으면_어드민_페이지_접근_승인() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
