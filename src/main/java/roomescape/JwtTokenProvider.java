@@ -42,14 +42,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(String token) {
-        validateToken(token);
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+    public Long getSubject(String token) {
+        Claims claims = parseClaims(token);
+        return Long.parseLong(claims.getSubject());
     }
 
     public String getName(String token) {
@@ -57,17 +52,9 @@ public class JwtTokenProvider {
         return claims.get("name", String.class);
     }
 
-    private void validateToken(String token) {
-        try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
-
-            claims.getBody().getExpiration();
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new RuntimeException("Invalid token");
-        }
+    public String getRole(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("role", String.class);
     }
 
     private Claims parseClaims(String token) {

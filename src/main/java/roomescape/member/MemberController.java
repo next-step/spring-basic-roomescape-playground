@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.UnauthorizedException;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -50,9 +51,9 @@ public class MemberController {
         Cookie tokenCookie = Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("로그인 정보를 찾을 수 없습니다."));
+                .orElseThrow(UnauthorizedException::new);
 
-        return new UsernameResponse(authService.getName(tokenCookie.getValue()));
+        return new UsernameResponse(authService.getUsername(tokenCookie.getValue()));
     }
 
     @PostMapping("/logout")
