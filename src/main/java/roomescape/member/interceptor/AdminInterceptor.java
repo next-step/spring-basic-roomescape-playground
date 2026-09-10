@@ -2,7 +2,6 @@ package roomescape.member.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -44,10 +43,6 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        return handlerMethod.hasMethodAnnotation(AdminOnly.class)
-                || AnnotatedElementUtils.hasAnnotation(
-                        handlerMethod.getBeanType(),
-                        AdminOnly.class
-                );
+        return handlerMethod.hasMethodAnnotation(AdminOnly.class);
     }
 }
