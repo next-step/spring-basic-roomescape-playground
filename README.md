@@ -19,3 +19,11 @@
   - [x] Cookie에서 `token` 값을 추출한다.
   - [x] 토큰에서 멤버 식별자를 얻어 멤버를 조회하고 이름을 응답한다.
   - [x] Cookie가 없거나 `token` 값이 없으면 `401 Unauthorized`로 응답한다.
+
+## 2단계 - 로그인 리팩터링
+
+- [x] Cookie의 인증 정보로 멤버 객체를 만드는 로직을 `HandlerMethodArgumentResolver`로 분리한다.
+  - [x] 컨트롤러 메서드에서 `LoginMember`를 주입받아 사용한다.
+- [x] `POST /reservations` 요청 시 `name`이 없으면 Cookie의 로그인 정보를 활용한다.
+  - [x] `name`이 있으면 기존대로 `name`으로 예약을 생성한다. (관리자)
+  - [x] `name`이 없으면 로그인한 멤버의 이름으로 예약을 생성한다. (로그인 사용자)
