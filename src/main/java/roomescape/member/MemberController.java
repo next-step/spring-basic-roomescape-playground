@@ -46,4 +46,22 @@ public class MemberController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/login/check")
+    public ResponseEntity checkLogin(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = extractTokenFromCookie(cookies);
+        String name = memberService.findNameByToken(token);
+
+        return ResponseEntity.ok().body(new CheckLoginResponse(name));
+    }
+
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        return "";
+    }
 }

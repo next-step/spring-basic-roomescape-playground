@@ -22,4 +22,8 @@ public class MemberService {
         Member member = memberDao.findByEmailAndPassword(email, password);
         return jwtTokenProvider.createToken(member);
     }
+
+    public String findNameByToken(String token) {
+        return jwtTokenProvider.getName(token);
+    }
 }
