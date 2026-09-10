@@ -14,6 +14,12 @@ public class GlobalExceptionHandler {
                 .body(new ExceptionResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ExceptionResponse> handleAuthorization(AuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ExceptionResponse(e.getMessage()));
+    }
+
     @ExceptionHandler(BlankTimeException.class)
     public ResponseEntity<ExceptionResponse> handleBlankTime(BlankTimeException e) {
         return ResponseEntity.badRequest()
