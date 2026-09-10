@@ -44,4 +44,3 @@ public class MissionStepTest {
         assertThat(checkResponse.body().jsonPath().getString("name")).isEqualTo("어드민");
     }
 }
-
