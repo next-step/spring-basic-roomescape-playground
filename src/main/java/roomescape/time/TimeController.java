@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.exception.BlankTimeException;
 
 import java.net.URI;
 import java.util.List;
@@ -27,8 +28,8 @@ public class TimeController {
 
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
-            throw new RuntimeException();
+        if (time.getValue() == null || time.getValue().isBlank()) {
+            throw new BlankTimeException("시간 값은 필수입니다.");
         }
 
         Time newTime = timeService.save(time);
