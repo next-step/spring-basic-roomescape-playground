@@ -110,4 +110,35 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    void 잘못된_비밀번호로_로그인하면_401을_응답한다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", "admin@email.com");
+        params.put("password", "wrong-password");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    void 토큰_쿠키_없이_로그인_정보를_조회하면_401을_응답한다() {
+        RestAssured.given().log().all()
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    void 잘못된_토큰으로_관리자_페이지를_요청하면_401을_응답한다() {
+        RestAssured.given().log().all()
+                .cookie("token", "invalid-token")
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
 }

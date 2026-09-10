@@ -1,6 +1,9 @@
 package roomescape.auth;
 
+import io.jsonwebtoken.JwtException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.exception.InvalidAuthenticationException;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
@@ -19,18 +22,26 @@ public class AuthService {
     }
 
     public String login(LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(
-                loginRequest.email(),
-                loginRequest.password()
-        );
+        try {
+            Member member = memberDao.findByEmailAndPassword(
+                    loginRequest.email(),
+                    loginRequest.password()
+            );
 
-        return jwtTokenProvider.createToken(member);
+            return jwtTokenProvider.createToken(member);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new InvalidAuthenticationException();
+        }
     }
 
     public LoginMember findMemberByToken(String token) {
-        Long memberId = jwtTokenProvider.extractMemberId(token);
-        Member member = memberDao.findById(memberId);
+        try {
+            Long memberId = jwtTokenProvider.extractMemberId(token);
+            Member member = memberDao.findById(memberId);
 
-        return new LoginMember(member.getName(), member.getRole());
+            return new LoginMember(member.getName(), member.getRole());
+        } catch (JwtException exception) {
+            throw new InvalidAuthenticationException();
+        }
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.exception.InvalidAuthenticationException;
 
 import java.util.Arrays;
 
@@ -39,16 +40,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null) {
-            throw new IllegalArgumentException("로그인 정보가 없습니다.");
+            throw new InvalidAuthenticationException();
         }
 
         String token = Arrays.stream(cookies)
                 .filter(cookie -> TOKEN_COOKIE_NAME.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
-                .orElseThrow(() ->
-                        new IllegalArgumentException("로그인 정보가 없습니다.")
-                );
+                .orElseThrow(InvalidAuthenticationException::new);
 
         return authService.findMemberByToken(token);
     }
