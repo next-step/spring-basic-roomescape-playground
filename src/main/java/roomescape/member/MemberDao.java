@@ -52,4 +52,17 @@ public class MemberDao {
                 name
         );
     }
+
+    public Member findById(Long id) {
+        return jdbcTemplate.queryForObject(
+                "SELECT id, name, email, role FROM member WHERE id = ?",
+                (resultSet, rowNum) -> new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("role")
+                ),
+                id
+        );
+    }
 }

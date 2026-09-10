@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,20 +20,125 @@ public class MissionStepTest {
 
     @Test
     void 일단계() {
-        Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
+        String token = createToken("admin@email.com", "password");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
+        assertThat(token).isNotBlank();
+
+        // 발급받은 토큰으로 로그인 회원 정보를 조회할 수 있는지 검증
+        ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
                 .extract();
 
-        String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+        assertThat(
+                checkResponse.body().jsonPath().getString("name")
+        ).isEqualTo("어드민");
+    }
 
-        assertThat(token).isNotBlank();
+    @Test
+    void 이단계() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(201);
+        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+
+        params.put("name", "브라운");
+
+        ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        assertThat(adminResponse.statusCode()).isEqualTo(201);
+        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    private String createToken(String email, String password) {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .contentType(ContentType.JSON)
+                        .body(params)
+                        .when().post("/login")
+                        .then().log().all()
+                        .statusCode(200)
+                        .extract();
+
+        return response.headers()
+                .get("Set-Cookie")
+                .getValue()
+                .split(";")[0]
+                .split("=")[1];
+    }
+
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    void 잘못된_비밀번호로_로그인하면_401을_응답한다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", "admin@email.com");
+        params.put("password", "wrong-password");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    void 토큰_쿠키_없이_로그인_정보를_조회하면_401을_응답한다() {
+        RestAssured.given().log().all()
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    void 잘못된_토큰으로_관리자_페이지를_요청하면_401을_응답한다() {
+        RestAssured.given().log().all()
+                .cookie("token", "invalid-token")
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(401);
     }
 }
