@@ -34,5 +34,17 @@ public class MissionStepTest {
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
 
         assertThat(token).isNotBlank();
+
+        // 발급받은 토큰으로 로그인 회원 정보를 조회할 수 있는지 검증
+        ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
+                .cookie("token", token)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .extract();
+
+        assertThat(
+                checkResponse.body().jsonPath().getString("name")
+        ).isEqualTo("어드민");
     }
 }
