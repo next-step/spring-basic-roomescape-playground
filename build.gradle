@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
@@ -27,6 +28,15 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured:5.3.1'
 
     runtimeOnly 'com.h2database:h2'
+}
+
+sourceSets {
+    test {
+        java {
+            // 이전 미션에서 가져온 참고용 테스트는 현재 애플리케이션의 실행 대상에서 제외한다.
+            exclude 'roomescape/roomescape/**'
+        }
+    }
 }
 
 test {
