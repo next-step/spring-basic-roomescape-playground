@@ -10,6 +10,8 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -25,8 +27,8 @@ public class ReservationDao {
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
             rs.getString("reservation_name"),
-            rs.getString("reservation_date"),
-            new Time(rs.getLong("time_id"), rs.getString("time_value")),
+            rs.getObject("reservation_date", LocalDate.class),
+            new Time(rs.getLong("time_id"), rs.getObject("time_value", LocalTime.class)),
             new Theme(
                     rs.getLong("theme_id"),
                     rs.getString("theme_name"),
@@ -44,7 +46,7 @@ public class ReservationDao {
         return jdbcTemplate.query(RESERVATION_SELECT, RESERVATION_ROW_MAPPER);
     }
 
-    public boolean existsBySchedule(String date, Long themeId, Long timeId) {
+    public boolean existsBySchedule(LocalDate date, Long themeId, Long timeId) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ?)",
                 Boolean.class,
@@ -61,7 +63,7 @@ public class ReservationDao {
                     "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)",
                     new String[]{"id"}
             );
-            ps.setString(1, reservation.getDate());
+            ps.setObject(1, reservation.getDate());
             ps.setString(2, reservation.getName());
             ps.setLong(3, reservation.getTheme().getId());
             ps.setLong(4, reservation.getTime().getId());
@@ -81,7 +83,7 @@ public class ReservationDao {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
-    public List<Reservation> findByDateAndThemeId(String date, Long themeId) {
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         return jdbcTemplate.query(
                 RESERVATION_SELECT + "WHERE r.date = ? AND r.theme_id = ?",
                 RESERVATION_ROW_MAPPER,

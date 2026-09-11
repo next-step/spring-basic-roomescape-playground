@@ -14,6 +14,7 @@ import roomescape.time.dto.AvailableTime;
 import roomescape.time.service.TimeService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,7 @@ public class TimeController {
     @PostMapping("/times")
     @AdminOnly
     public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
+        if (time.getValue() == null) {
             throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
         }
 
@@ -48,7 +49,8 @@ public class TimeController {
     }
 
     @GetMapping("/available-times")
-    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam String date, @RequestParam Long themeId) {
+    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam LocalDate date,
+                                                              @RequestParam Long themeId) {
         return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
     }
 }

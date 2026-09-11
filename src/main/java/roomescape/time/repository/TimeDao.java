@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.time.domain.Time;
 
 import java.sql.PreparedStatement;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -15,7 +16,7 @@ public class TimeDao {
     private static final String TIME_SELECT = "SELECT id, time_value FROM time ";
     private static final RowMapper<Time> TIME_ROW_MAPPER = (rs, rowNum) -> new Time(
             rs.getLong("id"),
-            rs.getString("time_value")
+            rs.getObject("time_value", LocalTime.class)
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -40,7 +41,7 @@ public class TimeDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         this.jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO time(time_value) VALUES (?)", new String[]{"id"});
-            ps.setString(1, time.getValue());
+            ps.setObject(1, time.getValue());
             return ps;
         }, keyHolder);
 

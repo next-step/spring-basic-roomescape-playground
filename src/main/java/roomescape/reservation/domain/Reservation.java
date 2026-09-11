@@ -3,14 +3,16 @@ package roomescape.reservation.domain;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
+import java.time.LocalDate;
+
 public class Reservation {
     private final Long id;
     private final String name;
-    private final String date;
+    private final LocalDate date;
     private final Time time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -18,7 +20,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(String name, LocalDate date, Time time, Theme theme) {
         this(null, name, date, time, theme);
     }
 
@@ -30,7 +32,7 @@ public class Reservation {
         return name;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
