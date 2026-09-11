@@ -48,7 +48,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         Member member = memberService.getMember(memberId);
-        if (!"ADMIN".equals(member.getRole())) {
+        if (!member.isAdmin()) {
             throw new MemberException(MemberErrorCode.ADMIN_REQUIRED);
         }
 

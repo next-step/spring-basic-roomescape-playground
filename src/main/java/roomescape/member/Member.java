@@ -37,6 +37,10 @@ public class Member {
         return password;
     }
 
+    public boolean isAdmin() {
+        return "ADMIN".equals(role);
+    }
+
     public String getRole() {
         return role;
     }
