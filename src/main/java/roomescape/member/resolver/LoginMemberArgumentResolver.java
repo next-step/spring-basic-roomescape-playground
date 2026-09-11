@@ -1,6 +1,7 @@
 package roomescape.member.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -8,14 +9,16 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.LoginMember;
-import roomescape.member.provider.LoginMemberProvider;
+import roomescape.member.MemberService;
+import roomescape.member.exception.MemberErrorCode;
+import roomescape.member.exception.MemberException;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final LoginMemberProvider loginMemberProvider;
+    private final MemberService memberService;
 
-    public LoginMemberArgumentResolver(LoginMemberProvider loginMemberProvider) {
-        this.loginMemberProvider = loginMemberProvider;
+    public LoginMemberArgumentResolver(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @Override
@@ -32,6 +35,16 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
-        return loginMemberProvider.getLoginMember(request);
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
+        }
+
+        Long memberId = (Long) session.getAttribute("memberId");
+        if (memberId == null) {
+            throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
+        }
+
+        return LoginMember.from(memberService.getMember(memberId));
     }
 }
