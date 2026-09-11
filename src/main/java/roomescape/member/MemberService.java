@@ -17,8 +17,8 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public Long login(LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
+    public Long login(String email, String password) {
+        Member member = memberDao.findByEmailAndPassword(email, password)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.LOGIN_FAILED));
         return member.getId();
     }

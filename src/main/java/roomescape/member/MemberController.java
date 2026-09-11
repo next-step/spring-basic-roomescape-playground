@@ -54,7 +54,7 @@ public class MemberController {
             @Valid @RequestBody LoginRequest loginRequest,
             HttpServletRequest request
     ) {
-        Long memberId = memberService.login(loginRequest);
+        Long memberId = memberService.login(loginRequest.email(), loginRequest.password());
 
         HttpSession session = request.getSession();
         request.changeSessionId();

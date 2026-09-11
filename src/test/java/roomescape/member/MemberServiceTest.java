@@ -34,11 +34,8 @@ class MemberServiceTest {
 
     @Test
     void 로그인_정보가_일치하면_회원_ID를_반환한다() {
-        // given
-        LoginRequest request = new LoginRequest(EMAIL, PASSWORD);
-
         // when
-        Long result = memberService.login(request);
+        Long result = memberService.login(EMAIL, PASSWORD);
 
         // then
         assertThat(result).isEqualTo(memberId);
@@ -47,10 +44,10 @@ class MemberServiceTest {
     @Test
     void 일치하는_회원이_없으면_로그인_실패_예외를_던진다() {
         // given
-        LoginRequest request = new LoginRequest(EMAIL, "wrong-password");
+        String wrongPassword = "wrong-password";
 
         // when & then
-        assertThatThrownBy(() -> memberService.login(request))
+        assertThatThrownBy(() -> memberService.login(EMAIL, wrongPassword))
                 .isInstanceOfSatisfying(MemberException.class,
                         exception -> assertThat(exception.getErrorCode()).isEqualTo(MemberErrorCode.LOGIN_FAILED));
     }

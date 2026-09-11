@@ -41,7 +41,7 @@ class MemberControllerTest {
     void 로그인_요청이_성공하면_200을_반환하고_회원_ID를_세션에_저장한다() throws Exception {
         // given
         LoginRequest request = new LoginRequest(EMAIL, PASSWORD);
-        given(memberService.login(request)).willReturn(1L);
+        given(memberService.login(request.email(), request.password())).willReturn(1L);
 
         // when & then
         mockMvc.perform(post("/login")
@@ -50,7 +50,7 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(request().sessionAttribute("memberId", 1L));
 
-        then(memberService).should().login(request);
+        then(memberService).should().login(request.email(), request.password());
     }
 
     @ParameterizedTest
@@ -91,7 +91,7 @@ class MemberControllerTest {
     void 서비스에서_로그인_실패_예외가_발생하면_401을_반환한다() throws Exception {
         // given
         LoginRequest request = new LoginRequest(EMAIL, "wrong-password");
-        given(memberService.login(request)).willThrow(new MemberException(MemberErrorCode.LOGIN_FAILED));
+        given(memberService.login(request.email(), request.password())).willThrow(new MemberException(MemberErrorCode.LOGIN_FAILED));
 
         // when & then
         mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON)
@@ -99,7 +99,7 @@ class MemberControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("MEMBER_LOGIN_FAILED"))
                 .andExpect(jsonPath("$.message").value("이메일 또는 비밀번호가 올바르지 않습니다."));
-        then(memberService).should().login(request);
+        then(memberService).should().login(request.email(), request.password());
     }
 
     @Test
