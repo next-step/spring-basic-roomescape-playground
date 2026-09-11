@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,13 @@ import java.util.List;
 
 @Repository
 public class ThemeDao {
+    private static final String THEME_SELECT = "SELECT id, name, description FROM theme ";
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description")
+    );
+
     private final JdbcTemplate jdbcTemplate;
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
@@ -17,11 +25,15 @@ public class ThemeDao {
     }
 
     public List<Theme> findAll() {
-        return jdbcTemplate.query("SELECT * FROM theme where deleted = false", (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description")
-        ));
+        return jdbcTemplate.query(THEME_SELECT + "WHERE deleted = false", THEME_ROW_MAPPER);
+    }
+
+    public Theme findById(Long id) {
+        return jdbcTemplate.queryForObject(
+                THEME_SELECT + "WHERE id = ? AND deleted = false",
+                THEME_ROW_MAPPER,
+                id
+        );
     }
 
     public Theme save(Theme theme) {

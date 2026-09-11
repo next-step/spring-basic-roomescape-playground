@@ -1,6 +1,7 @@
 package roomescape.time.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,12 @@ import java.util.List;
 
 @Repository
 public class TimeDao {
+    private static final String TIME_SELECT = "SELECT id, time_value FROM time ";
+    private static final RowMapper<Time> TIME_ROW_MAPPER = (rs, rowNum) -> new Time(
+            rs.getLong("id"),
+            rs.getString("time_value")
+    );
+
     private final JdbcTemplate jdbcTemplate;
 
     public TimeDao(JdbcTemplate jdbcTemplate) {
@@ -18,11 +25,15 @@ public class TimeDao {
     }
 
     public List<Time> findAll() {
-        return jdbcTemplate.query(
-                "SELECT * FROM time WHERE deleted = false",
-                (rs, rowNum) -> new Time(
-                        rs.getLong("id"),
-                        rs.getString("time_value")));
+        return jdbcTemplate.query(TIME_SELECT + "WHERE deleted = false", TIME_ROW_MAPPER);
+    }
+
+    public Time findById(Long id) {
+        return jdbcTemplate.queryForObject(
+                TIME_SELECT + "WHERE id = ? AND deleted = false",
+                TIME_ROW_MAPPER,
+                id
+        );
     }
 
     public Time save(Time time) {
