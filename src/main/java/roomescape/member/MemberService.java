@@ -8,10 +8,14 @@ import org.springframework.stereotype.Service;
 public class MemberService {
     private final MemberDao memberDao;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RevokedTokenStore revokedTokenStore;
 
-    public MemberService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberDao memberDao,
+                         JwtTokenProvider jwtTokenProvider,
+                         RevokedTokenStore revokedTokenStore) {
         this.memberDao = memberDao;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.revokedTokenStore = revokedTokenStore;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
@@ -35,11 +39,21 @@ public class MemberService {
 
     public LoginMember findLoginMemberByToken(String token) {
         try {
-            Member member = memberDao.findById(jwtTokenProvider.extractMemberId(token));
+            TokenPayload tokenPayload = jwtTokenProvider.parseToken(token);
+            if (revokedTokenStore.isRevoked(tokenPayload.tokenId())) {
+                throw new IllegalArgumentException("로그아웃된 로그인 토큰입니다.");
+            }
+
+            Member member = memberDao.findById(tokenPayload.memberId());
             return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
         } catch (JwtException | IllegalArgumentException | EmptyResultDataAccessException exception) {
             throw new IllegalArgumentException("유효하지 않은 로그인 토큰입니다.", exception);
         }
+    }
+
+    public void logout(String token) {
+        TokenPayload tokenPayload = jwtTokenProvider.parseToken(token);
+        revokedTokenStore.revoke(tokenPayload.tokenId(), tokenPayload.expiresAt());
     }
 
     public Member findById(Long id) {
