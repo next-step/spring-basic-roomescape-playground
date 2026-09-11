@@ -4,6 +4,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.auth.AuthorizationException;
 import roomescape.member.domain.LoginMember;
 import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
@@ -62,7 +63,10 @@ public class ReservationService {
         }
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(Long id, LoginMember loginMember) {
+        if (!loginMember.isAdmin()) {
+            throw new AuthorizationException("예약을 삭제할 권한이 없습니다.");
+        }
         reservationDao.deleteById(id);
     }
 

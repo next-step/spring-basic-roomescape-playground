@@ -17,6 +17,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReservationControllerTest {
 
     @Test
+    void admin_can_delete_reservation() {
+        String token = createToken("admin@email.com", "password");
+
+        RestAssured.given()
+                .cookie("token", token)
+                .delete("/reservations/1")
+                .then()
+                .statusCode(204);
+
+        ExtractableResponse<Response> response = RestAssured.get("/reservations")
+                .then()
+                .statusCode(200)
+                .extract();
+        assertThat(response.jsonPath().getList("id", Long.class)).doesNotContain(1L);
+    }
+
+    @Test
     void same_schedule_cannot_be_reserved_twice() {
         String token = createToken("admin@email.com", "password");
         Map<String, String> reservation = Map.of(
