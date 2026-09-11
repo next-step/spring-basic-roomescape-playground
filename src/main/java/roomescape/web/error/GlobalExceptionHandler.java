@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.web.error;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
