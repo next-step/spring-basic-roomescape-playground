@@ -43,6 +43,16 @@ public class ReservationDao {
         return jdbcTemplate.query(RESERVATION_SELECT, RESERVATION_ROW_MAPPER);
     }
 
+    public boolean existsBySchedule(String date, Long themeId, Long timeId) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND theme_id = ? AND time_id = ?)",
+                Boolean.class,
+                date,
+                themeId,
+                timeId
+        ));
+    }
+
     public Reservation save(String date, String memberName, Long themeId, Long timeId) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {

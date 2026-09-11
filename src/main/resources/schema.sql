@@ -30,9 +30,10 @@ CREATE TABLE reservation
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     date     VARCHAR(255) NOT NULL,
     name     VARCHAR(255) NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    time_id  BIGINT       NOT NULL,
+    theme_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
+    CONSTRAINT uk_reservation_schedule UNIQUE (date, time_id, theme_id),
     FOREIGN KEY (time_id) REFERENCES time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
