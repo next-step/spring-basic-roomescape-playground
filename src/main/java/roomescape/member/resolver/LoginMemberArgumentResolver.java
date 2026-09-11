@@ -2,6 +2,7 @@ package roomescape.member.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import roomescape.member.session.MemberSessionStore;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -16,9 +17,11 @@ import roomescape.member.exception.MemberException;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberService memberService;
+    private final MemberSessionStore memberSessionStore;
 
-    public LoginMemberArgumentResolver(MemberService memberService) {
+    public LoginMemberArgumentResolver(MemberService memberService, MemberSessionStore memberSessionStore) {
         this.memberService = memberService;
+        this.memberSessionStore = memberSessionStore;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
         }
 
-        Long memberId = (Long) session.getAttribute("memberId");
+        Long memberId = memberSessionStore.getMemberId(session);
         if (memberId == null) {
             throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
         }

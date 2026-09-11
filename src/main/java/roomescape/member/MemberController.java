@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import roomescape.member.session.MemberSessionStore;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +17,11 @@ import java.net.URI;
 @RestController
 public class MemberController {
     private final MemberService memberService;
+    private final MemberSessionStore memberSessionStore;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, MemberSessionStore memberSessionStore) {
         this.memberService = memberService;
+        this.memberSessionStore = memberSessionStore;
     }
 
     @PostMapping("/members")
@@ -55,7 +58,7 @@ public class MemberController {
 
         HttpSession session = request.getSession();
         request.changeSessionId();
-        session.setAttribute("memberId", memberId);
+        memberSessionStore.saveMemberId(session, memberId);
 
         return ResponseEntity.ok().build();
     }
