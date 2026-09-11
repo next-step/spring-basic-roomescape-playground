@@ -4,6 +4,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import roomescape.member.auth.AuthorizationException;
 import roomescape.member.domain.LoginMember;
 import roomescape.member.domain.Member;
@@ -77,10 +78,14 @@ public class ReservationService {
     }
 
     private Member findReservationMember(ReservationRequest reservationRequest, LoginMember loginMember) {
-        if (!loginMember.isAdmin() || reservationRequest.name() == null || reservationRequest.name().isBlank()) {
-            return memberService.findById(loginMember.id());
+        if (isReservationForAnotherMember(reservationRequest, loginMember)) {
+            return memberService.findByName(reservationRequest.name());
         }
-        return memberService.findByName(reservationRequest.name());
+        return memberService.findById(loginMember.id());
+    }
+
+    private boolean isReservationForAnotherMember(ReservationRequest reservationRequest, LoginMember loginMember) {
+        return loginMember.isAdmin() && StringUtils.hasText(reservationRequest.name());
     }
 
     private Time findTime(Long timeId) {
