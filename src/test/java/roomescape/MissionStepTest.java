@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -88,6 +89,39 @@ public class MissionStepTest {
                 .statusCode(200);
     }
 
+    @Test
+    void admin_apis_require_admin_authentication() {
+        String memberToken = createToken("brown@email.com", "password");
+        List<AdminApiRequest> adminApiRequests = List.of(
+                new AdminApiRequest("DELETE", "/reservations/1", null),
+                new AdminApiRequest("POST", "/themes", Map.of("name", "theme", "description", "description")),
+                new AdminApiRequest("DELETE", "/themes/1", null),
+                new AdminApiRequest("POST", "/times", Map.of("value", "23:00")),
+                new AdminApiRequest("DELETE", "/times/1", null)
+        );
+
+        for (AdminApiRequest request : adminApiRequests) {
+            assertUnauthorized(request, null);
+            assertUnauthorized(request, memberToken);
+        }
+    }
+
+    private void assertUnauthorized(AdminApiRequest request, String token) {
+        var requestSpecification = RestAssured.given()
+                .contentType(ContentType.JSON);
+        if (request.body() != null) {
+            requestSpecification.body(request.body());
+        }
+        if (token != null) {
+            requestSpecification.cookie("token", token);
+        }
+
+        requestSpecification
+                .request(request.method(), request.path())
+                .then()
+                .statusCode(401);
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);
@@ -102,5 +136,8 @@ public class MissionStepTest {
                 .extract();
 
         return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+    }
+
+    private record AdminApiRequest(String method, String path, Object body) {
     }
 }
