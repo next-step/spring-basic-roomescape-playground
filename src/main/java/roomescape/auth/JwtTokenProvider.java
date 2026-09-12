@@ -13,8 +13,6 @@ public class JwtTokenProvider {
     public String createToken(Member member) {
         return Jwts.builder()
             .setSubject(member.getId().toString())
-            .claim("name", member.getName())
-            .claim("role", member.getRole())
             .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
             .compact();
     }
