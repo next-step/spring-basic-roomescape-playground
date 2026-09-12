@@ -35,12 +35,13 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        if (reservationRequest.getName() == null) {
-            if (loginMember == null) {
-                throw new AuthorizationException("쿠키에 토큰이 없습니다.");
-            }
-            reservationRequest = reservationRequest.withName(loginMember.name());
+        if (loginMember == null) {
+            throw new AuthorizationException("쿠키에 토큰이 없습니다.");
         }
+
+        if (!loginMember.role().equals("ADMIN") || reservationRequest.getName() == null) {
+                reservationRequest = reservationRequest.withName(loginMember.name());
+            }
 
         ReservationResponse reservation = reservationService.save(reservationRequest);
 
