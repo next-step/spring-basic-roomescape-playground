@@ -16,7 +16,7 @@ public class MemberService {
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
+        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
@@ -30,7 +30,7 @@ public class MemberService {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
-                .claim("role", member.getRole())
+                .claim("role", member.getRole().name())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.LoginMember;
+import roomescape.member.Role;
 
 import java.net.URI;
 import java.util.List;
@@ -34,7 +35,7 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        if (!loginMember.role().equals("ADMIN") || reservationRequest.getName() == null) {
+        if (loginMember.role() != Role.ADMIN || reservationRequest.getName() == null) {
                 reservationRequest = reservationRequest.withName(loginMember.name());
             }
 

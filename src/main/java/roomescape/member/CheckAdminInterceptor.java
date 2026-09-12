@@ -21,7 +21,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
         }
 
         Member member = memberService.findMemberByToken(token);
-        if (member == null || !member.getRole().equals("ADMIN")) {
+        if (member == null || member.getRole() != Role.ADMIN) {
             response.setStatus(401);
             return false;
         }
