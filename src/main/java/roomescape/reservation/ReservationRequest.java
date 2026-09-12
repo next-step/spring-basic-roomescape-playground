@@ -6,6 +6,15 @@ public class ReservationRequest {
     private Long theme;
     private Long time;
 
+    public ReservationRequest() {}
+
+    public ReservationRequest(String name, String data, Long theme, Long time) {
+        this.name = name;
+        this.date = data;
+        this.theme = theme;
+        this.time = time;
+    }
+
     public String getName() {
         return name;
     }

@@ -40,6 +40,19 @@ public class MemberDao {
         );
     }
 
+    public Member findById(long id) {
+        return jdbcTemplate.queryForObject( // sql문을 실행한 후 결과를 객체로 반환
+                "SELECT id, name, email, role FROM member WHERE id = ?",
+                (rs, rowNum) -> new Member( // rs = resultSet, SQL문의 실행 결과 | rowNum = 현재 몇 번째 행인지
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                ),
+                id
+        );
+    }
+
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
