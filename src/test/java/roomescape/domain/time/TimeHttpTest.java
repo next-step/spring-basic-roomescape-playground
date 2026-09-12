@@ -30,12 +30,14 @@ public class TimeHttpTest {
     @Test
     void 시간_생성에_성공한다() {
         // given
+        String token = createToken("admin@email.com", "password");
         Map<String, String> params = new HashMap<>();
         params.put("value", "11:00");
 
         // when & then
         RestAssured.given()
                 .body(params)
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().post("/times")
                 .then()
@@ -47,13 +49,15 @@ public class TimeHttpTest {
 
     @Test
     void 시간은_value가_빈_채로_생성할_수_없다() {
-
-        // value == null
+        // given
+        String token = createToken("admin@email.com", "password");
         Map<String, String> params = new HashMap<>();
         params.put("value", null);
 
+        // when & then
         RestAssured.given()
                 .body(params)
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().post("/times")
                 .then()
@@ -73,8 +77,12 @@ public class TimeHttpTest {
 
     @Test
     void 시간_삭제에_성공한다() {
+        // given
+        String token = createToken("admin@email.com", "password");
+
         // when
         RestAssured.given()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().delete("/times/1")
                 .then()
@@ -90,6 +98,20 @@ public class TimeHttpTest {
     }
 
     @Test
+    void 일반_유저는_시간을_삭제할_수_없다() {
+        // given
+        String token = createToken("brown@email.com", "password");
+
+        // when & then
+        RestAssured.given()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().delete("/times/1")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
     void 예약_가능_시간_조회에_성공한다() {
         // given
         String date = LocalDate.now().plusDays(1).toString();
@@ -102,5 +124,19 @@ public class TimeHttpTest {
                 .statusCode(HttpStatus.OK.value())
                 .body("size()", is(6))
                 .body("time", hasItems("10:00", "20:00"));
+    }
+
+    private String createToken(String email, String password) {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
+
+        return RestAssured.given()
+                .body(params)
+                .contentType(ContentType.JSON)
+                .when().post("/login")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract().cookie("token");
     }
 }

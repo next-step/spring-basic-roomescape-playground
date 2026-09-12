@@ -32,11 +32,13 @@ public class ThemeHttpTest {
     @Test
     void 테마_생성에_성공한다() {
         // given
+        String token = createToken("admin@email.com", "password");
         Map<String, String> params = themeParams(name, description);
 
         // when & then
         RestAssured.given()
                 .body(params)
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().post("/themes")
                 .then()
@@ -48,29 +50,49 @@ public class ThemeHttpTest {
     }
 
     @Test
+    void 일반_유저는_테마를_생성할_수_없다() {
+        // given
+        String token = createToken("brown@email.com", "password");
+        Map<String, String> params = themeParams(name, description);
+
+        // when & then
+        RestAssured.given()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().post("/themes")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
     void 테마는_name이_빈_채로_생성할_수_없다() {
+        // given
+        String token = createToken("admin@email.com", "password");
 
         // name == null
-        postThemeExpectingBadRequest(themeParams(null, description));
+        postThemeExpectingBadRequest(token, themeParams(null, description));
 
         // name == ""
-        postThemeExpectingBadRequest(themeParams("", description));
+        postThemeExpectingBadRequest(token, themeParams("", description));
 
         // name == " "
-        postThemeExpectingBadRequest(themeParams(" ", description));
+        postThemeExpectingBadRequest(token, themeParams(" ", description));
     }
 
     @Test
     void 테마는_description이_빈_채로_생성할_수_없다() {
+        // given
+        String token = createToken("admin@email.com", "password");
 
         // description == null
-        postThemeExpectingBadRequest(themeParams(name, null));
+        postThemeExpectingBadRequest(token, themeParams(name, null));
 
         // description == ""
-        postThemeExpectingBadRequest(themeParams(name, ""));
+        postThemeExpectingBadRequest(token, themeParams(name, ""));
 
         // description == " "
-        postThemeExpectingBadRequest(themeParams(name, " "));
+        postThemeExpectingBadRequest(token, themeParams(name, " "));
     }
 
     @Test
@@ -86,8 +108,12 @@ public class ThemeHttpTest {
 
     @Test
     void 테마_삭제에_성공한다() {
+        // given
+        String token = createToken("admin@email.com", "password");
+
         // when
         RestAssured.given()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().delete("/themes/1")
                 .then()
@@ -109,12 +135,27 @@ public class ThemeHttpTest {
         return params;
     }
 
-    private void postThemeExpectingBadRequest(Map<String, String> params) {
+    private void postThemeExpectingBadRequest(String token, Map<String, String> params) {
         RestAssured.given()
                 .body(params)
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().post("/themes")
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private String createToken(String email, String password) {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
+
+        return RestAssured.given()
+                .body(params)
+                .contentType(ContentType.JSON)
+                .when().post("/login")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract().cookie("token");
     }
 }

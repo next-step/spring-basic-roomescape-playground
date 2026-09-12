@@ -148,8 +148,12 @@ public class ReservationHttpTest {
 
     @Test
     void 예약_삭제에_성공한다() {
+        // given
+        String token = createToken("admin@email.com", "password");
+
         // when
         RestAssured.given()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().delete("/reservations/1")
                 .then()
@@ -162,6 +166,15 @@ public class ReservationHttpTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("size()", is(2));
+    }
+
+    @Test
+    void 로그인_없이_예약을_삭제할_수_없다() {
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().delete("/reservations/1")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
     private Map<String, Object> reservationParams(String name) {
