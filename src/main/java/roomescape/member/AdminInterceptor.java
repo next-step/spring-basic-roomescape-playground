@@ -29,9 +29,15 @@ public class AdminInterceptor implements HandlerInterceptor {
         // 2) 위 토큰으로 Member를 조회한다
         Member memberByToken = memberService.findMemberByToken(token);
 
-        // 3) ADMIN이 아니면 차단한다
-        if (!"ADMIN".equals(memberByToken.getRole())) {
+        // 3-1) 로그인 상태인지 검사한다
+        if (memberByToken == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+
+        // 3-2) ADMIN이 아니면(관리자 권한 없음) 차단한다
+        if (!"ADMIN".equals(memberByToken.getRole())) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
 

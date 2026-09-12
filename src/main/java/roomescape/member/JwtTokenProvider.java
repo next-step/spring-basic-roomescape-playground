@@ -1,8 +1,12 @@
 package roomescape.member;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import roomescape.exception.UnauthorizedException;
+
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
@@ -10,19 +14,30 @@ public class JwtTokenProvider {
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
     public String createToken(Member member) {
-        return Jwts.builder() // JWT 조립 도구를 불러오기
+        // 1) 만료기한 설정을 위해 현재 시간/만료 시간을 계산
+        Date now = new Date();
+        Date validaity = new Date(now.getTime() + 1800000);
+
+        return Jwts.builder()
                 .setSubject(member.getId().toString())
+                .setIssuedAt(now) // 2) 발급 시간 설정
+                .setExpiration(validaity) // 만료 기한(30분) 설정
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes())) // 비밀 키를 해시 알고리즘 형태로 바꿔 서명(위조 방지 목적)
-                .compact(); // 위의 설정한 정보들을 긴 문자열로 변환해 완성
+                .compact();
     }
 
     // 토큰을 해독해 사용자의 ID 꺼내기
+    // 추가) 토큰 만료 시 UnauthorizrdException 예외를 던진다
     public Long getMemberId(String token) {
-        return Long.valueOf(Jwts.parserBuilder() // 토큰 해석 도구 불러오기
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes())) // 이 비밀 키로 서명된 정상적인 토큰인지 검사
-                .build()
-                .parseClaimsJws(token) // 해독한 데이터 보따리(Claims)를 가져옴
-                .getBody().getSubject()); // 위에서 setSubject로 저장했던 member.getId()문자열을 다시 꺼낸다
+        try {
+            return Long.valueOf(Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody().getSubject());
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new UnauthorizedException("유효하지 않거나 만료된 토큰입니다.");
+        }
     }
 
 }
