@@ -17,6 +17,11 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        // GET 요청(조회)은 사용자도 호출 가능
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // 1) 요청에서 쿠키를 꺼내 토큰을 추출한다
         Cookie[] cookies = request.getCookies();
         String token = extractToken(cookies);
