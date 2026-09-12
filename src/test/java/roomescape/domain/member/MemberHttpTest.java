@@ -201,6 +201,71 @@ public class MemberHttpTest {
         assertThat(tokenCookie.getMaxAge()).isEqualTo(0);
     }
 
+    @Test
+    void 중복된_email로_회원가입하면_409를_반환한다() {
+        // given
+        RestAssured.given()
+                .body(signupParams(name, email, password))
+                .contentType(ContentType.JSON)
+                .when().post("/members")
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
+
+        // when & then
+        RestAssured.given()
+                .body(signupParams("Bob", email, password))
+                .contentType(ContentType.JSON)
+                .when().post("/members")
+                .then()
+                .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    void 잘못된_비밀번호로_로그인하면_401을_반환한다() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("email", "admin@email.com");
+        params.put("password", "wrong-password");
+
+        // when & then
+        RestAssured.given()
+                .body(params)
+                .contentType(ContentType.JSON)
+                .when().post("/login")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void 로그인하지_않고_사용자_이름을_조회하면_401을_반환한다() {
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().get("/login/check")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void 로그아웃하면_기존_세션으로_사용자_이름을_조회할_수_없다() {
+        // given
+        String token = createToken("admin@email.com", "password");
+
+        RestAssured.given()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().post("/logout")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+
+        // when & then
+        RestAssured.given()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().get("/login/check")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
     private Map<String, String> signupParams(String name, String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);

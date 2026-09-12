@@ -51,6 +51,32 @@ public class PageHttpTest {
     }
 
     @Test
+    void ADMIN은_admin_하위_페이지에_접근할_수_있다() {
+        // given
+        String adminToken = createToken("admin@email.com", "password");
+
+        // when & then
+        RestAssured.given()
+                .cookie("token", adminToken)
+                .when().get("/admin/theme")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    void USER는_admin_하위_페이지에_접근할_수_없다() {
+        // given
+        String userToken = createToken("brown@email.com", "password");
+
+        // when & then
+        RestAssured.given()
+                .cookie("token", userToken)
+                .when().get("/admin/reservation")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
     void 토큰_없이_admin_페이지에_접근할_수_없다() {
         RestAssured.given()
                 .when().get("/admin")
