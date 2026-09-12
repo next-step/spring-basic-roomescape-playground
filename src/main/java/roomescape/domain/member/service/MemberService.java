@@ -2,12 +2,9 @@ package roomescape.domain.member.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.auth.principal.LoginMember;
 import roomescape.domain.member.entity.Member;
-import roomescape.domain.member.repository.MemberDao;
 import roomescape.domain.member.repository.MemberRepository;
 import roomescape.global.exception.ConflictException;
-import roomescape.global.exception.NotFoundException;
 
 import java.util.Map;
 

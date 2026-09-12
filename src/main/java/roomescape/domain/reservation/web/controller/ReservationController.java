@@ -1,18 +1,16 @@
 package roomescape.domain.reservation.web.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.auth.principal.LoginMember;
-import roomescape.domain.auth.service.AuthService;
 import roomescape.domain.auth.web.support.Login;
+import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.service.ReservationService;
 import roomescape.domain.reservation.web.dto.ReservationRequest;
 import roomescape.domain.reservation.web.dto.ReservationResponse;
-import roomescape.domain.reservation.service.ReservationService;
-import roomescape.domain.reservation.entity.Reservation;
 import roomescape.global.exception.ForbiddenException;
 
 import java.net.URI;

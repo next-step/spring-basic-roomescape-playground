@@ -3,7 +3,6 @@ package roomescape.domain.theme.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.entity.Theme;
-import roomescape.domain.theme.repository.ThemeDao;
 import roomescape.domain.theme.repository.ThemeRepository;
 
 import java.util.List;

@@ -3,7 +3,6 @@ package roomescape.domain.auth.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.auth.principal.LoginMember;
 import roomescape.domain.auth.repository.AuthRepository;
-import roomescape.domain.member.repository.MemberDao;
 
 @Service
 public class AuthService {

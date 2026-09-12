@@ -5,11 +5,11 @@ import jakarta.validation.constraints.FutureOrPresent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.time.web.dto.TimeRequest;
-import roomescape.domain.time.web.dto.TimeResponse;
-import roomescape.domain.time.service.TimeService;
 import roomescape.domain.time.entity.AvailableTime;
 import roomescape.domain.time.entity.Time;
+import roomescape.domain.time.service.TimeService;
+import roomescape.domain.time.web.dto.TimeRequest;
+import roomescape.domain.time.web.dto.TimeResponse;
 
 import java.net.URI;
 import java.time.LocalDate;
