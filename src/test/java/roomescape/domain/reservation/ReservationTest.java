@@ -2,8 +2,9 @@ package roomescape.domain.reservation;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.theme.Theme;
-import roomescape.domain.time.Time;
+import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.time.entity.Time;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

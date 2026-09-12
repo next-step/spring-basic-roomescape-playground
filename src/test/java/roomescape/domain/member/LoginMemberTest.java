@@ -2,6 +2,7 @@ package roomescape.domain.member;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.member.entity.LoginMember;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

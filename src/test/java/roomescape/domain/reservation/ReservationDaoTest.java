@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.domain.reservation.entity.Reservation;
+import roomescape.domain.reservation.repository.ReservationDao;
 
 import java.time.LocalDate;
 import java.util.List;

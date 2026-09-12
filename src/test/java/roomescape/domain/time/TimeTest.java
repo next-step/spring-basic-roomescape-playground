@@ -2,6 +2,7 @@ package roomescape.domain.time;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.time.entity.Time;
 
 import java.time.LocalTime;
 

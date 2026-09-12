@@ -7,7 +7,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.reservation.ReservationResponse;
+import roomescape.domain.reservation.web.dto.ReservationResponse;
 
 import java.time.LocalDate;
 import java.util.HashMap;

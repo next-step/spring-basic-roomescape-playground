@@ -2,6 +2,7 @@ package roomescape.domain.theme;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.theme.entity.Theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

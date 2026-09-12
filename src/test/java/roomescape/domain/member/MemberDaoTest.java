@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.domain.member.entity.LoginMember;
+import roomescape.domain.member.entity.Member;
+import roomescape.domain.member.repository.MemberDao;
 
 import java.util.Optional;
 
