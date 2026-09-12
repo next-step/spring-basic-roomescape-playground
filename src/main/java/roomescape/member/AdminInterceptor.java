@@ -19,7 +19,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         String token = TokenExtractor.extract(request.getCookies());
         Member member = memberService.findByToken(token);
 
-        if (!"ADMIN".equals(member.getRole())) {
+        if (member.getRole() != Role.ADMIN) {
             throw new BusinessException(ErrorCode.NOT_ADMIN);
         }
         return true;
