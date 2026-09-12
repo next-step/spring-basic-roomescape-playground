@@ -20,21 +20,21 @@ public class MemberDao {
             ps.setString(1, member.getName());
             ps.setString(2, member.getEmail());
             ps.setString(3, member.getPassword());
-            ps.setString(4, member.getRole());
+            ps.setString(4, member.getRole().name());
             return ps;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
+        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), Role.USER);
     }
 
     public Member findByEmailAndPassword(String email, String password) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
                 (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    Role.valueOf(rs.getString("role"))
                 ),
                 email, password
         );
@@ -44,12 +44,25 @@ public class MemberDao {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
                 (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    Role.valueOf(rs.getString("role"))
                 ),
                 name
+        );
+    }
+
+    public Member findById(Long id) {
+        return jdbcTemplate.queryForObject(
+            "SELECT id, name, email, role FROM member WHERE id = ?",
+            (rs, rowNum) -> new Member(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                Role.valueOf(rs.getString("role"))
+            ),
+            id
         );
     }
 }
