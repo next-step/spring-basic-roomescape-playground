@@ -48,7 +48,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("JSESSIONID",token)
+                .cookie("token",token)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
@@ -68,7 +68,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
-                .cookie("JSESSIONID",token)
+                .cookie("token",token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
                 .then().log().all()
@@ -81,7 +81,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
                 .body(params)
-                .cookie("JSESSIONID",token)
+                .cookie("token",token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
                 .then().log().all()
@@ -96,7 +96,7 @@ public class MissionStepTest {
         String brownToken = createToken("brown@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("JSESSIONID",brownToken)
+                .cookie("token",brownToken)
                 .get("/admin")
                 .then().log().all()
                 .statusCode(403);
@@ -104,7 +104,7 @@ public class MissionStepTest {
         String adminToken = createToken("admin@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("JSESSIONID",adminToken)
+                .cookie("token",adminToken)
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);

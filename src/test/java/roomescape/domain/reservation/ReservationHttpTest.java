@@ -36,7 +36,7 @@ public class ReservationHttpTest {
         // when & then
         RestAssured.given()
                 .body(params)
-                .cookie("JSESSIONID", token)
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().post("/reservations")
                 .then()
@@ -57,7 +57,7 @@ public class ReservationHttpTest {
         // when & then
         RestAssured.given()
                 .body(params)
-                .cookie("JSESSIONID", token)
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().post("/reservations")
                 .then()
@@ -73,7 +73,7 @@ public class ReservationHttpTest {
         // when & then
         RestAssured.given()
                 .body(params)
-                .cookie("JSESSIONID",token)
+                .cookie("token",token)
                 .contentType(ContentType.JSON)
                 .when().post("/reservations")
                 .then()
@@ -193,6 +193,6 @@ public class ReservationHttpTest {
                 .when().post("/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .extract().cookie("JSESSIONID");
+                .extract().cookie("token");
     }
 }
