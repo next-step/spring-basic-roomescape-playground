@@ -4,8 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.reservation.web.dto.ReservationResponse;
 
@@ -15,9 +17,17 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    void setup() {
+        RestAssured.port = this.port;
+    }
 
     @Test
     void 일단계() {
@@ -38,7 +48,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .cookie("token", token)
+                .cookie("JSESSIONID",token)
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(200)
@@ -58,7 +68,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .body(params)
-                .cookie("token", token)
+                .cookie("JSESSIONID",token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
                 .then().log().all()
@@ -71,7 +81,7 @@ public class MissionStepTest {
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
                 .body(params)
-                .cookie("token", token)
+                .cookie("JSESSIONID",token)
                 .contentType(ContentType.JSON)
                 .post("/reservations")
                 .then().log().all()
@@ -86,15 +96,15 @@ public class MissionStepTest {
         String brownToken = createToken("brown@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("token", brownToken)
+                .cookie("JSESSIONID",brownToken)
                 .get("/admin")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
 
         String adminToken = createToken("admin@email.com", "password");
 
         RestAssured.given().log().all()
-                .cookie("token", adminToken)
+                .cookie("JSESSIONID",adminToken)
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);

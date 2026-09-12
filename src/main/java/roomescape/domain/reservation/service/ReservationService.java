@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.repository.ReservationDao;
+import roomescape.domain.reservation.repository.ReservationRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,23 +12,23 @@ import java.util.List;
 @Service
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
     public Reservation save(String name, LocalDate date, Long themeId, Long timeId) {
-        return reservationDao.save(name, date, themeId, timeId);
+        return reservationRepository.save(name, date, themeId, timeId);
     }
 
     @Transactional
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<Reservation> findAll() {
-        return reservationDao.findAll();
+        return reservationRepository.findAll();
     }
 }

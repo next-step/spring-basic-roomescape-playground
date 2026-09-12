@@ -4,31 +4,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeDao;
+import roomescape.domain.theme.repository.ThemeRepository;
 
 import java.util.List;
 
 @Service
 public class ThemeService {
 
-    private final ThemeDao themeDao;
+    private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public ThemeService(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
     @Transactional
     public Theme saveTheme(String name, String description) {
         Theme theme = new Theme(name, description);
 
-        return themeDao.save(theme);
+        return themeRepository.save(theme);
     }
 
     public List<Theme> findAllTheme() {
-        return themeDao.findAll();
+        return themeRepository.findAll();
     }
 
     @Transactional
     public void deleteTheme(Long id) {
-        themeDao.deleteById(id);
+        themeRepository.deleteById(id);
     }
 }

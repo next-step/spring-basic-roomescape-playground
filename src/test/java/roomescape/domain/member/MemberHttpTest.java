@@ -110,7 +110,7 @@ public class MemberHttpTest {
                 .when().post("/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .extract().cookie("token");
+                .extract().cookie("JSESSIONID");
 
         // then
         assertThat(token).isNotBlank();
@@ -165,7 +165,7 @@ public class MemberHttpTest {
                 .when().post("/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .extract().cookie("token");
+                .extract().cookie("JSESSIONID");
 
         // then
         assertThat(token).isNotBlank();
@@ -178,7 +178,7 @@ public class MemberHttpTest {
 
         // when & then
         RestAssured.given()
-                .cookie("token", token)
+                .cookie("JSESSIONID",token)
                 .contentType(ContentType.JSON)
                 .when().get("/login/check")
                 .then()
@@ -194,7 +194,7 @@ public class MemberHttpTest {
                 .when().post("/logout")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .extract().detailedCookie("token");
+                .extract().detailedCookie("JSESSIONID");
 
         // then
         assertThat(tokenCookie.getValue()).isEmpty();
@@ -229,6 +229,6 @@ public class MemberHttpTest {
                 .when().post("/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .extract().cookie("token");
+                .extract().cookie("JSESSIONID");
     }
 }

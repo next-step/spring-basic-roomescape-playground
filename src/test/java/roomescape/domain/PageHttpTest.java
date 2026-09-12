@@ -31,7 +31,7 @@ public class PageHttpTest {
 
         // when & then
         RestAssured.given()
-                .cookie("token", adminToken)
+                .cookie("JSESSIONID",adminToken)
                 .when().get("/admin")
                 .then()
                 .statusCode(HttpStatus.OK.value());
@@ -44,10 +44,10 @@ public class PageHttpTest {
 
         // when & then
         RestAssured.given()
-                .cookie("token", userToken)
+                .cookie("JSESSIONID",userToken)
                 .when().get("/admin")
                 .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -93,6 +93,6 @@ public class PageHttpTest {
                 .when().post("/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .extract().cookie("token");
+                .extract().cookie("JSESSIONID");
     }
 }

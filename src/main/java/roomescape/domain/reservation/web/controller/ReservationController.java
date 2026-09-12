@@ -6,12 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.member.service.AuthService;
+import roomescape.domain.auth.principal.LoginMember;
+import roomescape.domain.auth.service.AuthService;
+import roomescape.domain.auth.web.support.Login;
 import roomescape.domain.reservation.web.dto.ReservationRequest;
 import roomescape.domain.reservation.web.dto.ReservationResponse;
 import roomescape.domain.reservation.service.ReservationService;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.global.auth.jwt.CookieTokenExtractor;
+import roomescape.global.exception.ForbiddenException;
 
 import java.net.URI;
 import java.util.List;
@@ -22,11 +24,9 @@ public class ReservationController {
     private final Logger log =  LoggerFactory.getLogger(ReservationController.class);
 
     private final ReservationService reservationService;
-    private final AuthService authService;
 
-    public ReservationController(ReservationService reservationService, AuthService authService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
-        this.authService = authService;
     }
 
     @GetMapping("/reservations")
@@ -37,21 +37,17 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(
             @Valid @RequestBody ReservationRequest reservationRequest,
-            HttpServletRequest httpServletRequest
+            @Login LoginMember loginMember
     ) {
         String username = reservationRequest.name();
+
         if (username == null || username.isBlank()) {
-            String token = CookieTokenExtractor.extract(httpServletRequest);
-            username = authService.getUsername(token);
-            log.info("username: {}", username);
+            username = loginMember.getName();
+        } else if (!loginMember.isAdmin()) {
+            throw new ForbiddenException();
         }
 
-        Reservation newReservation = reservationService.save(
-                username,
-                reservationRequest.date(),
-                reservationRequest.theme(),
-                reservationRequest.time()
-        );
+        Reservation newReservation = reservationService.save(username, reservationRequest.date(), reservationRequest.theme(), reservationRequest.time());
 
         return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId())).body(ReservationResponse.from(newReservation));
     }

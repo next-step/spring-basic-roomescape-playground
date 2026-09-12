@@ -1,6 +1,8 @@
-package roomescape.domain.member.entity;
+package roomescape.domain.auth.principal;
 
-public class LoginMember {
+import java.io.Serializable;
+
+public class LoginMember implements Serializable {
 
     private Long id;
     private String name;
@@ -29,6 +31,10 @@ public class LoginMember {
 
     public String getRole() {
         return role;
+    }
+
+    public boolean isAdmin() {
+        return this.role != null && this.role.equals("ADMIN");
     }
 
     private void validateFields(Long id, String name, String email, String role) {

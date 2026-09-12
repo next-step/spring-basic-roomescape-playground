@@ -30,11 +30,13 @@ public class ReservationHttpTest {
     @Test
     void 예약_생성에_성공한다() {
         // given
+        String token = createToken("admin@email.com", "password");
         Map<String, Object> params = reservationParams("Alice");
 
         // when & then
         RestAssured.given()
                 .body(params)
+                .cookie("JSESSIONID", token)
                 .contentType(ContentType.JSON)
                 .when().post("/reservations")
                 .then()
@@ -47,6 +49,22 @@ public class ReservationHttpTest {
     }
 
     @Test
+    void 일반_유저가_이름을_지정하면_403을_반환한다() {
+        // given
+        String token = createToken("brown@email.com", "password");
+        Map<String, Object> params = reservationParams("Alice");
+
+        // when & then
+        RestAssured.given()
+                .body(params)
+                .cookie("JSESSIONID", token)
+                .contentType(ContentType.JSON)
+                .when().post("/reservations")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
     void 이름이_없으면_로그인한_사용자의_이름으로_예약된다() {
         // given
         String token = createToken("admin@email.com", "password");
@@ -55,7 +73,7 @@ public class ReservationHttpTest {
         // when & then
         RestAssured.given()
                 .body(params)
-                .cookie("token", token)
+                .cookie("JSESSIONID",token)
                 .contentType(ContentType.JSON)
                 .when().post("/reservations")
                 .then()
@@ -175,6 +193,6 @@ public class ReservationHttpTest {
                 .when().post("/login")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .extract().cookie("token");
+                .extract().cookie("JSESSIONID");
     }
 }

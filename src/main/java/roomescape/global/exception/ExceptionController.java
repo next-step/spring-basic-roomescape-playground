@@ -1,4 +1,4 @@
-package roomescape.global.excpetion;
+package roomescape.global.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -32,25 +32,11 @@ public class ExceptionController {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<Void> handleBadRequestException(BadRequestException e, HandlerMethod handlerMethod) {
-        String where = handlerMethod.getBeanType().getSimpleName() + "." + handlerMethod.getMethod().getName();
-        log.info("[{}] userId:{} rejectedInputs:{} {}", where, e.getUserId(), e.getRejectedInputs(), e.getMessage());
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Void> handleNotFoundException(NotFoundException e, HandlerMethod handlerMethod) {
-        String where = handlerMethod.getBeanType().getSimpleName() + "." + handlerMethod.getMethod().getName();
-        log.info("[{}] userId:{} rejectedInputs:{} {}", where, e.getUserId(), e.getRejectedInputs(), e.getMessage());
-        return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<Void> handleUnauthorizedException(UnauthorizedException e, HandlerMethod handlerMethod) {
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<Void> handleRoomescapeException(RoomescapeException e, HandlerMethod handlerMethod) {
         String where = handlerMethod.getBeanType().getSimpleName() + "." + handlerMethod.getMethod().getName();
         log.info("[{}] {}",  where, e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(e.getHttpStatus()).build();
     }
 
     @ExceptionHandler(Exception.class)

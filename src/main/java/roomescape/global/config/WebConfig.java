@@ -4,9 +4,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.global.auth.jwt.JwtTokenProvider;
-import roomescape.global.auth.LoginMemberArgumentResolver;
-import roomescape.global.auth.RoleInterceptor;
+import roomescape.domain.auth.web.support.LoginMemberArgumentResolver;
+import roomescape.domain.auth.web.support.RoleInterceptor;
+import roomescape.domain.auth.web.support.SessionManager;
 
 import java.util.List;
 
@@ -14,15 +14,16 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private final String[] adminAllowedOrigins = {
-            "/admin"
+            "/admin",
+            "/admin/**"
     };
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final SessionManager sessionManager;
 
-    public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver,  JwtTokenProvider jwtTokenProvider) {
+    public WebConfig(LoginMemberArgumentResolver loginMemberArgumentResolver, SessionManager sessionManager) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.sessionManager = sessionManager;
     }
 
     @Override
@@ -32,7 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RoleInterceptor(jwtTokenProvider, "ADMIN"))
+        registry.addInterceptor(new RoleInterceptor("ADMIN", sessionManager))
                 .addPathPatterns(adminAllowedOrigins);
     }
 }

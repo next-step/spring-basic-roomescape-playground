@@ -11,13 +11,14 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public class TimeDao {
+public class TimeDao implements TimeRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public TimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<Time> findAll() {
         return jdbcTemplate.query(
                 "SELECT * FROM time WHERE deleted = false",
@@ -26,6 +27,7 @@ public class TimeDao {
                         rs.getObject("time_value", LocalTime.class)));
     }
 
+    @Override
     public Time save(Time time) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         this.jdbcTemplate.update(connection -> {
@@ -37,6 +39,7 @@ public class TimeDao {
         return new Time(keyHolder.getKey().longValue(), time.getValue());
     }
 
+    @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("UPDATE time SET deleted = true WHERE id = ?", id);
     }

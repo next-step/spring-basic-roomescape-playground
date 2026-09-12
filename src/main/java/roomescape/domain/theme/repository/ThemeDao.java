@@ -9,13 +9,14 @@ import roomescape.domain.theme.entity.Theme;
 import java.util.List;
 
 @Repository
-public class ThemeDao {
+public class ThemeDao implements ThemeRepository {
     private JdbcTemplate jdbcTemplate;
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<Theme> findAll() {
         return jdbcTemplate.query("SELECT * FROM theme where deleted = false", (rs, rowNum) -> new Theme(
                 rs.getLong("id"),
@@ -24,6 +25,7 @@ public class ThemeDao {
         ));
     }
 
+    @Override
     public Theme save(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -36,6 +38,7 @@ public class ThemeDao {
         return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription());
     }
 
+    @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("UPDATE theme SET deleted = true WHERE id = ?", id);
     }

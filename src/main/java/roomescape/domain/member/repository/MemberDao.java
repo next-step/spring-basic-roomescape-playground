@@ -4,19 +4,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.member.entity.LoginMember;
 import roomescape.domain.member.entity.Member;
 
-import java.util.Optional;
-
 @Repository
-public class MemberDao {
+public class MemberDao implements MemberRepository {
+
     private JdbcTemplate jdbcTemplate;
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Member save(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -31,29 +30,11 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), member.getRole());
     }
 
-    public Optional<Member> findByEmailAndPassword(String email, String password) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                email, password
-        ));
-    }
-
-    public Optional<LoginMember> findLoginMemberById(Long memberId) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(
-                "SELECT id, name, email, role FROM member WHERE id = ?",
-                (rs, rowNum) -> new LoginMember(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
-                ),
-                memberId
-        ));
+    @Override
+    public boolean existsByEmail(String email) {
+        return jdbcTemplate.queryForObject("""
+                        SELECT EXISTS(SELECT 1 FROM member where email = ?)
+                        """,
+                Boolean.class, email);
     }
 }
