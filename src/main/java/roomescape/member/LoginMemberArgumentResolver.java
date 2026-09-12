@@ -25,7 +25,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = extractTokenFromCookie(request.getCookies());
         if (token.isEmpty()) {
-            return null;
+            throw new AuthorizationException("쿠키에 토큰이 없습니다.");
         }
 
         Member member = memberService.findMemberByToken(token);
