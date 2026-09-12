@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.auth.principal.LoginMember;
+import roomescape.domain.auth.web.support.AdminOnly;
 import roomescape.domain.auth.web.support.Login;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.service.ReservationService;
@@ -50,6 +51,8 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId())).body(ReservationResponse.from(newReservation));
     }
 
+    // NOTE: ID 삭제 등 소유권이 불분명한 예약 취소이므로, 관리자만 삭제할 수 있음을 명시합니다.
+    @AdminOnly
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.deleteById(id);

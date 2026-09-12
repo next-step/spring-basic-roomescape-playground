@@ -15,7 +15,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final String[] adminAllowedOrigins = {
             "/admin",
-            "/admin/**"
+            "/admin/**",
+
     };
 
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
@@ -33,7 +34,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RoleInterceptor("ADMIN", sessionManager))
-                .addPathPatterns(adminAllowedOrigins);
+        registry.addInterceptor(new RoleInterceptor(sessionManager));
     }
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import roomescape.domain.auth.web.support.AdminOnly;
 import roomescape.domain.time.entity.AvailableTime;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.service.TimeService;
@@ -29,6 +30,7 @@ public class TimeController {
         return timeService.findAll().stream().map(TimeResponse::from).toList();
     }
 
+    @AdminOnly
     @PostMapping("/times")
     public ResponseEntity<TimeResponse> create(@Valid @RequestBody TimeRequest request) {
 
@@ -37,6 +39,7 @@ public class TimeController {
         return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(TimeResponse.from(newTime));
     }
 
+    @AdminOnly
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         timeService.deleteById(id);
