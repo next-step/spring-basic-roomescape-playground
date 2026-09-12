@@ -11,9 +11,7 @@ public class JwtTokenProvider {
 
     public String createToken(Member member) {
         return Jwts.builder() // JWT 조립 도구를 불러오기
-                .setSubject(member.getId().toString()) // 토큰을 만들 멤버의 id를 등록
-                .claim("name", member.getName()) // name, role을 토큰 내부에 Key-value 쌍으로 넣음
-                .claim("role", member.getRole())
+                .setSubject(member.getId().toString())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes())) // 비밀 키를 해시 알고리즘 형태로 바꿔 서명(위조 방지 목적)
                 .compact(); // 위의 설정한 정보들을 긴 문자열로 변환해 완성
     }
