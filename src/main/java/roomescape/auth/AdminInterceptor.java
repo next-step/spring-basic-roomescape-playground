@@ -1,22 +1,21 @@
 package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.member.Role;
 
-import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
-
-    private static final String TOKEN_COOKIE_NAME = "token";
-
     private final AuthService authService;
+    private final CookieTokenExtractor cookieTokenExtractor;
 
-    public AdminInterceptor(AuthService authService) {
+    public AdminInterceptor(AuthService authService, CookieTokenExtractor cookieTokenExtractor) {
         this.authService = authService;
+        this.cookieTokenExtractor = cookieTokenExtractor;
     }
 
     @Override
@@ -25,27 +24,16 @@ public class AdminInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) {
-        Cookie[] cookies = request.getCookies();
+        Optional<String> token = cookieTokenExtractor.extract(request);
 
-        if (cookies == null) {
+        if (token.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
 
-        String token = Arrays.stream(cookies)
-                .filter(cookie -> TOKEN_COOKIE_NAME.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
+        LoginMember loginMember = authService.findMemberByToken(token.get());
 
-        if (token == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return false;
-        }
-
-        LoginMember loginMember = authService.findMemberByToken(token);
-
-        if (!"ADMIN".equals(loginMember.role())) {
+        if (loginMember.role() != Role.ADMIN) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }

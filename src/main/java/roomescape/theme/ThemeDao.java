@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ThemeDao {
@@ -35,7 +36,19 @@ public class ThemeDao {
         return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription());
     }
 
-    public void deleteById(Long id) {
-        jdbcTemplate.update("UPDATE theme SET deleted = true WHERE id = ?", id);
+    public Optional<Theme> findById(Long id) {
+        return jdbcTemplate.query(
+                "SELECT id, name, description FROM theme WHERE id = ? AND deleted = false",
+                (resultSet, rowNumber) -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description")
+                ),
+                id
+        ).stream().findFirst();
+    }
+
+    public int deleteById(Long id) {
+        return jdbcTemplate.update("UPDATE theme SET deleted = true WHERE id = ? AND deleted = false", id);
     }
 }

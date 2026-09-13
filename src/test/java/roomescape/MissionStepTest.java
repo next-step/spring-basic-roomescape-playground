@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.ReservationResponse;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class MissionStepTest {
         String token = createToken("admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("time", "1");
         params.put("theme", "1");
 
@@ -58,6 +59,7 @@ public class MissionStepTest {
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
 
         params.put("name", "브라운");
+        params.put("time", "2");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
                 .body(params)

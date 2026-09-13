@@ -40,7 +40,7 @@ public class AuthService {
             Member member = memberDao.findById(memberId);
 
             return new LoginMember(member.getName(), member.getRole());
-        } catch (JwtException exception) {
+        } catch (JwtException | EmptyResultDataAccessException exception) {
             throw new InvalidAuthenticationException();
         }
     }

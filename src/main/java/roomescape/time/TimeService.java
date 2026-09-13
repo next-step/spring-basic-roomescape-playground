@@ -1,10 +1,14 @@
 package roomescape.time;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import roomescape.exception.DuplicateTimeException;
+import roomescape.exception.NotFoundTimeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationDao;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TimeService {
@@ -35,10 +39,30 @@ public class TimeService {
     }
 
     public Time save(Time time) {
-        return timeDao.save(time);
+        Optional<Time> existingTime = timeDao.findByValue(time.getValue());
+
+        if (existingTime.isPresent()) {
+            Time foundTime = existingTime.get();
+            int restoredCount = timeDao.restoreById(foundTime.getId());
+
+            if (restoredCount > 0) {
+                return foundTime;
+            }
+
+            throw new DuplicateTimeException("이미 등록된 시간입니다.");
+        }
+        try {
+            return timeDao.save(time);
+        } catch (DuplicateKeyException exception) {
+            throw new DuplicateTimeException("이미 등록된 시간입니다.");
+        }
     }
 
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        int deletedCount = timeDao.deleteById(id);
+
+        if (deletedCount == 0) {
+            throw new NotFoundTimeException("삭제할 시간을 찾을 수 없습니다.");
+        }
     }
 }

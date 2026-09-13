@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.LoginMember;
+import roomescape.exception.InvalidReservationException;
 
 import java.net.URI;
 import java.util.List;
@@ -31,9 +32,10 @@ public class ReservationController {
             LoginMember loginMember,
             @RequestBody ReservationRequest reservationRequest) {
         if (reservationRequest.getDate() == null
+                || reservationRequest.getDate().isBlank()
                 || reservationRequest.getTheme() == null
                 || reservationRequest.getTime() == null) {
-            return ResponseEntity.badRequest().build();
+            throw new InvalidReservationException("예약 정보를 모두 입력해야 합니다.");
         }
         ReservationResponse reservation = reservationService.save(loginMember, reservationRequest);
 

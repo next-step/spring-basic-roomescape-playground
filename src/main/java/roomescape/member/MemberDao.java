@@ -16,25 +16,25 @@ public class MemberDao {
     public Member save(Member member) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", new String[]{"id"});
-            ps.setString(1, member.getName());
-            ps.setString(2, member.getEmail());
-            ps.setString(3, member.getPassword());
-            ps.setString(4, member.getRole());
-            return ps;
+            var preparedStatement = connection.prepareStatement("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", new String[]{"id"});
+            preparedStatement.setString(1, member.getName());
+            preparedStatement.setString(2, member.getEmail());
+            preparedStatement.setString(3, member.getPassword());
+            preparedStatement.setString(4, member.getRole().name());
+            return preparedStatement;
         }, keyHolder);
 
-        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
+        return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), member.getRole());
     }
 
     public Member findByEmailAndPassword(String email, String password) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
+                (resultSet, rowNum) -> new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        Role.valueOf(resultSet.getString("role"))
                 ),
                 email, password
         );
@@ -43,11 +43,11 @@ public class MemberDao {
     public Member findByName(String name) {
         return jdbcTemplate.queryForObject(
                 "SELECT id, name, email, role FROM member WHERE name = ?",
-                (rs, rowNum) -> new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("role")
+                (resultSet, rowNum) -> new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        Role.valueOf(resultSet.getString("role"))
                 ),
                 name
         );
@@ -60,7 +60,7 @@ public class MemberDao {
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("email"),
-                        resultSet.getString("role")
+                        Role.valueOf(resultSet.getString("role"))
                 ),
                 id
         );
