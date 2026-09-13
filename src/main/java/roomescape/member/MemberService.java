@@ -29,8 +29,6 @@ public class MemberService {
         }
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole().name())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }
