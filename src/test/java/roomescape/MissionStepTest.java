@@ -119,6 +119,15 @@ public class MissionStepTest {
                     .then().log().all()
                     .statusCode(401);
         }
+
+        @Test
+        void 잘못된_토큰으로_인증_정보를_조회하면_401() {
+            RestAssured.given().log().all()
+                    .cookie("token", "invalid-token")
+                    .when().get("/login/check")
+                    .then().log().all()
+                    .statusCode(401);
+        }
     }
 
     private String createToken(String email, String password) {
