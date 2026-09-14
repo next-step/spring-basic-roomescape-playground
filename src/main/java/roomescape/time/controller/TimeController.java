@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.auth.AdminOnly;
+import roomescape.reservation.service.ReservationAvailabilityService;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.AvailableTime;
 import roomescape.time.service.TimeService;
@@ -20,9 +21,12 @@ import java.util.List;
 @RestController
 public class TimeController {
     private final TimeService timeService;
+    private final ReservationAvailabilityService reservationAvailabilityService;
 
-    public TimeController(TimeService timeService) {
+    public TimeController(TimeService timeService,
+                          ReservationAvailabilityService reservationAvailabilityService) {
         this.timeService = timeService;
+        this.reservationAvailabilityService = reservationAvailabilityService;
     }
 
     @GetMapping("/times")
@@ -51,6 +55,6 @@ public class TimeController {
     @GetMapping("/available-times")
     public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam LocalDate date,
                                                               @RequestParam Long themeId) {
-        return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
+        return ResponseEntity.ok(reservationAvailabilityService.findAvailableTimes(date, themeId));
     }
 }
