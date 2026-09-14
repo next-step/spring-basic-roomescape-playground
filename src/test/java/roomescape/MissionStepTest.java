@@ -55,7 +55,7 @@ public class MissionStepTest {
         assertThat(response.statusCode()).isEqualTo(201);
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
 
-        params.put("name", "브라운");
+        params.put("memberId", "2");
         params.put("time", "2");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()

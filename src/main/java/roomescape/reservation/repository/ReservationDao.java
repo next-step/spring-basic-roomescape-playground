@@ -17,16 +17,19 @@ import java.util.List;
 @Repository
 public class ReservationDao {
     private static final String RESERVATION_SELECT =
-            "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date AS reservation_date, " +
+            "SELECT r.id AS reservation_id, r.date AS reservation_date, " +
+                    "m.id AS member_id, m.name AS member_name, " +
                     "t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, " +
                     "ti.id AS time_id, ti.time_value AS time_value " +
                     "FROM reservation r " +
+                    "JOIN member m ON r.member_id = m.id " +
                     "JOIN theme t ON r.theme_id = t.id " +
                     "JOIN time ti ON r.time_id = ti.id ";
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
-            rs.getString("reservation_name"),
+            rs.getLong("member_id"),
+            rs.getString("member_name"),
             rs.getObject("reservation_date", LocalDate.class),
             new Time(rs.getLong("time_id"), rs.getObject("time_value", LocalTime.class)),
             new Theme(
@@ -60,11 +63,11 @@ public class ReservationDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO reservation(date, member_id, theme_id, time_id) VALUES (?, ?, ?, ?)",
                     new String[]{"id"}
             );
             ps.setObject(1, reservation.getDate());
-            ps.setString(2, reservation.getName());
+            ps.setLong(2, reservation.getMemberId());
             ps.setLong(3, reservation.getTheme().getId());
             ps.setLong(4, reservation.getTime().getId());
             return ps;
@@ -72,7 +75,8 @@ public class ReservationDao {
 
         return new Reservation(
                 keyHolder.getKey().longValue(),
-                reservation.getName(),
+                reservation.getMemberId(),
+                reservation.getMemberName(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()

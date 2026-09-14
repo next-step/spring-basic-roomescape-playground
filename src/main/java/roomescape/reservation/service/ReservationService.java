@@ -4,7 +4,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import roomescape.member.auth.AuthorizationException;
 import roomescape.member.domain.LoginMember;
 import roomescape.member.domain.Member;
@@ -45,7 +44,13 @@ public class ReservationService {
         Member member = findReservationMember(reservationRequest, loginMember);
         Time time = findTime(reservationRequest.timeId());
         Theme theme = findTheme(reservationRequest.themeId());
-        Reservation reservation = new Reservation(member.getName(), reservationRequest.date(), time, theme);
+        Reservation reservation = new Reservation(
+                member.getId(),
+                member.getName(),
+                reservationRequest.date(),
+                time,
+                theme
+        );
 
         try {
             return toResponse(reservationDao.save(reservation));
@@ -79,13 +84,13 @@ public class ReservationService {
 
     private Member findReservationMember(ReservationRequest reservationRequest, LoginMember loginMember) {
         if (isReservationForAnotherMember(reservationRequest, loginMember)) {
-            return memberService.findByName(reservationRequest.name());
+            return memberService.findById(reservationRequest.memberId());
         }
         return memberService.findById(loginMember.id());
     }
 
     private boolean isReservationForAnotherMember(ReservationRequest reservationRequest, LoginMember loginMember) {
-        return loginMember.isAdmin() && StringUtils.hasText(reservationRequest.name());
+        return loginMember.isAdmin() && reservationRequest.memberId() != null;
     }
 
     private Time findTime(Long timeId) {
@@ -107,7 +112,7 @@ public class ReservationService {
     private ReservationResponse toResponse(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getMemberName(),
                 reservation.getTheme().getName(),
                 reservation.getDate(),
                 reservation.getTime().getValue()

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 
 public record ReservationRequest(
-        String name,
+        Long memberId,
         LocalDate date,
         @JsonProperty("theme") Long themeId,
         @JsonProperty("time") Long timeId

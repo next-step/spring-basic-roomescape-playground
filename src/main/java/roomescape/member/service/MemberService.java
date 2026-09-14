@@ -69,7 +69,4 @@ public class MemberService {
         return memberDao.findById(id);
     }
 
-    public Member findByName(String name) {
-        return memberDao.findByName(name);
-    }
 }

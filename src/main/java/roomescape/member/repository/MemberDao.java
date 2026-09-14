@@ -59,11 +59,4 @@ public class MemberDao {
         );
     }
 
-    public Member findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, name, email, password, role FROM member WHERE name = ?",
-                MEMBER_ROW_MAPPER,
-                name
-        );
-    }
 }

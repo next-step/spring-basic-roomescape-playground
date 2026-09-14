@@ -7,29 +7,35 @@ import java.time.LocalDate;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Long memberId;
+    private final String memberName;
     private final LocalDate date;
     private final Time time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
+    public Reservation(Long id, Long memberId, String memberName, LocalDate date, Time time, Theme theme) {
         this.id = id;
-        this.name = name;
+        this.memberId = memberId;
+        this.memberName = memberName;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, Time time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(Long memberId, String memberName, LocalDate date, Time time, Theme theme) {
+        this(null, memberId, memberName, date, time, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public String getMemberName() {
+        return memberName;
     }
 
     public LocalDate getDate() {
