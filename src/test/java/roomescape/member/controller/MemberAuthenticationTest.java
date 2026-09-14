@@ -17,6 +17,7 @@ class MemberAuthenticationTest {
     void admin_apis_require_admin_authentication() {
         String memberToken = createToken("brown@email.com", "password");
         List<AdminApiRequest> adminApiRequests = List.of(
+                new AdminApiRequest("GET", "/reservations", null),
                 new AdminApiRequest("DELETE", "/reservations/1", null),
                 new AdminApiRequest("POST", "/themes", Map.of("name", "theme", "description", "description")),
                 new AdminApiRequest("DELETE", "/themes/1", null),

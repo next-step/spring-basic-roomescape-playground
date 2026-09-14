@@ -26,6 +26,7 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
+    @AdminOnly
     public List<ReservationResponse> list() {
         return reservationService.findAll();
     }

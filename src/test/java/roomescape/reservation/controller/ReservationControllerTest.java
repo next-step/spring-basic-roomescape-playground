@@ -26,7 +26,9 @@ class ReservationControllerTest {
                 .then()
                 .statusCode(204);
 
-        ExtractableResponse<Response> response = RestAssured.get("/reservations")
+        ExtractableResponse<Response> response = RestAssured.given()
+                .cookie("token", token)
+                .get("/reservations")
                 .then()
                 .statusCode(200)
                 .extract();
