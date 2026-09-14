@@ -108,6 +108,14 @@ public class PageHttpTest {
                 .statusCode(HttpStatus.OK.value());
     }
 
+    @Test
+    void 내_예약_페이지에_접근할_수_있다() {
+        RestAssured.given()
+                .when().get("/reservation-mine")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);

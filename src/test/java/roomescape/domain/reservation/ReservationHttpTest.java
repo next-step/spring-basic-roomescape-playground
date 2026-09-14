@@ -98,52 +98,83 @@ public class ReservationHttpTest {
     @Test
     void 예약은_date가_빈_채로_생성할_수_없다() {
         // given
+        String token = createToken("admin@email.com", "password");
         Map<String, Object> params = reservationParams("Alice");
         params.put("date", null);
 
         // when & then
-        postReservationExpectingBadRequest(params);
+        postReservationExpectingBadRequest(token, params);
     }
 
     @Test
     void 예약은_과거_날짜로_생성할_수_없다() {
         // given
+        String token = createToken("admin@email.com", "password");
         Map<String, Object> params = reservationParams("Alice");
         params.put("date", LocalDate.now().minusDays(1).toString());
 
         // when & then
-        postReservationExpectingBadRequest(params);
+        postReservationExpectingBadRequest(token, params);
     }
 
     @Test
     void 예약은_time이_빈_채로_생성할_수_없다() {
         // given
+        String token = createToken("admin@email.com", "password");
         Map<String, Object> params = reservationParams("Alice");
         params.put("time", null);
 
         // when & then
-        postReservationExpectingBadRequest(params);
+        postReservationExpectingBadRequest(token, params);
     }
 
     @Test
     void 예약은_theme이_빈_채로_생성할_수_없다() {
         // given
+        String token = createToken("admin@email.com", "password");
         Map<String, Object> params = reservationParams("Alice");
         params.put("theme", null);
 
         // when & then
-        postReservationExpectingBadRequest(params);
+        postReservationExpectingBadRequest(token, params);
     }
 
     @Test
     void 예약_목록_조회에_성공한다() {
-        // schema.sql 시드 예약 3건
+        // given
+        String token = createToken("admin@email.com", "password");
+
+        // when & then: schema.sql 시드 예약 3건
         RestAssured.given()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().get("/reservations")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("size()", is(3));
+    }
+
+    @Test
+    void 로그인_없이_예약_목록을_조회하면_401을_반환한다() {
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void 일반_유저가_예약_목록을_조회하면_403을_반환한다() {
+        // given
+        String token = createToken("brown@email.com", "password");
+
+        // when & then
+        RestAssured.given()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().get("/reservations")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -161,6 +192,7 @@ public class ReservationHttpTest {
 
         // then
         RestAssured.given()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().get("/reservations")
                 .then()
@@ -186,9 +218,10 @@ public class ReservationHttpTest {
         return params;
     }
 
-    private void postReservationExpectingBadRequest(Map<String, Object> params) {
+    private void postReservationExpectingBadRequest(String token, Map<String, Object> params) {
         RestAssured.given()
                 .body(params)
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().post("/reservations")
                 .then()
