@@ -13,12 +13,6 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final String[] adminAllowedOrigins = {
-            "/admin",
-            "/admin/**",
-
-    };
-
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
     private final SessionManager sessionManager;
 
