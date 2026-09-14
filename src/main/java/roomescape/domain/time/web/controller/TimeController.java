@@ -5,7 +5,8 @@ import jakarta.validation.constraints.FutureOrPresent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.auth.web.support.AdminOnly;
+import roomescape.domain.auth.web.support.annotation.AdminOnly;
+import roomescape.domain.auth.web.support.annotation.Public;
 import roomescape.domain.time.entity.AvailableTime;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.service.TimeService;
@@ -25,6 +26,7 @@ public class TimeController {
         this.timeService = timeService;
     }
 
+    @Public
     @GetMapping("/times")
     public List<TimeResponse> list() {
         return timeService.findAll().stream().map(TimeResponse::from).toList();
@@ -46,6 +48,7 @@ public class TimeController {
         return ResponseEntity.noContent().build();
     }
 
+    @Public
     @GetMapping("/available-times")
     public ResponseEntity<List<AvailableTime>> availableTimes(
             @RequestParam @FutureOrPresent(message = "날짜는 과거일 수 없습니다.") LocalDate date,

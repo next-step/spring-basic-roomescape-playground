@@ -12,8 +12,10 @@ import roomescape.domain.auth.principal.LoginMember;
 import roomescape.domain.auth.service.AuthService;
 import roomescape.domain.auth.web.dto.AuthRequest;
 import roomescape.domain.auth.web.dto.UsernameResponse;
-import roomescape.domain.auth.web.support.Login;
 import roomescape.domain.auth.web.support.SessionManager;
+import roomescape.domain.auth.web.support.annotation.Login;
+import roomescape.domain.auth.web.support.annotation.LoginRequired;
+import roomescape.domain.auth.web.support.annotation.Public;
 
 @RestController
 public class AuthController {
@@ -26,6 +28,7 @@ public class AuthController {
         this.sessionManager = sessionManager;
     }
 
+    @Public
     @PostMapping("/login")
     public ResponseEntity<Void> login(
             @Valid @RequestBody AuthRequest request,
@@ -39,6 +42,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @LoginRequired
     @GetMapping("/login/check")
     public UsernameResponse getName(
             @Login LoginMember member
@@ -46,6 +50,7 @@ public class AuthController {
         return new UsernameResponse(member.getName());
     }
 
+    @Public
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
 

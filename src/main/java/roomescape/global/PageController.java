@@ -2,7 +2,8 @@ package roomescape.global;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import roomescape.domain.auth.web.support.AdminOnly;
+import roomescape.domain.auth.web.support.annotation.AdminOnly;
+import roomescape.domain.auth.web.support.annotation.Public;
 
 @Controller
 public class PageController {
@@ -31,21 +32,25 @@ public class PageController {
         return "admin/time";
     }
 
+    @Public
     @GetMapping("/")
     public String reservation() {
         return "reservation";
     }
 
+    @Public
     @GetMapping("/reservation-mine")
     public String myReservation() {
         return "reservation-mine";
     }
 
+    @Public
     @GetMapping("/login")
     public String login() {
         return "login";
     }
 
+    @Public
     @GetMapping("/signup")
     public String signup() {
         return "signup";

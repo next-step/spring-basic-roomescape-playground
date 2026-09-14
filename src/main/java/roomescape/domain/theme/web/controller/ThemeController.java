@@ -3,7 +3,8 @@ package roomescape.domain.theme.web.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.auth.web.support.AdminOnly;
+import roomescape.domain.auth.web.support.annotation.AdminOnly;
+import roomescape.domain.auth.web.support.annotation.Public;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.service.ThemeService;
 import roomescape.domain.theme.web.dto.ThemeRequest;
@@ -28,6 +29,7 @@ public class ThemeController {
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(ThemeResponse.from(newTheme));
     }
 
+    @Public
     @GetMapping("/themes")
     public List<ThemeResponse> list() {
         return themeService.findAllTheme().stream().map(ThemeResponse::from).toList();

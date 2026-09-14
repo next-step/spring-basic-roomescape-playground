@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.auth.web.support.annotation.Public;
 import roomescape.domain.member.entity.Member;
 import roomescape.domain.member.service.MemberService;
 import roomescape.domain.member.web.dto.MemberRequest;
@@ -24,6 +25,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @Public
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> createMember(@Valid @RequestBody MemberRequest memberRequest) {
 

@@ -6,8 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.auth.principal.LoginMember;
-import roomescape.domain.auth.web.support.AdminOnly;
-import roomescape.domain.auth.web.support.Login;
+import roomescape.domain.auth.web.support.annotation.AdminOnly;
+import roomescape.domain.auth.web.support.annotation.Login;
+import roomescape.domain.auth.web.support.annotation.LoginRequired;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.service.ReservationService;
 import roomescape.domain.reservation.web.dto.ReservationRequest;
@@ -28,11 +29,13 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @AdminOnly
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
         return reservationService.findAll().stream().map(ReservationResponse::from).toList();
     }
 
+    @LoginRequired
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> create(
             @Valid @RequestBody ReservationRequest reservationRequest,
