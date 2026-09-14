@@ -5,13 +5,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import roomescape.member.session.MemberSessionStore;
 import org.springframework.stereotype.Component;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.member.Member;
 import roomescape.member.MemberService;
 import roomescape.member.exception.MemberErrorCode;
 import roomescape.member.exception.MemberException;
-import roomescape.member.annotation.AdminOnly;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
@@ -33,10 +31,6 @@ public class AdminInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) {
-        if (!requiresAdmin(handler)) {
-            return true;
-        }
-
         HttpSession session = request.getSession(false);
         if (session == null) {
             throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
@@ -55,11 +49,4 @@ public class AdminInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private boolean requiresAdmin(Object handler) {
-        if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return false;
-        }
-
-        return handlerMethod.hasMethodAnnotation(AdminOnly.class);
-    }
 }

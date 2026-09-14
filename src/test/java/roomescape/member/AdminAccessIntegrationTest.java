@@ -18,7 +18,7 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
     private JdbcTemplate jdbcTemplate;
 
     @ParameterizedTest
-    @ValueSource(strings = {"/times", "/themes"})
+    @ValueSource(strings = {"/manager/times", "/manager/themes"})
     void 일반_회원은_관리자_API로_생성하거나_삭제할_수_없다(String path) {
         // given
         String token = login("brown@email.com");
@@ -36,7 +36,7 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/times", "/themes"})
+    @ValueSource(strings = {"/manager/times", "/manager/themes"})
     void 미로그인_사용자는_관리자_API로_생성하거나_삭제할_수_없다(String path) {
         // when & then
         RestAssured.given().contentType("application/json").body(createRequest(path))
@@ -50,7 +50,7 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/times", "/themes"})
+    @ValueSource(strings = {"/manager/times", "/manager/themes"})
     void 관리자는_API로_생성하고_삭제할_수_있다(String path) {
         // given
         String token = login("admin@email.com");
@@ -64,7 +64,7 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
             RestAssured.given().cookie("token", token)
                     .when().delete(path + "/" + id).then().statusCode(204);
         } finally {
-            if (path.equals("/times")) {
+            if (path.equals("/manager/times")) {
                 jdbcTemplate.update("delete from time where id = ?", id);
             } else {
                 jdbcTemplate.update("delete from theme where id = ?", id);
@@ -79,9 +79,8 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
         RestAssured.given().when().get(path)
                 .then().statusCode(200).contentType("application/json");
     }
-
     private Map<String, String> createRequest(String path) {
-        if (path.equals("/times")) {
+        if (path.equals("/manager/times")) {
             return Map.of("value", "23:40");
         }
         return Map.of("name", "권한검증테마", "description", "관리자 API 테스트");
@@ -89,7 +88,7 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
 
 
     @ParameterizedTest
-    @ValueSource(strings = {"/admin", "/admin/reservation", "/admin/theme", "/admin/time"})
+    @ValueSource(strings = {"/manager", "/manager/reservation", "/manager/theme", "/manager/time"})
     void 관리자_권한이_있으면_어드민_페이지와_HTML을_반환한다(String path) {
         // given
         String token = login("admin@email.com");
@@ -103,7 +102,7 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/admin", "/admin/reservation", "/admin/theme", "/admin/time"})
+    @ValueSource(strings = {"/manager", "/manager/reservation", "/manager/theme", "/manager/time"})
     void 관리자_권한이_없으면_어드민_페이지_접근_시_401을_반환한다(String path) {
         // given
         String token = login("brown@email.com");
@@ -118,7 +117,7 @@ class AdminAccessIntegrationTest extends IntegrationTestSupport {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/admin", "/admin/reservation", "/admin/theme", "/admin/time"})
+    @ValueSource(strings = {"/manager", "/manager/reservation", "/manager/theme", "/manager/time"})
     void 로그인하지_않으면_어드민_페이지_접근_시_401을_반환한다(String path) {
         // when & then
         RestAssured.given()
