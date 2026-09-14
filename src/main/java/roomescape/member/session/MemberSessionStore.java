@@ -2,16 +2,17 @@ package roomescape.member.session;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
+import roomescape.member.LoginMember;
 
 @Component
 public class MemberSessionStore {
-    private static final String MEMBER_ID = "memberId";
+    private static final String LOGIN_MEMBER = "loginMember";
 
-    public void saveMemberId(HttpSession session, Long memberId) {
-        session.setAttribute(MEMBER_ID, memberId);
+    public void saveLoginMember(HttpSession session, LoginMember loginMember) {
+        session.setAttribute(LOGIN_MEMBER, loginMember);
     }
 
-    public Long getMemberId(HttpSession session) {
-        return (Long) session.getAttribute(MEMBER_ID);
+    public LoginMember getLoginMember(HttpSession session) {
+        return (LoginMember) session.getAttribute(LOGIN_MEMBER);
     }
 }

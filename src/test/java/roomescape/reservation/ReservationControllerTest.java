@@ -12,8 +12,7 @@ import org.springframework.context.annotation.Import;
 import roomescape.member.session.MemberSessionStore;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
+import roomescape.member.LoginMember;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +36,6 @@ class ReservationControllerTest {
 
     @MockBean
     private ReservationService reservationService;
-
-    @MockBean
-    private MemberService memberService;
 
     @Test
     void 예약_생성_요청과_로그인_회원_ID를_서비스에_전달한다() throws Exception {
@@ -76,7 +72,7 @@ class ReservationControllerTest {
         Map<String, Object> request = createReservationRequest();
         request.put(field, null);
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("memberId", 1L);
+        session.setAttribute("loginMember", new LoginMember(1L, "어드민", "ADMIN"));
 
         // when & then
         mockMvc.perform(post("/reservations").session(session)
@@ -90,8 +86,7 @@ class ReservationControllerTest {
 
     private MockHttpSession loginSession() {
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("memberId", 1L);
-        given(memberService.getMember(1L)).willReturn(new Member(1L, "어드민", "admin@email.com", "ADMIN"));
+        session.setAttribute("loginMember", new LoginMember(1L, "어드민", "ADMIN"));
         return session;
     }
 

@@ -3,25 +3,19 @@ package roomescape.member.interceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import roomescape.member.LoginMember;
 import roomescape.member.session.MemberSessionStore;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.member.Member;
-import roomescape.member.MemberService;
 import roomescape.member.exception.MemberErrorCode;
 import roomescape.member.exception.MemberException;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final MemberService memberService;
     private final MemberSessionStore memberSessionStore;
 
-    public AdminInterceptor(
-            MemberService memberService,
-            MemberSessionStore memberSessionStore
-    ) {
-        this.memberService = memberService;
+    public AdminInterceptor(MemberSessionStore memberSessionStore) {
         this.memberSessionStore = memberSessionStore;
     }
 
@@ -36,13 +30,12 @@ public class AdminInterceptor implements HandlerInterceptor {
             throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
         }
 
-        Long memberId = memberSessionStore.getMemberId(session);
-        if (memberId == null) {
+        LoginMember loginMember = memberSessionStore.getLoginMember(session);
+        if (loginMember == null) {
             throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
         }
 
-        Member member = memberService.getMember(memberId);
-        if (!member.isAdmin()) {
+        if (!loginMember.isAdmin()) {
             throw new MemberException(MemberErrorCode.ADMIN_REQUIRED);
         }
 

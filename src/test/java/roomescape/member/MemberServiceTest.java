@@ -33,12 +33,15 @@ class MemberServiceTest {
     }
 
     @Test
-    void 로그인_정보가_일치하면_회원_ID를_반환한다() {
+    void 로그인_정보가_일치하면_회원_정보를_반환한다() {
         // when
-        Long result = memberService.login(EMAIL, PASSWORD);
+        Member result = memberService.login(EMAIL, PASSWORD);
 
         // then
-        assertThat(result).isEqualTo(memberId);
+        assertThat(result.getId()).isEqualTo(memberId);
+        assertThat(result.getName()).isEqualTo("테스터");
+        assertThat(result.getEmail()).isEqualTo(EMAIL);
+        assertThat(result.getRole()).isEqualTo("USER");
     }
 
     @Test

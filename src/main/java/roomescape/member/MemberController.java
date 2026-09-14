@@ -54,11 +54,13 @@ public class MemberController {
             @Valid @RequestBody LoginRequest loginRequest,
             HttpServletRequest request
     ) {
-        Long memberId = memberService.login(loginRequest.email(), loginRequest.password());
+        Member member = memberService.login(loginRequest.email(), loginRequest.password());
+
+        LoginMember loginMember = LoginMember.from(member);
 
         HttpSession session = request.getSession();
         request.changeSessionId();
-        memberSessionStore.saveMemberId(session, memberId);
+        memberSessionStore.saveLoginMember(session, loginMember);
 
         return ResponseEntity.ok().build();
     }

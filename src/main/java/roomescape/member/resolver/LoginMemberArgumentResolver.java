@@ -10,17 +10,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.member.LoginMember;
-import roomescape.member.MemberService;
 import roomescape.member.exception.MemberErrorCode;
 import roomescape.member.exception.MemberException;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberService memberService;
     private final MemberSessionStore memberSessionStore;
 
-    public LoginMemberArgumentResolver(MemberService memberService, MemberSessionStore memberSessionStore) {
-        this.memberService = memberService;
+    public LoginMemberArgumentResolver(MemberSessionStore memberSessionStore) {
         this.memberSessionStore = memberSessionStore;
     }
 
@@ -43,11 +40,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
         }
 
-        Long memberId = memberSessionStore.getMemberId(session);
-        if (memberId == null) {
+        LoginMember loginMember = memberSessionStore.getLoginMember(session);
+        if (loginMember == null) {
             throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
         }
 
-        return LoginMember.from(memberService.getMember(memberId));
+        return loginMember;
     }
 }

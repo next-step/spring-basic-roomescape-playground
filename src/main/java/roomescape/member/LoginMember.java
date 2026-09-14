@@ -12,4 +12,8 @@ public record LoginMember(
                 member.getRole()
         );
     }
+
+    public boolean isAdmin() {
+        return "ADMIN".equals(role);
+    }
 }

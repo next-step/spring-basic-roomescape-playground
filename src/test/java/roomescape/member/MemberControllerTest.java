@@ -38,17 +38,18 @@ class MemberControllerTest {
     private MemberService memberService;
 
     @Test
-    void 로그인_요청이_성공하면_200을_반환하고_회원_ID를_세션에_저장한다() throws Exception {
+    void 로그인_요청이_성공하면_200을_반환하고_로그인_회원_정보를_세션에_저장한다() throws Exception {
         // given
         LoginRequest request = new LoginRequest(EMAIL, PASSWORD);
-        given(memberService.login(request.email(), request.password())).willReturn(1L);
+        Member member = new Member(1L, "어드민", EMAIL, "ADMIN");
+        given(memberService.login(EMAIL, PASSWORD)).willReturn(member);
 
         // when & then
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(request().sessionAttribute("memberId", 1L));
+                .andExpect(request().sessionAttribute("loginMember", new LoginMember(1L, "어드민", "ADMIN")));
 
         then(memberService).should().login(request.email(), request.password());
     }
@@ -103,18 +104,17 @@ class MemberControllerTest {
     }
 
     @Test
-    void 로그인_회원_조회_시_이름만_반환한다() throws Exception {
+    void 세션의_회원_이름을_서비스_호출_없이_반환한다() throws Exception {
         // given
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("memberId", 1L);
-        given(memberService.getMember(1L)).willReturn(new Member(1L, "어드민", EMAIL, "ADMIN"));
+        session.setAttribute("loginMember", new LoginMember(1L, "어드민", "ADMIN"));
 
         // when & then
         mockMvc.perform(get("/login/check").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json("{\"name\":\"어드민\"}", true));
-        then(memberService).should().getMember(1L);
+        then(memberService).shouldHaveNoInteractions();
     }
 
     @Test
@@ -128,7 +128,7 @@ class MemberControllerTest {
     }
 
     @Test
-    void 세션에_회원_ID가_없으면_로그인_필요_오류를_반환한다() throws Exception {
+    void 세션에_로그인_회원_정보가_없으면_로그인_필요_오류를_반환한다() throws Exception {
         // given
         MockHttpSession session = new MockHttpSession();
 
