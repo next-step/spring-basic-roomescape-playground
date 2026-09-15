@@ -37,7 +37,7 @@ class AdminInterceptorTest {
     }
 
     @Test
-    void 일반_유저_권한이면_401_상태코드를_반환하고_요청을_차단한다() {
+    void 일반_유저_권한이면_403_상태코드를_반환하고_요청을_차단한다() {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setCookies(new Cookie("token", "userToken"));
@@ -51,7 +51,7 @@ class AdminInterceptorTest {
 
         // then
         assertThat(result).isFalse();
-        assertThat(response.getStatus()).isEqualTo(MockHttpServletResponse.SC_UNAUTHORIZED);
+        assertThat(response.getStatus()).isEqualTo(MockHttpServletResponse.SC_FORBIDDEN);
     }
 
     @Test

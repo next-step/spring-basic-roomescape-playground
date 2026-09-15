@@ -15,9 +15,6 @@ import static org.hamcrest.Matchers.startsWith;
 
 @DatabaseTest
 class MemberControllerTest {
-
-
-
     // 1. POST /members (성공)
     @Test
     void 회원을_정상적으로_생성한다() {
