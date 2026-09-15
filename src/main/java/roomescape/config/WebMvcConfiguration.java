@@ -7,28 +7,28 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.member.CheckAdminInterceptor;
 import roomescape.member.LoginMemberArgumentResolver;
 import roomescape.member.MemberService;
-import roomescape.TokenUtil;
+import roomescape.CookieUtil;
 
 import java.util.List;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private MemberService memberService;
-    private TokenUtil tokenUtil;
+    private CookieUtil cookieUtil;
 
-    public WebMvcConfiguration(MemberService memberService, TokenUtil tokenUtil) {
+    public WebMvcConfiguration(MemberService memberService, CookieUtil cookieUtil) {
         this.memberService = memberService;
-        this.tokenUtil = tokenUtil;
+        this.cookieUtil = cookieUtil;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(memberService, tokenUtil));
+        resolvers.add(new LoginMemberArgumentResolver(memberService, cookieUtil));
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new CheckAdminInterceptor(memberService, tokenUtil))
+        registry.addInterceptor(new CheckAdminInterceptor(memberService, cookieUtil))
                 .addPathPatterns("/admin/**");
     }
 }

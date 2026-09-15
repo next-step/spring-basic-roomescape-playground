@@ -1,21 +1,23 @@
 package roomescape.member;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.CookieUtil;
 
 import java.net.URI;
 
 @RestController
 public class MemberController {
     private MemberService memberService;
+    private CookieUtil cookieUtil;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, CookieUtil cookieUtil) {
         this.memberService = memberService;
+        this.cookieUtil = cookieUtil;
     }
 
     @PostMapping("/members")
@@ -26,23 +28,14 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", "");
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        response.addCookie(cookieUtil.expireCookie());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         String token = memberService.login(loginRequest);
-
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
+        response.addCookie(cookieUtil.createCookie(token));
         return ResponseEntity.ok().build();
     }
 

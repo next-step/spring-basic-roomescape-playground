@@ -3,20 +3,20 @@ package roomescape.member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.TokenUtil;
+import roomescape.CookieUtil;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
     private final MemberService memberService;
-    private final TokenUtil tokenUtil;
+    private final CookieUtil cookieUtil;
 
-    public CheckAdminInterceptor(MemberService memberService, TokenUtil tokenUtil) {
+    public CheckAdminInterceptor(MemberService memberService, CookieUtil cookieUtil) {
         this.memberService = memberService;
-        this.tokenUtil = tokenUtil;
+        this.cookieUtil = cookieUtil;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = tokenUtil.extractToken(request);
+        String token = cookieUtil.extractToken(request);
         if (token.isEmpty()) {
             response.setStatus(401);
             return false;

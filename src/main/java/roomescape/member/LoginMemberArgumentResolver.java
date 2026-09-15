@@ -6,15 +6,15 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.TokenUtil;
+import roomescape.CookieUtil;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final MemberService memberService;
-    private final TokenUtil tokenUtil;
+    private final CookieUtil cookieUtil;
 
-    public LoginMemberArgumentResolver(MemberService memberService, TokenUtil tokenUtil) {
+    public LoginMemberArgumentResolver(MemberService memberService, CookieUtil cookieUtil) {
         this.memberService = memberService;
-        this.tokenUtil = tokenUtil;
+        this.cookieUtil = cookieUtil;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = tokenUtil.extractToken(request);
+        String token = cookieUtil.extractToken(request);
         if (token.isEmpty()) {
             throw new AuthorizationException("쿠키에 토큰이 없습니다.");
         }
