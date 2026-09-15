@@ -5,6 +5,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public class MemberDao {
     private JdbcTemplate jdbcTemplate;
@@ -27,8 +30,8 @@ public class MemberDao {
         return new Member(keyHolder.getKey().longValue(), member.getName(), member.getEmail(), "USER");
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
-        return jdbcTemplate.queryForObject(
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        List<Member> members = jdbcTemplate.query(
                 "SELECT id, name, email, role FROM member WHERE email = ? AND password = ?",
                 (rs, rowNum) -> new Member(
                         rs.getLong("id"),
@@ -38,6 +41,8 @@ public class MemberDao {
                 ),
                 email, password
         );
+
+        return members.stream().findFirst();
     }
 
     public Member findByName(String name) {
@@ -50,6 +55,19 @@ public class MemberDao {
                         rs.getString("role")
                 ),
                 name
+        );
+    }
+
+    public Member findById(Long id) {
+        return jdbcTemplate.queryForObject(
+                "SELECT id, name, email, role FROM member WHERE id = ?",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                ),
+                id
         );
     }
 }
