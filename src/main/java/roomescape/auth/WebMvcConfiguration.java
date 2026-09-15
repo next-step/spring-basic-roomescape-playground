@@ -10,20 +10,20 @@ import java.util.List;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final LoginMemberResolver loginMemberResolver;
 
-    public WebMvcConfiguration(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public WebMvcConfiguration(LoginMemberResolver loginMemberResolver) {
+        this.loginMemberResolver = loginMemberResolver;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(jwtTokenProvider));
+        resolvers.add(new LoginMemberArgumentResolver(loginMemberResolver));
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AdminAuthInterceptor(jwtTokenProvider))
+        registry.addInterceptor(new AdminAuthInterceptor(loginMemberResolver))
                 .addPathPatterns("/admin/**");
     }
 }

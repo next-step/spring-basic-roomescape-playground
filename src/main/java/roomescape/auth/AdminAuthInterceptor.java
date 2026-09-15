@@ -6,15 +6,15 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 public class AdminAuthInterceptor implements HandlerInterceptor {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final LoginMemberResolver loginMemberResolver;
 
-    public AdminAuthInterceptor(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public AdminAuthInterceptor(LoginMemberResolver loginMemberResolver) {
+        this.loginMemberResolver = loginMemberResolver;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        LoginMember loginMember = jwtTokenProvider.resolveLoginMember(request);
+        LoginMember loginMember = loginMemberResolver.resolve(request);
 
         if (loginMember == null || !loginMember.getRole().equals("ADMIN")) {
             response.setStatus(401);

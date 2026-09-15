@@ -9,10 +9,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final LoginMemberResolver loginMemberResolver;
 
-    public LoginMemberArgumentResolver(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public LoginMemberArgumentResolver(LoginMemberResolver loginMemberResolver) {
+        this.loginMemberResolver = loginMemberResolver;
     }
 
     @Override
@@ -24,6 +24,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                    NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        return jwtTokenProvider.resolveLoginMember(request);
+        return loginMemberResolver.resolve(request);
     }
 }
