@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.exception.InvalidTimeException;
 
 import java.net.URI;
 import java.util.List;
 
 @RestController
 public class TimeController {
+    private static final int MAX_TIME_LENGTH = 20;
     private TimeService timeService;
 
     public TimeController(TimeService timeService) {
@@ -27,8 +29,10 @@ public class TimeController {
 
     @PostMapping("/times")
     public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
-            throw new RuntimeException();
+        if (time.getValue() == null
+                || time.getValue().isBlank()
+                || time.getValue().length() > MAX_TIME_LENGTH) {
+            throw new InvalidTimeException("시간을 올바르게 입력해야 합니다.");
         }
 
         Time newTime = timeService.save(time);
