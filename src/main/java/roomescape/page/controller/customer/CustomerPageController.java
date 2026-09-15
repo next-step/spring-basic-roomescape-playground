@@ -1,30 +1,10 @@
-package roomescape;
+package roomescape.page.controller.customer;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class PageController {
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin/index";
-    }
-
-    @GetMapping("/admin/reservation")
-    public String adminReservation() {
-        return "admin/reservation";
-    }
-
-    @GetMapping("/admin/theme")
-    public String adminTheme() {
-        return "admin/theme";
-    }
-
-    @GetMapping("/admin/time")
-    public String adminTime() {
-        return "admin/time";
-    }
-
+public class CustomerPageController {
     @GetMapping("/")
     public String reservation() {
         return "reservation";

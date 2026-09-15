@@ -56,8 +56,8 @@ function login() {
   const password = document.getElementById('password').value;
 
   // 입력 필드 검증
-  if (!email || !password) {
-    alert('Please fill in all fields.');
+  if (!email.trim() || !password.trim()) {
+    alert('이메일과 비밀번호를 모두 입력해 주세요.');
     return; // 필수 입력 필드가 비어있으면 여기서 함수 실행을 중단
   }
 
@@ -71,10 +71,10 @@ function login() {
       password: password
     })
   })
-      .then(response => {
-        if (200 === !response.status) {
-          alert('Login failed'); // 로그인 실패 시 경고창 표시
-          throw new Error('Login failed');
+      .then(async response => {
+        if (!response.ok) {
+          const error = await response.json().catch(() => null);
+          throw new Error(error?.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해 주세요.');
         }
       })
       .then(() => {
@@ -82,6 +82,7 @@ function login() {
         window.location.href = '/';
       })
       .catch(error => {
+        alert(error.message);
         console.error('Error during login:', error);
       });
 }
