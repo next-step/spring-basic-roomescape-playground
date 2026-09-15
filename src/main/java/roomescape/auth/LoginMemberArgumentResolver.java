@@ -24,6 +24,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                    NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        return loginMemberResolver.resolve(request);
+        LoginMember loginMember = loginMemberResolver.resolve(request);
+
+        if (loginMember == null) {
+            throw new AuthenticationException();
+        }
+
+        return loginMember;
     }
 }
