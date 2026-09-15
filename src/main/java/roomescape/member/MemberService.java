@@ -19,9 +19,9 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
-    public String login(LoginRequest request) {
+    public String login(String email, String password) {
         try {
-            Member member = memberDao.findByEmailAndPassword(request.getEmail(), request.getPassword());
+            Member member = memberDao.findByEmailAndPassword(email, password);
             return jwtTokenProvider.createToken(member);
         } catch (EmptyResultDataAccessException e) {
             throw new AuthenticationException("이메일 또는 비밀번호가 일치하지 않습니다.");

@@ -28,7 +28,7 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        String token = memberService.login(request);
+        String token = memberService.login(request.getEmail(), request.getPassword());
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true); // js에서 쿠키에 접근하지 못하도록 막는다(토큰 보호)
         cookie.setPath("/");

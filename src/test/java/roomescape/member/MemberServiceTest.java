@@ -48,14 +48,15 @@ class MemberServiceTest {
     @Test
     void 이메일과_비밀번호가_일치하면_토큰을_발급한다() {
         // given
-        LoginRequest request = new LoginRequest("admin@email.com", "password");
-        Member member = new Member(1L, "어드민", "admin@email.com", "ADMIN");
+        String email = "admin@email.com";
+        String password = "password";
+        Member member = new Member(1L, "어드민", email, "ADMIN");
 
-        given(memberDao.findByEmailAndPassword("admin@email.com", "password")).willReturn(member);
+        given(memberDao.findByEmailAndPassword(email, password)).willReturn(member);
         given(jwtTokenProvider.createToken(member)).willReturn("mocked-jwt-token");
 
-        // when
-        String token = memberService.login(request);
+        // when (LoginRequest 객체 대신 email, password 직접 전달)
+        String token = memberService.login(email, password);
 
         // then
         assertThat(token).isEqualTo("mocked-jwt-token");
@@ -64,12 +65,13 @@ class MemberServiceTest {
     @Test
     void 로그인_정보가_일치하지_않으면_AuthenticationException이_발생한다() {
         // given
-        LoginRequest request = new LoginRequest("wrong@email.com", "wrong-password");
+        String wrongEmail = "wrong@email.com";
+        String wrongPassword = "wrong-password";
         given(memberDao.findByEmailAndPassword(anyString(), anyString()))
                 .willThrow(new EmptyResultDataAccessException(1));
 
-        // when & then
-        assertThatThrownBy(() -> memberService.login(request))
+        // when & then (LoginRequest 객체 대신 wrongEmail, wrongPassword 직접 전달)
+        assertThatThrownBy(() -> memberService.login(wrongEmail, wrongPassword))
                 .isInstanceOf(AuthenticationException.class)
                 .hasMessage("이메일 또는 비밀번호가 일치하지 않습니다.");
     }
