@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     NO_TOKEN(HttpStatus.UNAUTHORIZED, "로그인 토큰이 없습니다."),
-    NOT_ADMIN(HttpStatus.UNAUTHORIZED, "관리자 권한이 필요합니다."),
+    NOT_ADMIN(HttpStatus.FORBIDDEN, "관리자 권한이 필요합니다."),
     BLANK_TIME(HttpStatus.BAD_REQUEST, "시간 값은 필수입니다."),
     BLANK_RESERVATION(HttpStatus.BAD_REQUEST, "날짜, 테마, 시간은 필수입니다.");
 

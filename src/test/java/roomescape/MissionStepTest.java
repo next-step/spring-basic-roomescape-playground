@@ -115,7 +115,7 @@ public class MissionStepTest {
     }
 
     @Test
-    @DisplayName("어드민 권한이 없으면 어드민 페이지 접근 시 401을 응답한다")
+    @DisplayName("어드민 권한이 없으면 어드민 페이지 접근 시 403을 응답한다")
     void test_어드민_권한이_없으면_어드민_페이지_접근_차단() {
         String brownToken = createToken("brown@email.com", "password");
 
@@ -123,7 +123,7 @@ public class MissionStepTest {
                 .cookie("token", brownToken)
                 .when().get("/admin")
                 .then().log().all()
-                .statusCode(401);
+                .statusCode(403);
     }
 
     @Test
