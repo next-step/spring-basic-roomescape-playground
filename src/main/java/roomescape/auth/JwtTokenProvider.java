@@ -3,16 +3,15 @@ package roomescape.auth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
-import roomescape.member.Member;
 
 @Component
 public class JwtTokenProvider {
 
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
 
-    public String createToken(Member member) {
+    public String createToken(Long memberId) {
         return Jwts.builder()
-            .setSubject(member.getId().toString())
+            .setSubject(memberId.toString())
             .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
             .compact();
     }

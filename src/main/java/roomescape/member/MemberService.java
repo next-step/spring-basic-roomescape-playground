@@ -20,7 +20,7 @@ public class MemberService {
 
     public String login(LoginRequest loginRequest) {
         Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
-        return jwtTokenProvider.createToken(member);
+        return jwtTokenProvider.createToken(member.getId());
     }
 
     public Member findByToken(String token) {
