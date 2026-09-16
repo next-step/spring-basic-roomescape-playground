@@ -46,3 +46,84 @@ assertThat(checkResponse.body().jsonPath().getString("name"))
         .isEqualTo("어드민");
     }
 }
+
+private String createToken(String email, String password) {
+    return RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(Map.of(
+                    "email", email,
+                    "password", password
+            ))
+            .when().post("/login")
+            .then().log().all()
+            .statusCode(200)
+            .extract()
+            .cookie("token");
+}
+
+@Test
+void 이단계() {
+    String token = createToken("admin@email.com", "password");
+
+    Map<String, String> params = new HashMap<>();
+    params.put("date", "2024-03-01");
+    params.put("time", "1");
+    params.put("theme", "1");
+
+    ExtractableResponse<Response> response =
+            RestAssured.given().log().all()
+                    .body(params)
+                    .cookie("token", token)
+                    .contentType(ContentType.JSON)
+                    .when().post("/reservations")
+                    .then().log().all()
+                    .statusCode(201)
+                    .extract();
+
+    assertThat(response.jsonPath().getString("name"))
+            .isEqualTo("어드민");
+
+    params.put("name", "브라운");
+
+    ExtractableResponse<Response> adminResponse =
+            RestAssured.given().log().all()
+                    .body(params)
+                    .cookie("token", token)
+                    .contentType(ContentType.JSON)
+                    .when().post("/reservations")
+                    .then().log().all()
+                    .statusCode(201)
+                    .extract();
+
+    assertThat(adminResponse.jsonPath().getString("name"))
+            .isEqualTo("브라운");
+}
+
+@Test
+void 로그인_없이_예약하면_실패한다() {
+    RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(Map.of(
+                    "date", "2024-03-01",
+                    "time", "1",
+                    "theme", "1"
+            ))
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+}
+
+@Test
+void 유효하지_않은_토큰으로_예약하면_실패한다() {
+    RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .cookie("token", "invalid-token")
+            .body(Map.of(
+                    "date", "2024-03-01",
+                    "time", "1",
+                    "theme", "1"
+            ))
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+}
