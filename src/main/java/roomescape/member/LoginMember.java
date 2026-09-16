@@ -3,7 +3,7 @@ package roomescape.member;
 public record LoginMember(
         Long id,
         String name,
-        String role
+        Role role
 ) {
     public static LoginMember from(Member member) {
         return new LoginMember(

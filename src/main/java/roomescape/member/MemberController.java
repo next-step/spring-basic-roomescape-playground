@@ -48,10 +48,6 @@ public class MemberController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginCheckResponse> checkLogin(LoginMember loginMember) {
-        if (loginMember == null) {
-            throw new AuthorizationException("쿠키에 토큰이 없습니다.");
-        }
-
         return ResponseEntity.ok().body(new LoginCheckResponse(loginMember.name()));
     }
 }
