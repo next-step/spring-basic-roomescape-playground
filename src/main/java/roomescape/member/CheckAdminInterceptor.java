@@ -3,26 +3,18 @@ package roomescape.member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.CookieUtil;
+import roomescape.AuthService;
 
 public class CheckAdminInterceptor implements HandlerInterceptor {
-    private final MemberService memberService;
-    private final CookieUtil cookieUtil;
+    private final AuthService authService;
 
-    public CheckAdminInterceptor(MemberService memberService, CookieUtil cookieUtil) {
-        this.memberService = memberService;
-        this.cookieUtil = cookieUtil;
+    public CheckAdminInterceptor(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = cookieUtil.extractToken(request);
-        if (token.isEmpty()) {
-            response.setStatus(401);
-            return false;
-        }
-
-        Member member = memberService.findMemberByToken(token);
+        Member member = authService.findAuthenticatedMember(request);
         if (member.getRole() != Role.ADMIN) {
             response.setStatus(401);
             return false;
