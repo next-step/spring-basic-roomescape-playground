@@ -38,7 +38,7 @@ public class LoginService {
         }
     }
 
-    public LoginResponse checkLogin(String token) {
+    public LoginMember findLoginMember(String token) {
         if (token == null || token.isBlank()) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
@@ -47,7 +47,12 @@ public class LoginService {
             Long memberId = jwtTokenProvider.getMemberId(token);
             Member member = memberDao.findById(memberId);
 
-            return new LoginResponse(member.getName());
+            return new LoginMember(
+                    member.getId(),
+                    member.getName(),
+                    member.getEmail(),
+                    member.getRole()
+            );
         } catch (JwtException | IllegalArgumentException
                  | EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("유효하지 않은 로그인 정보입니다.");
