@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import roomescape.member.LoginMember;
 
 @RestController
 public class ReservationController {
@@ -42,5 +43,24 @@ public class ReservationController {
     public ResponseEntity delete(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reservations")
+    public ResponseEntity<ReservationResponse> create(
+            @RequestBody ReservationRequest reservationRequest,
+            LoginMember member
+    ) {
+        if (reservationRequest.getDate() == null
+                || reservationRequest.getTheme() == null
+                || reservationRequest.getTime() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ReservationResponse reservation =
+                reservationService.save(reservationRequest, member);
+
+        return ResponseEntity
+                .created(URI.create("/reservations/" + reservation.getId()))
+                .body(reservation);
     }
 }

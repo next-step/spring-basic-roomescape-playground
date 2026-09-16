@@ -43,7 +43,10 @@ public class ReservationDao {
                         )));
     }
 
-    public Reservation save(ReservationRequest reservationRequest) {
+    public Reservation save(
+            ReservationRequest reservationRequest,
+            String memberName
+    ) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(date, name, theme_id, time_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
@@ -64,7 +67,7 @@ public class ReservationDao {
 
         return new Reservation(
                 keyHolder.getKey().longValue(),
-                reservationRequest.getName(),
+                memberName,
                 reservationRequest.getDate(),
                 time,
                 theme

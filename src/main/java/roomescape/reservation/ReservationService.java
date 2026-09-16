@@ -3,20 +3,51 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import roomescape.member.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberDao;
 
-@Service
-public class ReservationService {
-    private ReservationDao reservationDao;
+private final ReservationDao reservationDao;
+private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+public ReservationService(
+        ReservationDao reservationDao,
+        MemberDao memberDao
+) {
+    this.reservationDao = reservationDao;
+    this.memberDao = memberDao;
+}
+
+public ReservationResponse save(
+        ReservationRequest reservationRequest,
+        LoginMember loginMember
+) {
+    Member member = findReservationMember(reservationRequest, loginMember);
+
+    Reservation reservation =
+            reservationDao.save(reservationRequest, member.getName());
+
+    return new ReservationResponse(
+            reservation.getId(),
+            reservation.getName(),
+            reservation.getTheme().getName(),
+            reservation.getDate(),
+            reservation.getTime().getValue()
+    );
+}
+
+private Member findReservationMember(
+        ReservationRequest reservationRequest,
+        LoginMember loginMember
+) {
+    String name = reservationRequest.getName();
+
+    if (name == null || name.isBlank()) {
+        return memberDao.findById(loginMember.getId());
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
-
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
-    }
+    return memberDao.findByName(name);
+}
 
     public void deleteById(Long id) {
         reservationDao.deleteById(id);
