@@ -1,7 +1,7 @@
 CREATE TABLE time
 (
     id         BIGINT      NOT NULL AUTO_INCREMENT,
-    time_value VARCHAR(20) NOT NULL,
+    time_value TIME        NOT NULL,
     deleted    BOOLEAN     NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id)
 );
@@ -28,11 +28,13 @@ CREATE TABLE member
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
-    date     VARCHAR(255) NOT NULL,
-    name     VARCHAR(255) NOT NULL,
-    time_id  BIGINT,
-    theme_id BIGINT,
+    date     DATE         NOT NULL,
+    member_id BIGINT      NOT NULL,
+    time_id  BIGINT       NOT NULL,
+    theme_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
+    CONSTRAINT uk_reservation_schedule UNIQUE (date, time_id, theme_id),
+    FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (time_id) REFERENCES time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
@@ -54,7 +56,7 @@ VALUES ('10:00'),
        ('18:00'),
        ('20:00');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('어드민', '2024-03-01', 1, 1),
-       ('어드민', '2024-03-01', 2, 2),
-       ('어드민', '2024-03-01', 3, 3);
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (1, '2024-03-01', 1, 1),
+       (1, '2024-03-01', 2, 2),
+       (1, '2024-03-01', 3, 3);
