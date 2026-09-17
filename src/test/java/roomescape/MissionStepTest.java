@@ -19,111 +19,152 @@ public class MissionStepTest {
 
     @Test
     void 일단계() {
-        Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
+        String token = createToken("admin@email.com", "password");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        assertThat(token).isNotBlank();
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .cookie("token", token)
+                        .when().get("/login/check")
+                        .then().log().all()
+                        .statusCode(200)
+                        .extract();
+
+        assertThat(response.jsonPath().getString("name"))
+                .isEqualTo("어드민");
+    }
+
+    @Test
+    void 이단계() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .contentType(ContentType.JSON)
+                        .cookie("token", token)
+                        .body(params)
+                        .when().post("/reservations")
+                        .then().log().all()
+                        .statusCode(201)
+                        .extract();
+
+        assertThat(response.jsonPath().getString("name"))
+                .isEqualTo("어드민");
+
+        params.put("name", "브라운");
+
+        ExtractableResponse<Response> adminResponse =
+                RestAssured.given().log().all()
+                        .contentType(ContentType.JSON)
+                        .cookie("token", token)
+                        .body(params)
+                        .when().post("/reservations")
+                        .then().log().all()
+                        .statusCode(201)
+                        .extract();
+
+        assertThat(adminResponse.jsonPath().getString("name"))
+                .isEqualTo("브라운");
+    }
+
+    @Test
+    void 로그인_없이_예약하면_실패한다() {
+        RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(Map.of(
+                        "date", "2024-03-01",
+                        "time", "1",
+                        "theme", "1"
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 유효하지_않은_토큰으로_예약하면_실패한다() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", "invalid-token")
+                .body(Map.of(
+                        "date", "2024-03-01",
+                        "time", "1",
+                        "theme", "1"
+                ))
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
+        String adminToken = createToken("admin@email.com", "password");
+
+        String[] adminPaths = {
+                "/admin",
+                "/admin/reservation",
+                "/admin/theme",
+                "/admin/time"
+        };
+
+        for (String path : adminPaths) {
+            RestAssured.given().log().all()
+                    .cookie("token", brownToken)
+                    .when().get(path)
+                    .then().log().all()
+                    .statusCode(401);
+
+            RestAssured.given().log().all()
+                    .cookie("token", adminToken)
+                    .when().get(path)
+                    .then().log().all()
+                    .statusCode(200);
+        }
+    }
+
+    @Test
+    void 로그인_없이_관리자_페이지에_접근하면_실패한다() {
+        RestAssured.given().log().all()
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    void 유효하지_않은_토큰으로_관리자_페이지에_접근하면_실패한다() {
+        RestAssured.given().log().all()
+                .cookie("token", "invalid-token")
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    void 로그인_없이_일반_페이지에_접근할_수_있다() {
+        RestAssured.given().log().all()
+                .when().get("/")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    private String createToken(String email, String password) {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "email", email,
+                        "password", password
+                ))
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .extract();
-
-        String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
-
-        assertThat(token).isNotBlank();
-        ExtractableResponse<Response> checkResponse = RestAssured.given().log().all()
-        .contentType(ContentType.JSON)
-        .cookie("token", token)
-        .when().get("/login/check")
-        .then().log().all()
-        .statusCode(200)
-        .extract();
-
-assertThat(checkResponse.body().jsonPath().getString("name"))
-        .isEqualTo("어드민");
+                .extract()
+                .cookie("token");
     }
-}
-
-private String createToken(String email, String password) {
-    return RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(Map.of(
-                    "email", email,
-                    "password", password
-            ))
-            .when().post("/login")
-            .then().log().all()
-            .statusCode(200)
-            .extract()
-            .cookie("token");
-}
-
-@Test
-void 이단계() {
-    String token = createToken("admin@email.com", "password");
-
-    Map<String, String> params = new HashMap<>();
-    params.put("date", "2024-03-01");
-    params.put("time", "1");
-    params.put("theme", "1");
-
-    ExtractableResponse<Response> response =
-            RestAssured.given().log().all()
-                    .body(params)
-                    .cookie("token", token)
-                    .contentType(ContentType.JSON)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(201)
-                    .extract();
-
-    assertThat(response.jsonPath().getString("name"))
-            .isEqualTo("어드민");
-
-    params.put("name", "브라운");
-
-    ExtractableResponse<Response> adminResponse =
-            RestAssured.given().log().all()
-                    .body(params)
-                    .cookie("token", token)
-                    .contentType(ContentType.JSON)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(201)
-                    .extract();
-
-    assertThat(adminResponse.jsonPath().getString("name"))
-            .isEqualTo("브라운");
-}
-
-@Test
-void 로그인_없이_예약하면_실패한다() {
-    RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(Map.of(
-                    "date", "2024-03-01",
-                    "time", "1",
-                    "theme", "1"
-            ))
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(400);
-}
-
-@Test
-void 유효하지_않은_토큰으로_예약하면_실패한다() {
-    RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .cookie("token", "invalid-token")
-            .body(Map.of(
-                    "date", "2024-03-01",
-                    "time", "1",
-                    "theme", "1"
-            ))
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(400);
 }
