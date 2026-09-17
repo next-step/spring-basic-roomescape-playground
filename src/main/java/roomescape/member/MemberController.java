@@ -1,7 +1,6 @@
 package roomescape.member;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
@@ -55,10 +54,9 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> getCurrentMember(HttpServletRequest request) {
-        String token = cookieTokenExtractor.extract(request.getCookies());
-        String email = jwtTokenProvider.getPayload(token);
-        MemberResponse memberResponse = memberService.findByEmail(email);
+    public ResponseEntity<MemberResponse> getCurrentMember(LoginMember loginMember) {
+        MemberResponse memberResponse = new MemberResponse(loginMember.getId(), loginMember.getName(),
+                loginMember.getEmail());
 
         return ResponseEntity.ok().body(memberResponse);
     }

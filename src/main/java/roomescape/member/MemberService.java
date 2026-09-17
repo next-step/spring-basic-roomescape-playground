@@ -25,4 +25,9 @@ public class MemberService {
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
+    public LoginMember findLoginMemberByEmail(String email) {
+        Member member = memberDao.findByEmail(email);
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+    }
+
 }
