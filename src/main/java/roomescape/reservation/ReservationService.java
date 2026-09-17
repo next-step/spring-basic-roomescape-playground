@@ -1,53 +1,61 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
-private final ReservationDao reservationDao;
-private final MemberDao memberDao;
+import java.util.List;
 
-public ReservationService(
-        ReservationDao reservationDao,
-        MemberDao memberDao
-) {
-    this.reservationDao = reservationDao;
-    this.memberDao = memberDao;
-}
+@Service
+public class ReservationService {
 
-public ReservationResponse save(
-        ReservationRequest reservationRequest,
-        LoginMember loginMember
-) {
-    Member member = findReservationMember(reservationRequest, loginMember);
+    private final ReservationDao reservationDao;
+    private final MemberDao memberDao;
 
-    Reservation reservation =
-            reservationDao.save(reservationRequest, member.getName());
-
-    return new ReservationResponse(
-            reservation.getId(),
-            reservation.getName(),
-            reservation.getTheme().getName(),
-            reservation.getDate(),
-            reservation.getTime().getValue()
-    );
-}
-
-private Member findReservationMember(
-        ReservationRequest reservationRequest,
-        LoginMember loginMember
-) {
-    String name = reservationRequest.getName();
-
-    if (name == null || name.isBlank()) {
-        return memberDao.findById(loginMember.getId());
+    public ReservationService(
+            ReservationDao reservationDao,
+            MemberDao memberDao
+    ) {
+        this.reservationDao = reservationDao;
+        this.memberDao = memberDao;
     }
 
-    return memberDao.findByName(name);
-}
+    public ReservationResponse save(
+            ReservationRequest reservationRequest,
+            LoginMember loginMember
+    ) {
+        Member member = findReservationMember(
+                reservationRequest,
+                loginMember
+        );
+
+        Reservation reservation = reservationDao.save(
+                reservationRequest,
+                member.getName()
+        );
+
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue()
+        );
+    }
+
+    private Member findReservationMember(
+            ReservationRequest reservationRequest,
+            LoginMember loginMember
+    ) {
+        String name = reservationRequest.getName();
+
+        if (name == null || name.isBlank()) {
+            return memberDao.findById(loginMember.getId());
+        }
+
+        return memberDao.findByName(name);
+    }
 
     public void deleteById(Long id) {
         reservationDao.deleteById(id);
@@ -55,7 +63,13 @@ private Member findReservationMember(
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(reservation -> new ReservationResponse(
+                        reservation.getId(),
+                        reservation.getName(),
+                        reservation.getTheme().getName(),
+                        reservation.getDate(),
+                        reservation.getTime().getValue()
+                ))
                 .toList();
     }
 }
