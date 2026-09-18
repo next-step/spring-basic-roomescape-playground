@@ -1,21 +1,50 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import roomescape.login.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberDao;
 
 import java.util.List;
 
 @Service
 public class ReservationService {
     private ReservationDao reservationDao;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao) {
+    public ReservationService(ReservationDao reservationDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
+        this.memberDao = memberDao;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        Member member;
+
+        if (reservationRequest.getName() != null) {
+            member = memberDao.findByName(reservationRequest.getName());
+        }
+
+        else {
+            member = memberDao.findById(loginMember.getId());
+        }
+
+        ReservationRequest request = new ReservationRequest(
+                member.getName(),
+                reservationRequest.getDate(),
+                reservationRequest.getTheme(),
+                reservationRequest.getTime()
+        );
+
+        Reservation reservation = reservationDao.save(request);
+
+        return new ReservationResponse(
+                reservation.getId(),
+                member.getName(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue()
+        );
     }
 
     public void deleteById(Long id) {
