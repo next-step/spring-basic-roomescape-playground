@@ -40,3 +40,14 @@
 - [x] 예약 생성에 사용할 `Member`를 `ReservationService`에 전달하도록 수정한다.
 - [x] `ReservationService.save()`가 `ReservationRequest`와 `Member`를 함께 전달받도록 수정한다.
 - [x] `ReservationService`에서 전달받은 `Member`를 `ReservationDao`에 전달하도록 수정한다.
+
+
+### `관리자 권한 검증 기능`
+
+- [x] 관리자 권한을 검증하는 `AdminInterceptor`를 생성한다.
+- [x] 요청의 Cookie에서 `token` 값을 추출한다.
+- [x] JWT 토큰에서 회원 식별자를 조회한다.
+- [x] 회원 식별자로 `Member` 정보를 조회한다.
+- [x] 조회한 회원의 `role`이 `ADMIN`인지 확인한다.
+- [x] 관리자 권한이 없는 경우 401 상태 코드를 응답한다.
+- [x] `WebMvcConfiguration`에 `AdminInterceptor`를 등록한다.
