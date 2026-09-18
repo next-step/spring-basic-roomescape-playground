@@ -1,8 +1,13 @@
 package roomescape.theme;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class Theme {
     private Long id;
+    @NotBlank
     private String name;
+    @NotNull
     private String description;
 
     public Theme() {
