@@ -17,6 +17,6 @@ public class CookieTokenExtractor {
                 }
             }
         }
-        throw new IllegalArgumentException("로그인 토큰이 없습니다.");
+        throw new InvalidTokenException("로그인 토큰이 없습니다.");
     }
 }

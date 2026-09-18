@@ -1,6 +1,8 @@
 package roomescape.member;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.auth.InvalidTokenException;
 
 @Service
 public class MemberService {
@@ -26,8 +28,12 @@ public class MemberService {
     }
 
     public LoginMember findLoginMemberByEmail(String email) {
-        Member member = memberDao.findByEmail(email);
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        try {
+            Member member = memberDao.findByEmail(email);
+            return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        } catch (EmptyResultDataAccessException e) {
+            throw new InvalidTokenException("토큰에 해당하는 회원이 없습니다.", e);
+        }
     }
 
 }
