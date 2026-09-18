@@ -24,3 +24,9 @@
 - [x] email과 password로 회원을 조회하는 기능을 사용한다.
 - [x] 회원 식별자로 회원을 조회하는 기능을 추가한다.
 
+### `로그인 리팩터링`
+
+- [x] 로그인 사용자 정보를 담는 `LoginMember`를 생성한다.
+- [x] Cookie를 이용한 로그인 사용자 조회를 `LoginMemberArgumentResolver`로 분리한다.
+- [x] `LoginMemberArgumentResolver`에서 로그인 회원 정보를 조회한다.0
+- [x] 컨트롤러 메서드에서 `LoginMember`를 주입받도록 수정한다.
