@@ -45,30 +45,9 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-
-        Long memberId = Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject());
-
-        Member member = memberDao.findById(memberId);
-
-        LoginCheckResponse response = new LoginCheckResponse(member.getName());
+    public ResponseEntity<LoginCheckResponse> checkLogin(LoginMember loginMember) {
+        LoginCheckResponse response = new LoginCheckResponse(loginMember.getName());
 
         return ResponseEntity.ok().body(response);
     }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
-    }
-
 }
