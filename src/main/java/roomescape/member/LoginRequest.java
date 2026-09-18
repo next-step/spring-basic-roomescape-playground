@@ -2,16 +2,15 @@ package roomescape.member;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class MemberRequest {
-    @NotBlank
-    private String name;
+public class LoginRequest {
     @NotBlank
     private String email;
     @NotBlank
     private String password;
 
-    public String getName() {
-        return name;
+    public LoginRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public String getEmail() {
