@@ -1,9 +1,6 @@
 package roomescape.member;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,11 +39,9 @@ public class MemberController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = memberService.extractTokenFromCookie(cookies);
-        Member member = memberService.tokenToMember(token);
-        LoginCheckResponse loginCheckRespons = new LoginCheckResponse(member.getName());
+    public ResponseEntity<LoginCheckResponse> checkLogin(LoginMember loginMember) {
+        LoginCheckResponse loginCheckRespons = new LoginCheckResponse(loginMember.getName());
+
         return ResponseEntity.ok().body(loginCheckRespons);
     }
 
