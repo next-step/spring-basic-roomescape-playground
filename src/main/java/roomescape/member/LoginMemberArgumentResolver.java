@@ -9,6 +9,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+
     private MemberService memberService;
 
     public LoginMemberArgumentResolver(MemberService memberService) {
@@ -21,12 +22,14 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest request=webRequest.getNativeRequest(HttpServletRequest.class);
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = request.getCookies();
         String token = memberService.extractTokenFromCookie(cookies);
         Member member = memberService.tokenToMember(token);
 
-        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(),
+            member.getRole());
     }
 }
