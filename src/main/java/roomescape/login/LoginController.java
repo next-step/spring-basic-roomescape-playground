@@ -35,14 +35,10 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        String token = extractTokenFromCookie(cookies);
-
-        Member member = loginService.findMemberByToken(token);
-
-        return ResponseEntity.ok(new LoginResponse(member.getName()));
+    public ResponseEntity<LoginResponse> checkLogin(LoginMember loginMember) {
+        return ResponseEntity.ok(
+                new LoginResponse(loginMember.getName())
+        );
     }
 
     @PostMapping("/logout")
@@ -54,15 +50,5 @@ public class LoginController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
     }
 }
