@@ -30,3 +30,13 @@
 - [x] Cookie를 이용한 로그인 사용자 조회를 `LoginMemberArgumentResolver`로 분리한다.
 - [x] `LoginMemberArgumentResolver`에서 로그인 회원 정보를 조회한다.0
 - [x] 컨트롤러 메서드에서 `LoginMember`를 주입받도록 수정한다.
+
+
+### `예약 생성 기능 변경`
+
+- [x] `ReservationController`의 예약 생성 메서드에서 `LoginMember`를 주입받도록 수정한다.
+- [x] 예약 요청의 `name`이 있는 경우 `MemberService`를 통해 이름으로 회원을 조회한다.
+- [x] 예약 요청의 `name`이 없는 경우 주입받은 `LoginMember`으로 회원을 조회한다.
+- [x] 예약 생성에 사용할 `Member`를 `ReservationService`에 전달하도록 수정한다.
+- [x] `ReservationService.save()`가 `ReservationRequest`와 `Member`를 함께 전달받도록 수정한다.
+- [x] `ReservationService`에서 전달받은 `Member`를 `ReservationDao`에 전달하도록 수정한다.
