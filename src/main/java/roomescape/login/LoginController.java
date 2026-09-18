@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
-
+import roomescape.member.LoginMember;
+import roomescape.member.MemberResponse;
 
 
 @RestController
@@ -33,21 +34,7 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginResponse> checkLogin(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        String name = loginService.extractName(token);
-
-        return ResponseEntity.ok(new LoginResponse(name));
-
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
+    public ResponseEntity<LoginResponse> checkLogin(LoginMember loginMember) {
+       return ResponseEntity.ok(new LoginResponse(loginMember.name()));
     }
 }

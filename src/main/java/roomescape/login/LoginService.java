@@ -1,8 +1,10 @@
 package roomescape.login;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
+import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
@@ -25,9 +27,17 @@ public class LoginService {
                 .compact();
     }
 
-    public String extractName(String token) {
-        return Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .build().parseClaimsJws(token)
-                .getBody().get("name", String.class);
+
+    public LoginMember extractLoginMember(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        Long id = Long.valueOf(claims.getSubject());
+        String name = claims.get("name", String.class);
+        String role = claims.get("role", String.class);
+
+        return new LoginMember(id, name, null, role);
     }
 }
