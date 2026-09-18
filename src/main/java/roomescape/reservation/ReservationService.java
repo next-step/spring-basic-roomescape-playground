@@ -16,7 +16,7 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
         Reservation reservation = reservationDao.save(reservationRequest, member);
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(reservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
