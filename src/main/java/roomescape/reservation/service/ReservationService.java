@@ -1,7 +1,6 @@
 package roomescape.reservation.service;
 
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.auth.AuthorizationException;
@@ -11,11 +10,11 @@ import roomescape.member.service.MemberService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.repository.ReservationDao;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeDao;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
-import roomescape.time.repository.TimeDao;
+import roomescape.time.repository.TimeRepository;
 
 import java.util.List;
 
@@ -23,19 +22,19 @@ import java.util.List;
 public class ReservationService {
     private static final String DUPLICATE_RESERVATION_MESSAGE = "이미 예약된 날짜, 테마, 시간입니다.";
 
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
     private final MemberService memberService;
-    private final ThemeDao themeDao;
-    private final TimeDao timeDao;
+    private final ThemeRepository themeRepository;
+    private final TimeRepository timeRepository;
 
-    public ReservationService(ReservationDao reservationDao,
+    public ReservationService(ReservationRepository reservationRepository,
                               MemberService memberService,
-                              ThemeDao themeDao,
-                              TimeDao timeDao) {
-        this.reservationDao = reservationDao;
+                              ThemeRepository themeRepository,
+                              TimeRepository timeRepository) {
+        this.reservationRepository = reservationRepository;
         this.memberService = memberService;
-        this.themeDao = themeDao;
-        this.timeDao = timeDao;
+        this.themeRepository = themeRepository;
+        this.timeRepository = timeRepository;
     }
 
     @Transactional
@@ -44,23 +43,17 @@ public class ReservationService {
         Member member = findReservationMember(reservationRequest, loginMember);
         Time time = findTime(reservationRequest.timeId());
         Theme theme = findTheme(reservationRequest.themeId());
-        Reservation reservation = new Reservation(
-                member.getId(),
-                member.getName(),
-                reservationRequest.date(),
-                time,
-                theme
-        );
+        Reservation reservation = new Reservation(member, reservationRequest.date(), time, theme);
 
         try {
-            return toResponse(reservationDao.save(reservation));
-        } catch (DuplicateKeyException exception) {
+            return toResponse(reservationRepository.save(reservation));
+        } catch (DataIntegrityViolationException exception) {
             throw new IllegalArgumentException(DUPLICATE_RESERVATION_MESSAGE, exception);
         }
     }
 
     private void validateDuplicateReservation(ReservationRequest reservationRequest) {
-        if (reservationDao.existsBySchedule(
+        if (reservationRepository.existsByDateAndThemeIdAndTimeId(
                 reservationRequest.date(),
                 reservationRequest.themeId(),
                 reservationRequest.timeId()
@@ -73,11 +66,11 @@ public class ReservationService {
         if (!loginMember.isAdmin()) {
             throw new AuthorizationException("예약을 삭제할 권한이 없습니다.");
         }
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(this::toResponse)
                 .toList();
     }
@@ -94,19 +87,13 @@ public class ReservationService {
     }
 
     private Time findTime(Long timeId) {
-        try {
-            return timeDao.findById(timeId);
-        } catch (EmptyResultDataAccessException exception) {
-            throw new IllegalArgumentException("예약 시간을 찾을 수 없습니다.", exception);
-        }
+        return timeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("예약 시간을 찾을 수 없습니다."));
     }
 
     private Theme findTheme(Long themeId) {
-        try {
-            return themeDao.findById(themeId);
-        } catch (EmptyResultDataAccessException exception) {
-            throw new IllegalArgumentException("예약 테마를 찾을 수 없습니다.", exception);
-        }
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("예약 테마를 찾을 수 없습니다."));
     }
 
     private ReservationResponse toResponse(Reservation reservation) {

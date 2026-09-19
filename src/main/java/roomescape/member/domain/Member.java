@@ -1,11 +1,24 @@
 package roomescape.member.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Member {
-    private final Long id;
-    private final String name;
-    private final String email;
-    private final String password;
-    private final String role;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    @Column(unique = true, nullable = false)
+    private String email;
+    private String password;
+    private String role;
+
+    protected Member() {
+    }
 
     public Member(Long id, String name, String email, String password, String role) {
         this.id = id;

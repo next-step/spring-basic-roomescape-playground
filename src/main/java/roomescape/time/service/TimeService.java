@@ -2,27 +2,27 @@ package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.time.domain.Time;
-import roomescape.time.repository.TimeDao;
+import roomescape.time.repository.TimeRepository;
 
 import java.util.List;
 
 @Service
 public class TimeService {
-    private final TimeDao timeDao;
+    private final TimeRepository timeRepository;
 
-    public TimeService(TimeDao timeDao) {
-        this.timeDao = timeDao;
+    public TimeService(TimeRepository timeRepository) {
+        this.timeRepository = timeRepository;
     }
 
     public List<Time> findAll() {
-        return timeDao.findAll();
+        return timeRepository.findAll();
     }
 
     public Time save(Time time) {
-        return timeDao.save(time);
+        return timeRepository.save(time);
     }
 
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        timeRepository.deleteById(id);
     }
 }
