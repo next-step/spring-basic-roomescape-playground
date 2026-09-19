@@ -179,7 +179,7 @@ function onWaitButtonClick() {
           return response.json();
         })
         .then(data => {
-          alert("대기 순서" + data.waitingNumber + "번째");
+          alert("예약 대기가 등록되었습니다.");
           window.location.href = "/";
         })
         .catch(error => {

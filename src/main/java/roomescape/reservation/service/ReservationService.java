@@ -16,7 +16,10 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.repository.TimeRepository;
+import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.repository.WaitingRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,15 +30,18 @@ public class ReservationService {
     private final MemberService memberService;
     private final ThemeRepository themeRepository;
     private final TimeRepository timeRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               MemberService memberService,
                               ThemeRepository themeRepository,
-                              TimeRepository timeRepository) {
+                              TimeRepository timeRepository,
+                              WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberService = memberService;
         this.themeRepository = themeRepository;
         this.timeRepository = timeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     @Transactional
@@ -76,9 +82,14 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMine(LoginMember loginMember) {
-        return reservationRepository.findByMember_IdOrderByIdAsc(loginMember.id()).stream()
+        List<MyReservationResponse> responses = new ArrayList<>(reservationRepository
+                .findByMember_IdOrderByIdAsc(loginMember.id()).stream()
                 .map(this::toMyReservationResponse)
-                .toList();
+                .toList());
+        responses.addAll(waitingRepository.findByMember_IdOrderByIdAsc(loginMember.id()).stream()
+                .map(this::toMyWaitingResponse)
+                .toList());
+        return responses;
     }
 
     private Reservation createReservation(ReservationRequest reservationRequest,
@@ -132,6 +143,16 @@ public class ReservationService {
                 reservation.getDate(),
                 reservation.getTime().getValue(),
                 "예약"
+        );
+    }
+
+    private MyReservationResponse toMyWaitingResponse(Waiting waiting) {
+        return new MyReservationResponse(
+                waiting.getId(),
+                waiting.getTheme().getName(),
+                waiting.getDate(),
+                waiting.getTime().getValue(),
+                "예약대기"
         );
     }
 }
