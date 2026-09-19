@@ -16,7 +16,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.repository.TimeRepository;
-import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.WaitingWithRank;
 import roomescape.waiting.repository.WaitingRepository;
 
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class ReservationService {
                 .findByMember_IdOrderByIdAsc(loginMember.id()).stream()
                 .map(this::toMyReservationResponse)
                 .toList());
-        responses.addAll(waitingRepository.findByMember_IdOrderByIdAsc(loginMember.id()).stream()
+        responses.addAll(waitingRepository.findWaitingsWithRankByMemberId(loginMember.id()).stream()
                 .map(this::toMyWaitingResponse)
                 .toList());
         return responses;
@@ -146,13 +146,14 @@ public class ReservationService {
         );
     }
 
-    private MyReservationResponse toMyWaitingResponse(Waiting waiting) {
+    private MyReservationResponse toMyWaitingResponse(WaitingWithRank waitingWithRank) {
+        var waiting = waitingWithRank.getWaiting();
         return new MyReservationResponse(
                 waiting.getId(),
                 waiting.getTheme().getName(),
                 waiting.getDate(),
                 waiting.getTime().getValue(),
-                "예약대기"
+                (waitingWithRank.getRank() + 1) + "번째 예약대기"
         );
     }
 }

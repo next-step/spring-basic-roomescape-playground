@@ -51,7 +51,9 @@ public class WaitingService {
 
         try {
             Waiting waiting = waitingRepository.save(new Waiting(member, request.date(), time, theme));
-            return toResponse(waiting);
+            long waitingNumber = waitingRepository.countByDateAndTheme_IdAndTime_Id(
+                    request.date(), request.themeId(), request.timeId());
+            return toResponse(waiting, waitingNumber);
         } catch (DataIntegrityViolationException exception) {
             throw new IllegalArgumentException(DUPLICATE_WAITING_MESSAGE, exception);
         }
@@ -82,12 +84,13 @@ public class WaitingService {
         waitingRepository.delete(waiting);
     }
 
-    private WaitingResponse toResponse(Waiting waiting) {
+    private WaitingResponse toResponse(Waiting waiting, long waitingNumber) {
         return new WaitingResponse(
                 waiting.getId(),
                 waiting.getTheme().getName(),
                 waiting.getDate(),
-                waiting.getTime().getValue()
+                waiting.getTime().getValue(),
+                waitingNumber
         );
     }
 }
