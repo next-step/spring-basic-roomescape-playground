@@ -8,9 +8,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.member.auth.AuthorizationException;
 import roomescape.member.domain.LoginMember;
 import roomescape.member.service.MemberService;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.theme.repository.ThemeDao;
-import roomescape.time.repository.TimeDao;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.repository.TimeRepository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -20,16 +20,16 @@ import static org.mockito.Mockito.verifyNoInteractions;
 class ReservationServiceTest {
 
     @Mock
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
     @Mock
     private MemberService memberService;
 
     @Mock
-    private ThemeDao themeDao;
+    private ThemeRepository themeRepository;
 
     @Mock
-    private TimeDao timeDao;
+    private TimeRepository timeRepository;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -41,7 +41,7 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.deleteById(1L, member))
                 .isInstanceOf(AuthorizationException.class)
                 .hasMessage("예약을 삭제할 권한이 없습니다.");
-        verifyNoInteractions(reservationDao);
+        verifyNoInteractions(reservationRepository);
     }
 
     @Test
@@ -50,6 +50,6 @@ class ReservationServiceTest {
 
         reservationService.deleteById(1L, admin);
 
-        verify(reservationDao).deleteById(1L);
+        verify(reservationRepository).deleteById(1L);
     }
 }

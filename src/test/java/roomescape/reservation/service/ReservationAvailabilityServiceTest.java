@@ -6,11 +6,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.ReservationDao;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.AvailableTime;
-import roomescape.time.repository.TimeDao;
+import roomescape.time.repository.TimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,10 +23,10 @@ import static org.mockito.Mockito.when;
 class ReservationAvailabilityServiceTest {
 
     @Mock
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
 
     @Mock
-    private TimeDao timeDao;
+    private TimeRepository timeRepository;
 
     @InjectMocks
     private ReservationAvailabilityService reservationAvailabilityService;
@@ -39,8 +39,8 @@ class ReservationAvailabilityServiceTest {
         Time availableTime = new Time(2L, LocalTime.of(12, 0));
         Reservation reservation = new Reservation(1L, 1L, "member", date, bookedTime, theme);
 
-        when(reservationDao.findByDateAndThemeId(date, theme.getId())).thenReturn(List.of(reservation));
-        when(timeDao.findAll()).thenReturn(List.of(bookedTime, availableTime));
+        when(reservationRepository.findByDateAndThemeId(date, theme.getId())).thenReturn(List.of(reservation));
+        when(timeRepository.findAll()).thenReturn(List.of(bookedTime, availableTime));
 
         List<AvailableTime> result = reservationAvailabilityService.findAvailableTimes(date, theme.getId());
 

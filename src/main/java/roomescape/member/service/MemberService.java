@@ -1,7 +1,6 @@
 package roomescape.member.service;
 
 import io.jsonwebtoken.JwtException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.member.auth.JwtTokenProvider;
 import roomescape.member.auth.RevokedTokenStore;
@@ -11,24 +10,24 @@ import roomescape.member.domain.Member;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
-import roomescape.member.repository.MemberDao;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class MemberService {
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RevokedTokenStore revokedTokenStore;
 
-    public MemberService(MemberDao memberDao,
+    public MemberService(MemberRepository memberRepository,
                          JwtTokenProvider jwtTokenProvider,
                          RevokedTokenStore revokedTokenStore) {
-        this.memberDao = memberDao;
+        this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.revokedTokenStore = revokedTokenStore;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(
+        Member member = memberRepository.save(new Member(
                 memberRequest.name(),
                 memberRequest.email(),
                 memberRequest.password(),
@@ -39,9 +38,10 @@ public class MemberService {
 
     public String login(LoginRequest loginRequest) {
         try {
-            Member member = memberDao.findByEmailAndPassword(loginRequest.email(), loginRequest.password());
+            Member member = memberRepository.findByEmailAndPassword(loginRequest.email(), loginRequest.password())
+                    .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
             return jwtTokenProvider.createToken(member.getId());
-        } catch (EmptyResultDataAccessException exception) {
+        } catch (IllegalArgumentException exception) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.", exception);
         }
     }
@@ -53,9 +53,10 @@ public class MemberService {
                 throw new IllegalArgumentException("로그아웃된 로그인 토큰입니다.");
             }
 
-            Member member = memberDao.findById(tokenPayload.memberId());
+            Member member = memberRepository.findById(tokenPayload.memberId())
+                    .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
             return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
-        } catch (JwtException | IllegalArgumentException | EmptyResultDataAccessException exception) {
+        } catch (JwtException | IllegalArgumentException exception) {
             throw new IllegalArgumentException("유효하지 않은 로그인 토큰입니다.", exception);
         }
     }
@@ -66,7 +67,8 @@ public class MemberService {
     }
 
     public Member findById(Long id) {
-        return memberDao.findById(id);
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
     }
 
 }

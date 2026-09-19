@@ -1,25 +1,67 @@
 package roomescape.reservation.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 import java.time.LocalDate;
 
+@Entity
+@Table(uniqueConstraints = @UniqueConstraint(
+        name = "uk_reservation_schedule",
+        columnNames = {"date", "time_id", "theme_id"}
+))
 public class Reservation {
-    private final Long id;
-    private final Long memberId;
-    private final String memberName;
-    private final LocalDate date;
-    private final Time time;
-    private final Theme theme;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public Reservation(Long id, Long memberId, String memberName, LocalDate date, Time time, Theme theme) {
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    private String name;
+
+    private LocalDate date;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "time_id", nullable = false)
+    private Time time;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "theme_id", nullable = false)
+    private Theme theme;
+
+    protected Reservation() {
+    }
+
+    public Reservation(Long id, Member member, String name, LocalDate date, Time time, Theme theme) {
         this.id = id;
-        this.memberId = memberId;
-        this.memberName = memberName;
+        this.member = member;
+        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public Reservation(Member member, LocalDate date, Time time, Theme theme) {
+        this(null, member, "", date, time, theme);
+    }
+
+    public Reservation(String name, LocalDate date, Time time, Theme theme) {
+        this(null, (Member) null, name, date, time, theme);
+    }
+
+    public Reservation(Long id, Long memberId, String memberName, LocalDate date, Time time, Theme theme) {
+        this(id, new Member(memberId, memberName, null, null, null), "", date, time, theme);
     }
 
     public Reservation(Long memberId, String memberName, LocalDate date, Time time, Theme theme) {
@@ -31,11 +73,19 @@ public class Reservation {
     }
 
     public Long getMemberId() {
-        return memberId;
+        return member == null ? null : member.getId();
     }
 
     public String getMemberName() {
-        return memberName;
+        return member == null ? name : member.getName();
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public LocalDate getDate() {

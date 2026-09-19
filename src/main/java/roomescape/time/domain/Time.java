@@ -1,9 +1,21 @@
 package roomescape.time.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.time.LocalTime;
 
+@Entity
 public class Time {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "time_value", nullable = false)
     private LocalTime value;
 
     public Time(Long id, LocalTime value) {
@@ -15,8 +27,11 @@ public class Time {
         this.value = value;
     }
 
-    public Time() {
+    public Time(String value) {
+        this(LocalTime.parse(value));
+    }
 
+    protected Time() {
     }
 
     public Long getId() {
@@ -24,6 +39,11 @@ public class Time {
     }
 
     public LocalTime getValue() {
+        return value;
+    }
+
+    @JsonIgnore
+    public LocalTime getTime() {
         return value;
     }
 }
