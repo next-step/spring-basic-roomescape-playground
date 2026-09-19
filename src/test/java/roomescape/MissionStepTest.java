@@ -96,7 +96,7 @@ public class MissionStepTest {
     void 오단계() {
         String adminToken = createToken("admin@email.com", "password");
 
-        List<MyReservationResponse> reservations = RestAstatssured.given().log().all()
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
                 .cookie("token", adminToken)
                 .get("/reservations-mine")
                 .then().log().all()
