@@ -24,9 +24,11 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "member_id")
     private Member member;
+
+    private String name;
 
     private LocalDate date;
 
@@ -41,20 +43,25 @@ public class Reservation {
     protected Reservation() {
     }
 
-    public Reservation(Long id, Member member, LocalDate date, Time time, Theme theme) {
+    public Reservation(Long id, Member member, String name, LocalDate date, Time time, Theme theme) {
         this.id = id;
         this.member = member;
+        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
     public Reservation(Member member, LocalDate date, Time time, Theme theme) {
-        this(null, member, date, time, theme);
+        this(null, member, "", date, time, theme);
+    }
+
+    public Reservation(String name, LocalDate date, Time time, Theme theme) {
+        this(null, (Member) null, name, date, time, theme);
     }
 
     public Reservation(Long id, Long memberId, String memberName, LocalDate date, Time time, Theme theme) {
-        this(id, new Member(memberId, memberName, null, null, null), date, time, theme);
+        this(id, new Member(memberId, memberName, null, null, null), "", date, time, theme);
     }
 
     public Reservation(Long memberId, String memberName, LocalDate date, Time time, Theme theme) {
@@ -66,15 +73,19 @@ public class Reservation {
     }
 
     public Long getMemberId() {
-        return member.getId();
+        return member == null ? null : member.getId();
     }
 
     public String getMemberName() {
-        return member.getName();
+        return member == null ? name : member.getName();
     }
 
     public Member getMember() {
         return member;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public LocalDate getDate() {

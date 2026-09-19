@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 public record ReservationRequest(
         Long memberId,
+        String name,
         LocalDate date,
         @JsonProperty("theme") Long themeId,
         @JsonProperty("time") Long timeId

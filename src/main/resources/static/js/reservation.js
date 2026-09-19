@@ -86,12 +86,12 @@ function addInputRow() {
   const row = tableBody.insertRow();
   isEditing = true;
 
-  const memberIdInput = createInput('number');
+  const nameInput = createInput('text');
   const dateInput = createInput('date');
   const timeDropdown = createSelect(timesOptions, "시간 선택", 'time-select', 'value');
   const themeDropdown = createSelect(themesOptions, "테마 선택", 'theme-select', 'name');
 
-  const cellFieldsToCreate = ['', memberIdInput, themeDropdown, dateInput, timeDropdown];
+  const cellFieldsToCreate = ['', nameInput, themeDropdown, dateInput, timeDropdown];
 
   cellFieldsToCreate.forEach((field, index) => {
     const cell = row.insertCell(index);
@@ -130,13 +130,13 @@ function saveRow(event) {
   event.stopPropagation();
 
   const row = event.target.parentNode.parentNode;
-  const memberIdInput = row.querySelector('input[type="number"]');
-  const themeSelect = row.querySelector('select');
+  const nameInput = row.querySelector('input[type="text"]');
+  const themeSelect = row.querySelector('#theme-select');
   const dateInput = row.querySelector('input[type="date"]');
-  const timeSelect = row.querySelector('select');
+  const timeSelect = row.querySelector('#time-select');
 
   const reservation = {
-    memberId: memberIdInput.value,
+    name: nameInput.value,
     theme: themeSelect.value,
     date: dateInput.value,
     time: timeSelect.value

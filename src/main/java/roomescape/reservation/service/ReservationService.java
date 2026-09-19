@@ -10,6 +10,7 @@ import roomescape.member.service.MemberService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -40,10 +41,9 @@ public class ReservationService {
     @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         validateDuplicateReservation(reservationRequest);
-        Member member = findReservationMember(reservationRequest, loginMember);
         Time time = findTime(reservationRequest.timeId());
         Theme theme = findTheme(reservationRequest.themeId());
-        Reservation reservation = new Reservation(member, reservationRequest.date(), time, theme);
+        Reservation reservation = createReservation(reservationRequest, loginMember, time, theme);
 
         try {
             return toResponse(reservationRepository.save(reservation));
@@ -75,6 +75,25 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<MyReservationResponse> findMine(LoginMember loginMember) {
+        return reservationRepository.findByMember_IdOrderByIdAsc(loginMember.id()).stream()
+                .map(this::toMyReservationResponse)
+                .toList();
+    }
+
+    private Reservation createReservation(ReservationRequest reservationRequest,
+                                          LoginMember loginMember,
+                                          Time time,
+                                          Theme theme) {
+        if (loginMember.isAdmin() && reservationRequest.name() != null
+                && !reservationRequest.name().isBlank()) {
+            return new Reservation(reservationRequest.name(), reservationRequest.date(), time, theme);
+        }
+
+        Member member = findReservationMember(reservationRequest, loginMember);
+        return new Reservation(member, reservationRequest.date(), time, theme);
+    }
+
     private Member findReservationMember(ReservationRequest reservationRequest, LoginMember loginMember) {
         if (isReservationForAnotherMember(reservationRequest, loginMember)) {
             return memberService.findById(reservationRequest.memberId());
@@ -103,6 +122,16 @@ public class ReservationService {
                 reservation.getTheme().getName(),
                 reservation.getDate(),
                 reservation.getTime().getValue()
+        );
+    }
+
+    private MyReservationResponse toMyReservationResponse(Reservation reservation) {
+        return new MyReservationResponse(
+                reservation.getId(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue(),
+                "예약"
         );
     }
 }

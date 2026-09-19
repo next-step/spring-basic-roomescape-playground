@@ -11,6 +11,7 @@ import roomescape.member.auth.AdminOnly;
 import roomescape.member.domain.LoginMember;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 import java.net.URI;
@@ -29,6 +30,11 @@ public class ReservationController {
     @AdminOnly
     public List<ReservationResponse> list() {
         return reservationService.findAll();
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> listMine(LoginMember loginMember) {
+        return reservationService.findMine(loginMember);
     }
 
     @PostMapping("/reservations")
