@@ -16,10 +16,10 @@ import java.util.List;
 @RestController
 public class ThemeController {
     private static final int MAX_THEME_LENGTH = 255;
-    private ThemeDao themeDao;
+    private final ThemeRepository themeRepository;
 
-    public ThemeController(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public ThemeController(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
     @PostMapping("/themes")
@@ -32,22 +32,22 @@ public class ThemeController {
                 || theme.getDescription().length() > MAX_THEME_LENGTH) {
             throw new InvalidThemeException("테마 정보를 올바르게 입력해야 합니다.");
         }
-        Theme newTheme = themeDao.save(theme);
+        Theme newTheme = themeRepository.save(theme);
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
     }
 
     @GetMapping("/themes")
     public ResponseEntity<List<Theme>> list() {
-        return ResponseEntity.ok(themeDao.findAll());
+        return ResponseEntity.ok(themeRepository.findAllByDeletedFalse());
     }
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        int deletedCount = themeDao.deleteById(id);
+        Theme theme = themeRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new NotFoundThemeException("삭제할 테마를 찾을 수 없습니다."));
 
-        if (deletedCount == 0) {
-            throw new NotFoundThemeException("삭제할 테마를 찾을 수 없습니다.");
-        }
+        theme.delete();
+        themeRepository.save(theme);
 
         return ResponseEntity.noContent().build();
     }

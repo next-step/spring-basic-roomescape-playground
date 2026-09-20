@@ -1,30 +1,29 @@
 package roomescape.reservation;
 
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.exception.*;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
-import roomescape.theme.ThemeDao;
+import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
-import roomescape.time.TimeDao;
+import roomescape.time.TimeRepository;
 
 import java.util.List;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
-    private MemberDao memberDao;
-    private final TimeDao timeDao;
-    private final ThemeDao themeDao;
+    private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationDao reservationDao, MemberDao memberDao, TimeDao timeDao, ThemeDao themeDao) {
-        this.reservationDao = reservationDao;
-        this.memberDao = memberDao;
-        this.timeDao = timeDao;
-        this.themeDao = themeDao;
+    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse save(LoginMember loginMember, ReservationRequest reservationRequest) {
@@ -36,20 +35,16 @@ public class ReservationService {
                 throw new InvalidReservationException("예약자 이름을 올바르게 입력해야 합니다.");
             }
 
-            try {
-                reservationName = memberDao.findByName(requestedName).getName();
-            } catch (EmptyResultDataAccessException exception) {
-                throw new NotFoundMemberException("예약할 회원을 찾을 수 없습니다.");
-            }
+            reservationName = memberRepository.findByName(requestedName)
+                    .orElseThrow(() -> new NotFoundMemberException("예약할 회원을 찾을 수 없습니다."))
+                    .getName();
         }
 
-        Time time = timeDao.findById(reservationRequest.getTime())
+        Time time = timeRepository.findByIdAndDeletedFalse(reservationRequest.getTime())
                 .orElseThrow(() -> new NotFoundTimeException("예약 시간을 찾을 수 없습니다."));
 
-        Theme theme = themeDao.findById(reservationRequest.getTheme())
-                .orElseThrow(() ->
-                        new NotFoundThemeException("예약 테마를 찾을 수 없습니다.")
-                );
+        Theme theme = themeRepository.findByIdAndDeletedFalse(reservationRequest.getTheme())
+                .orElseThrow(() -> new NotFoundThemeException("예약 테마를 찾을 수 없습니다."));
 
         Reservation newReservation = Reservation.create(
                 reservationName,
@@ -61,8 +56,8 @@ public class ReservationService {
         Reservation savedReservation;
 
         try {
-            savedReservation = reservationDao.save(newReservation);
-        } catch (DuplicateKeyException exception) {
+            savedReservation = reservationRepository.save(newReservation);
+        } catch (DataIntegrityViolationException exception) {
             throw new DuplicateReservationException("이미 해당 날짜와 시간에 예약된 테마입니다.");
         }
 
@@ -70,15 +65,14 @@ public class ReservationService {
     }
 
     public void deleteById(Long id) {
-        int deletedCount = reservationDao.deleteById(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundReservationException("삭제할 예약을 찾을 수 없습니다."));
 
-        if (deletedCount == 0) {
-            throw new NotFoundReservationException("삭제할 예약을 찾을 수 없습니다.");
-        }
+        reservationRepository.delete(reservation);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }

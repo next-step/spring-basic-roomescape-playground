@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import jakarta.persistence.*;
 import roomescape.exception.InvalidReservationException;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
@@ -9,11 +10,26 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
+@Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_reservation_date_time_theme",
+                columnNames = {"date", "time_id", "theme_id"}
+        )
+)
 public class Reservation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String date;
+
+    @ManyToOne
+    @JoinColumn(name = "time_id")
     private Time time;
+
+    @ManyToOne
+    @JoinColumn(name = "theme_id")
     private Theme theme;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {

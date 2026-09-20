@@ -1,28 +1,28 @@
 package roomescape.time;
 
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.DuplicateTimeException;
 import roomescape.exception.NotFoundTimeException;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
+import roomescape.reservation.ReservationRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class TimeService {
-    private TimeDao timeDao;
-    private ReservationDao reservationDao;
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
+    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
+        this.timeRepository = timeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        List<Time> times = timeRepository.findAllByDeletedFalse();
 
         return times.stream()
                 .map(time -> new AvailableTime(
@@ -35,34 +35,35 @@ public class TimeService {
     }
 
     public List<Time> findAll() {
-        return timeDao.findAll();
+        return timeRepository.findAllByDeletedFalse();
     }
 
     public Time save(Time time) {
-        Optional<Time> existingTime = timeDao.findByValue(time.getValue());
+        Optional<Time> existingTime = timeRepository.findByValue(time.getValue());
 
         if (existingTime.isPresent()) {
             Time foundTime = existingTime.get();
-            int restoredCount = timeDao.restoreById(foundTime.getId());
 
-            if (restoredCount > 0) {
-                return foundTime;
+            if (!foundTime.isDeleted()) {
+                throw new DuplicateTimeException("이미 등록된 시간입니다.");
             }
 
-            throw new DuplicateTimeException("이미 등록된 시간입니다.");
+            foundTime.restore();
+            return timeRepository.save(foundTime);
         }
+
         try {
-            return timeDao.save(time);
-        } catch (DuplicateKeyException exception) {
+            return timeRepository.save(time);
+        } catch (DataIntegrityViolationException exception) {
             throw new DuplicateTimeException("이미 등록된 시간입니다.");
         }
     }
 
     public void deleteById(Long id) {
-        int deletedCount = timeDao.deleteById(id);
+        Time time = timeRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new NotFoundTimeException("삭제할 시간을 찾을 수 없습니다."));
 
-        if (deletedCount == 0) {
-            throw new NotFoundTimeException("삭제할 시간을 찾을 수 없습니다.");
-        }
+        time.delete();
+        timeRepository.save(time);
     }
 }

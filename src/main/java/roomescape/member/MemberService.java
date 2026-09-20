@@ -1,20 +1,20 @@
 package roomescape.member;
 
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.DuplicateMemberException;
 
 @Service
 public class MemberService {
-    private MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public MemberService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponse createMember(MemberRequest memberRequest) {
         try {
-            Member member = memberDao.save(
+            Member member = memberRepository.save(
                     new Member(
                             memberRequest.getName(),
                             memberRequest.getEmail(),
@@ -28,7 +28,7 @@ public class MemberService {
                     member.getName(),
                     member.getEmail()
             );
-        } catch (DuplicateKeyException exception) {
+        } catch (DataIntegrityViolationException exception) {
             throw new DuplicateMemberException("이미 가입된 이메일입니다.");
         }
     }
