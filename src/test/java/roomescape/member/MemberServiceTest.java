@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.exception.AuthenticationException;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,7 +19,7 @@ import static org.mockito.BDDMockito.given;
 class MemberServiceTest {
 
     @Mock
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @Mock
     private JwtTokenProvider jwtTokenProvider;
@@ -27,7 +28,7 @@ class MemberServiceTest {
 
     @BeforeEach
     void setUp() {
-        memberService = new MemberService(memberDao, jwtTokenProvider);
+        memberService = new MemberService(memberRepository, jwtTokenProvider);
     }
 
     @Test
@@ -35,7 +36,7 @@ class MemberServiceTest {
         // given
         MemberRequest request = new MemberRequest();
         Member savedMember = new Member(1L, "어드민", "admin@email.com", "USER");
-        given(memberDao.save(any(Member.class))).willReturn(savedMember);
+        given(memberRepository.save(any(Member.class))).willReturn(savedMember);
 
         // when
         MemberResponse response = memberService.createMember(request);
@@ -52,10 +53,10 @@ class MemberServiceTest {
         String password = "password";
         Member member = new Member(1L, "어드민", email, "ADMIN");
 
-        given(memberDao.findByEmailAndPassword(email, password)).willReturn(member);
+        given(memberRepository.findByEmailAndPassword(email, password)).willReturn(Optional.of(member));
         given(jwtTokenProvider.createToken(member)).willReturn("mocked-jwt-token");
 
-        // when (LoginRequest 객체 대신 email, password 직접 전달)
+        // when
         String token = memberService.login(email, password);
 
         // then
@@ -67,10 +68,10 @@ class MemberServiceTest {
         // given
         String wrongEmail = "wrong@email.com";
         String wrongPassword = "wrong-password";
-        given(memberDao.findByEmailAndPassword(anyString(), anyString()))
-                .willThrow(new EmptyResultDataAccessException(1));
+        given(memberRepository.findByEmailAndPassword(anyString(), anyString()))
+                .willReturn(Optional.empty());
 
-        // when & then (LoginRequest 객체 대신 wrongEmail, wrongPassword 직접 전달)
+        // when & then
         assertThatThrownBy(() -> memberService.login(wrongEmail, wrongPassword))
                 .isInstanceOf(AuthenticationException.class)
                 .hasMessage("이메일 또는 비밀번호가 일치하지 않습니다.");
@@ -83,7 +84,7 @@ class MemberServiceTest {
         Member member = new Member(1L, "어드민", "admin@email.com", "ADMIN");
 
         given(jwtTokenProvider.getMemberId(token)).willReturn(1L);
-        given(memberDao.findById(1L)).willReturn(member);
+        given(memberRepository.findById(1L)).willReturn(Optional.of(member));
 
         // when
         Member response = memberService.findMemberByToken(token);
