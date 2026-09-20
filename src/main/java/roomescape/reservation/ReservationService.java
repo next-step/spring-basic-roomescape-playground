@@ -24,7 +24,7 @@ public class ReservationService {
         if (reservationRequest.getName() != null) {
             member = memberDao.findByName(reservationRequest.getName());
         } else {
-            member = memberDao.findByName(loginMember.getName());
+            member = memberDao.findById(loginMember.getId());
         }
         Reservation reservation = reservationDao.save(reservationRequest, member.getName());
 
