@@ -146,4 +146,13 @@ public class MissionStepTest {
                 .statusCode(401);
     }
 
+    @Test
+    @DisplayName("로그인하지 않은 경우 401을 반환한다.")
+    void noLogin() {
+        RestAssured.given().log().all()
+                .get("/login/check")
+                .then().log().all()
+                .statusCode(401);
+    }
+
 }

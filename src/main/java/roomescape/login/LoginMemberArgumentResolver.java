@@ -1,5 +1,6 @@
 package roomescape.login;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -32,6 +33,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
 
+        if (token.isBlank()) {
+            throw new JwtException("토큰이 없습니다.");
+        }
+
         Long memberId = Long.valueOf(Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
@@ -44,6 +49,10 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            return "";
+        }
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
