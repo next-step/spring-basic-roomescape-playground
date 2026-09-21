@@ -33,3 +33,11 @@
 - [x] `/admin/**` 진입은 `ADMIN` 권한이 있는 사람만 할 수 있다.
   - [x] `HandlerInterceptor`를 활용하여 컨트롤러 진입 전에 Cookie의 role을 확인한다.
   - [x] 권한이 없는 경우 `401 Unauthorized`로 응답한다.
+
+## 4단계 - JPA 전환
+
+- [x] `spring-boot-starter-jdbc` 의존성을 `spring-boot-starter-data-jpa`로 대체한다.
+- [x] `Time`, `Theme`, `Member`를 엔티티로 매핑한다.
+- [x] `Reservation`은 `Time`, `Theme`를 `@ManyToOne`으로 연관관계 매핑한다.
+- [x] Dao를 `JpaRepository`를 상속받는 Repository로 대체하고, 필요한 조회는 쿼리 메서드로 정의한다.
+- [x] 스키마 생성은 Hibernate에 맡기고, `schema.sql`은 초기 데이터만 남긴 `data.sql`로 대체한다.
