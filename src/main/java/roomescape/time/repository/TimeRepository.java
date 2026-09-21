@@ -1,6 +1,7 @@
-package roomescape.time;
+package roomescape.time.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import roomescape.time.domain.Time;
 
 import java.util.List;
 import java.util.Optional;

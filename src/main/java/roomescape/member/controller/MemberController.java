@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
+import roomescape.member.service.MemberService;
 
 import java.net.URI;
 

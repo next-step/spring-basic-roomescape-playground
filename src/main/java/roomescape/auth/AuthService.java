@@ -3,8 +3,8 @@ package roomescape.auth;
 import io.jsonwebtoken.JwtException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.InvalidAuthenticationException;
-import roomescape.member.Member;
-import roomescape.member.MemberRepository;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberRepository;
 
 @Service
 public class AuthService {

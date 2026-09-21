@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.member.Member;
-import roomescape.member.Role;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 import java.time.LocalDate;
 import java.util.HashMap;

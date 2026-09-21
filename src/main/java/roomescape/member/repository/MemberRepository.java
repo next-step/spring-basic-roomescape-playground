@@ -1,6 +1,7 @@
-package roomescape.member;
+package roomescape.member.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import roomescape.member.domain.Member;
 
 import java.util.Optional;
 

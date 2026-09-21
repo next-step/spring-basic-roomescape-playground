@@ -1,4 +1,4 @@
-package roomescape.member;
+package roomescape.member.domain;
 
 import jakarta.persistence.*;
 import roomescape.exception.InvalidMemberException;

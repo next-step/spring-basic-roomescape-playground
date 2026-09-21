@@ -1,9 +1,9 @@
-package roomescape.reservation;
+package roomescape.reservation.domain;
 
 import jakarta.persistence.*;
 import roomescape.exception.InvalidReservationException;
-import roomescape.theme.Theme;
-import roomescape.time.Time;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

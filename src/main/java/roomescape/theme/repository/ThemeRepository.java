@@ -1,6 +1,7 @@
-package roomescape.theme;
+package roomescape.theme.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import roomescape.theme.domain.Theme;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,14 +1,18 @@
-package roomescape.reservation;
+package roomescape.reservation.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.exception.*;
-import roomescape.member.MemberRepository;
-import roomescape.theme.Theme;
-import roomescape.theme.ThemeRepository;
-import roomescape.time.Time;
-import roomescape.time.TimeRepository;
+import roomescape.member.repository.MemberRepository;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.domain.Time;
+import roomescape.time.repository.TimeRepository;
 
 import java.util.List;
 
