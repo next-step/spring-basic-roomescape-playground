@@ -7,8 +7,8 @@ public class MyReservationResponse {
     private String time;
     private String status;
 
-    public MyReservationResponse(Long reservationId, String theme, String date, String time, String status) {
-        this.reservationId = reservationId;
+    public MyReservationResponse(Long id, String theme, String date, String time, String status) {
+        this.reservationId = id;
         this.theme = theme;
         this.date = date;
         this.time = time;

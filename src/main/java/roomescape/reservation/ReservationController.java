@@ -46,7 +46,7 @@ public class ReservationController {
         String reservationName = isSelfBooking ? loginMember.getName() : requestName;
         Member member = isSelfBooking
                 ? memberRepository.findById(loginMember.getId()).orElseThrow()
-                : null;
+                : memberRepository.findByName(requestName).orElse(null);
 
         ReservationRequest requestWithName = new ReservationRequest(
                 reservationName,
