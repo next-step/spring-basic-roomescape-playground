@@ -1,6 +1,5 @@
-package roomescape.login;
+package roomescape.auth;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -9,22 +8,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
-import roomescape.member.LoginMember;
-import roomescape.member.MemberResponse;
 
 
 @RestController
-public class LoginController {
-    private final LoginService loginService;
+public class AuthController {
+    private final AuthService authService;
 
-    public LoginController(LoginService loginService) {
-        this.loginService = loginService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest,
                                       HttpServletResponse response) {
-        String accessToken = loginService.login(loginRequest);
+        String accessToken = authService.login(loginRequest);
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);

@@ -1,7 +1,7 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-import roomescape.member.LoginMember;
+import roomescape.auth.LoginMember;
 
 import java.util.List;
 

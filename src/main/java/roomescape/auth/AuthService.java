@@ -1,20 +1,19 @@
-package roomescape.login;
+package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
-import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 import roomescape.member.Role;
 
 @Service
-public class LoginService {
+public class AuthService {
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private final MemberDao memberDao;
 
-    public LoginService(MemberDao memberDao) {
+    public AuthService(MemberDao memberDao) {
         this.memberDao = memberDao;
     }
 

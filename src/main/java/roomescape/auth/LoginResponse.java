@@ -1,4 +1,4 @@
-package roomescape.login;
+package roomescape.auth;
 
 public class LoginResponse {
     private String name;

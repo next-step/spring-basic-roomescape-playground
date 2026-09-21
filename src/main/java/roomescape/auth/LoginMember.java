@@ -1,4 +1,6 @@
-package roomescape.member;
+package roomescape.auth;
+
+import roomescape.member.Role;
 
 public record LoginMember(
         Long id,
