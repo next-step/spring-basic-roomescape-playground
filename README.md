@@ -51,3 +51,7 @@
 - [x] 조회한 회원의 `role`이 `ADMIN`인지 확인한다.
 - [x] 관리자 권한이 없는 경우 401 상태 코드를 응답한다.
 - [x] `WebMvcConfiguration`에 `AdminInterceptor`를 등록한다.
+
+### `리뷰 반영`
+
+- [x] 최신 정보를 반영할 수 있도록 DB에서 다시 조회하게끔 `name`, `role` claim을 제거한다.

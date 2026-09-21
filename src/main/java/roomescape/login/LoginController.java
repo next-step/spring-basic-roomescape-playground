@@ -31,8 +31,6 @@ public class LoginController {
 
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
 
