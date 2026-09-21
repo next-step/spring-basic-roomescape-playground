@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
+import java.util.Date;
+
 @RestController
 public class LoginController {
     private final MemberDao memberDao;
     private final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private final long tokenValidityInMilliseconds = 1000 * 60 * 60;
 
     public LoginController(MemberDao memberDao) {
         this.memberDao = memberDao;
@@ -29,9 +32,13 @@ public class LoginController {
                 request.getPassword()
         );
 
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + tokenValidityInMilliseconds);
+
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setExpiration(validity)
                 .compact();
 
         Cookie cookie = new Cookie("token", accessToken);
