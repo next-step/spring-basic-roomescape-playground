@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
+import roomescape.member.Role;
 
 @Service
 public class LoginService {
@@ -36,8 +37,8 @@ public class LoginService {
                 .getBody();
         Long id = Long.valueOf(claims.getSubject());
         String name = claims.get("name", String.class);
-        String role = claims.get("role", String.class);
-
+        String roleString = claims.get("role", String.class);
+        Role role = Role.valueOf(roleString);
         return new LoginMember(id, name, null, role);
     }
 }
