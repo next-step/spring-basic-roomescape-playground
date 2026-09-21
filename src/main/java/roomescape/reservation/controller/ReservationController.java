@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.LoginMember;
 import roomescape.exception.InvalidReservationException;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -28,6 +29,11 @@ public class ReservationController {
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
         return reservationService.findAll();
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        return reservationService.findMyReservations(loginMember);
     }
 
     @PostMapping("/reservations")

@@ -4,8 +4,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.exception.*;
+import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
@@ -31,7 +33,10 @@ public class ReservationService {
     }
 
     public ReservationResponse save(LoginMember loginMember, ReservationRequest reservationRequest) {
-        String reservationName = loginMember.name();
+        Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new NotFoundMemberException("예약할 회원을 찾을 수 없습니다."));
+
+        String reservationName = member.getName();
         String requestedName = reservationRequest.getName();
 
         if (requestedName != null) {
@@ -39,9 +44,10 @@ public class ReservationService {
                 throw new InvalidReservationException("예약자 이름을 올바르게 입력해야 합니다.");
             }
 
-            reservationName = memberRepository.findByName(requestedName)
-                    .orElseThrow(() -> new NotFoundMemberException("예약할 회원을 찾을 수 없습니다."))
-                    .getName();
+            member = memberRepository.findByName(requestedName)
+                    .orElseThrow(() -> new NotFoundMemberException("예약할 회원을 찾을 수 없습니다."));
+
+            reservationName = member.getName();
         }
 
         Time time = timeRepository.findByIdAndDeletedFalse(reservationRequest.getTime())
@@ -54,7 +60,8 @@ public class ReservationService {
                 reservationName,
                 reservationRequest.getDate(),
                 time,
-                theme
+                theme,
+                member
         );
 
         Reservation savedReservation;
@@ -78,6 +85,12 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        return reservationRepository.findAllByMemberId(loginMember.id()).stream()
+                .map(MyReservationResponse::from)
                 .toList();
     }
 }

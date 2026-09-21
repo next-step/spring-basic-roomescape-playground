@@ -2,6 +2,7 @@ package roomescape.reservation.domain;
 
 import jakarta.persistence.*;
 import roomescape.exception.InvalidReservationException;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -32,19 +33,16 @@ public class Reservation {
     @JoinColumn(name = "theme_id")
     private Theme theme;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    public Reservation(String name, String date, Time time, Theme theme) {
+    public Reservation(String name, String date, Time time, Theme theme, Member member) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
     public Reservation() {
@@ -71,15 +69,20 @@ public class Reservation {
         return theme;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     public static Reservation create(
             String name,
             String date,
             Time time,
-            Theme theme
+            Theme theme,
+            Member member
     ) {
         validateFutureDateTime(date, time);
 
-        return new Reservation(name, date, time, theme);
+        return new Reservation(name, date, time, theme, member);
     }
 
     private static void validateFutureDateTime(String date, Time time) {

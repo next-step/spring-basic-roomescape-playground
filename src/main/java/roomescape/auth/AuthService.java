@@ -37,7 +37,7 @@ public class AuthService {
             Member member = memberRepository.findById(memberId)
                     .orElseThrow(InvalidAuthenticationException::new);
 
-            return new LoginMember(member.getName(), member.getRole());
+            return new LoginMember(member.getId(), member.getName(), member.getRole());
         } catch (JwtException exception) {
             throw new InvalidAuthenticationException();
         }

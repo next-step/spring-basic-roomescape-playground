@@ -1,0 +1,21 @@
+package roomescape.reservation.dto;
+
+import roomescape.reservation.domain.Reservation;
+
+public record MyReservationResponse(
+        Long reservationId,
+        String theme,
+        String data,
+        String time,
+        String status
+) {
+    public static MyReservationResponse from(Reservation reservation) {
+        return new MyReservationResponse(
+                reservation.getId(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue(),
+                "예약"
+        );
+    }
+}

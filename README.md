@@ -36,11 +36,18 @@
 # Spring Data JPA 4~6단계
 
 ## 요구 사항
-- JPA를 활용하여 데이터베이스에 접근하도록 수정한다.
+- JDBC 기반 데이터 접근 방식을 Spring Data JPA 기반으로 전환한다.
+- 회원, 테마, 시간, 예약 데이터를 엔티티로 관리한다.
+- 예약은 시간, 테마, 회원과의 관계를 통해 관리한다.
+- 로그인한 회원은 자신의 예약 목록만 조회할 수 있다.
+- `GET /reservations-mine` 요청 시 예약 번호, 테마, 날짜, 시간, 예약 상태를 반환한다.
 
 ## 적용 사항
 - `Time`, `Theme`, `Member`, `Reservation`을 JPA 엔티티로 매핑했다.
-- `Reservation`에서 `Time`, `Theme`을 다대일 연관관계로 매핑했다.
+- JDBC DAO를 `JpaRepository` 기반 Repository로 전환했다.
+- `Reservation`에서 `Time`, `Theme`, `Member`를 다대일 연관관계로 매핑했다.
 - 삭제되지 않은 시간과 테마만 조회하도록 JPA 쿼리 메서드를 정의했다.
 - 시간, 회원 이메일, 예약의 중복 방지를 위한 유니크 제약 조건을 엔티티 매핑에 반영했다.
 - 테이블 생성은 JPA가 담당하고, 초기 데이터는 `data.sql`로 분리했다.
+- `LoginMember`에 회원 id를 추가해 로그인 회원을 식별하도록 했다.
+- 로그인한 회원의 id를 기준으로 예약을 조회하는 메서드와 `MyReservationResponse` DTO를 추가했다.
