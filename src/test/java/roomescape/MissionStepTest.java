@@ -1,14 +1,19 @@
 package roomescape;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.member.Member;
 import roomescape.reservation.ReservationResponse;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,5 +98,31 @@ public class MissionStepTest {
                 .get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    private final long milliseconds = 1000;
+    private final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+    private String createExpiredToken(Long memberId) {
+        long now = new Date().getTime();
+        Date expiredDate = new Date(now - milliseconds);
+
+        return Jwts.builder()
+                .setSubject(memberId.toString())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setExpiration(expiredDate)
+                .compact();
+    }
+
+    @Test
+    @DisplayName("만료된 토큰을 요청하면 예외이다.")
+    void expiredToken() {
+        String expiredToken = createExpiredToken(1L);
+
+        RestAssured.given().log().all()
+                .cookie("token", expiredToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
     }
 }
