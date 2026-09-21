@@ -35,10 +35,10 @@ public class ReservationController {
         }
         if (reservationRequest.getName() == null) {
             ReservationResponse reservation = reservationService.saveWithLogin(reservationRequest, member);
-            return ResponseEntity.created(URI.create("/reservations" + reservation.getId())).body(reservation);
+            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
         }
         ReservationResponse reservation = reservationService.save(reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations" + reservation.getId())).body(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
 
     }
 
