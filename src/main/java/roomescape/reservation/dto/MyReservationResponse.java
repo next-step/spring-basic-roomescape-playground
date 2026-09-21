@@ -5,7 +5,7 @@ import roomescape.reservation.domain.Reservation;
 public record MyReservationResponse(
         Long reservationId,
         String theme,
-        String data,
+        String date,
         String time,
         String status
 ) {
