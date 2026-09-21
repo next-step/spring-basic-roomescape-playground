@@ -261,4 +261,30 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(409);
     }
+
+    @Test
+    void 다른_회원의_예약_대기를_취소하면_403을_응답한다() {
+        String adminToken = createToken("admin@email.com", "password");
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        WaitingResponse waiting = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .delete("/waitings/" + waiting.getId())
+                .then().log().all()
+                .statusCode(403);
+    }
 }

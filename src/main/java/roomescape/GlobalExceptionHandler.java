@@ -78,4 +78,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handleDuplicateWaitingException() {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
+
+    @ExceptionHandler(ForbiddenWaitingException.class)
+    public ResponseEntity<Void> handleForbiddenWaitingException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 }

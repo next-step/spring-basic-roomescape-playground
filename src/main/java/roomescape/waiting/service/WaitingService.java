@@ -56,10 +56,13 @@ public class WaitingService {
         return new WaitingResponse(waiting.getId(), waitingNumber);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(LoginMember loginMember, Long id) {
         Waiting waiting = waitingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundWaitingException("취소할 대기중인 예약을 찾을 수 없습니다."));
 
+        if (!waiting.getMember().getId().equals(loginMember.id())) {
+            throw new ForbiddenWaitingException("본인의 예약 대기만 취소할 수 있습니다.");
+        }
         waitingRepository.delete(waiting);
     }
 }
