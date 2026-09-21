@@ -17,6 +17,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
+
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
@@ -33,13 +34,9 @@ public class ReservationController {
             || reservationRequest.getTheme() == null || reservationRequest.getTime() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (reservationRequest.getName() == null) {
-            ReservationResponse reservation = reservationService.saveWithLogin(reservationRequest, member);
-            return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
-        }
-        ReservationResponse reservation = reservationService.save(reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
 
+        ReservationResponse reservation = reservationService.save(reservationRequest, member);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
 
