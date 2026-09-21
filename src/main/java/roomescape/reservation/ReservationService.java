@@ -11,19 +11,23 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
     private ReservationRepository reservationRepository;
+    private WaitingRepository waitingRepository;
     private TimeRepository timeRepository;
     private ThemeRepository themeRepository;
     private MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository) {
+    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
+        this.waitingRepository = waitingRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
@@ -54,9 +58,12 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMine(LoginMember loginMember) {
-        return reservationRepository.findByMemberId(loginMember.id()).stream()
-                .map(MyReservationResponse::from)
-                .toList();
+        Stream<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.id()).stream()
+                .map(MyReservationResponse::from);
+        Stream<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id()).stream()
+                .map(MyReservationResponse::from);
+
+        return Stream.concat(reservations, waitings).toList();
     }
 
     private Reservation createReservation(ReservationRequest reservationRequest, LoginMember loginMember, Time time, Theme theme) {

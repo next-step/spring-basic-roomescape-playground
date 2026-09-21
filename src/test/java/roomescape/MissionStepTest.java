@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
+import roomescape.waiting.WaitingResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -107,6 +108,63 @@ public class MissionStepTest {
         assertThat(reservations).hasSize(3);
     }
 
+    @Test
+    void 육단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 예약 대기 생성
+        WaitingResponse waiting = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        // 내 예약 목록 조회
+        List<MyReservationResponse> myReservations = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        // 예약 대기 상태 확인
+        String status = myReservations.stream()
+                .filter(it -> it.reservationId().equals(waiting.id()))
+                .filter(it -> !it.status().equals("예약"))
+                .findFirst()
+                .map(MyReservationResponse::status)
+                .orElse(null);
+
+        assertThat(status).isEqualTo("1번째 예약대기");
+
+        // 예약 대기 취소
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .delete("/waitings/" + waiting.id())
+                .then().log().all()
+                .statusCode(204);
+
+        // 취소 후 내 예약 목록에서 대기가 사라졌는지 확인
+        List<MyReservationResponse> afterCancel = RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(afterCancel).noneMatch(it -> !it.status().equals("예약"));
+    }
+
     @Nested
     class 인증_실패 {
 
@@ -141,6 +199,81 @@ public class MissionStepTest {
             RestAssured.given().log().all()
                     .cookie("token", "invalid-token")
                     .when().get("/login/check")
+                    .then().log().all()
+                    .statusCode(401);
+        }
+    }
+
+    @Nested
+    class 예약_대기_실패 {
+
+        @Test
+        void 이미_예약한_시간에_대기하면_409() {
+            String adminToken = createToken("admin@email.com", "password");
+
+            Map<String, String> params = new HashMap<>();
+            params.put("date", "2024-03-01");
+            params.put("time", "1");
+            params.put("theme", "1");
+
+            RestAssured.given().log().all()
+                    .body(params)
+                    .cookie("token", adminToken)
+                    .contentType(ContentType.JSON)
+                    .post("/waitings")
+                    .then().log().all()
+                    .statusCode(409);
+        }
+
+        @Test
+        void 이미_대기_중인_시간에_다시_대기하면_409() {
+            String brownToken = createToken("brown@email.com", "password");
+
+            Map<String, String> params = new HashMap<>();
+            params.put("date", "2024-03-01");
+            params.put("time", "1");
+            params.put("theme", "1");
+
+            RestAssured.given().log().all()
+                    .body(params)
+                    .cookie("token", brownToken)
+                    .contentType(ContentType.JSON)
+                    .post("/waitings")
+                    .then().log().all()
+                    .statusCode(201);
+
+            RestAssured.given().log().all()
+                    .body(params)
+                    .cookie("token", brownToken)
+                    .contentType(ContentType.JSON)
+                    .post("/waitings")
+                    .then().log().all()
+                    .statusCode(409);
+        }
+
+        @Test
+        void 다른_사람의_대기를_취소하면_401() {
+            String brownToken = createToken("brown@email.com", "password");
+
+            Map<String, String> params = new HashMap<>();
+            params.put("date", "2024-03-01");
+            params.put("time", "1");
+            params.put("theme", "1");
+
+            WaitingResponse waiting = RestAssured.given().log().all()
+                    .body(params)
+                    .cookie("token", brownToken)
+                    .contentType(ContentType.JSON)
+                    .post("/waitings")
+                    .then().log().all()
+                    .statusCode(201)
+                    .extract().as(WaitingResponse.class);
+
+            String adminToken = createToken("admin@email.com", "password");
+
+            RestAssured.given().log().all()
+                    .cookie("token", adminToken)
+                    .delete("/waitings/" + waiting.id())
                     .then().log().all()
                     .statusCode(401);
         }
