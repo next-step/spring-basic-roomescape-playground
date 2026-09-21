@@ -68,4 +68,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handleDuplicateReservationException() {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
+
+    @ExceptionHandler(NotFoundWaitingException.class)
+    public ResponseEntity<Void> handleNotFoundWaitingException() {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(DuplicateWaitingException.class)
+    public ResponseEntity<Void> handleDuplicateWaitingException() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
 }

@@ -15,8 +15,10 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.repository.TimeRepository;
+import roomescape.waiting.repository.WaitingRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -24,12 +26,14 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(LoginMember loginMember, ReservationRequest reservationRequest) {
@@ -89,8 +93,19 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        return reservationRepository.findAllByMemberId(loginMember.id()).stream()
+        List<MyReservationResponse> reservations = reservationRepository
+                .findAllByMemberId(loginMember.id())
+                .stream()
                 .map(MyReservationResponse::from)
+                .toList();
+
+        List<MyReservationResponse> waitings = waitingRepository
+                .findWaitingsWithRankByMemberId(loginMember.id())
+                .stream()
+                .map(MyReservationResponse::from)
+                .toList();
+
+        return Stream.concat(reservations.stream(), waitings.stream())
                 .toList();
     }
 }
