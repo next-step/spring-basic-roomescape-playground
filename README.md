@@ -41,3 +41,8 @@
 - [x] `Reservation`은 `Time`, `Theme`를 `@ManyToOne`으로 연관관계 매핑한다.
 - [x] Dao를 `JpaRepository`를 상속받는 Repository로 대체하고, 필요한 조회는 쿼리 메서드로 정의한다.
 - [x] 스키마 생성은 Hibernate에 맡기고, `schema.sql`은 초기 데이터만 남긴 `data.sql`로 대체한다.
+
+## 5단계 - 내 예약 목록 조회
+
+- [x] `GET /reservations-mine` 요청 시 로그인한 회원의 예약 목록을 응답한다.
+- [x] `Reservation`은 `Member`를 `@ManyToOne`으로 연관관계 매핑한다.

@@ -28,8 +28,4 @@ public class ReservationRequest {
     public Long getTime() {
         return time;
     }
-
-    public ReservationRequest withName(String name) {
-        return new ReservationRequest(name, date, theme, time);
-    }
 }
