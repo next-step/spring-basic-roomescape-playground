@@ -23,6 +23,11 @@ public class AdminInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
 
+        if (token.isBlank()) {
+            response.setStatus(401);
+            return false;
+        }
+
         Long memberId = Long.valueOf(
                 Jwts.parserBuilder()
                         .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))

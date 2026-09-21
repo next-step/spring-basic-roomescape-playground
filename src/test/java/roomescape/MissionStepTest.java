@@ -125,4 +125,25 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(401);
     }
+
+    @Test
+    @DisplayName("토큰이 없는 경우 401을 반환한다.")
+    void noToken() {
+        RestAssured.given().log().all()
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+
+    @Test
+    @DisplayName("잘못된 토큰일 경우 401을 반환한다.")
+    void wrongToken() {
+        RestAssured.given().log().all()
+                .cookie("token", "invalidToken")
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
 }
