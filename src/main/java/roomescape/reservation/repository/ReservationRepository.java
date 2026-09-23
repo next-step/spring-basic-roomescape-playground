@@ -8,4 +8,5 @@ import java.util.List;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findByDateAndThemeId(String date, Long themeId);
     List<Reservation> findAllByMemberId(Long memberId);
+    boolean existsByDateAndThemeIdAndTimeId(String date, Long themeId, Long timeId);
 }

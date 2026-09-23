@@ -9,7 +9,8 @@ public record MyReservationResponse(
         String theme,
         String date,
         String time,
-        String status
+        ReservationType type,
+        Long waitingRank
 ) {
     public static MyReservationResponse from(Reservation reservation) {
         return new MyReservationResponse(
@@ -17,7 +18,8 @@ public record MyReservationResponse(
                 reservation.getTheme().getName(),
                 reservation.getDate(),
                 reservation.getTime().getValue(),
-                "예약"
+                ReservationType.RESERVATION,
+                null
         );
     }
 
@@ -29,7 +31,8 @@ public record MyReservationResponse(
                 waiting.getTheme().getName(),
                 waiting.getDate(),
                 waiting.getTime().getValue(),
-                (waitingWithRank.getRank() + 1) + "번째 예약대기"
+                ReservationType.WAITING,
+                waitingWithRank.getRank() + 1
         );
     }
 }

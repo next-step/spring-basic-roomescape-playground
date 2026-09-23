@@ -6,6 +6,7 @@ import roomescape.auth.LoginMember;
 import roomescape.exception.*;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.Time;
@@ -21,12 +22,14 @@ public class WaitingService {
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public WaitingService(WaitingRepository waitingRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public WaitingService(WaitingRepository waitingRepository, MemberRepository memberRepository, TimeRepository timeRepository, ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public WaitingResponse save(LoginMember loginMember, WaitingRequest waitingRequest) {
@@ -39,6 +42,10 @@ public class WaitingService {
         Theme theme = themeRepository.findByIdAndDeletedFalse(waitingRequest.theme())
                 .orElseThrow(() -> new NotFoundThemeException("예약 대기 테마를 찾을 수 없습니다."));
 
+        if (!reservationRepository.existsByDateAndThemeIdAndTimeId(waitingRequest.date(), theme.getId(), time.getId())) {
+            throw new InvalidReservationException("예약되지 않은 시간에는 대기를 신청할 수 없습니다.");
+        }
+
         Waiting waiting;
 
         try {
@@ -47,11 +54,12 @@ public class WaitingService {
             throw new DuplicateWaitingException("이미 신청한 예약 대기입니다.");
         }
 
-        long waitingNumber = waitingRepository.countByDateAndThemeIdAndTimeId(
+        long waitingNumber = waitingRepository.countByDateAndThemeIdAndTimeIdAndIdLessThan(
                 waitingRequest.date(),
                 waitingRequest.theme(),
-                waitingRequest.time()
-        );
+                waitingRequest.time(),
+                waiting.getId()
+        ) + 1;
 
         return new WaitingResponse(waiting.getId(), waitingNumber);
     }

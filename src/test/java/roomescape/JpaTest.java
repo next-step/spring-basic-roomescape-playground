@@ -22,6 +22,7 @@ public class JpaTest {
         Time time = new Time("22:00");
         entityManager.persist(time);
         entityManager.flush();
+        entityManager.clear();
 
         Time persistTime = timeRepository.findById(time.getId()).orElse(null);
 

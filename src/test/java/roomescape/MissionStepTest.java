@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationType;
 import roomescape.waiting.dto.WaitingResponse;
 
 import java.time.LocalDate;
@@ -192,14 +193,13 @@ public class MissionStepTest {
                 .extract().jsonPath().getList(".", MyReservationResponse.class);
 
         // 예약 대기 상태 확인
-        String status = myReservations.stream()
+        MyReservationResponse waitingReservation = myReservations.stream()
                 .filter(it -> it.id().equals(waiting.getId()))
-                .filter(it -> !it.status().equals("예약"))
+                .filter(it -> it.type() == ReservationType.WAITING)
                 .findFirst()
-                .map(MyReservationResponse::status)
-                .orElse(null);
+                .orElseThrow();
 
-        assertThat(status).isEqualTo("1번째 예약대기");
+        assertThat(waitingReservation.waitingRank()).isEqualTo(1L);
     }
 
     @Test
@@ -286,5 +286,86 @@ public class MissionStepTest {
                 .delete("/waitings/" + waiting.getId())
                 .then().log().all()
                 .statusCode(403);
+    }
+
+    @Test
+    void 예약되지_않은_시간에_대기를_신청하면_400을_응답한다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("theme", "1");
+        params.put("time", "4");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 존재하지_않는_예약_대기를_취소하면_404를_응답한다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .delete("/waitings/9999")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 앞선_대기가_취소되면_남은_대기_순번이_당겨진다() {
+        String adminToken = createToken("admin@email.com", "password");
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        WaitingResponse brownWaiting = RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        WaitingResponse adminWaiting = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        assertThat(adminWaiting.getWaitingNumber()).isEqualTo(2L);
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .delete("/waitings/" + brownWaiting.getId())
+                .then().log().all()
+                .statusCode(204);
+
+        List<MyReservationResponse> adminReservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        MyReservationResponse adminWaitingAfterCancel = adminReservations.stream()
+                .filter(it -> it.type() == ReservationType.WAITING)
+                .filter(it -> it.id().equals(adminWaiting.getId()))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(adminWaitingAfterCancel.waitingRank()).isEqualTo(1L);
     }
 }

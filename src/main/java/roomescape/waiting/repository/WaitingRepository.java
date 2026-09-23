@@ -9,7 +9,7 @@ import roomescape.waiting.dto.WaitingWithRank;
 import java.util.List;
 
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
-    long countByDateAndThemeIdAndTimeId(String date, Long themeId, Long timeId);
+    long countByDateAndThemeIdAndTimeIdAndIdLessThan(String date, Long themeId, Long timeId, Long id);
     @Query("""
         SELECT new roomescape.waiting.dto.WaitingWithRank(
             w,
