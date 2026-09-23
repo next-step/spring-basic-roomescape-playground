@@ -1,30 +1,121 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.ForbiddenException;
+import roomescape.member.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
-    private ReservationDao reservationDao;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
+
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            MemberRepository memberRepository,
+            TimeRepository timeRepository,
+            ThemeRepository themeRepository
+    ) {
+        this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    @Transactional
+    public ReservationResponse save(
+            ReservationRequest request,
+            LoginMember loginMember
+    ) {
+        if (request.getDate() == null
+                || request.getTime() == null
+                || request.getTheme() == null) {
+            throw new IllegalArgumentException(
+                    "날짜, 시간, 테마를 입력해주세요."
+            );
+        }
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        String date = LocalDate.parse(request.getDate()).toString();
+
+        Member member = findReservationMember(request, loginMember);
+
+        Time time = timeRepository.findByIdAndDeletedFalse(request.getTime())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "존재하지 않는 예약 시간입니다."
+                ));
+
+        Theme theme = themeRepository.findByIdAndDeletedFalse(request.getTheme())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "존재하지 않는 테마입니다."
+                ));
+
+        if (reservationRepository.existsByDateAndTheme_IdAndTime_Id(
+                date, theme.getId(), time.getId()
+        )) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
+
+        Reservation reservation = reservationRepository.save(
+                new Reservation(member, date, time, theme)
+        );
+
+        return toResponse(reservation);
     }
 
+    private Member findReservationMember(
+            ReservationRequest request,
+            LoginMember loginMember
+    ) {
+        Long memberId = request.getMemberId();
+
+        if (memberId == null) {
+            memberId = loginMember.getId();
+        }
+
+        if (!loginMember.isAdmin()
+                && !loginMember.getId().equals(memberId)) {
+            throw new ForbiddenException(
+                    "다른 회원의 예약은 관리자만 생성할 수 있습니다."
+            );
+        }
+
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "존재하지 않는 회원입니다."
+                ));
+    }
+
+    @Transactional
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationRepository.findAllByOrderByIdAsc().stream()
+                .map(this::toResponse)
                 .toList();
+    }
+
+    private ReservationResponse toResponse(Reservation reservation) {
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getTheme().getName(),
+                reservation.getDate(),
+                reservation.getTime().getValue()
+        );
     }
 }
