@@ -50,4 +50,9 @@ class JwtTokenProviderTest {
         assertThatThrownBy(() -> jwtTokenProvider.getMemberId(invalidToken))
                 .isInstanceOf(Exception.class);
     }
+
+    @Test
+    void 해시값_뽑기() {
+        System.out.println("### 해시값: " + new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("password"));
+    }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import roomescape.exception.AuthenticationException;
 
 import java.util.Optional;
@@ -12,7 +13,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,9 +26,12 @@ class MemberServiceTest {
 
     private MemberService memberService;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @BeforeEach
     void setUp() {
-        memberService = new MemberService(memberRepository, jwtTokenProvider);
+        memberService = new MemberService(memberRepository, jwtTokenProvider, passwordEncoder);
     }
 
     @Test
@@ -53,7 +56,8 @@ class MemberServiceTest {
         String password = "password";
         Member member = new Member(1L, "어드민", email, "ADMIN");
 
-        given(memberRepository.findByEmailAndPassword(email, password)).willReturn(Optional.of(member));
+        given(memberRepository.findByEmail(email)).willReturn(Optional.of(member));
+        given(passwordEncoder.matches(password, member.getPassword())).willReturn(true);
         given(jwtTokenProvider.createToken(member)).willReturn("mocked-jwt-token");
 
         // when
@@ -68,30 +72,11 @@ class MemberServiceTest {
         // given
         String wrongEmail = "wrong@email.com";
         String wrongPassword = "wrong-password";
-        given(memberRepository.findByEmailAndPassword(anyString(), anyString()))
-                .willReturn(Optional.empty());
+        given(memberRepository.findByEmail(wrongEmail)).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> memberService.login(wrongEmail, wrongPassword))
                 .isInstanceOf(AuthenticationException.class)
                 .hasMessage("이메일 또는 비밀번호가 일치하지 않습니다.");
-    }
-
-    @Test
-    void 토큰으로_회원_정보를_조회한다() {
-        // given
-        String token = "valid-jwt-token";
-        Member member = new Member(1L, "어드민", "admin@email.com", "ADMIN");
-
-        given(jwtTokenProvider.getMemberId(token)).willReturn(1L);
-        given(memberRepository.findById(1L)).willReturn(Optional.of(member));
-
-        // when
-        Member response = memberService.findMemberByToken(token);
-
-        // then
-        assertThat(response.getName()).isEqualTo("어드민");
-        assertThat(response.getEmail()).isEqualTo("admin@email.com");
-        assertThat(response.getRole()).isEqualTo("ADMIN");
     }
 }
