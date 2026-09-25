@@ -3,47 +3,60 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberNotFoundException;
+import roomescape.member.MemberRepository;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
 
 import java.util.List;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
-    private MemberDao memberDao;
+    private final ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationDao reservationDao, MemberDao memberDao) {
-        this.reservationDao = reservationDao;
-        this.memberDao = memberDao;
+    public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository,
+                              TimeRepository timeRepository, ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.memberRepository = memberRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
         Member member;
 
         if (reservationRequest.getName() == null) {
-            member = memberDao.findById(loginMember.getId());
+            member = memberRepository.findById(loginMember.getId()).orElseThrow(MemberNotFoundException::new);
         } else {
-            member = memberDao.findByName(reservationRequest.getName());
+            member = memberRepository.findByName(reservationRequest.getName()).orElseThrow(MemberNotFoundException::new);
         }
 
-        ReservationSaveCommand command = new ReservationSaveCommand(
+        Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
+        Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
+
+        Reservation reservation = new Reservation(
+                member.getName(),
                 reservationRequest.getDate(),
-                reservationRequest.getTheme(),
-                reservationRequest.getTime(),
-                member.getName()
-        );
+                time,
+                theme
+                );
 
-        Reservation reservation = reservationDao.save(command);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        return new ReservationResponse(reservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(savedReservation.getId(), savedReservation.getName(), savedReservation.getTheme().getName(), savedReservation.getDate(), savedReservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
