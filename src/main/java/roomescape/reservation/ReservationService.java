@@ -3,6 +3,7 @@ package roomescape.reservation;
 import org.springframework.stereotype.Service;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.UnauthorizedException;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
@@ -45,7 +46,22 @@ public class ReservationService {
         return new ReservationResponse(saved.getId(), resolveName(saved), saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());
     }
 
-    public void deleteById(Long id) {
+//    public void deleteById(Long id) {
+//        reservationRepository.deleteById(id);
+//    }
+
+    public void deleteById(Long id, Member loginMember) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+
+        boolean isOwner = reservation.getMember() != null
+                && reservation.getMember().getId().equals(loginMember.getId());
+        boolean isAdmin = "ADMIN".equals(loginMember.getRole());
+
+        if (!isOwner && !isAdmin) {
+            throw new UnauthorizedException("본인의 예약이거나 관리자만 삭제할 수 있습니다.");
+        }
+
         reservationRepository.deleteById(id);
     }
 
