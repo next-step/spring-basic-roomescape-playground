@@ -24,8 +24,8 @@ public class DatabaseCleanupListener extends AbstractTestExecutionListener {
 
         jdbcTemplate.update(
                 "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?), (?, ?, ?, ?)",
-                "어드민", "admin@email.com", "password", "ADMIN",
-                "브라운", "brown@email.com", "password", "USER"
+                "어드민", "admin@email.com", "$2a$10$sSwu.Zk0dFqdXPROB/2ceO6NcJpqdvzQObMaVnxXTV.uGO8O7zYpK", "ADMIN",
+                "브라운", "brown@email.com", "$2a$10$sSwu.Zk0dFqdXPROB/2ceO6NcJpqdvzQObMaVnxXTV.uGO8O7zYpK", "USER"
         );
     }
 }

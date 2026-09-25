@@ -6,13 +6,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 import roomescape.exception.AuthenticationException;
+import roomescape.exception.DuplicateException;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,10 +27,10 @@ class MemberServiceTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
-    private MemberService memberService;
-
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    private MemberService memberService;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +41,12 @@ class MemberServiceTest {
     void 회원을_정상적으로_생성한다() {
         // given
         MemberRequest request = new MemberRequest();
+        ReflectionTestUtils.setField(request, "name", "어드민");
+        ReflectionTestUtils.setField(request, "email", "admin@email.com");
+        ReflectionTestUtils.setField(request, "password", "1234");
+
         Member savedMember = new Member(1L, "어드민", "admin@email.com", "USER");
+        given(passwordEncoder.encode(anyString())).willReturn("encoded-password");
         given(memberRepository.save(any(Member.class))).willReturn(savedMember);
 
         // when
@@ -47,6 +55,22 @@ class MemberServiceTest {
         // then
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getName()).isEqualTo("어드민");
+    }
+
+    @Test
+    void 이메일이_중복되면_예외가_발생한다() {
+        // given
+        MemberRequest request = new MemberRequest();
+        ReflectionTestUtils.setField(request, "name", "어드민");
+        ReflectionTestUtils.setField(request, "email", "admin@email.com");
+        ReflectionTestUtils.setField(request, "password", "1234");
+
+        given(memberRepository.existsByEmail("admin@email.com")).willReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> memberService.createMember(request))
+                .isInstanceOf(DuplicateException.class)
+                .hasMessage("이미 가입되어있는 이메일입니다.");
     }
 
     @Test

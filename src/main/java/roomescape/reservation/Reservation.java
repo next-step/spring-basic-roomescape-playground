@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import roomescape.exception.InvalidRequestException;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
@@ -31,12 +32,14 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member; // JPA는 기본이 nullable
+    private Member member;
 
     protected Reservation() {
     }
 
     public Reservation(Long id, String name, String date, Time time, Theme theme, Member member) {
+        validateName(name);
+        validateDate(date);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -46,11 +49,19 @@ public class Reservation {
     }
 
     public Reservation(String name, String date, Time time, Theme theme, Member member) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-        this.member = member;
+        this(null, name, date, time, theme, member);
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidRequestException("예약자 이름은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateDate(String date) {
+        if (date == null || date.isBlank()) {
+            throw new InvalidRequestException("예약 날짜는 비어있을 수 없습니다.");
+        }
     }
 
     public Long getId() {
