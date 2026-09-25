@@ -37,17 +37,9 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationStatus status;
 
-    public Reservation(String name, String date, Time time, Theme theme) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-        this.status = ReservationStatus.RESERVED;
-    }
-
-    public Reservation(Member member, String date, Time time, Theme theme) {
+    private Reservation(Member member, String name, String date, Time time, Theme theme) {
         this.member = member;
-        this.name = "";
+        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -58,11 +50,22 @@ public class Reservation {
 
     }
 
+    public static Reservation forMember(Member member, String date, Time time, Theme theme) {
+        return new Reservation(member, "", date, time, theme);
+    }
+
+    public static Reservation forGuest(String name, String date, Time time, Theme theme) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("예약자 이름은 필수입니다.");
+        }
+        return new Reservation(null, name, date, time, theme);
+    }
+
     public Long getId() {
         return id;
     }
 
-    public String getName() {
+    public String getReserverName() {
         if (member != null) {
             return member.getName();
         }

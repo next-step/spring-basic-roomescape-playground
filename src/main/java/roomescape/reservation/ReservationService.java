@@ -43,7 +43,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.save(
                 createReservation(reservationRequest, loginMember, time, theme));
 
-        return new ReservationResponse(reservation.getId(), reservation.getName(), theme.getName(), reservation.getDate(), time.getValue());
+        return new ReservationResponse(reservation.getId(), reservation.getReserverName(), theme.getName(), reservation.getDate(), time.getValue());
     }
 
     @Transactional
@@ -53,7 +53,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(it -> new ReservationResponse(it.getId(), it.getReserverName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
     }
 
@@ -68,11 +68,11 @@ public class ReservationService {
 
     private Reservation createReservation(ReservationRequest reservationRequest, LoginMember loginMember, Time time, Theme theme) {
         if (loginMember.role() == Role.ADMIN && reservationRequest.getName() != null) {
-            return new Reservation(reservationRequest.getName(), reservationRequest.getDate(), time, theme);
+            return Reservation.forGuest(reservationRequest.getName(), reservationRequest.getDate(), time, theme);
         }
 
         Member member = memberRepository.findById(loginMember.id())
                 .orElseThrow(() -> new AuthorizationException("존재하지 않는 회원입니다."));
-        return new Reservation(member, reservationRequest.getDate(), time, theme);
+        return Reservation.forMember(member, reservationRequest.getDate(), time, theme);
     }
 }
