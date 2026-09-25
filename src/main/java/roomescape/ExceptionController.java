@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.member.AuthorizationException;
+import roomescape.member.DuplicatedEmailException;
 import roomescape.waiting.DuplicatedReservationException;
 
 @ControllerAdvice
@@ -13,6 +14,11 @@ public class ExceptionController {
     @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<Void> handleAuthorizationException(AuthorizationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(DuplicatedEmailException.class)
+    public ResponseEntity<Void> handleDuplicatedEmailException(DuplicatedEmailException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     @ExceptionHandler(DuplicatedReservationException.class)

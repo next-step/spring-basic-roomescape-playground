@@ -17,6 +17,8 @@ public class MemberService {
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
+        validateNotDuplicated(memberRequest.getEmail());
+
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
@@ -32,5 +34,11 @@ public class MemberService {
 
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new AuthorizationException("존재하지 않는 회원입니다."));
+    }
+
+    private void validateNotDuplicated(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new DuplicatedEmailException("이미 가입된 이메일입니다.");
+        }
     }
 }
