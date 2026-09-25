@@ -4,9 +4,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import roomescape.exception.InvalidRequestException;
 
 @Entity
 public class Member {
+
+    private static final String EMAIL_REGEX = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +31,34 @@ public class Member {
     }
 
     public Member(String name, String email, String password, String role) {
+        validateName(name);
+        validateEmail(email);
+        validatePasswordNotBlank(password);
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidRequestException("이름은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new InvalidRequestException("이메일은 비어있을 수 없습니다.");
+        }
+        if (!email.matches(EMAIL_REGEX)) {
+            throw new InvalidRequestException("이메일 형식이 올바르지 않습니다.");
+        }
+    }
+
+    private void validatePasswordNotBlank(String password) {
+        if (password == null || password.isBlank()) {
+            throw new InvalidRequestException("비밀번호는 비어있을 수 없습니다.");
+        }
     }
 
     public Long getId() {

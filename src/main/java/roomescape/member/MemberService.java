@@ -5,9 +5,12 @@ import org.springframework.stereotype.Service;
 import roomescape.config.PasswordConfig;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.InvalidRequestException;
 
 @Service
 public class MemberService {
+    private static final int MIN_PASSWORD_LENGTH = 4;
+
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
@@ -27,6 +30,13 @@ public class MemberService {
         String encodedPassword = passwordEncoder.encode(memberRequest.getPassword());
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), encodedPassword, "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
+    }
+
+    // 비밀번호를 암호화하기 전 유효한 값인지 검사
+    private void validateRawPassword(String password) {
+        if (password == null || password.length() < MIN_PASSWORD_LENGTH) {
+            throw new InvalidRequestException("비밀번호는 " + MIN_PASSWORD_LENGTH + "자 이상이어야 합니다.");
+        }
     }
 
     // DB에 쿼리를 보내 검증하는 방식에서 회원을 이메일로 조회해서 가져온 후 비밀번호를 검증하도록 수정

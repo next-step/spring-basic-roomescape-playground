@@ -41,4 +41,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException e) {
         return ResponseEntity.status(409).body("해당 테마를 참조하는 예약이 존재하여 삭제할 수 없습니다.");
     }
+
+    // 회원가입 시 사용자가 양식에 맞지 않는 값을 입력한 경우
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<String> handleInvalidRequestException(InvalidRequestException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }
