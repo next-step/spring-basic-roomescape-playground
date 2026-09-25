@@ -14,6 +14,7 @@ import java.util.List;
 
 @Service
 public class ReservationService {
+
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
@@ -28,27 +29,37 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        Member member;
-
-        if (reservationRequest.getName() == null) {
-            member = memberRepository.findById(loginMember.getId()).orElseThrow(MemberNotFoundException::new);
-        } else {
-            member = memberRepository.findByName(reservationRequest.getName()).orElseThrow(MemberNotFoundException::new);
-        }
-
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
 
-        Reservation reservation = new Reservation(
-                member.getName(),
-                reservationRequest.getDate(),
-                time,
-                theme
-                );
+        Reservation reservation = createReservation(reservationRequest, loginMember, time, theme);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        return new ReservationResponse(savedReservation.getId(), savedReservation.getName(), savedReservation.getTheme().getName(), savedReservation.getDate(), savedReservation.getTime().getValue());
+        return new ReservationResponse(savedReservation.getId(), savedReservation.getReservationName(), savedReservation.getTheme().getName(), savedReservation.getDate(), savedReservation.getTime().getValue());
+    }
+
+    private Reservation createReservation(ReservationRequest reservationRequest, LoginMember loginMember,
+                                          Time time, Theme theme) {
+        if (reservationRequest.getName() == null) {
+            Member member = memberRepository.findById(loginMember.getId()).orElseThrow(MemberNotFoundException::new);
+
+            return new Reservation(
+                    member,
+                    "",
+                    reservationRequest.getDate(),
+                    time,
+                    theme
+            );
+        }
+
+        return new Reservation(
+                null,
+                reservationRequest.getName(),
+                reservationRequest.getDate(),
+                time,
+                theme
+        );
     }
 
     public void deleteById(Long id) {
@@ -57,7 +68,13 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(it -> new ReservationResponse(it.getId(), it.getReservationName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        return reservationRepository.findByMemberId(loginMember.getId()).stream()
+                .map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
                 .toList();
     }
 }
