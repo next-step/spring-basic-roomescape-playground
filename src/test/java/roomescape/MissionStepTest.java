@@ -279,6 +279,45 @@ public class MissionStepTest {
         }
     }
 
+    @Nested
+    class 예약_대기_순번 {
+
+        private static final String DATE = "2024-03-05";
+        private static final String TIME = "1";
+        private static final String THEME = "1";
+
+        @Test
+        void 같은_슬롯에_대기하면_순번이_차례로_매겨진다() {
+            String brownToken = createToken("brown@email.com", "password");
+            String testToken = createMemberToken("테스트", "test@email.com", "password");
+
+            WaitingResponse first = createWaiting(brownToken, DATE, TIME, THEME);
+            WaitingResponse second = createWaiting(testToken, DATE, TIME, THEME);
+
+            assertThat(first.waitingNumber()).isEqualTo(1);
+            assertThat(second.waitingNumber()).isEqualTo(2);
+        }
+
+        @Test
+        void 앞선_대기가_취소되면_순번이_당겨진다() {
+            String brownToken = createToken("brown@email.com", "password");
+            String testToken = createMemberToken("테스트", "test@email.com", "password");
+
+            WaitingResponse brownWaiting = createWaiting(brownToken, DATE, TIME, THEME);
+            createWaiting(testToken, DATE, TIME, THEME);
+
+            assertThat(waitingStatusOf(testToken)).isEqualTo("2번째 예약대기");
+
+            RestAssured.given().log().all()
+                    .cookie("token", brownToken)
+                    .delete("/waitings/" + brownWaiting.id())
+                    .then().log().all()
+                    .statusCode(204);
+
+            assertThat(waitingStatusOf(testToken)).isEqualTo("1번째 예약대기");
+        }
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);
@@ -293,5 +332,52 @@ public class MissionStepTest {
                 .extract();
 
         return response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
+    }
+
+    private String createMemberToken(String name, String email, String password) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("email", email);
+        params.put("password", password);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(201);
+
+        return createToken(email, password);
+    }
+
+    private WaitingResponse createWaiting(String token, String date, String time, String theme) {
+        Map<String, String> params = new HashMap<>();
+        params.put("date", date);
+        params.put("time", time);
+        params.put("theme", theme);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+    }
+
+    private String waitingStatusOf(String token) {
+        List<MyReservationResponse> myReservations = RestAssured.given().log().all()
+                .cookie("token", token)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        return myReservations.stream()
+                .filter(it -> !it.status().equals("예약"))
+                .findFirst()
+                .map(MyReservationResponse::status)
+                .orElse(null);
     }
 }
