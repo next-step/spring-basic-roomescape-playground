@@ -18,6 +18,10 @@ public class DatabaseCleanupListener extends AbstractTestExecutionListener {
         jdbcTemplate.update("DELETE FROM member");
         jdbcTemplate.update("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
 
+        // 테스트간 격리를 위해 waiting 테이블 삭제
+        jdbcTemplate.update("DELETE FROM waiting");
+        jdbcTemplate.update("ALTER TABLE waiting ALTER COLUMN id RESTART WITH 1");
+
         jdbcTemplate.update(
                 "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?), (?, ?, ?, ?)",
                 "어드민", "admin@email.com", "password", "ADMIN",
