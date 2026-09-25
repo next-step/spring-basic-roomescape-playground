@@ -47,4 +47,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidRequestException(InvalidRequestException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    // WatingRequest 검증에 실패한 경우 (@valid )
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidation(org.springframework.web.bind.MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(err -> err.getDefaultMessage())
+                .orElse("잘못된 요청입니다.");
+        return ResponseEntity.badRequest().body(message);
+    }
 }
