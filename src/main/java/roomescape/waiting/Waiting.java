@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,23 +15,25 @@ import roomescape.slot.Slot;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(
-        name = "reservations",
+        name = "waitings",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_reservations_slot",
-                        columnNames = "slot_id"
+                        name = "uk_waitings_member_slot",
+                        columnNames = {"member_id", "slot_id"}
                 )
         }
 )
-public class Reservation {
+public class Waiting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "slot_id", nullable = false)
@@ -41,25 +43,29 @@ public class Reservation {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    protected Reservation() {
+    protected Waiting() {
     }
 
-    public Reservation(String name, Slot slot, Member member) {
-        this.name = name;
+    public Waiting(Slot slot, Member member) {
+        this(slot, member, LocalDateTime.now());
+    }
+
+    public Waiting(Slot slot, Member member, LocalDateTime createdAt) {
         this.slot = slot;
         this.member = member;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getDate() {
         return slot.getDate();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public Time getTime() {
@@ -72,5 +78,9 @@ public class Reservation {
 
     public Slot getSlot() {
         return slot;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }

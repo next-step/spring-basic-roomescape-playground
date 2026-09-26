@@ -10,7 +10,14 @@ function render(data) {
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = '';
 
-  data.forEach(item => {
+  if (data.reservations.length === 0) {
+    const cell = tableBody.insertRow().insertCell();
+    cell.colSpan = 5;
+    cell.textContent = '예약 및 대기 내역이 없습니다.';
+    return;
+  }
+
+  data.reservations.forEach(item => {
     const row = tableBody.insertRow();
 
     row.insertCell(0).textContent = item.theme;
@@ -18,18 +25,17 @@ function render(data) {
     row.insertCell(2).textContent = item.time;
     row.insertCell(3).textContent = item.status;
 
-    // 새 셀을 만들고 취소 버튼을 추가
-    if (item.status !== '예약') {
-      const cancelCell = row.insertCell(4);
+    const actionCell = row.insertCell(4);
+    if (item.waitingId !== null && item.waitingId !== undefined) {
       const cancelButton = document.createElement('button');
-      cancelButton.textContent = '취소 '; // 버튼 텍스트 설정
-      cancelButton.className = 'btn btn-danger'; // 필요한 경우 CSS 클래스 설정
+      cancelButton.textContent = '취소';
+      cancelButton.className = 'btn btn-danger';
       cancelButton.onclick = function () {
-        requestDeleteWaiting(item.id).then(() => window.location.reload());
+        requestDeleteWaiting(item.waitingId)
+            .then(() => window.location.reload())
+            .catch(error => alert(error.message));
       };
-      cancelCell.appendChild(cancelButton); // 버튼을 셀에 추가
-    } else {
-      row.insertCell(4).textContent = ''; // 취소 버튼이 없는 빈 셀 추가
+      actionCell.appendChild(cancelButton);
     }
   });
 }
@@ -43,10 +49,13 @@ function requestRead(endpoint) {
 }
 
 function requestDeleteWaiting(id) {
-  const endpoint = '/waitings/' + id;
-  return fetch(endpoint, { method: 'DELETE' })
+  return fetch('/waitings/' + id, { method: 'DELETE' })
       .then(response => {
         if (response.status === 204) return;
-        throw new Error('Delete failed');
+        return response.json()
+            .catch(() => null)
+            .then(error => {
+              throw new Error(error?.message || '예약 대기 취소에 실패했습니다.');
+            });
       });
 }
