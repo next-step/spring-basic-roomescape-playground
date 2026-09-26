@@ -14,6 +14,7 @@ import roomescape.member.dto.LoginCheckResponse;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
+import roomescape.member.service.MemberResult;
 import roomescape.member.service.MemberService;
 
 import java.net.URI;
@@ -28,13 +29,18 @@ public class MemberController {
 
     @PostMapping("/members")
     public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
-        MemberResponse member = memberService.createMember(memberRequest);
-        return ResponseEntity.created(URI.create("/members/" + member.id())).body(member);
+        MemberResult member = memberService.createMember(
+                memberRequest.name(),
+                memberRequest.email(),
+                memberRequest.password()
+        );
+        MemberResponse response = new MemberResponse(member.id(), member.name(), member.email());
+        return ResponseEntity.created(URI.create("/members/" + member.id())).body(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        String token = memberService.login(loginRequest);
+        String token = memberService.login(loginRequest.email(), loginRequest.password());
 
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);

@@ -17,6 +17,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReservationControllerTest {
 
     @Test
+    void available_times_are_returned_with_booking_status_in_one_query() {
+        ExtractableResponse<Response> response = RestAssured.given()
+                .queryParam("date", "2024-03-01")
+                .queryParam("themeId", 1)
+                .get("/available-times")
+                .then()
+                .statusCode(200)
+                .extract();
+
+        assertThat(response.jsonPath().getList("timeId", Long.class))
+                .containsExactly(1L, 2L, 3L, 4L, 5L, 6L);
+        assertThat(response.jsonPath().getList("booked", Boolean.class))
+                .containsExactly(true, false, false, false, false, false);
+    }
+
+    @Test
     void admin_can_delete_reservation() {
         String token = createToken("admin@email.com", "password");
 

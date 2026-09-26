@@ -1,5 +1,6 @@
 package roomescape.time.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.auth.AdminOnly;
 import roomescape.reservation.service.ReservationAvailabilityService;
-import roomescape.time.domain.Time;
-import roomescape.time.dto.AvailableTime;
+import roomescape.reservation.service.AvailableTimeResult;
+import roomescape.time.dto.AvailableTimeResponse;
+import roomescape.time.dto.TimeRequest;
+import roomescape.time.dto.TimeResponse;
+import roomescape.time.service.TimeResult;
 import roomescape.time.service.TimeService;
 
 import java.net.URI;
@@ -30,19 +34,17 @@ public class TimeController {
     }
 
     @GetMapping("/times")
-    public List<Time> list() {
-        return timeService.findAll();
+    public List<TimeResponse> list() {
+        return timeService.findAll().stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @PostMapping("/times")
     @AdminOnly
-    public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null) {
-            throw new IllegalArgumentException("예약 시간은 비어 있을 수 없습니다.");
-        }
-
-        Time newTime = timeService.save(time);
-        return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(newTime);
+    public ResponseEntity<TimeResponse> create(@Valid @RequestBody TimeRequest request) {
+        TimeResult time = timeService.save(request.value());
+        return ResponseEntity.created(URI.create("/times/" + time.id())).body(toResponse(time));
     }
 
     @DeleteMapping("/times/{id}")
@@ -53,8 +55,18 @@ public class TimeController {
     }
 
     @GetMapping("/available-times")
-    public ResponseEntity<List<AvailableTime>> availableTimes(@RequestParam LocalDate date,
-                                                              @RequestParam Long themeId) {
-        return ResponseEntity.ok(reservationAvailabilityService.findAvailableTimes(date, themeId));
+    public ResponseEntity<List<AvailableTimeResponse>> availableTimes(@RequestParam LocalDate date,
+                                                                      @RequestParam Long themeId) {
+        return ResponseEntity.ok(reservationAvailabilityService.findAvailableTimes(date, themeId).stream()
+                .map(this::toAvailableTimeResponse)
+                .toList());
+    }
+
+    private TimeResponse toResponse(TimeResult result) {
+        return new TimeResponse(result.id(), result.value());
+    }
+
+    private AvailableTimeResponse toAvailableTimeResponse(AvailableTimeResult result) {
+        return new AvailableTimeResponse(result.timeId(), result.time(), result.booked());
     }
 }
