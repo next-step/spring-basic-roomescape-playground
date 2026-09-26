@@ -31,9 +31,9 @@ public class WaitingService {
 
     @Transactional
     public WaitingResponse save(WaitingRequest waitingRequest, LoginMember loginMember) {
-        Time time = timeRepository.findById(waitingRequest.time())
+        Time time = timeRepository.findByIdAndDeletedFalse(waitingRequest.time())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
-        Theme theme = themeRepository.findById(waitingRequest.theme())
+        Theme theme = themeRepository.findByIdAndDeletedFalse(waitingRequest.theme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         Member member = memberRepository.findById(loginMember.id())
                 .orElseThrow(() -> new AuthorizationException("존재하지 않는 회원입니다."));

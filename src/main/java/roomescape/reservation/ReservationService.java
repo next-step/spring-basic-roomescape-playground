@@ -35,9 +35,9 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
-        Time time = timeRepository.findById(reservationRequest.getTime())
+        Time time = timeRepository.findByIdAndDeletedFalse(reservationRequest.getTime())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
-        Theme theme = themeRepository.findById(reservationRequest.getTheme())
+        Theme theme = themeRepository.findByIdAndDeletedFalse(reservationRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
         Reservation reservation = reservationRepository.save(

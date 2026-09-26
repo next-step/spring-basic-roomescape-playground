@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -211,17 +212,7 @@ public class MissionStepTest {
         void 이미_예약한_시간에_대기하면_409() {
             String adminToken = createToken("admin@email.com", "password");
 
-            Map<String, String> params = new HashMap<>();
-            params.put("date", "2024-03-01");
-            params.put("time", "1");
-            params.put("theme", "1");
-
-            RestAssured.given().log().all()
-                    .body(params)
-                    .cookie("token", adminToken)
-                    .contentType(ContentType.JSON)
-                    .post("/waitings")
-                    .then().log().all()
+            requestWaiting(adminToken, "2024-03-01", "1", "1")
                     .statusCode(409);
         }
 
@@ -229,25 +220,10 @@ public class MissionStepTest {
         void 이미_대기_중인_시간에_다시_대기하면_409() {
             String brownToken = createToken("brown@email.com", "password");
 
-            Map<String, String> params = new HashMap<>();
-            params.put("date", "2024-03-01");
-            params.put("time", "1");
-            params.put("theme", "1");
-
-            RestAssured.given().log().all()
-                    .body(params)
-                    .cookie("token", brownToken)
-                    .contentType(ContentType.JSON)
-                    .post("/waitings")
-                    .then().log().all()
+            requestWaiting(brownToken, "2024-03-01", "1", "1")
                     .statusCode(201);
 
-            RestAssured.given().log().all()
-                    .body(params)
-                    .cookie("token", brownToken)
-                    .contentType(ContentType.JSON)
-                    .post("/waitings")
-                    .then().log().all()
+            requestWaiting(brownToken, "2024-03-01", "1", "1")
                     .statusCode(409);
         }
 
@@ -255,17 +231,7 @@ public class MissionStepTest {
         void 다른_사람의_대기를_취소하면_401() {
             String brownToken = createToken("brown@email.com", "password");
 
-            Map<String, String> params = new HashMap<>();
-            params.put("date", "2024-03-01");
-            params.put("time", "1");
-            params.put("theme", "1");
-
-            WaitingResponse waiting = RestAssured.given().log().all()
-                    .body(params)
-                    .cookie("token", brownToken)
-                    .contentType(ContentType.JSON)
-                    .post("/waitings")
-                    .then().log().all()
+            WaitingResponse waiting = requestWaiting(brownToken, "2024-03-01", "1", "1")
                     .statusCode(201)
                     .extract().as(WaitingResponse.class);
 
@@ -291,8 +257,12 @@ public class MissionStepTest {
             String brownToken = createToken("brown@email.com", "password");
             String testToken = createMemberToken("테스트", "test@email.com", "password");
 
-            WaitingResponse first = createWaiting(brownToken, DATE, TIME, THEME);
-            WaitingResponse second = createWaiting(testToken, DATE, TIME, THEME);
+            WaitingResponse first = requestWaiting(brownToken, DATE, TIME, THEME)
+                    .statusCode(201)
+                    .extract().as(WaitingResponse.class);
+            WaitingResponse second = requestWaiting(testToken, DATE, TIME, THEME)
+                    .statusCode(201)
+                    .extract().as(WaitingResponse.class);
 
             assertThat(first.waitingNumber()).isEqualTo(1);
             assertThat(second.waitingNumber()).isEqualTo(2);
@@ -303,8 +273,11 @@ public class MissionStepTest {
             String brownToken = createToken("brown@email.com", "password");
             String testToken = createMemberToken("테스트", "test@email.com", "password");
 
-            WaitingResponse brownWaiting = createWaiting(brownToken, DATE, TIME, THEME);
-            createWaiting(testToken, DATE, TIME, THEME);
+            WaitingResponse brownWaiting = requestWaiting(brownToken, DATE, TIME, THEME)
+                    .statusCode(201)
+                    .extract().as(WaitingResponse.class);
+            requestWaiting(testToken, DATE, TIME, THEME)
+                    .statusCode(201);
 
             assertThat(waitingStatusOf(testToken)).isEqualTo("2번째 예약대기");
 
@@ -315,6 +288,46 @@ public class MissionStepTest {
                     .statusCode(204);
 
             assertThat(waitingStatusOf(testToken)).isEqualTo("1번째 예약대기");
+        }
+    }
+
+    @Nested
+    class 삭제된_시간_테마 {
+
+        @Test
+        void 삭제된_시간으로_대기하면_400() {
+            String brownToken = createToken("brown@email.com", "password");
+            deleteTime("3");
+
+            requestWaiting(brownToken, "2024-03-05", "3", "1")
+                    .statusCode(400);
+        }
+
+        @Test
+        void 삭제된_테마로_대기하면_400() {
+            String brownToken = createToken("brown@email.com", "password");
+            deleteTheme("2");
+
+            requestWaiting(brownToken, "2024-03-05", "1", "2")
+                    .statusCode(400);
+        }
+
+        @Test
+        void 삭제된_시간으로_예약하면_400() {
+            String brownToken = createToken("brown@email.com", "password");
+            deleteTime("3");
+
+            requestReservation(brownToken, "2024-03-05", "3", "1")
+                    .statusCode(400);
+        }
+
+        @Test
+        void 삭제된_테마로_예약하면_400() {
+            String brownToken = createToken("brown@email.com", "password");
+            deleteTheme("2");
+
+            requestReservation(brownToken, "2024-03-05", "1", "2")
+                    .statusCode(400);
         }
     }
 
@@ -350,7 +363,7 @@ public class MissionStepTest {
         return createToken(email, password);
     }
 
-    private WaitingResponse createWaiting(String token, String date, String time, String theme) {
+    private ValidatableResponse requestWaiting(String token, String date, String time, String theme) {
         Map<String, String> params = new HashMap<>();
         params.put("date", date);
         params.put("time", time);
@@ -361,9 +374,35 @@ public class MissionStepTest {
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .post("/waitings")
+                .then().log().all();
+    }
+
+    private ValidatableResponse requestReservation(String token, String date, String time, String theme) {
+        Map<String, String> params = new HashMap<>();
+        params.put("date", date);
+        params.put("time", time);
+        params.put("theme", theme);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all();
+    }
+
+    private void deleteTime(String id) {
+        RestAssured.given().log().all()
+                .delete("/times/" + id)
                 .then().log().all()
-                .statusCode(201)
-                .extract().as(WaitingResponse.class);
+                .statusCode(204);
+    }
+
+    private void deleteTheme(String id) {
+        RestAssured.given().log().all()
+                .delete("/themes/" + id)
+                .then().log().all()
+                .statusCode(204);
     }
 
     private String waitingStatusOf(String token) {
