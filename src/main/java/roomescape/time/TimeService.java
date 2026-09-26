@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -18,7 +19,7 @@ public class TimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<AvailableTime> getAvailableTime(String date, Long themeId) {
+    public List<AvailableTime> getAvailableTime(LocalDate date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
         List<Time> times = timeRepository.findByDeleted(false);
 

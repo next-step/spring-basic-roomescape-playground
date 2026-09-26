@@ -12,6 +12,8 @@ import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 
+import java.time.LocalDate;
+
 @Service
 @Transactional(readOnly = true)
 public class WaitingService {
@@ -57,7 +59,7 @@ public class WaitingService {
         waitingRepository.delete(waiting);
     }
 
-    private void validateNotDuplicated(Member member, String date, Time time, Theme theme) {
+    private void validateNotDuplicated(Member member, LocalDate date, Time time, Theme theme) {
         if (reservationRepository.existsByMemberAndDateAndTimeAndTheme(member, date, time, theme)) {
             throw new DuplicatedReservationException("이미 예약한 시간에는 대기할 수 없습니다.");
         }

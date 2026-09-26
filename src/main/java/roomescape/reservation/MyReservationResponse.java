@@ -14,7 +14,7 @@ public record MyReservationResponse(
         return new MyReservationResponse(
                 reservation.getId(),
                 reservation.getTheme().getName(),
-                reservation.getDate(),
+                reservation.getDate().toString(),
                 reservation.getTime().getValue(),
                 reservation.getStatus().getDisplayName()
         );
@@ -25,7 +25,7 @@ public record MyReservationResponse(
         return new MyReservationResponse(
                 waiting.getId(),
                 waiting.getTheme().getName(),
-                waiting.getDate(),
+                waiting.getDate().toString(),
                 waiting.getTime().getValue(),
                 (waitingWithRank.rank() + 1) + "번째 예약대기"
         );

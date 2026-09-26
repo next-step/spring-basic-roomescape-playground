@@ -6,13 +6,14 @@ import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
-    boolean existsByMemberAndDateAndTimeAndTheme(Member member, String date, Time time, Theme theme);
+    boolean existsByMemberAndDateAndTimeAndTheme(Member member, LocalDate date, Time time, Theme theme);
 
-    Long countByDateAndTimeAndThemeAndIdLessThan(String date, Time time, Theme theme, Long id);
+    Long countByDateAndTimeAndThemeAndIdLessThan(LocalDate date, Time time, Theme theme, Long id);
 
     @Query("SELECT new roomescape.waiting.WaitingWithRank(" +
             "    w, " +

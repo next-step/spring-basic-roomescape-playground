@@ -43,7 +43,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.save(
                 createReservation(reservationRequest, loginMember, time, theme));
 
-        return new ReservationResponse(reservation.getId(), reservation.getReserverName(), theme.getName(), reservation.getDate(), time.getValue());
+        return new ReservationResponse(reservation.getId(), reservation.getReserverName(), theme.getName(), reservation.getDate().toString(), time.getValue());
     }
 
     @Transactional
@@ -53,7 +53,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getReserverName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+                .map(it -> new ReservationResponse(it.getId(), it.getReserverName(), it.getTheme().getName(), it.getDate().toString(), it.getTime().getValue()))
                 .toList();
     }
 

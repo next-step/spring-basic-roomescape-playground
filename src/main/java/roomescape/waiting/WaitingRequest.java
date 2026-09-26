@@ -1,7 +1,9 @@
 package roomescape.waiting;
 
+import java.time.LocalDate;
+
 public record WaitingRequest(
-        String date,
+        LocalDate date,
         Long theme,
         Long time
 ) {

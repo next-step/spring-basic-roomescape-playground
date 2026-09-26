@@ -15,6 +15,7 @@ import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.waiting.WaitingResponse;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    private static final String FUTURE_DATE = "2030-03-01";
+    private static final String LEAP_DATE = "2032-02-29";
+    private static final String NOT_LEAP_DATE = "2030-02-29";
+    private static final String PAST_DATE = "2024-03-01";
 
     @Test
     void 일단계() {
@@ -47,7 +53,7 @@ public class MissionStepTest {
         String token = createToken("admin@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", FUTURE_DATE);
         params.put("time", "1");
         params.put("theme", "1");
 
@@ -114,7 +120,7 @@ public class MissionStepTest {
         String brownToken = createToken("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", FUTURE_DATE);
         params.put("time", "1");
         params.put("theme", "1");
 
@@ -212,7 +218,10 @@ public class MissionStepTest {
         void 이미_예약한_시간에_대기하면_409() {
             String adminToken = createToken("admin@email.com", "password");
 
-            requestWaiting(adminToken, "2024-03-01", "1", "1")
+            requestReservation(adminToken, FUTURE_DATE, "1", "1")
+                    .statusCode(201);
+
+            requestWaiting(adminToken, FUTURE_DATE, "1", "1")
                     .statusCode(409);
         }
 
@@ -220,10 +229,10 @@ public class MissionStepTest {
         void 이미_대기_중인_시간에_다시_대기하면_409() {
             String brownToken = createToken("brown@email.com", "password");
 
-            requestWaiting(brownToken, "2024-03-01", "1", "1")
+            requestWaiting(brownToken, FUTURE_DATE, "1", "1")
                     .statusCode(201);
 
-            requestWaiting(brownToken, "2024-03-01", "1", "1")
+            requestWaiting(brownToken, FUTURE_DATE, "1", "1")
                     .statusCode(409);
         }
 
@@ -231,7 +240,7 @@ public class MissionStepTest {
         void 다른_사람의_대기를_취소하면_401() {
             String brownToken = createToken("brown@email.com", "password");
 
-            WaitingResponse waiting = requestWaiting(brownToken, "2024-03-01", "1", "1")
+            WaitingResponse waiting = requestWaiting(brownToken, FUTURE_DATE, "1", "1")
                     .statusCode(201)
                     .extract().as(WaitingResponse.class);
 
@@ -248,7 +257,7 @@ public class MissionStepTest {
     @Nested
     class 예약_대기_순번 {
 
-        private static final String DATE = "2024-03-05";
+        private static final String DATE = FUTURE_DATE;
         private static final String TIME = "1";
         private static final String THEME = "1";
 
@@ -299,7 +308,7 @@ public class MissionStepTest {
             String brownToken = createToken("brown@email.com", "password");
             deleteTime("3");
 
-            requestWaiting(brownToken, "2024-03-05", "3", "1")
+            requestWaiting(brownToken, FUTURE_DATE, "3", "1")
                     .statusCode(400);
         }
 
@@ -308,7 +317,7 @@ public class MissionStepTest {
             String brownToken = createToken("brown@email.com", "password");
             deleteTheme("2");
 
-            requestWaiting(brownToken, "2024-03-05", "1", "2")
+            requestWaiting(brownToken, FUTURE_DATE, "1", "2")
                     .statusCode(400);
         }
 
@@ -317,7 +326,7 @@ public class MissionStepTest {
             String brownToken = createToken("brown@email.com", "password");
             deleteTime("3");
 
-            requestReservation(brownToken, "2024-03-05", "3", "1")
+            requestReservation(brownToken, FUTURE_DATE, "3", "1")
                     .statusCode(400);
         }
 
@@ -326,7 +335,59 @@ public class MissionStepTest {
             String brownToken = createToken("brown@email.com", "password");
             deleteTheme("2");
 
-            requestReservation(brownToken, "2024-03-05", "1", "2")
+            requestReservation(brownToken, FUTURE_DATE, "1", "2")
+                    .statusCode(400);
+        }
+    }
+
+    @Nested
+    class 잘못된_날짜 {
+
+        @ParameterizedTest
+        @CsvSource({
+                "''",
+                "not-a-date",
+                "2024-02-31",
+                "2024-3-5"
+        })
+        void 달력에_없는_날짜로_예약하거나_대기하면_400(String date) {
+            String brownToken = createToken("brown@email.com", "password");
+
+            requestReservation(brownToken, date, "1", "1")
+                    .statusCode(400);
+
+            requestWaiting(brownToken, date, "1", "1")
+                    .statusCode(400);
+        }
+
+        @Test
+        void 윤년의_2월_29일은_예약할_수_있다() {
+            String brownToken = createToken("brown@email.com", "password");
+
+            requestReservation(brownToken, LEAP_DATE, "1", "1")
+                    .statusCode(201);
+        }
+
+        @Test
+        void 윤년이_아닌_해의_2월_29일로_예약하면_400() {
+            String brownToken = createToken("brown@email.com", "password");
+
+            requestReservation(brownToken, NOT_LEAP_DATE, "1", "1")
+                    .statusCode(400);
+        }
+    }
+
+    @Nested
+    class 지난_날짜 {
+
+        @Test
+        void 지난_날짜로_예약하거나_대기하면_400() {
+            String brownToken = createToken("brown@email.com", "password");
+
+            requestReservation(brownToken, PAST_DATE, "1", "1")
+                    .statusCode(400);
+
+            requestWaiting(brownToken, PAST_DATE, "1", "1")
                     .statusCode(400);
         }
     }

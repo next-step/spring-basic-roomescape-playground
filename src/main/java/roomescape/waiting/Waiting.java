@@ -9,12 +9,14 @@ import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+import java.time.LocalDate;
+
 @Entity
 public class Waiting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String date;
+    private LocalDate date;
 
     @ManyToOne
     private Member member;
@@ -25,7 +27,8 @@ public class Waiting {
     @ManyToOne
     private Theme theme;
 
-    public Waiting(Member member, String date, Time time, Theme theme) {
+    public Waiting(Member member, LocalDate date, Time time, Theme theme) {
+        validateNotPast(date);
         this.member = member;
         this.date = date;
         this.time = time;
@@ -36,6 +39,12 @@ public class Waiting {
 
     }
 
+    private void validateNotPast(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("지난 날짜는 대기할 수 없습니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -44,7 +53,7 @@ public class Waiting {
         return member;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

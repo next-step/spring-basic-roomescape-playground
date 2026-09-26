@@ -12,6 +12,8 @@ import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
+import java.time.LocalDate;
+
 @Entity
 public class Reservation {
     @Id
@@ -22,7 +24,7 @@ public class Reservation {
     private String name;
 
     @Column(nullable = false)
-    private String date;
+    private LocalDate date;
 
     @ManyToOne
     private Member member;
@@ -37,7 +39,8 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationStatus status;
 
-    private Reservation(Member member, String name, String date, Time time, Theme theme) {
+    private Reservation(Member member, String name, LocalDate date, Time time, Theme theme) {
+        validateNotPast(date);
         this.member = member;
         this.name = name;
         this.date = date;
@@ -50,15 +53,21 @@ public class Reservation {
 
     }
 
-    public static Reservation forMember(Member member, String date, Time time, Theme theme) {
+    public static Reservation forMember(Member member, LocalDate date, Time time, Theme theme) {
         return new Reservation(member, "", date, time, theme);
     }
 
-    public static Reservation forGuest(String name, String date, Time time, Theme theme) {
+    public static Reservation forGuest(String name, LocalDate date, Time time, Theme theme) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("예약자 이름은 필수입니다.");
         }
         return new Reservation(null, name, date, time, theme);
+    }
+
+    private void validateNotPast(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+        }
     }
 
     public Long getId() {
@@ -72,7 +81,7 @@ public class Reservation {
         return name;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
