@@ -7,6 +7,7 @@ import roomescape.waiting.domain.Waiting;
 import roomescape.waiting.dto.WaitingWithRank;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
     long countByDateAndThemeIdAndTimeIdAndIdLessThan(String date, Long themeId, Long timeId, Long id);
@@ -25,4 +26,6 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
         ORDER BY w.id ASC
         """)
     List<WaitingWithRank> findWaitingsWithRankByMemberId(@Param("memberId") Long memberId);
+    Optional<Waiting> findFirstByDateAndThemeIdAndTimeIdOrderByIdAsc(String date, Long themeId, Long timeId);
+    void deleteAllByDateAndThemeIdAndTimeId(String date, Long themeId, Long timeId);
 }

@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationType;
@@ -165,12 +166,21 @@ public class MissionStepTest {
 
     @Test
     void 육단계() {
+        String adminToken = createToken("admin@email.com", "password");
         String brownToken = createToken("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("time", "1");
         params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201);
 
         // 예약 대기 생성
         WaitingResponse waiting = RestAssured.given().log().all()
@@ -204,12 +214,21 @@ public class MissionStepTest {
 
     @Test
     void 예약_대기를_취소하면_목록에서_제외된다() {
+        String adminToken = createToken("admin@email.com", "password");
         String brownToken = createToken("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("time", "1");
         params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201);
 
         WaitingResponse waiting = RestAssured.given().log().all()
                 .body(params)
@@ -233,17 +252,26 @@ public class MissionStepTest {
                 .statusCode(200)
                 .extract().jsonPath().getList(".", MyReservationResponse.class);
 
-        assertThat(reservations).isEmpty();
+        assertThat(reservations).noneMatch(it -> it.type() == ReservationType.WAITING && it.id().equals(waiting.getId()));
     }
 
     @Test
     void 동일한_예약_대기를_중복_신청하면_409를_응답한다() {
+        String adminToken = createToken("admin@email.com", "password");
         String brownToken = createToken("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("time", "1");
         params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .body(params)
@@ -268,13 +296,21 @@ public class MissionStepTest {
         String brownToken = createToken("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("time", "1");
         params.put("theme", "1");
 
-        WaitingResponse waiting = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .body(params)
                 .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        WaitingResponse waiting = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
                 .contentType(ContentType.JSON)
                 .post("/waitings")
                 .then().log().all()
@@ -282,7 +318,7 @@ public class MissionStepTest {
                 .extract().as(WaitingResponse.class);
 
         RestAssured.given().log().all()
-                .cookie("token", brownToken)
+                .cookie("token", adminToken)
                 .delete("/waitings/" + waiting.getId())
                 .then().log().all()
                 .statusCode(403);
@@ -293,7 +329,7 @@ public class MissionStepTest {
         String brownToken = createToken("brown@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("theme", "1");
         params.put("time", "4");
 
@@ -319,13 +355,34 @@ public class MissionStepTest {
 
     @Test
     void 앞선_대기가_취소되면_남은_대기_순번이_당겨진다() {
+        Map<String, String> memberParams = new HashMap<>();
+        memberParams.put("name", "한성");
+        memberParams.put("email", "hansung@email.com");
+        memberParams.put("password", "password");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberParams)
+                .post("/members")
+                .then().log().all()
+                .statusCode(201);
+
         String adminToken = createToken("admin@email.com", "password");
         String brownToken = createToken("brown@email.com", "password");
+        String hansungToken = createToken("hansung@email.com", "password");
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("time", "1");
         params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201);
 
         WaitingResponse brownWaiting = RestAssured.given().log().all()
                 .cookie("token", brownToken)
@@ -336,8 +393,8 @@ public class MissionStepTest {
                 .statusCode(201)
                 .extract().as(WaitingResponse.class);
 
-        WaitingResponse adminWaiting = RestAssured.given().log().all()
-                .cookie("token", adminToken)
+        WaitingResponse hansungWaiting = RestAssured.given().log().all()
+                .cookie("token", hansungToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .post("/waitings")
@@ -345,7 +402,7 @@ public class MissionStepTest {
                 .statusCode(201)
                 .extract().as(WaitingResponse.class);
 
-        assertThat(adminWaiting.getWaitingNumber()).isEqualTo(2L);
+        assertThat(hansungWaiting.getWaitingNumber()).isEqualTo(2L);
 
         RestAssured.given().log().all()
                 .cookie("token", brownToken)
@@ -353,19 +410,163 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(204);
 
-        List<MyReservationResponse> adminReservations = RestAssured.given().log().all()
-                .cookie("token", adminToken)
+        List<MyReservationResponse> hansungReservations = RestAssured.given().log().all()
+                .cookie("token", hansungToken)
                 .get("/reservations-mine")
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".", MyReservationResponse.class);
 
-        MyReservationResponse adminWaitingAfterCancel = adminReservations.stream()
+        MyReservationResponse hansungWaitingAfterCancel = hansungReservations.stream()
                 .filter(it -> it.type() == ReservationType.WAITING)
-                .filter(it -> it.id().equals(adminWaiting.getId()))
+                .filter(it -> it.id().equals(hansungWaiting.getId()))
                 .findFirst()
                 .orElseThrow();
 
-        assertThat(adminWaitingAfterCancel.waitingRank()).isEqualTo(1L);
+        assertThat(hansungWaitingAfterCancel.waitingRank()).isEqualTo(1L);
+    }
+
+    @Test
+    void 예약을_취소하면_첫_대기가_예약으로_전환되고_다음_대기_순번이_당겨진다() {
+        String adminToken = createToken("admin@email.com", "password");
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> memberParams = new HashMap<>();
+        memberParams.put("name", "한성");
+        memberParams.put("email", "hansung@email.com");
+        memberParams.put("password", "password");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(memberParams)
+                .post("/members")
+                .then().log().all()
+                .statusCode(201);
+
+        String hansungToken = createToken("hansung@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ReservationResponse reservation = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(ReservationResponse.class);
+
+        WaitingResponse waiting = RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        WaitingResponse hansungWaiting = RestAssured.given().log().all()
+                .cookie("token", hansungToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        assertThat(hansungWaiting.getWaitingNumber()).isEqualTo(2L);
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .delete("/reservations/" + reservation.getId())
+                .then().log().all()
+                .statusCode(204);
+
+        List<MyReservationResponse> brownReservations = RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(brownReservations).anyMatch(it -> it.type() == ReservationType.RESERVATION
+                        && it.date().equals(reservation.getDate())
+                        && it.time().equals(reservation.getTime())
+                        && it.theme().equals(reservation.getTheme()));
+        assertThat(brownReservations).noneMatch(it -> it.type() == ReservationType.WAITING && it.id().equals(waiting.getId()));
+
+        List<MyReservationResponse> hansungReservations = RestAssured.given().log().all()
+                .cookie("token", hansungToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(hansungReservations).anyMatch(it -> it.type() == ReservationType.WAITING
+                        && it.id().equals(hansungWaiting.getId())
+                        && it.waitingRank().equals(1L));
+    }
+
+    @Test
+    @Sql(statements = """
+        INSERT INTO waiting (member_id, theme_id, date, time_id)
+        VALUES (2, 1, '2024-03-01', 1);
+        """)
+    void 지난_예약을_삭제하면_대기도_함께_삭제된다() {
+        String adminToken = createToken("admin@email.com", "password");
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).noneMatch(it -> it.type() == ReservationType.WAITING
+                        && it.date().equals("2024-03-01")
+                        && it.time().equals("10:00")
+                        && it.theme().equals("테마1"));
+    }
+
+    @Test
+    void 일반_회원이_본인_예약을_삭제할_수_있다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .when().delete("/reservations/4")
+                .then().log().all()
+                .statusCode(204);
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .when().get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).noneMatch(it ->
+                it.type() == ReservationType.RESERVATION && it.id().equals(4L));
+    }
+
+    @Test
+    void 관리자는_다른_회원의_예약을_삭제할_수_있다() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().delete("/reservations/4")
+                .then().log().all()
+                .statusCode(204);
     }
 }

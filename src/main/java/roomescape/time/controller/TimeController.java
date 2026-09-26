@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.LoginMember;
+import roomescape.exception.ForbiddenAdminOperationException;
 import roomescape.exception.InvalidTimeException;
+import roomescape.member.domain.Role;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.AvailableTime;
 import roomescape.time.service.TimeService;
@@ -31,7 +34,11 @@ public class TimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<Time> create(@RequestBody Time time) {
+    public ResponseEntity<Time> create(LoginMember loginMember, @RequestBody Time time) {
+        if (loginMember.role() != Role.ADMIN) {
+            throw new ForbiddenAdminOperationException("관리자만 시간을 관리할 수 있습니다.");
+        }
+
         if (time.getValue() == null
                 || time.getValue().isBlank()
                 || time.getValue().length() > MAX_TIME_LENGTH) {
@@ -43,7 +50,11 @@ public class TimeController {
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(LoginMember loginMember, @PathVariable Long id) {
+        if (loginMember.role() != Role.ADMIN) {
+            throw new ForbiddenAdminOperationException("관리자만 시간을 관리할 수 있습니다.");
+        }
+
         timeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

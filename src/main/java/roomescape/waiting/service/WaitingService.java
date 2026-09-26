@@ -6,6 +6,7 @@ import roomescape.auth.LoginMember;
 import roomescape.exception.*;
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -15,6 +16,11 @@ import roomescape.waiting.domain.Waiting;
 import roomescape.waiting.dto.WaitingRequest;
 import roomescape.waiting.dto.WaitingResponse;
 import roomescape.waiting.repository.WaitingRepository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 @Service
 public class WaitingService {
@@ -39,11 +45,23 @@ public class WaitingService {
         Time time = timeRepository.findByIdAndDeletedFalse(waitingRequest.time())
                 .orElseThrow(() -> new NotFoundTimeException("예약 대기 시간을 찾을 수 없습니다."));
 
+        validateFutureDateTime(waitingRequest.date(), time);
+
         Theme theme = themeRepository.findByIdAndDeletedFalse(waitingRequest.theme())
                 .orElseThrow(() -> new NotFoundThemeException("예약 대기 테마를 찾을 수 없습니다."));
 
-        if (!reservationRepository.existsByDateAndThemeIdAndTimeId(waitingRequest.date(), theme.getId(), time.getId())) {
-            throw new InvalidReservationException("예약되지 않은 시간에는 대기를 신청할 수 없습니다.");
+        Reservation reservation = reservationRepository
+                .findByDateAndThemeIdAndTimeId(
+                        waitingRequest.date(), theme.getId(), time.getId()
+                )
+                .orElseThrow(() -> new InvalidReservationException(
+                        "예약되지 않은 시간에는 대기를 신청할 수 없습니다."
+                ));
+
+        if (reservation.getMember().getId().equals(member.getId())) {
+            throw new InvalidReservationException(
+                    "본인의 예약에는 대기를 신청할 수 없습니다."
+            );
         }
 
         Waiting waiting;
@@ -72,5 +90,24 @@ public class WaitingService {
             throw new ForbiddenWaitingException("본인의 예약 대기만 취소할 수 있습니다.");
         }
         waitingRepository.delete(waiting);
+    }
+
+    private void validateFutureDateTime(String date, Time time) {
+        if (date == null) {
+            throw new InvalidReservationException("올바른 예약 날짜와 시간을 선택해야 합니다.");
+        }
+
+        try {
+            LocalDateTime reservationDateTime = LocalDateTime.of(
+                    LocalDate.parse(date),
+                    LocalTime.parse(time.getValue())
+            );
+
+            if (!reservationDateTime.isAfter(LocalDateTime.now())) {
+                throw new InvalidReservationException("지난 예약에는 대기를 신청할 수 없습니다.");
+            }
+        } catch (DateTimeParseException exception) {
+            throw new InvalidReservationException("올바른 예약 날짜와 시간을 선택해야 합니다.");
+        }
     }
 }

@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.LoginMember;
+import roomescape.exception.ForbiddenAdminOperationException;
 import roomescape.exception.InvalidReservationException;
+import roomescape.member.domain.Role;
 import roomescape.reservation.dto.MyReservationResponse;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -27,7 +29,11 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public List<ReservationResponse> list() {
+    public List<ReservationResponse> list(LoginMember loginMember) {
+        if (loginMember.role() != Role.ADMIN) {
+            throw new ForbiddenAdminOperationException("관리자만 전체 예약 목록을 조회할 수 있습니다.");
+        }
+
         return reservationService.findAll();
     }
 
@@ -52,8 +58,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        reservationService.deleteById(id);
+    public ResponseEntity<Void> delete(LoginMember loginMember, @PathVariable Long id) {
+        reservationService.deleteById(loginMember, id);
         return ResponseEntity.noContent().build();
     }
 }

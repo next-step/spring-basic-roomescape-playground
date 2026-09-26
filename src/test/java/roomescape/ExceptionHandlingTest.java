@@ -101,6 +101,8 @@ class ExceptionHandlingTest {
 
     @Test
     void 올바르지_않은_테마를_등록하면_400을_응답한다() {
+        String adminToken = createToken("admin@email.com", "password");
+
         Map<String, String> params = new HashMap<>();
         params.put("name", " ");
         params.put("description", "테마 설명");
@@ -108,6 +110,7 @@ class ExceptionHandlingTest {
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(400);
@@ -115,7 +118,10 @@ class ExceptionHandlingTest {
 
     @Test
     void 존재하지_않는_테마를_삭제하면_404를_응답한다() {
+        String adminToken = createToken("admin@email.com", "password");
+
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().delete("/themes/9999")
                 .then().log().all()
                 .statusCode(404);
@@ -167,7 +173,10 @@ class ExceptionHandlingTest {
 
     @Test
     void 존재하지_않는_예약을_삭제하면_404를_응답한다() {
+        String adminToken = createToken("admin@email.com", "password");
+
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().delete("/reservations/9999")
                 .then().log().all()
                 .statusCode(404);
@@ -175,12 +184,15 @@ class ExceptionHandlingTest {
 
     @Test
     void 올바르지_않은_시간을_등록하면_400을_응답한다() {
+        String adminToken = createToken("admin@email.com", "password");
+
         Map<String, String> params = new HashMap<>();
         params.put("value", " ");
 
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
@@ -188,12 +200,15 @@ class ExceptionHandlingTest {
 
     @Test
     void 이미_등록된_시간을_등록하면_409를_응답한다() {
+        String adminToken = createToken("admin@email.com", "password");
+
         Map<String, String> params = new HashMap<>();
         params.put("value", "10:00");
 
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(409);
@@ -201,7 +216,10 @@ class ExceptionHandlingTest {
 
     @Test
     void 존재하지_않는_시간을_삭제하면_404를_응답한다() {
+        String adminToken = createToken("admin@email.com", "password");
+
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().delete("/times/9999")
                 .then().log().all()
                 .statusCode(404);
@@ -209,7 +227,10 @@ class ExceptionHandlingTest {
 
     @Test
     void 삭제된_시간을_다시_등록하면_복구된다() {
+        String adminToken = createToken("admin@email.com", "password");
+
         RestAssured.given().log().all()
+                .cookie("token", adminToken)
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(204);
@@ -220,6 +241,7 @@ class ExceptionHandlingTest {
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(ContentType.JSON)
+                .cookie("token", adminToken)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
@@ -289,6 +311,7 @@ class ExceptionHandlingTest {
                 .then().log().all()
                 .statusCode(401);
     }
+
     @Value("${roomescape.auth.jwt.secret}")
     private String secretKey;
     @Test
@@ -309,5 +332,180 @@ class ExceptionHandlingTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .statusCode(401);
+    }
+
+    @Test
+    void 비로그인_사용자는_관리_API를_사용할_수_없다() {
+        Map<String, String> time = new HashMap<>();
+        time.put("value", "22:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(401);
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(401);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    void 본인의_예약에_대기를_신청하면_400을_응답한다() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 다른_회원의_예약을_삭제하면_403을_응답한다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(403);
+    }
+
+    @Test
+    void 일반_회원은_시간을_등록하거나_삭제할_수_없다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("value", "22:00");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(403);
+    }
+
+    @Test
+    void 일반_회원은_테마를_등록하거나_삭제할_수_없다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "새 테마");
+        params.put("description", "테마 설명");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(403);
+    }
+
+    @Test
+    void 일반_회원은_본인_예약만_할_수_있다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "어드민");
+        params.put("date", LocalDate.now().plusDays(1).toString());
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(403);
+
+        params.remove("name");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @Test
+    void 전체_예약_목록은_관리자만_조회할_수_있다() {
+        String brownToken = createToken("brown@email.com", "password");
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(401);
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(403);
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    void 지난_예약에는_대기를_신청할_수_없다() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("theme", "1");
+        params.put("time", "1");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/waitings")
+                .then().log().all()
+                .statusCode(400);
     }
 }

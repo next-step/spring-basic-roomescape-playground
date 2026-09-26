@@ -83,4 +83,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handleForbiddenWaitingException() {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
+    @ExceptionHandler(ForbiddenReservationException.class)
+    public ResponseEntity<Void> handleForbiddenReservationException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(ForbiddenAdminOperationException.class)
+    public ResponseEntity<Void> handleForbiddenAdminOperationException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 }

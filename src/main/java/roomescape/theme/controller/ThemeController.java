@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.LoginMember;
+import roomescape.exception.ForbiddenAdminOperationException;
 import roomescape.exception.InvalidThemeException;
 import roomescape.exception.NotFoundThemeException;
+import roomescape.member.domain.Role;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -25,7 +28,11 @@ public class ThemeController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
+    public ResponseEntity<Theme> createTheme(LoginMember loginMember, @RequestBody Theme theme) {
+        if (loginMember.role() != Role.ADMIN) {
+            throw new ForbiddenAdminOperationException("관리자만 테마를 관리할 수 있습니다.");
+        }
+
         if (theme.getName() == null
                 || theme.getName().isBlank()
                 || theme.getName().length() > MAX_THEME_LENGTH
@@ -44,7 +51,11 @@ public class ThemeController {
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTheme(LoginMember loginMember, @PathVariable Long id) {
+        if (loginMember.role() != Role.ADMIN) {
+            throw new ForbiddenAdminOperationException("관리자만 테마를 관리할 수 있습니다.");
+        }
+
         Theme theme = themeRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new NotFoundThemeException("삭제할 테마를 찾을 수 없습니다."));
 

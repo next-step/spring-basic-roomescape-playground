@@ -34,7 +34,7 @@ public class Reservation {
     private Theme theme;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     public Reservation(String name, String date, Time time, Theme theme, Member member) {
