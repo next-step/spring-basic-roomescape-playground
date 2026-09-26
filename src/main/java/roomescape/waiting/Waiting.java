@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
@@ -12,6 +14,8 @@ import roomescape.time.Time;
 import java.time.LocalDate;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(
+        columnNames = {"member_id", "date", "time_id", "theme_id"}))
 public class Waiting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
