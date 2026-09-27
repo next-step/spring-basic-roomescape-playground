@@ -6,6 +6,7 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.global.exception.BadRequestException;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 
 import java.util.List;
@@ -27,7 +28,12 @@ public class ThemeService {
     }
 
     @Transactional
-    public Theme saveTheme(String name, String description) {
+    public Theme saveTheme(Long requesterId, String name, String description) {
+
+        if (themeRepository.existsByName(name)) {
+            throw new ConflictException(requesterId, Map.of("name", name), "이미 존재하는 테마 이름입니다.");
+        }
+
         Theme theme = new Theme(name, description);
 
         return themeRepository.save(theme);

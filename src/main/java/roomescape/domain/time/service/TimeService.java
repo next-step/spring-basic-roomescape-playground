@@ -7,10 +7,12 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.entity.AvailableTime;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.TimeRepository;
+import roomescape.global.exception.ConflictException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TimeService {
@@ -42,7 +44,12 @@ public class TimeService {
     }
 
     @Transactional
-    public Time save(LocalTime value) {
+    public Time save(Long requesterId, LocalTime value) {
+
+        if (timeRepository.existsByTimeValue(value)) {
+            throw new ConflictException(requesterId, Map.of("value", value), "이미 존재하는 시간입니다.");
+        }
+
         Time time = new Time(value);
         return timeRepository.save(time);
     }
