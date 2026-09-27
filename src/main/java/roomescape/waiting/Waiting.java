@@ -17,7 +17,6 @@ public class Waiting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 예약 우선순위를 계산할 때 사용
 
-    private String name;
     private String date;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,8 +32,7 @@ public class Waiting {
     protected Waiting() {
     }
 
-    public Waiting(String name, String date, Time time, Theme theme, Long memberId) {
-        this.name = name;
+    public Waiting(String date, Time time, Theme theme, Long memberId) {
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -43,10 +41,6 @@ public class Waiting {
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getDate() {

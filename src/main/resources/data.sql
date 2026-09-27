@@ -19,5 +19,5 @@ INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('브라운', '2024-03-01', 1, 2);
 
 
-INSERT INTO waiting (name, date, time_id, theme_id, member_id)
-VALUES ('어드민', '2024-03-01', 1, 2, 2);
+INSERT INTO waiting (date, time_id, theme_id, member_id)
+VALUES ('2024-03-01', 1, 2, 2);

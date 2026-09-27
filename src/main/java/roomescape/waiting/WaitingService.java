@@ -55,7 +55,7 @@ public class WaitingService {
             throw new DuplicateException("이미 예약 대기 중입니다.");
         }
 
-        Waiting waiting = new Waiting(loginMember.getName(), request.getDate(), time, theme, loginMember.getId());
+        Waiting waiting = new Waiting(request.getDate(), time, theme, loginMember.getId());
         Waiting saved = waitingRepository.save(waiting);
 
         // 나보다 먼저 등록된(id가 작은) 대기 수 + 1로 순번을 구하도록 수정
