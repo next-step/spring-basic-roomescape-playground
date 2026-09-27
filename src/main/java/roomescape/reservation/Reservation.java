@@ -64,6 +64,14 @@ public class Reservation {
         }
     }
 
+    // 예약이 본인 것인지 스스로 확인하도록 추가
+    public boolean isOwnedBy(Member member) {
+        if (this.member == null) {
+            return false;
+        }
+        return this.member.getId().equals(member.getId());
+    }
+
     public Long getId() {
         return id;
     }

@@ -48,16 +48,13 @@ public class ReservationService {
         return new ReservationResponse(saved.getId(), resolveName(saved), saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());
     }
 
+    // 예약이 본인 것인지 / ADMIN 권한인지 확인하는 로직을 Resrvation과 ADMIN으로 책임 분리
     @Transactional
     public void deleteById(Long id, Member loginMember) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
 
-        boolean isOwner = reservation.getMember() != null
-                && reservation.getMember().getId().equals(loginMember.getId());
-        boolean isAdmin = "ADMIN".equals(loginMember.getRole());
-
-        if (!isOwner && !isAdmin) {
+        if (!reservation.isOwnedBy(loginMember) && !loginMember.isAdmin()) {
             throw new UnauthorizedException("본인의 예약이거나 관리자만 삭제할 수 있습니다.");
         }
 

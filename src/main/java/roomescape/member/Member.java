@@ -61,6 +61,11 @@ public class Member {
         }
     }
 
+    // 스스로 권한을 확인하도록 수정
+    public boolean isAdmin() {
+        return "ADMIN".equals(this.role);
+    }
+
     public Long getId() {
         return id;
     }
