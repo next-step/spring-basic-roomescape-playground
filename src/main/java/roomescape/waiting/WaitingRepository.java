@@ -21,6 +21,8 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
            "       AND w2.time = w.time " +
            "       AND w2.id < w.id)) " +
            "FROM Waiting w " +
+           "JOIN FETCH w.time " +
+           "JOIN FETCH w.theme " +
            "WHERE w.member.id = ?1")
     List<WaitingWithRank> findWaitingsWithRankByMemberId(Long memberId);
 }
