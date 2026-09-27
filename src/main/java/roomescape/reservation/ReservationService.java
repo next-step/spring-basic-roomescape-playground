@@ -50,18 +50,17 @@ public class ReservationService {
 
     private Reservation resolveReservation(ReservationRequest reservationRequest, LoginMember loginMember, Time time, Theme theme) {
         String requestName = reservationRequest.getName();
-        if (requestName == null || requestName.isBlank()) {
-            Member member = memberRepository.findById(loginMember.getId()).orElseThrow();
-            return new Reservation(member, reservationRequest.getDate(), time, theme);
-        }
-        return new Reservation(requestName, reservationRequest.getDate(), time, theme);
-    }
+        boolean hasName = requestName != null && !requestName.isBlank();
 
-    private String resolveName(Reservation reservation) {
-        if (reservation.getMember() != null) {
-            return reservation.getMember().getName();
+        if (hasName && !isAdmin(loginMember)) {
+            throw new IllegalArgumentException("예약자 이름은 관리자만 지정할 수 있습니다.");
         }
-        return reservation.getName();
+        if (hasName) {
+            return new Reservation(requestName, reservationRequest.getDate(), time, theme);
+        }
+
+        Member member = memberRepository.findById(loginMember.getId()).orElseThrow();
+        return new Reservation(member, reservationRequest.getDate(), time, theme);
     }
 
     @Transactional
@@ -90,5 +89,16 @@ public class ReservationService {
                 .toList();
 
         return Stream.concat(reservations.stream(), waitings.stream()).toList();
+    }
+
+    private String resolveName(Reservation reservation) {
+        if (reservation.getMember() != null) {
+            return reservation.getMember().getName();
+        }
+        return reservation.getName();
+    }
+
+    private boolean isAdmin(LoginMember loginMember) {
+        return "ADMIN".equals(loginMember.getRole());
     }
 }
