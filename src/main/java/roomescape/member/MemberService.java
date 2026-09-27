@@ -17,6 +17,10 @@ public class MemberService {
 
     @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
+        if (memberRepository.existsByEmail(memberRequest.getEmail())) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
