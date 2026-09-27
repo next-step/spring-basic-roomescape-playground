@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.reservation.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 import roomescape.member.LoginMember;
+import roomescape.reservation.ReservationService;
+import roomescape.reservation.controller.dto.MyReservationResponse;
+import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -26,6 +30,11 @@ public class ReservationController {
     @GetMapping("/reservations")
     public List<ReservationResponse> list() {
         return reservationService.findAll();
+    }
+
+    @GetMapping("/reservations-mine")
+    public List<MyReservationResponse> myReservations(LoginMember loginMember) {
+        return reservationService.findMyReservations(loginMember);
     }
 
     @PostMapping("/reservations")

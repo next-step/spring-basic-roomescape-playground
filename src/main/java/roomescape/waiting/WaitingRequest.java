@@ -1,14 +1,9 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
-public class ReservationRequest {
-    private String name;
+public class WaitingRequest {
     private String date;
     private Long theme;
     private Long time;
-
-    public String getName() {
-        return name;
-    }
 
     public String getDate() {
         return date;
