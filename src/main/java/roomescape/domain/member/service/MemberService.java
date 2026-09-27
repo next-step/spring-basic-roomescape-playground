@@ -6,7 +6,6 @@ import roomescape.domain.member.entity.Member;
 import roomescape.domain.member.repository.MemberRepository;
 import roomescape.global.exception.ConflictException;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

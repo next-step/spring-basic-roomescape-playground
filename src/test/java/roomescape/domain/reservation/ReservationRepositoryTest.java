@@ -15,7 +15,6 @@ import roomescape.domain.time.repository.TimeRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

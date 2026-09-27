@@ -7,12 +7,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.service.ReservationService;
-import roomescape.domain.time.entity.Time;
 import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
