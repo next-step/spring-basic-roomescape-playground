@@ -75,7 +75,7 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMine(LoginMember loginMember) {
-        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.getId()).stream()
+        List<MyReservationResponse> reservations = reservationRepository.findByMemberIdWithDetails(loginMember.getId()).stream()
                 .map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
                 .toList();
 
