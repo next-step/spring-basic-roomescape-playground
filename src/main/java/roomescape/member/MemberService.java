@@ -1,41 +1,44 @@
 package roomescape.member;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.TokenUtil;
 
 @Service
+@Transactional(readOnly = true)
 public class MemberService {
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
     private TokenUtil tokenUtil;
 
-    public MemberService(MemberDao memberDao, TokenUtil tokenUtil) {
-        this.memberDao = memberDao;
+    public MemberService(MemberRepository memberRepository, TokenUtil tokenUtil) {
+        this.memberRepository = memberRepository;
         this.tokenUtil = tokenUtil;
     }
 
+    @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
-        Member member = memberDao.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
+        validateNotDuplicated(memberRequest.getEmail());
+
+        Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), memberRequest.getPassword(), Role.USER));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
     }
 
     public String login(LoginRequest loginRequest) {
-        Member member;
-        try {
-            member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
-        } catch (EmptyResultDataAccessException e) {
-            throw new AuthorizationException("이메일 또는 비밀번호가 일치하지 않습니다.");
-        }
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword())
+                .orElseThrow(() -> new AuthorizationException("이메일 또는 비밀번호가 일치하지 않습니다."));
         return tokenUtil.createToken(member);
     }
 
     public Member findMemberByToken(String token) {
         Long memberId = tokenUtil.getMemberId(token);
 
-        try {
-            return memberDao.findById(memberId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new AuthorizationException("존재하지 않는 회원입니다.");
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new AuthorizationException("존재하지 않는 회원입니다."));
+    }
+
+    private void validateNotDuplicated(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new DuplicatedEmailException("이미 가입된 이메일입니다.");
         }
     }
 }

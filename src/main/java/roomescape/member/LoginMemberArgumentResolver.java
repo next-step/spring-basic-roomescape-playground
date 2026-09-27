@@ -6,15 +6,13 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.TokenUtil;
+import roomescape.AuthService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberService memberService;
-    private final TokenUtil tokenUtil;
+    private final AuthService authService;
 
-    public LoginMemberArgumentResolver(MemberService memberService, TokenUtil tokenUtil) {
-        this.memberService = memberService;
-        this.tokenUtil = tokenUtil;
+    public LoginMemberArgumentResolver(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
@@ -25,12 +23,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String token = tokenUtil.extractToken(request);
-        if (token.isEmpty()) {
-            throw new AuthorizationException("쿠키에 토큰이 없습니다.");
-        }
-
-        Member member = memberService.findMemberByToken(token);
+        Member member = authService.findAuthenticatedMember(request);
         return LoginMember.from(member);
     }
 }

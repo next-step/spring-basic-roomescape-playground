@@ -1,30 +1,78 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import roomescape.member.AuthorizationException;
+import roomescape.member.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
+import roomescape.member.Role;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
+    private WaitingRepository waitingRepository;
+    private TimeRepository timeRepository;
+    private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository, WaitingRepository waitingRepository, TimeRepository timeRepository, ThemeRepository themeRepository, MemberRepository memberRepository) {
+        this.reservationRepository = reservationRepository;
+        this.waitingRepository = waitingRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    @Transactional
+    public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
+        Time time = timeRepository.findByIdAndDeletedFalse(reservationRequest.getTime())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+        Theme theme = themeRepository.findByIdAndDeletedFalse(reservationRequest.getTheme())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        Reservation reservation = reservationRepository.save(
+                createReservation(reservationRequest, loginMember, time, theme));
+
+        return new ReservationResponse(reservation.getId(), reservation.getReserverName(), theme.getName(), reservation.getDate().toString(), time.getValue());
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
-                .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
+        return reservationRepository.findAll().stream()
+                .map(it -> new ReservationResponse(it.getId(), it.getReserverName(), it.getTheme().getName(), it.getDate().toString(), it.getTime().getValue()))
                 .toList();
+    }
+
+    public List<MyReservationResponse> findMine(LoginMember loginMember) {
+        Stream<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.id()).stream()
+                .map(MyReservationResponse::from);
+        Stream<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.id()).stream()
+                .map(MyReservationResponse::from);
+
+        return Stream.concat(reservations, waitings).toList();
+    }
+
+    private Reservation createReservation(ReservationRequest reservationRequest, LoginMember loginMember, Time time, Theme theme) {
+        if (loginMember.role() == Role.ADMIN && reservationRequest.getName() != null) {
+            return Reservation.forGuest(reservationRequest.getName(), reservationRequest.getDate(), time, theme);
+        }
+
+        Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new AuthorizationException("존재하지 않는 회원입니다."));
+        return Reservation.forMember(member, reservationRequest.getDate(), time, theme);
     }
 }
