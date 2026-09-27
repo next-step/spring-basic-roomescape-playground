@@ -68,4 +68,29 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handleDuplicateReservationException() {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
+
+    @ExceptionHandler(NotFoundWaitingException.class)
+    public ResponseEntity<Void> handleNotFoundWaitingException() {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(DuplicateWaitingException.class)
+    public ResponseEntity<Void> handleDuplicateWaitingException() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @ExceptionHandler(ForbiddenWaitingException.class)
+    public ResponseEntity<Void> handleForbiddenWaitingException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(ForbiddenReservationException.class)
+    public ResponseEntity<Void> handleForbiddenReservationException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(ForbiddenAdminOperationException.class)
+    public ResponseEntity<Void> handleForbiddenAdminOperationException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 }

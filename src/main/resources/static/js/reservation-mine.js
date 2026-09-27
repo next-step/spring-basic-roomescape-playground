@@ -12,14 +12,17 @@ function render(data) {
 
   data.forEach(item => {
     const row = tableBody.insertRow();
+    const status = item.type === 'WAITING'
+        ? `${item.waitingRank}번째 예약대기`
+        : '예약';
 
     row.insertCell(0).textContent = item.theme;
     row.insertCell(1).textContent = item.date;
     row.insertCell(2).textContent = item.time;
-    row.insertCell(3).textContent = item.status;
+    row.insertCell(3).textContent = status;
 
     // 새 셀을 만들고 취소 버튼을 추가
-    if (item.status !== '예약') {
+    if (item.type === 'WAITING') {
       const cancelCell = row.insertCell(4);
       const cancelButton = document.createElement('button');
       cancelButton.textContent = '취소 '; // 버튼 텍스트 설정

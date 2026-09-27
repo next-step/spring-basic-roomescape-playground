@@ -1,0 +1,31 @@
+package roomescape.waiting.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import roomescape.waiting.domain.Waiting;
+import roomescape.waiting.dto.WaitingWithRank;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface WaitingRepository extends JpaRepository<Waiting, Long> {
+    long countByDateAndThemeIdAndTimeIdAndIdLessThan(String date, Long themeId, Long timeId, Long id);
+    @Query("""
+        SELECT new roomescape.waiting.dto.WaitingWithRank(
+            w,
+            (SELECT COUNT(w2)
+             FROM Waiting w2
+             WHERE w2.theme = w.theme
+               AND w2.date = w.date
+               AND w2.time = w.time
+               AND w2.id < w.id)
+        )
+        FROM Waiting w
+        WHERE w.member.id = :memberId
+        ORDER BY w.id ASC
+        """)
+    List<WaitingWithRank> findWaitingsWithRankByMemberId(@Param("memberId") Long memberId);
+    Optional<Waiting> findFirstByDateAndThemeIdAndTimeIdOrderByIdAsc(String date, Long themeId, Long timeId);
+    void deleteAllByDateAndThemeIdAndTimeId(String date, Long themeId, Long timeId);
+}
