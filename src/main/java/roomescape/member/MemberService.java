@@ -2,7 +2,7 @@ package roomescape.member;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import roomescape.config.PasswordConfig;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.InvalidRequestException;
@@ -22,6 +22,7 @@ public class MemberService {
     }
 
     // 이메일 중복 검증 로직 추가
+    @Transactional
     public MemberResponse createMember(MemberRequest memberRequest) {
         if (memberRepository.existsByEmail(memberRequest.getEmail())) {
             throw new DuplicateException("이미 가입되어있는 이메일입니다.");

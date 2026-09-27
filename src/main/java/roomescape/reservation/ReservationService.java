@@ -1,6 +1,7 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
 import roomescape.exception.UnauthorizedException;
@@ -29,6 +30,7 @@ public class ReservationService {
         this.waitingRepository = waitingRepository;
     }
 
+    @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
@@ -46,10 +48,7 @@ public class ReservationService {
         return new ReservationResponse(saved.getId(), resolveName(saved), saved.getTheme().getName(), saved.getDate(), saved.getTime().getTime());
     }
 
-//    public void deleteById(Long id) {
-//        reservationRepository.deleteById(id);
-//    }
-
+    @Transactional
     public void deleteById(Long id, Member loginMember) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));

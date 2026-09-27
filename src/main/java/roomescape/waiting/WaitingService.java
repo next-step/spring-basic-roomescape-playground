@@ -1,5 +1,6 @@
 package roomescape.waiting;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
@@ -28,6 +29,7 @@ public class WaitingService {
         this.timeRepository = timeRepository;
     }
 
+    @Transactional
     public WaitingResponse save(WaitingRequest request, LoginMember loginMember) {
         Theme theme = themeRepository.findById(request.getTheme())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마입니다."));
@@ -64,6 +66,7 @@ public class WaitingService {
                 saved.getTime().getTime(), waitingNumber);
     }
 
+    @Transactional
     public void deleteById(Long id, LoginMember loginMember) {
         Waiting waiting = waitingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 대기입니다."));
