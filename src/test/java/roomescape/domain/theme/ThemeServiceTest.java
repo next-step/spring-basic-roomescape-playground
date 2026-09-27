@@ -31,14 +31,14 @@ public class ThemeServiceTest {
                 DataIntegrityViolationException.class,
 
                 // when
-                () -> themeService.saveTheme("dummy", description)
+                () -> themeService.saveTheme(1L, "dummy", description)
         );
     }
 
     @Test
     void 정상적으로_saveTheme_호출() {
         // when
-        Theme theme = themeService.saveTheme(name, description);
+        Theme theme = themeService.saveTheme(1L, name, description);
 
         // then
         assertThat(theme).isNotNull();
@@ -50,7 +50,7 @@ public class ThemeServiceTest {
     @Test
     void findAllTheme를_호출하면_저장된_모든_theme를_반환한다() {
         // given
-        themeService.saveTheme(name, description);
+        themeService.saveTheme(1L, name, description);
 
         // when
         List<Theme> allTheme = themeService.findAllTheme();
@@ -73,7 +73,7 @@ public class ThemeServiceTest {
     @Test
     void deleteTheme을_호출하면_저장된_theme을_삭제한다() {
         // given
-        Theme savedTheme = themeService.saveTheme(name, description);
+        Theme savedTheme = themeService.saveTheme(1L, name, description);
 
         // when
         themeService.deleteTheme(1L, savedTheme.getId());
