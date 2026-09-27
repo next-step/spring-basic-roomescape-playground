@@ -56,8 +56,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
+    public void deleteById(Long memberId, Long reservationId) {
+        Reservation foundReservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NotFoundException(memberId, Map.of("reservationId", reservationId), "해당하는 예약을 찾을 수 없습니다."));
+
+        reservationRepository.delete(foundReservation);
     }
 
     public List<Reservation> findAll() {

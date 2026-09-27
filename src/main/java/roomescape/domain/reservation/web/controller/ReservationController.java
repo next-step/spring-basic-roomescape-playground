@@ -69,8 +69,11 @@ public class ReservationController {
     // NOTE: ID 삭제 등 소유권이 불분명한 예약 취소이므로, 관리자만 삭제할 수 있음을 명시합니다.
     @AdminOnly
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationService.deleteById(id);
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            @Login LoginMember loginMember
+    ) {
+        reservationService.deleteById(loginMember.id(), id);
         return ResponseEntity.noContent().build();
     }
 

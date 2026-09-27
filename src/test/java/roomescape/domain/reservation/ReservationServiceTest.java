@@ -11,6 +11,7 @@ import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -65,5 +66,26 @@ public class ReservationServiceTest {
         assertThat(reservation).isNotNull();
         assertThat(reservation.getId()).isNotNull();
         assertThat(reservation.getDate()).isEqualTo(reserveDate);
+    }
+
+    @Test
+    void 존재하지_않는_예약_ID로_deleteById_호출_시_Not_Found_예외가_발생한다() {
+        // given
+        Long reservationId = -1L;
+
+        // when
+        Assertions.assertThrows(NotFoundException.class,
+                () -> reservationService.deleteById(1L, reservationId)
+        );
+    }
+
+    @Test
+    void 정상적으로_deleteById를_호출한_경우_예약이_삭제된다() {
+        // when
+        reservationService.deleteById(1L, 1L);
+
+        // then
+        List<Reservation> reservations = reservationService.findAllReservationByUser(2L);
+        assertThat(reservations).isEmpty();
     }
 }
