@@ -58,9 +58,10 @@ public class WaitingService {
         Waiting waiting = new Waiting(loginMember.getName(), request.getDate(), time, theme, loginMember.getId());
         Waiting saved = waitingRepository.save(waiting);
 
-        // 방금 저장된 대기가 마지막 대기라서 저장 후 갯수가 곧 순번
-        long waitingNumber = waitingRepository.countByDateAndTheme_IdAndTime_Id(
-                request.getDate(), request.getTheme(), request.getTime());
+        // 나보다 먼저 등록된(id가 작은) 대기 수 + 1로 순번을 구하도록 수정
+        long precedingCount = waitingRepository.countByDateAndTheme_IdAndTime_IdAndIdLessThan(
+                request.getDate(), request.getTheme(), request.getTime(), saved.getId());
+        long waitingNumber = precedingCount + 1;
 
         return new WaitingResponse(saved.getId(), saved.getTheme().getName(), saved.getDate(),
                 saved.getTime().getTime(), waitingNumber);
