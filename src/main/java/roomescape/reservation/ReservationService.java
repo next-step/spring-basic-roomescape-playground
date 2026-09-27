@@ -101,6 +101,9 @@ public class ReservationService {
 
     // member가 연결되어 있으면 member의 실제 이름을, 없으면(관리자 대리예약) name 필드를 사용
     private String resolveName(Reservation r) {
-        return r.getMember() != null ? r.getMember().getName() : r.getName();
+        if (r.getMember() != null) {
+            return r.getMember().getName();
+        }
+        return r.getName();
     }
 }
