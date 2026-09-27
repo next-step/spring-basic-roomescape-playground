@@ -27,6 +27,7 @@ public class MemberService {
             throw new DuplicateException("이미 가입되어있는 이메일입니다.");
         }
         // 요청에서 받은 비밀번호를 암호화한 후 DB에 저장
+        validateRawPassword(memberRequest.getPassword());
         String encodedPassword = passwordEncoder.encode(memberRequest.getPassword());
         Member member = memberRepository.save(new Member(memberRequest.getName(), memberRequest.getEmail(), encodedPassword, "USER"));
         return new MemberResponse(member.getId(), member.getName(), member.getEmail());
