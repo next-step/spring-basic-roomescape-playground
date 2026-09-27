@@ -36,10 +36,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().build();
     }
 
-    // 이미 예약중인 테마를 삭제하려는 경우
+    // FK 제약을 위반하여 삭제할 수 없는 경우
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException e) {
-        return ResponseEntity.status(409).body("해당 테마를 참조하는 예약이 존재하여 삭제할 수 없습니다.");
+        return ResponseEntity.status(409).body("해당 데이터를 참조하는 다른 데이터가 존재하여 삭제할 수 없습니다.");
     }
 
     // 회원가입 시 사용자가 양식에 맞지 않는 값을 입력한 경우
