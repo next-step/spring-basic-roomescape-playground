@@ -11,23 +11,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 
 import java.util.Date;
 
 @RestController
 public class LoginController {
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
     private final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private final long tokenValidityInMilliseconds = 1000 * 60 * 60;
 
-    public LoginController(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public LoginController(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        Member member = memberDao.findByEmailAndPassword(
+        Member member = memberRepository.findByEmailAndPassword(
                 request.getEmail(),
                 request.getPassword()
         );

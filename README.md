@@ -76,8 +76,9 @@
 
 ### `Repository 전환`
 
-- [ ] 기존 DAO를 JpaRepository 기반 Repository로 전환하고 Service에 적용한다.
-- [ ] 필요한 조회 기능을 쿼리 메서드로 구현한다.
+- [x] 기존 DAO를 JpaRepository 기반 Repository로 전환한다.
+- [x] 필요한 조회 기능을 쿼리 메서드로 구현한다.
+- [x] 기존 Dao 대신 Repository를 사용하도록 Service와 Controller를 변경한다.
 
 ### `리뷰 반영`
 
