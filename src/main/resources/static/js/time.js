@@ -1,10 +1,10 @@
 let isEditing = false;
 const API_ENDPOINT = '/times';
-const cellFields = ['id', 'value'];
+const cellFields = ['id', 'time'];
 const createCellFields = ['', createInput()];
 function createBody(inputs) {
   return {
-    value: inputs[0].value,
+    time: inputs[0].value, /** 필드명 통일 **/
   };
 }
 

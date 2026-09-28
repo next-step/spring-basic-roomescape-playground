@@ -11,13 +11,21 @@ public class DatabaseCleanupListener extends AbstractTestExecutionListener {
         JdbcTemplate jdbcTemplate = testContext.getApplicationContext()
                 .getBean(JdbcTemplate.class);
 
+        // member를 reservation이 참조하고 있어 reservation 먼저 삭제 필요
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+
         jdbcTemplate.update("DELETE FROM member");
         jdbcTemplate.update("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
 
+        // 테스트간 격리를 위해 waiting 테이블 삭제
+        jdbcTemplate.update("DELETE FROM waiting");
+        jdbcTemplate.update("ALTER TABLE waiting ALTER COLUMN id RESTART WITH 1");
+
         jdbcTemplate.update(
                 "INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?), (?, ?, ?, ?)",
-                "어드민", "admin@email.com", "password", "ADMIN",
-                "브라운", "brown@email.com", "password", "USER"
+                "어드민", "admin@email.com", "$2a$10$sSwu.Zk0dFqdXPROB/2ceO6NcJpqdvzQObMaVnxXTV.uGO8O7zYpK", "ADMIN",
+                "브라운", "brown@email.com", "$2a$10$sSwu.Zk0dFqdXPROB/2ceO6NcJpqdvzQObMaVnxXTV.uGO8O7zYpK", "USER"
         );
     }
 }
