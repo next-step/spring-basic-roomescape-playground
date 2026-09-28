@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +11,8 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.Waiting;
+import roomescape.waiting.WaitingRepository;
 
 @Service
 public class ReservationService {
@@ -18,14 +21,16 @@ public class ReservationService {
     private MemberRepository memberRepository;
     private TimeRepository timeRepository;
     private ThemeRepository themeRepository;
+    private WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
         MemberRepository memberRepository, TimeRepository timeRepository,
-        ThemeRepository themeRepository) {
+        ThemeRepository themeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest,
@@ -40,20 +45,26 @@ public class ReservationService {
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
 
+        if (reservationRepository.existsByDateAndTimeAndTheme(
+            reservationRequest.getDate(), time, theme)) {
+            throw new IllegalArgumentException("이미 존재합니다");
+        }
+
         Reservation unSavedReservation;
-        if(reservationRequest.getName()!=null){
-            unSavedReservation=new Reservation(reservationRequest.getName(),reservationRequest.getDate(),time,theme);
-        }else {
-            unSavedReservation=new Reservation(member,reservationRequest.getDate(),time,theme);
+        if (reservationRequest.getName() != null) {
+            unSavedReservation = new Reservation(reservationRequest.getName(),
+                reservationRequest.getDate(), time, theme);
+        } else {
+            unSavedReservation = new Reservation(member, reservationRequest.getDate(), time, theme);
         }
 
         Reservation reservation = reservationRepository.save(unSavedReservation);
 
         String reservationName;
-        if(reservation.getName()!=null){
-            reservationName=reservation.getName();
-        }else{
-            reservationName=reservation.getMember().getName();
+        if (reservation.getName() != null) {
+            reservationName = reservation.getName();
+        } else {
+            reservationName = reservation.getMember().getName();
         }
         return new ReservationResponse(reservation.getId(), reservationName,
             reservation.getTheme().getName(), reservation.getDate(),
@@ -71,16 +82,33 @@ public class ReservationService {
             .toList();
     }
 
-    public List<MyReservationResponse> findMine(LoginMember loginMember){
-        List<Reservation> reservations=reservationRepository.findByMemberId(loginMember.getId());
+    public List<MyReservationResponse> findMine(LoginMember loginMember) {
+        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.getId());
+        List<Waiting> waitings = waitingRepository.findByMemberId(loginMember.getId());
 
-        List<MyReservationResponse> myReservationResponses=reservations.stream().map(reservation -> {
-            return new MyReservationResponse(reservation.getId(),
-                reservation.getTheme().getName(),
-                reservation.getDate(),
-                reservation.getTime().getTime(),
-                "예약");
-        }).toList();
-        return myReservationResponses;
+        List<MyReservationResponse> myReservationResponses = reservations.stream()
+            .map(reservation -> {
+                return new MyReservationResponse(reservation.getId(),
+                    reservation.getTheme().getName(),
+                    reservation.getDate(),
+                    reservation.getTime().getTime(),
+                    "예약");
+            }).toList();
+
+        List<MyReservationResponse> myReservationWaitingResponses = waitings.stream()
+            .map(waiting -> {
+                return new MyReservationResponse(waiting.getId(),
+                    waiting.getTheme().getName(),
+                    waiting.getDate(),
+                    waiting.getTime().getTime(),
+                    "예약대기");
+            }).toList();
+
+        List<MyReservationResponse> result =
+            new ArrayList<>(myReservationResponses);
+
+        result.addAll(myReservationWaitingResponses);
+
+        return result;
     }
 }
