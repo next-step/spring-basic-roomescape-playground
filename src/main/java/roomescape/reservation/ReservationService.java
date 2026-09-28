@@ -13,6 +13,7 @@ import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 import roomescape.waiting.Waiting;
 import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.WaitingWithRank;
 
 @Service
 public class ReservationService {
@@ -84,7 +85,8 @@ public class ReservationService {
 
     public List<MyReservationResponse> findMine(LoginMember loginMember) {
         List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.getId());
-        List<Waiting> waitings = waitingRepository.findByMemberId(loginMember.getId());
+        List<WaitingWithRank> waitings = waitingRepository.findWaitingsWithRankByMemberId(
+            loginMember.getId());
 
         List<MyReservationResponse> myReservationResponses = reservations.stream()
             .map(reservation -> {
@@ -96,12 +98,12 @@ public class ReservationService {
             }).toList();
 
         List<MyReservationResponse> myReservationWaitingResponses = waitings.stream()
-            .map(waiting -> {
-                return new MyReservationResponse(waiting.getId(),
-                    waiting.getTheme().getName(),
-                    waiting.getDate(),
-                    waiting.getTime().getTime(),
-                    "예약대기");
+            .map(waitingWithRank -> {
+                return new MyReservationResponse(waitingWithRank.getWaiting().getId(),
+                    waitingWithRank.getWaiting().getTheme().getName(),
+                    waitingWithRank.getWaiting().getDate(),
+                    waitingWithRank.getWaiting().getTime().getTime(),
+                    (waitingWithRank.getRank() + 1) + "번째 예약대기");
             }).toList();
 
         List<MyReservationResponse> result =
