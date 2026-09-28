@@ -154,5 +154,4 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(401);
     }
-
 }
