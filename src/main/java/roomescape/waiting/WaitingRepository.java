@@ -7,7 +7,8 @@ import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
-public interface WaitingRepository extends JpaRepository<Waiting,Long> {
+public interface WaitingRepository extends JpaRepository<Waiting, Long> {
+
     List<Waiting> findByMemberId(Long memberId);
 
     boolean existsByMemberAndDateAndTimeAndTheme(
@@ -16,6 +17,7 @@ public interface WaitingRepository extends JpaRepository<Waiting,Long> {
         Time time,
         Theme theme
     );
+
     @Query("SELECT new roomescape.waiting.WaitingWithRank(" +
         "    w, " +
         "    (SELECT COUNT(w2) " +
@@ -25,7 +27,7 @@ public interface WaitingRepository extends JpaRepository<Waiting,Long> {
         "       AND w2.time = w.time " +
         "       AND w2.id < w.id)) " +
         "FROM Waiting w " +
-        "WHERE w.memberId = :memberId")
+        "WHERE w.member.id = :memberId")
     List<WaitingWithRank> findWaitingsWithRankByMemberId(Long memberId);
 
 }
