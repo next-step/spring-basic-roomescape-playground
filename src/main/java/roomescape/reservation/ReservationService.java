@@ -9,7 +9,11 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.Waiting;
+import roomescape.waiting.WaitingRepository;
+import roomescape.waiting.WaitingWithRank;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,13 +23,15 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository, MemberRepository memberRepository,
-                              TimeRepository timeRepository, ThemeRepository themeRepository) {
+                              TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
@@ -73,8 +79,32 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
-        return reservationRepository.findByMemberId(loginMember.getId()).stream()
+        List<Reservation> reservations = reservationRepository.findByMemberId(loginMember.getId());
+
+        List<WaitingWithRank> waitingsWithRank = waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId());
+
+        List<MyReservationResponse> reservationResponses = reservations.stream()
                 .map(it -> new MyReservationResponse(it.getId(), it.getTheme().getName(), it.getDate(), it.getTime().getValue(), "예약"))
                 .toList();
+
+        List<MyReservationResponse> waitingResponses = waitingsWithRank.stream()
+                .map(it -> {
+                    Waiting waiting = it.getWaiting();
+                    Long rank = it.getRank();
+
+                    return new MyReservationResponse(
+                            waiting.getId(),
+                            waiting.getTheme().getName(),
+                            waiting.getDate(),
+                            waiting.getTime().getValue(),
+                            (rank + 1) + "번째 예약대기"
+                    );
+                })
+                .toList();
+
+        List<MyReservationResponse> result = new ArrayList<>(reservationResponses);
+        result.addAll(waitingResponses);
+
+        return result;
     }
 }

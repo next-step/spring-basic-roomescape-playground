@@ -41,7 +41,7 @@ public class WaitingService {
         long earlierCount = waitingRepository.countEarlierWaitings(savedWaiting.getTheme(), savedWaiting.getDate(),savedWaiting.getTime(), savedWaiting.getId());
         long waitingNumber = earlierCount + 1;
 
-        return new WaitingResponse(waitingNumber);
+        return new WaitingResponse(savedWaiting.getId(), waitingNumber);
     }
 
     @Transactional
