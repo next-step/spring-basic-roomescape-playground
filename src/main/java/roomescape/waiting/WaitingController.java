@@ -11,9 +11,11 @@ import roomescape.member.LoginMember;
 
 @RestController
 public class WaitingController {
+
     private WaitingService waitingService;
-    public WaitingController(WaitingService waitingService){
-        this.waitingService=waitingService;
+
+    public WaitingController(WaitingService waitingService) {
+        this.waitingService = waitingService;
     }
 
     @PostMapping("/waitings")
@@ -21,7 +23,7 @@ public class WaitingController {
         @RequestBody WaitingRequest waitingRequest,
         LoginMember loginMember
     ) {
-        Waiting waiting = waitingService.save(waitingRequest,loginMember);
+        Waiting waiting = waitingService.save(waitingRequest, loginMember);
 
         WaitingResponse response = new WaitingResponse(waiting.getId());
 
@@ -29,7 +31,7 @@ public class WaitingController {
     }
 
     @DeleteMapping("/waitings/{id}")
-    public ResponseEntity<Void> deleteWaiting(@PathVariable Long id){
+    public ResponseEntity<Void> deleteWaiting(@PathVariable Long id) {
         waitingService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

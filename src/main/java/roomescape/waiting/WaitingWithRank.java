@@ -1,6 +1,7 @@
 package roomescape.waiting;
 
 public class WaitingWithRank {
+
     private Waiting waiting;
     private Long rank;
 

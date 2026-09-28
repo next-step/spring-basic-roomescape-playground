@@ -25,20 +25,20 @@ public class WaitingService {
         this.themeRepository = themeRepository;
     }
 
-    public Waiting save(WaitingRequest waitingRequest, LoginMember loginMember){
-        Member member= memberRepository.findByEmail(loginMember.getEmail());
-        String date= waitingRequest.getDate();
+    public Waiting save(WaitingRequest waitingRequest, LoginMember loginMember) {
+        Member member = memberRepository.findByEmail(loginMember.getEmail());
+        String date = waitingRequest.getDate();
         Time time = timeRepository.findById(waitingRequest.getTime()).orElseThrow();
-        Theme theme=themeRepository.findById(waitingRequest.getTheme()).orElseThrow();
+        Theme theme = themeRepository.findById(waitingRequest.getTheme()).orElseThrow();
 
-
-        if(waitingRepository.existsByMemberAndDateAndTimeAndTheme(member,date,time,theme)){
+        if (waitingRepository.existsByMemberAndDateAndTimeAndTheme(member, date, time, theme)) {
             throw new IllegalArgumentException("이미 존재합니다");
         }
-        Waiting waiting=new Waiting(member,date,time,theme);
+        Waiting waiting = new Waiting(member, date, time, theme);
 
         return waitingRepository.save(waiting);
     }
+
     public void deleteById(Long id) {
         waitingRepository.deleteById(id);
     }

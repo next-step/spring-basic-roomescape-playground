@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Theme {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

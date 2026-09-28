@@ -1,13 +1,13 @@
 package roomescape.time;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.Reservation;
-
-import java.util.List;
 import roomescape.reservation.ReservationRepository;
 
 @Service
 public class TimeService {
+
     private TimeRepository timeRepository;
     private ReservationRepository reservationRepository;
 
@@ -21,13 +21,13 @@ public class TimeService {
         List<Time> times = timeRepository.findAll();
 
         return times.stream()
-                .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getValue(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
-                ))
-                .toList();
+            .map(time -> new AvailableTime(
+                time.getId(),
+                time.getValue(),
+                reservations.stream()
+                    .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
+            ))
+            .toList();
     }
 
     public List<Time> findAll() {
