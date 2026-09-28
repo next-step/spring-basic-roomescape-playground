@@ -1,16 +1,11 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import java.time.LocalDate;
 
-public class ReservationRequest {
-    private String name;
+public class WaitingRequest {
     private LocalDate date;
     private Long theme;
     private Long time;
-
-    public String getName() {
-        return name;
-    }
 
     public LocalDate getDate() {
         return date;
