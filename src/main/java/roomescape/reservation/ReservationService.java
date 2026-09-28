@@ -2,6 +2,8 @@ package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
+import roomescape.member.Member;
+import roomescape.member.MemberRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -19,32 +21,34 @@ public class ReservationService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final WaitingService waitingService;
+    private final MemberRepository memberRepository;
 
 
     public ReservationService(ReservationRepository reservationRepository,
                               TimeRepository timeRepository,
-                              ThemeRepository themeRepository, WaitingService waitingService) {
+                              ThemeRepository themeRepository, WaitingService waitingService, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.waitingService = waitingService;
+        this.memberRepository = memberRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember member) {
         ReservationRequest reservationToSave = withName(reservationRequest, member);
-        return save(reservationToSave);
-    }
-
-    public ReservationResponse save(ReservationRequest reservationRequest) {
         Time time = timeRepository.findById(reservationRequest.getTime())
                 .orElseThrow(() -> new IllegalArgumentException("시간이 존재하지 않습니다."));
         Theme theme = themeRepository.findById(reservationRequest.getTheme())
                 .orElseThrow(() -> new IllegalArgumentException("테마가 존재하지 않습니다."));
+        Member persistMember = memberRepository.findById(member.id())
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+
         Reservation reservation = new Reservation(
-                reservationRequest.getName(),
-                reservationRequest.getDate(),
+                reservationToSave.getName(),
+                reservationToSave.getDate(),
                 time,
-                theme
+                theme,
+                persistMember
         );
         Reservation savedReservation = reservationRepository.save(reservation);
         return new ReservationResponse(savedReservation.getId(),
@@ -53,6 +57,8 @@ public class ReservationService {
                 savedReservation.getDate(),
                 savedReservation.getTime().getValue());
     }
+
+
 
     public List<MyReservationResponse> findMyReservations(LoginMember member) {
         List<Reservation> reservations = reservationRepository.findByMemberId(member.id());

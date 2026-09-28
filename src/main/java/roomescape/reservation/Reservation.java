@@ -38,6 +38,14 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation(String name, String date, Time time, Theme theme, Member member) {
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+        this.member = member;
+    }
+
     public Reservation() {
 
     }
@@ -60,5 +68,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }
