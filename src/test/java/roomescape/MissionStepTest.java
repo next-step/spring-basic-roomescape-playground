@@ -17,9 +17,17 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
+
+    @org.springframework.boot.test.web.server.LocalServerPort
+    private int port;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUpPort() {
+        RestAssured.port = port;
+    }
 
     @Test
     void 일단계() {
@@ -88,7 +96,7 @@ public class MissionStepTest {
                 ))
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(401);
     }
 
     @Test
@@ -103,7 +111,7 @@ public class MissionStepTest {
                 ))
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(401);
     }
 
     @Test
@@ -123,7 +131,7 @@ public class MissionStepTest {
                     .cookie("token", brownToken)
                     .when().get(path)
                     .then().log().all()
-                    .statusCode(401);
+                    .statusCode(403);
 
             RestAssured.given().log().all()
                     .cookie("token", adminToken)
@@ -174,6 +182,7 @@ public class MissionStepTest {
 
     @ParameterizedTest
     @CsvSource({
+            "GET, /members",
             "DELETE, /reservations/1",
             "POST, /themes",
             "DELETE, /themes/1",
@@ -263,5 +272,75 @@ public class MissionStepTest {
                 ))
                 .when().post("/reservations")
                 .then().statusCode(403);
+    }
+    @Test
+    void 관리자는_회원_목록을_조회하고_선택한_회원으로_예약한다() {
+        String token = createToken("admin@email.com", "password");
+        Long memberId = RestAssured.given()
+                .cookie("token", token)
+                .get("/members")
+                .then().statusCode(200)
+                .extract().jsonPath().getLong("find { it.email == 'brown@email.com' }.id");
+
+        Long reservationId = RestAssured.given()
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .body(Map.of("memberId", memberId, "date", "2024-04-01",
+                        "theme", 2, "time", 3))
+                .post("/reservations")
+                .then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+
+        Map<String, Object> saved = jdbcTemplate.queryForMap(
+                "SELECT member_id, theme_id, time_id FROM reservation WHERE id = ?",
+                reservationId
+        );
+        assertThat(((Number) saved.get("member_id")).longValue()).isEqualTo(memberId);
+        assertThat(((Number) saved.get("theme_id")).longValue()).isEqualTo(2L);
+        assertThat(((Number) saved.get("time_id")).longValue()).isEqualTo(3L);
+    }
+
+    @Test
+    void 관리자는_테마와_시간을_생성하고_삭제할_수_있다() {
+        String token = createToken("admin@email.com", "password");
+        Long themeId = RestAssured.given()
+                .cookie("token", token).contentType(ContentType.JSON)
+                .body(Map.of("name", "새 테마", "description", "설명"))
+                .post("/themes").then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+        Long timeId = RestAssured.given()
+                .cookie("token", token).contentType(ContentType.JSON)
+                .body(Map.of("value", "22:00"))
+                .post("/times").then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+
+        RestAssured.given().cookie("token", token)
+                .delete("/themes/" + themeId).then().statusCode(204);
+        RestAssured.given().cookie("token", token)
+                .delete("/times/" + timeId).then().statusCode(204);
+        RestAssured.given().cookie("token", token)
+                .delete("/reservations/1").then().statusCode(204);
+    }
+
+    @Test
+    void 일반_회원은_본인_예약을_생성할_수_있다() {
+        String token = createToken("brown@email.com", "password");
+        Long id = RestAssured.given()
+                .cookie("token", token).contentType(ContentType.JSON)
+                .body(Map.of("date", "2024-04-01", "theme", 1, "time", 1))
+                .post("/reservations").then().statusCode(201)
+                .extract().jsonPath().getLong("id");
+        assertThat(jdbcTemplate.queryForObject(
+                "SELECT member_id FROM reservation WHERE id = ?", Long.class, id
+        )).isEqualTo(2L);
+    }
+
+    @Test
+    void 관리자도_잘못된_시간_입력은_400으로_응답한다() {
+        RestAssured.given()
+                .cookie("token", createToken("admin@email.com", "password"))
+                .contentType(ContentType.JSON)
+                .body(Map.of("value", ""))
+                .post("/times").then().statusCode(400);
     }
 }
