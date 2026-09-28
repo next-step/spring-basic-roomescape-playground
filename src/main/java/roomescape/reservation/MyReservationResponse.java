@@ -1,5 +1,7 @@
 package roomescape.reservation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class MyReservationResponse {
 
     Long reservationId;
@@ -32,6 +34,7 @@ public class MyReservationResponse {
         return status;
     }
 
+    @JsonIgnore
     public Long getId() {
         return reservationId;
     }
