@@ -5,20 +5,21 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.member.Member;
-import roomescape.member.MemberDao;
+import roomescape.member.MemberRepository;
 import roomescape.member.Role;
 
 @Service
 public class AuthService {
     private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-    private final MemberDao memberDao;
+    private final MemberRepository memberRepository;
 
-    public AuthService(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public AuthService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     public String login(LoginRequest loginRequest) {
-        Member member = memberDao.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
+        Member member = memberRepository.findByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword())
+                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
         return Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
