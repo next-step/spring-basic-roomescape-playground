@@ -52,6 +52,33 @@
 - [x] 관리자 권한이 없는 경우 401 상태 코드를 응답한다.
 - [x] `WebMvcConfiguration`에 `AdminInterceptor`를 등록한다.
 
+
+### `JPA 의존성 및 설정`
+
+- [x] JDBC 의존성을 Spring Data JPA 의존성으로 변경한다.
+- [x] `application.properties`에 JPA 관련 설정을 추가한다.
+
+
+### `엔티티 매핑`
+
+- [ ] `Member`를 JPA 엔티티로 매핑한다.
+- [ ] `Theme`를 JPA 엔티티로 매핑한다.
+- [ ] `Time`을 JPA 엔티티로 매핑한다.
+
+
+### `연관관계 매핑`
+
+- [ ] `Reservation`을 JPA 엔티티로 매핑한다.
+- [ ] `Reservation`과 `Member`의 연관관계를 매핑한다.
+- [ ] `Reservation`과 `Theme`의 연관관계를 매핑한다.
+- [ ] `Reservation`과 `Time`의 연관관계를 매핑한다.
+
+
+### `Repository 전환`
+
+- [ ] 기존 DAO를 JpaRepository 기반 Repository로 전환하고 Service에 적용한다.
+- [ ] 필요한 조회 기능을 쿼리 메서드로 구현한다.
+
 ### `리뷰 반영`
 
 - [x] 최신 정보를 반영할 수 있도록 DB에서 다시 조회하게끔 `name`, `role` claim을 제거한다.
