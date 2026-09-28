@@ -61,17 +61,17 @@
 
 ### `엔티티 매핑`
 
-- [ ] `Member`를 JPA 엔티티로 매핑한다.
-- [ ] `Theme`를 JPA 엔티티로 매핑한다.
-- [ ] `Time`을 JPA 엔티티로 매핑한다.
+- [x] `Member`를 JPA 엔티티로 매핑한다.
+- [x] `Theme`를 JPA 엔티티로 매핑한다.
+- [x] `Time`을 JPA 엔티티로 매핑한다.
 
 
 ### `연관관계 매핑`
 
-- [ ] `Reservation`을 JPA 엔티티로 매핑한다.
-- [ ] `Reservation`과 `Member`의 연관관계를 매핑한다.
-- [ ] `Reservation`과 `Theme`의 연관관계를 매핑한다.
-- [ ] `Reservation`과 `Time`의 연관관계를 매핑한다.
+- [x] `Reservation`을 JPA 엔티티로 매핑한다.
+- [x] `Reservation`과 `Member`의 연관관계를 매핑한다.
+- [x] `Reservation`과 `Theme`의 연관관계를 매핑한다.
+- [x] `Reservation`과 `Time`의 연관관계를 매핑한다.
 
 
 ### `Repository 전환`
