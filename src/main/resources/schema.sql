@@ -48,7 +48,8 @@ CREATE TABLE waiting (
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member(id),
     FOREIGN KEY (time_id) REFERENCES time(id),
-    FOREIGN KEY (theme_id) REFERENCES theme(id)
+    FOREIGN KEY (theme_id) REFERENCES theme(id),
+    UNIQUE (member_id, date, theme_id, time_id)
 );
 
 INSERT INTO member (name, email, password, role)

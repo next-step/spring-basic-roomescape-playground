@@ -2,6 +2,7 @@ package roomescape.waiting;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -28,4 +29,6 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
             "   AND w.time = :time " +
             "   AND w.id < :waitingId ")
     long countEarlierWaitings(Theme theme, String date, Time time, Long waitingId);
+
+    boolean existsByMemberAndDateAndThemeAndTime(Member member, String date, Theme theme, Time time);
 }

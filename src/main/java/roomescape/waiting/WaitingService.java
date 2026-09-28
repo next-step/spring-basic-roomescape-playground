@@ -6,6 +6,9 @@ import roomescape.auth.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberNotFoundException;
 import roomescape.member.MemberRepository;
+import roomescape.reservation.ReservationAlreadyExistsException;
+import roomescape.reservation.ReservationUnavailableException;
+import roomescape.reservation.ReservationRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -18,13 +21,15 @@ public class WaitingService {
     private final MemberRepository memberRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
     public WaitingService(WaitingRepository waitingRepository, MemberRepository memberRepository,
-                          TimeRepository timeRepository, ThemeRepository themeRepository) {
+                          TimeRepository timeRepository, ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.waitingRepository = waitingRepository;
         this.memberRepository = memberRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -34,6 +39,8 @@ public class WaitingService {
         Time time = timeRepository.findById(waitingRequest.time()).orElseThrow();
         Theme theme = themeRepository.findById(waitingRequest.theme()).orElseThrow();
 
+        validateWaiting(member, date, theme, time);
+
         Waiting waiting = new Waiting(member, date, time, theme);
 
         Waiting savedWaiting = waitingRepository.save(waiting);
@@ -42,6 +49,24 @@ public class WaitingService {
         long waitingNumber = earlierCount + 1;
 
         return new WaitingResponse(savedWaiting.getId(), waitingNumber);
+    }
+
+    private void validateWaiting(Member member, String date, Theme theme, Time time) {
+        boolean reservationExists = reservationRepository.existsByDateAndThemeAndTime(date, theme, time);
+        boolean myReservationExists = reservationRepository.existsByMemberAndDateAndThemeAndTime(member, date, theme, time);
+        boolean waitingExists = waitingRepository.existsByMemberAndDateAndThemeAndTime(member, date, theme, time);
+
+        if (!reservationExists) {
+            throw new ReservationUnavailableException();
+        }
+
+        if (myReservationExists) {
+            throw new ReservationAlreadyExistsException();
+        }
+
+        if (waitingExists) {
+            throw new WaitingAlreadyExistsException();
+        }
     }
 
     @Transactional
