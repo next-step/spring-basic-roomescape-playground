@@ -4,6 +4,7 @@ const TIME_API_ENDPOINT = '/times';
 const THEME_API_ENDPOINT = '/themes';
 const timesOptions = [];
 const themesOptions = [];
+const membersOptions = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('add-button').addEventListener('click', addInputRow);
@@ -14,6 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fetchTimes();
   fetchThemes();
+  const addButton = document.getElementById('add-button');
+  addButton.disabled = true;
+  requestRead('/members')
+      .then(members => {
+        membersOptions.push(...members.map(member => ({
+          ...member,
+          label: member.name + ' (' + member.email + ')'
+        })));
+        addButton.disabled = false;
+      })
+      .catch(() => alert('회원 목록을 불러오지 못했습니다. 새로고침해주세요.'));
 });
 
 function render(data) {
@@ -58,6 +70,7 @@ function createSelect(options, defaultText, selectId, textProperty) {
   // 기본 옵션 추가
   const defaultOption = document.createElement('option');
   defaultOption.textContent = defaultText;
+  defaultOption.value = '';
   select.appendChild(defaultOption);
 
   // 넘겨받은 옵션을 바탕으로 드롭다운 메뉴 아이템 생성
@@ -86,12 +99,12 @@ function addInputRow() {
   const row = tableBody.insertRow();
   isEditing = true;
 
-  const nameInput = createInput('text');
+  const memberSelect = createSelect(membersOptions, '회원 선택', 'member-select', 'label');
   const dateInput = createInput('date');
   const timeDropdown = createSelect(timesOptions, "시간 선택", 'time-select', 'value');
   const themeDropdown = createSelect(themesOptions, "테마 선택", 'theme-select', 'name');
 
-  const cellFieldsToCreate = ['', nameInput, themeDropdown, dateInput, timeDropdown];
+  const cellFieldsToCreate = ['', memberSelect, themeDropdown, dateInput, timeDropdown];
 
   cellFieldsToCreate.forEach((field, index) => {
     const cell = row.insertCell(index);
@@ -126,31 +139,34 @@ function createActionButton(label, className, eventListener) {
 }
 
 function saveRow(event) {
-  // 이벤트 전파를 막는다
   event.stopPropagation();
-
-  const row = event.target.parentNode.parentNode;
-  const nameInput = row.querySelector('input[type="text"]');
-  const themeSelect = row.querySelector('select');
+  const row = event.target.closest('tr');
+  const memberSelect = row.querySelector('#member-select');
+  const themeSelect = row.querySelector('#theme-select');
   const dateInput = row.querySelector('input[type="date"]');
-  const timeSelect = row.querySelector('select');
+  const timeSelect = row.querySelector('#time-select');
+
+  if (!memberSelect.value || !themeSelect.value || !dateInput.value || !timeSelect.value) {
+    alert('회원, 테마, 날짜, 시간을 모두 선택해주세요.');
+    return;
+  }
 
   const reservation = {
-    name: nameInput.value,
-    theme: themeSelect.value,
+    memberId: Number(memberSelect.value),
+    theme: Number(themeSelect.value),
     date: dateInput.value,
-    time: timeSelect.value
+    time: Number(timeSelect.value)
   };
 
+  event.target.disabled = true;
   requestCreate(reservation)
-      .then(() => {
-        location.reload();
-      })
-      .catch(error => console.error('Error:', error));
-
-  isEditing = false;  // isEditing 값을 false로 설정
+      .then(() => location.reload())
+      .catch(error => {
+        console.error('Error:', error);
+        alert('예약 생성에 실패했습니다.');
+        event.target.disabled = false;
+      });
 }
-
 function deleteRow(event) {
   const row = event.target.closest('tr');
   const reservationId = row.cells[0].textContent;
