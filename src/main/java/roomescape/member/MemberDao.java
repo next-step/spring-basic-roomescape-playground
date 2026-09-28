@@ -1,5 +1,7 @@
 package roomescape.member;
 
+import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -50,6 +52,15 @@ public class MemberDao {
                         rs.getString("role")
                 ),
                 id
+        );
+    }
+    public List<Member> findAll() {
+        return jdbcTemplate.query(
+                "SELECT id, name, email, role FROM member ORDER BY id",
+                (rs, rowNum) -> new Member(
+                        rs.getLong("id"), rs.getString("name"),
+                        rs.getString("email"), rs.getString("role")
+                )
         );
     }
 }

@@ -1,13 +1,13 @@
 package roomescape.reservation;
 
 import org.springframework.stereotype.Service;
-import roomescape.member.LoginMember;
+import roomescape.auth.UnauthorizedException;
 import roomescape.member.Member;
 import roomescape.member.MemberDao;
 
 import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
-import roomescape.member.ForbiddenException;
+import roomescape.auth.ForbiddenException;
 
 @Service
 public class ReservationService {
@@ -25,11 +25,11 @@ public class ReservationService {
 
     public ReservationResponse save(
             ReservationRequest reservationRequest,
-            LoginMember loginMember
+            Long loginMemberId
     ) {
         Member member = findReservationMember(
                 reservationRequest,
-                loginMember
+                loginMemberId
         );
 
         Reservation reservation = reservationDao.save(
@@ -48,9 +48,15 @@ public class ReservationService {
 
     private Member findReservationMember(
             ReservationRequest reservationRequest,
-            LoginMember loginMember
+            Long loginMemberId
     ) {
-        Long memberId = reservationRequest.getMemberId();
+        Member loginMember;
+        try {
+            loginMember = memberDao.findById(loginMemberId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UnauthorizedException("로그인한 회원을 찾을 수 없습니다.");
+        }
+        Long memberId = reservationRequest.memberId();
 
         if (memberId == null) {
             memberId = loginMember.getId();

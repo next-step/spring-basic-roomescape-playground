@@ -58,11 +58,11 @@ public class ReservationDao {
                     new String[]{"id"}
             );
 
-            ps.setString(1, reservationRequest.getDate());
+            ps.setString(1, reservationRequest.date());
             ps.setString(2, member.getName());
             ps.setLong(3, member.getId());
-            ps.setLong(4, reservationRequest.getTheme());
-            ps.setLong(5, reservationRequest.getTime());
+            ps.setLong(4, reservationRequest.theme());
+            ps.setLong(5, reservationRequest.time());
 
             return ps;
         }, keyHolder);
@@ -70,7 +70,7 @@ public class ReservationDao {
         Time time = jdbcTemplate.queryForObject(
                 "SELECT * FROM time WHERE id = ?",
                 (rs, rowNum) -> new Time(rs.getLong("id"), rs.getString("time_value")),
-                reservationRequest.getTime()
+                reservationRequest.time()
         );
 
         Theme theme = jdbcTemplate.queryForObject(
@@ -78,13 +78,13 @@ public class ReservationDao {
                 (rs, rowNum) -> new Theme(
                         rs.getLong("id"), rs.getString("name"), rs.getString("description")
                 ),
-                reservationRequest.getTheme()
+                reservationRequest.theme()
         );
 
         return new Reservation(
                 keyHolder.getKey().longValue(),
                 member.getName(),
-                reservationRequest.getDate(),
+                reservationRequest.date(),
                 time,
                 theme
         );

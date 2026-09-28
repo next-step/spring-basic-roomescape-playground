@@ -1,25 +1,4 @@
 package roomescape.reservation;
 
-public class ReservationRequest {
-    private String date;
-    private Long theme;
-    private Long time;
-
-    public String getDate() {
-        return date;
-    }
-
-    public Long getTheme() {
-        return theme;
-    }
-
-    public Long getTime() {
-        return time;
-    }
-
-    private Long memberId;
-
-    public Long getMemberId() {
-        return memberId;
-    }
+public record ReservationRequest(String date, Long theme, Long time, Long memberId) {
 }

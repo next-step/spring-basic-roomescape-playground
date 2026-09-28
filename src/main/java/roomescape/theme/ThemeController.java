@@ -1,5 +1,7 @@
 package roomescape.theme;
 
+
+import roomescape.auth.AdminOnly;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ public class ThemeController {
         this.themeDao = themeDao;
     }
 
+    @AdminOnly
     @PostMapping("/themes")
     public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
         Theme newTheme = themeDao.save(theme);
@@ -30,6 +33,7 @@ public class ThemeController {
         return ResponseEntity.ok(themeDao.findAll());
     }
 
+    @AdminOnly
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeDao.deleteById(id);
