@@ -190,5 +190,15 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(201)
                 .extract().as(WaitingResponse.class);
+
+        // 내 예약 목록 조회
+        List<MyReservationResponse> myReservations = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
     }
 }

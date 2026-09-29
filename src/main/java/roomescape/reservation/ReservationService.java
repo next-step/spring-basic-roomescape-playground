@@ -6,7 +6,9 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -14,11 +16,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
@@ -57,7 +61,7 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(Long memberId) {
-        return reservationRepository.findByMemberId(memberId).stream()
+        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(memberId).stream()
                 .map(it -> new MyReservationResponse(
                         it.getId(),
                         it.getTheme().getName(),
@@ -65,5 +69,20 @@ public class ReservationService {
                         it.getTime().getValue(),
                         "예약"))
                 .toList();
+
+        List<MyReservationResponse> waitings = waitingRepository
+                .findByMemberId(memberId).stream()
+                .map(it -> new MyReservationResponse(
+                        it.getId(),
+                        it.getTheme().getName(),
+                        it.getDate(),
+                        it.getTime().getValue(),
+                        "예약대기"
+                )).toList();
+
+        List<MyReservationResponse> result = new ArrayList<>(reservations);
+        result.addAll(waitings);
+
+        return result;
     }
 }
