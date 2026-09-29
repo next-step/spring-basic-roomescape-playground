@@ -201,4 +201,45 @@ public class MissionStepTest {
                 .statusCode(200)
                 .extract().jsonPath().getList(".", MyReservationResponse.class);
     }
+
+    @Test
+    @DisplayName("예약 대기 취소")
+    void delete_waiting() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 1. 예약 대기 생성
+        WaitingResponse waiting = RestAssured.given()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        // 2. 생성한 예약 대기 취소
+        RestAssured.given()
+                .cookie("token", brownToken)
+                .delete("/waitings/" + waiting.getId())
+                .then()
+                .statusCode(204);
+
+        // 3. 내 예약 목록에서 삭제되었는지 확인
+        List<MyReservationResponse> myReservations = RestAssured.given()
+                .cookie("token", brownToken)
+                .get("/reservations-mine")
+                .then()
+                .statusCode(200)
+                .extract().jsonPath()
+                .getList(".", MyReservationResponse.class);
+
+        assertThat(myReservations.stream()
+                .noneMatch(it -> it.getStatus().contains("예약대기")))
+                .isTrue();
+    }
 }

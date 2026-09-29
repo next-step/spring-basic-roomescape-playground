@@ -1,6 +1,8 @@
 package roomescape.waiting;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import roomescape.member.Member;
 import roomescape.reservation.ReservationRequest;
 import roomescape.theme.Theme;
@@ -41,6 +43,16 @@ public class WaitingService {
                 time.getValue(),
                 "예약대기"
         );
+    }
+
+    public void delete(Long waitingId, Long memberId) {
+        Waiting waiting = waitingRepository.findById(waitingId).orElseThrow();
+
+        if (!waiting.getMember().getId().equals(memberId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        waitingRepository.delete(waiting);
     }
 
 }
