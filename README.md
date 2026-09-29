@@ -82,10 +82,13 @@
 
 ### `예약 목록 조회`
 
-- [x] GET /reservation-mine 요청 시 reservation-mine.html.html 화면을 반환한다.
 - [x] 새로운 응답 DTO를 생성한다.
 - [x] GET /reservations-mine 요청 시 새 DTO를 이용해 응답을 반환한다.
 - [x] Service에서 로그인 회원 예약을 조회하고 DTO를 반환한다.
+- [x] SQL reservation 테이블을 수정한다.
+- [x] 관리자 예약 생성 시 String으로 전달한다.
+- [x] 사용자 예약 생성 시 ID를 Reservation에 저장한다.
+
 
 ### `리뷰 반영`
 

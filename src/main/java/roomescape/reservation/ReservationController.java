@@ -25,7 +25,7 @@ public class ReservationController {
         return reservationService.findAll();
     }
 
-    @GetMapping("/reservation-mine")
+    @GetMapping("/reservations-mine")
     public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
         return reservationService.findMyReservations(loginMember.getId());
     }
@@ -38,12 +38,10 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        Member member;
+        Member member = null;
 
-        if (reservationRequest.getName() != null) {
-            member = memberService.findByName(reservationRequest.getName());
-        }
-        else {
+        // 요청으로 들어온 게 null이면 사용자니까
+        if (reservationRequest.getName() == null) {
             member = memberService.findById(loginMember.getId());
         }
 

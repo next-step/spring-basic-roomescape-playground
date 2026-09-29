@@ -25,8 +25,16 @@ public class ReservationService {
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
 
+        String name;
+        if (member != null) {
+            name = member.getName();
+        }
+        else {
+            name = reservationRequest.getName();
+        }
+
         Reservation reservation = new Reservation(
-                reservationRequest.getName(),
+                name,
                 reservationRequest.getDate(),
                 time,
                 theme,
@@ -35,7 +43,7 @@ public class ReservationService {
 
         Reservation saveReservation = reservationRepository.save(reservation);
 
-        return new ReservationResponse(saveReservation.getId(), member.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        return new ReservationResponse(saveReservation.getId(), name, reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
@@ -49,7 +57,7 @@ public class ReservationService {
     }
 
     public List<MyReservationResponse> findMyReservations(Long memberId) {
-        return reservationRepository.findById(memberId).stream()
+        return reservationRepository.findByMemberId(memberId).stream()
                 .map(it -> new MyReservationResponse(
                         it.getId(),
                         it.getTheme().getName(),
