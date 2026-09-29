@@ -45,7 +45,7 @@
 
 <div class="content-container" style="width: 400px;">
   <h2 class="content-container-title">Signup</h2>
-  <form id="signup-form">
+  <form id="signup-form" onsubmit="register(event)">
     <div class="form-group">
       <label for="email">Email address</label>
       <input type="email" class="form-control" id="email" placeholder="Enter email">
@@ -58,7 +58,7 @@
       <label for="name">Name</label>
       <input type="name" class="form-control" id="name" placeholder="Enter name">
     </div>
-    <button type="submit" class="btn btn-custom" onclick="register()">Register</button>
+    <button type="submit" class="btn btn-custom">Register</button>
   </form>
 </div>
 
