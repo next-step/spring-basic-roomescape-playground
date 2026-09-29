@@ -242,4 +242,62 @@ public class MissionStepTest {
                 .noneMatch(it -> it.getStatus().contains("예약대기")))
                 .isTrue();
     }
+
+    @Test
+    @DisplayName("중복 예약 방지")
+    void noTwoReservation() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2026-09-29");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 예약하기
+        RestAssured.given()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then()
+                .statusCode(201);
+
+        // 같은 날짜,시간, 테마로 다시 예약하면 실패
+        RestAssured.given()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then()
+                .statusCode(409);
+    }
+
+    @Test
+    @DisplayName("중복 예약 대기 방지")
+    void noTwoWaiting() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2026-09-29");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 예약 대기 생성
+        RestAssured.given()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then()
+                .statusCode(201);
+
+        // 같은 회원이 동일한 조건으로 다시 신청하면 실패
+        RestAssured.given()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then()
+                .statusCode(409);
+    }
 }

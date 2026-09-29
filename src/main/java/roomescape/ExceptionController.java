@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 public class ExceptionController {
@@ -23,5 +24,10 @@ public class ExceptionController {
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<Void> handleJwtException(JwtException e) {
         return ResponseEntity.status(401).build();
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Void> handleResponseStatusException(ResponseStatusException e) {
+        return ResponseEntity.status(e.getStatusCode()).build();
     }
 }

@@ -1,6 +1,8 @@
 package roomescape.reservation;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
@@ -26,6 +28,19 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservationRequest.getDate(),
+                reservationRequest.getTime(),
+                reservationRequest.getTheme()
+        );
+
+        if (exists) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "이미 예약된 날짜와 시간입니다."
+            );
+        }
+
         Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
         Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
 

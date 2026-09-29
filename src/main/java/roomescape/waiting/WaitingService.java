@@ -34,6 +34,17 @@ public class WaitingService {
                 member
         );
 
+        boolean exists = waitingRepository.existsByMemberIdAndDateAndTimeIdAndThemeId(
+                member.getId(),
+                request.getDate(),
+                request.getTime(),
+                request.getTheme()
+        );
+
+        if (exists) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 예약 대기 중입니다.");
+        }
+
         Waiting saveWaiting = waitingRepository.save(waiting);
 
         return new WaitingResponse(
