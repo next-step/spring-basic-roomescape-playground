@@ -1,10 +1,13 @@
 package roomescape.reservation;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
@@ -41,4 +44,18 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findAllWithDetails();
 
     boolean existsByDateAndTimeIdAndThemeId(String date, Long timeId, Long themeId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        SELECT r
+        FROM Reservation r
+        WHERE r.date = :date
+          AND r.time.id = :timeId
+          AND r.theme.id = :themeId
+        """)
+    Optional<Reservation> findBySlotForUpdate(
+            @Param("date") String date,
+            @Param("timeId") Long timeId,
+            @Param("themeId") Long themeId
+    );
 }

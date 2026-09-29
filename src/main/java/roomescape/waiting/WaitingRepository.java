@@ -17,7 +17,7 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
                  WHERE w2.theme = w.theme
                    AND w2.date = w.date
                    AND w2.time = w.time
-                   AND w2.id < w.id)
+                   AND w2.waitingOrder < w.waitingOrder)
             )
             FROM Waiting w
             WHERE w.memberId = :memberId
@@ -36,5 +36,18 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
     Optional<Waiting> findByIdAndMemberId(
             Long id,
             Long memberId
+    );
+
+    @Query("""
+        SELECT COALESCE(MAX(w.waitingOrder), 0)
+        FROM Waiting w
+        WHERE w.theme.id = :themeId
+          AND w.date = :date
+          AND w.time.id = :timeId
+        """)
+    Long findMaxWaitingOrder(
+            @Param("themeId") Long themeId,
+            @Param("date") String date,
+            @Param("timeId") Long timeId
     );
 }

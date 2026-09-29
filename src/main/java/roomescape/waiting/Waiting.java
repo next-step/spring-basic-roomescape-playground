@@ -5,7 +5,20 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
-@Table(name = "waiting")
+@Table(
+        name = "waiting",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_waiting_order",
+                        columnNames = {
+                                "date",
+                                "time_id",
+                                "theme_id",
+                                "waiting_order"
+                        }
+                )
+        }
+)
 public class Waiting {
 
     @Id
@@ -26,14 +39,18 @@ public class Waiting {
     @JoinColumn(name = "theme_id", nullable = false)
     private Theme theme;
 
+    @Column(name = "waiting_order", nullable = false)
+    private Long waitingOrder;
+
     protected Waiting() {
     }
 
-    public Waiting(Long memberId, String date, Time time, Theme theme) {
+    public Waiting(Long memberId, String date, Time time, Theme theme, Long waitingOrder) {
         this.memberId = memberId;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.waitingOrder = waitingOrder;
     }
 
     public Long getId() {
@@ -54,5 +71,9 @@ public class Waiting {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Long getWaitingOrder() {
+        return waitingOrder;
     }
 }

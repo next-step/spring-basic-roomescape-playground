@@ -1,6 +1,7 @@
 package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.login.LoginMember;
 import roomescape.reservation.ReservationRepository;
 import roomescape.theme.Theme;
@@ -31,32 +32,53 @@ public class WaitingService {
         this.timeRepository = timeRepository;
     }
 
+    @Transactional
     public WaitingResponse save(WaitingRequest request, LoginMember loginMember) {
-        boolean reservationExists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+        reservationRepository.findBySlotForUpdate(
                 request.getDate(),
                 request.getTime(),
                 request.getTheme()
+        ).orElseThrow(() ->
+                new IllegalArgumentException("예약이 존재하지 않아 대기할 수 없습니다.")
         );
 
-        if (!reservationExists) {
-            throw new IllegalArgumentException("예약이 존재하지 않아 대기할 수 없습니다.");
-        }
-
-        boolean waitingExists = waitingRepository.existsByMemberIdAndDateAndTimeIdAndThemeId(
-                loginMember.id(),
-                request.getDate(),
-                request.getTime(),
-                request.getTheme()
-        );
+        boolean waitingExists =
+                waitingRepository
+                        .existsByMemberIdAndDateAndTimeIdAndThemeId(
+                                loginMember.id(),
+                                request.getDate(),
+                                request.getTime(),
+                                request.getTheme()
+                        );
 
         if (waitingExists) {
             throw new IllegalArgumentException("이미 예약 대기 중입니다.");
         }
 
-        Theme theme = themeRepository.findById(request.getTheme()).orElseThrow(NoSuchElementException::new);
-        Time time = timeRepository.findById(request.getTime()).orElseThrow(NoSuchElementException::new);
+        Theme theme = themeRepository
+                .findById(request.getTheme())
+                .orElseThrow(NoSuchElementException::new);
 
-        Waiting waiting = new Waiting(loginMember.id(), request.getDate(), time, theme);
+        Time time = timeRepository
+                .findById(request.getTime())
+                .orElseThrow(NoSuchElementException::new);
+
+        Long maxWaitingOrder =
+                waitingRepository.findMaxWaitingOrder(
+                        request.getTheme(),
+                        request.getDate(),
+                        request.getTime()
+                );
+
+        Long nextWaitingOrder = maxWaitingOrder + 1;
+
+        Waiting waiting = new Waiting(
+                loginMember.id(),
+                request.getDate(),
+                time,
+                theme,
+                nextWaitingOrder
+        );
 
         Waiting savedWaiting = waitingRepository.save(waiting);
 
