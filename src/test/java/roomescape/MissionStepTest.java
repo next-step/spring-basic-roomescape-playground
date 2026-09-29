@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.member.Member;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
+import roomescape.waiting.WaitingResponse;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -169,5 +170,25 @@ public class MissionStepTest {
                 .extract().jsonPath().getList(".", MyReservationResponse.class);
 
         assertThat(reservations).hasSize(3);
+    }
+
+    @Test
+    void 육단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 예약 대기 생성
+        WaitingResponse waiting = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
     }
 }
