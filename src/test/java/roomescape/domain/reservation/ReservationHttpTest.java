@@ -4,12 +4,19 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.domain.time.entity.Time;
+import roomescape.domain.time.repository.TimeRepository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +29,15 @@ public class ReservationHttpTest {
     @LocalServerPort
     private int port;
 
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private TimeRepository timeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @BeforeEach
     void setup() {
         RestAssured.port = this.port;
@@ -30,8 +46,10 @@ public class ReservationHttpTest {
     @Test
     void 예약_생성에_성공한다() {
         // given
-        String token = createToken("admin@email.com", "password");
-        Map<String, Object> params = reservationParams("Alice");
+        String token = createToken("admin@dummy.com", "dummy");
+        Time time = saveTime();
+        Theme theme = saveTheme();
+        Map<String, Object> params = reservationParams("더미_유저", time, theme);
 
         // when & then
         RestAssured.given()
@@ -43,16 +61,16 @@ public class ReservationHttpTest {
                 .statusCode(HttpStatus.CREATED.value())
                 .header("Location", containsString("/reservations"))
                 .body("id", notNullValue())
-                .body("name", is("Alice"))
-                .body("theme", is("테마1"))
-                .body("time", is("10:00"));
+                .body("name", is("더미_유저"))
+                .body("theme", is("Dummy"))
+                .body("time", is("03:00"));
     }
 
     @Test
-    void 일반_유저가_이름을_지정하면_403을_반환한다() {
+    void 일반_유저가_이름을_지정하면_400을_반환한다() {
         // given
-        String token = createToken("brown@email.com", "password");
-        Map<String, Object> params = reservationParams("Alice");
+        String token = createToken("user@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams("Alice", saveTime(), saveTheme());
 
         // when & then
         RestAssured.given()
@@ -61,30 +79,30 @@ public class ReservationHttpTest {
                 .contentType(ContentType.JSON)
                 .when().post("/reservations")
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value());
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
     void 이름이_없으면_로그인한_사용자의_이름으로_예약된다() {
         // given
-        String token = createToken("admin@email.com", "password");
-        Map<String, Object> params = reservationParams(null);
+        String token = createToken("user@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams(null, saveTime(), saveTheme());
 
         // when & then
         RestAssured.given()
                 .body(params)
-                .cookie("token",token)
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().post("/reservations")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
-                .body("name", is("어드민"));
+                .body("name", is("더미_유저"));
     }
 
     @Test
     void 이름과_토큰이_모두_없으면_401을_반환한다() {
         // given
-        Map<String, Object> params = reservationParams(null);
+        Map<String, Object> params = reservationParams(null, saveTime(), saveTheme());
 
         // when & then
         RestAssured.given()
@@ -98,8 +116,8 @@ public class ReservationHttpTest {
     @Test
     void 예약은_date가_빈_채로_생성할_수_없다() {
         // given
-        String token = createToken("admin@email.com", "password");
-        Map<String, Object> params = reservationParams("Alice");
+        String token = createToken("admin@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams("Alice", saveTime(), saveTheme());
         params.put("date", null);
 
         // when & then
@@ -109,8 +127,8 @@ public class ReservationHttpTest {
     @Test
     void 예약은_과거_날짜로_생성할_수_없다() {
         // given
-        String token = createToken("admin@email.com", "password");
-        Map<String, Object> params = reservationParams("Alice");
+        String token = createToken("admin@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams("Alice", saveTime(), saveTheme());
         params.put("date", LocalDate.now().minusDays(1).toString());
 
         // when & then
@@ -120,8 +138,8 @@ public class ReservationHttpTest {
     @Test
     void 예약은_time이_빈_채로_생성할_수_없다() {
         // given
-        String token = createToken("admin@email.com", "password");
-        Map<String, Object> params = reservationParams("Alice");
+        String token = createToken("admin@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams("Alice", saveTime(), saveTheme());
         params.put("time", null);
 
         // when & then
@@ -131,8 +149,8 @@ public class ReservationHttpTest {
     @Test
     void 예약은_theme이_빈_채로_생성할_수_없다() {
         // given
-        String token = createToken("admin@email.com", "password");
-        Map<String, Object> params = reservationParams("Alice");
+        String token = createToken("admin@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams("Alice", saveTime(), saveTheme());
         params.put("theme", null);
 
         // when & then
@@ -142,16 +160,16 @@ public class ReservationHttpTest {
     @Test
     void 예약_목록_조회에_성공한다() {
         // given
-        String token = createToken("admin@email.com", "password");
+        String token = createToken("admin@dummy.com", "dummy");
 
-        // when & then: schema.sql 시드 예약 3건
+        // when & then
         RestAssured.given()
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .when().get("/reservations")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", is(3));
+                .body("size()", is(1));
     }
 
     @Test
@@ -166,7 +184,7 @@ public class ReservationHttpTest {
     @Test
     void 일반_유저가_예약_목록을_조회하면_403을_반환한다() {
         // given
-        String token = createToken("brown@email.com", "password");
+        String token = createToken("user@dummy.com", "dummy");
 
         // when & then
         RestAssured.given()
@@ -180,13 +198,13 @@ public class ReservationHttpTest {
     @Test
     void 예약_삭제에_성공한다() {
         // given
-        String token = createToken("admin@email.com", "password");
+        String token = createToken("admin@dummy.com", "dummy");
 
         // when
         RestAssured.given()
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + 1L)
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
@@ -197,7 +215,7 @@ public class ReservationHttpTest {
                 .when().get("/reservations")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", is(2));
+                .body("size()", is(0));
     }
 
     @Test
@@ -209,12 +227,20 @@ public class ReservationHttpTest {
                 .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
-    private Map<String, Object> reservationParams(String name) {
+    private Time saveTime() {
+        return timeRepository.save(new Time(LocalTime.of(3, 0)));
+    }
+
+    private Theme saveTheme() {
+        return themeRepository.save(new Theme("Dummy",  "it is Dummy for Test"));
+    }
+
+    private Map<String, Object> reservationParams(String name, Time time, Theme theme) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("date", LocalDate.now().plusDays(1).toString());
-        params.put("time", 1);
-        params.put("theme", 1);
+        params.put("time", time.getId());
+        params.put("theme", theme.getId());
         return params;
     }
 

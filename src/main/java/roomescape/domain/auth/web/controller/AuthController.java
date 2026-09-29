@@ -35,7 +35,7 @@ public class AuthController {
             HttpServletRequest httpServletRequest
     ) {
 
-        LoginMember loginMember = authService.login(request.email(),  request.password());
+        LoginMember loginMember = authService.login(request.email(), request.password());
 
         sessionManager.store(httpServletRequest, loginMember);
 
@@ -47,7 +47,7 @@ public class AuthController {
     public UsernameResponse getName(
             @Login LoginMember member
     ) {
-        return new UsernameResponse(member.getName());
+        return new UsernameResponse(member.name());
     }
 
     @Public

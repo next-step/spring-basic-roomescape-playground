@@ -27,7 +27,7 @@ public class PageHttpTest {
     @Test
     void ADMIN은_admin_페이지에_접근할_수_있다() {
         // given
-        String adminToken = createToken("admin@email.com", "password");
+        String adminToken = createToken("admin@dummy.com", "dummy");
 
         // when & then
         RestAssured.given()
@@ -40,7 +40,7 @@ public class PageHttpTest {
     @Test
     void USER는_admin_페이지에_접근할_수_없다() {
         // given
-        String userToken = createToken("brown@email.com", "password");
+        String userToken = createToken("user@dummy.com", "dummy");
 
         // when & then
         RestAssured.given()
@@ -53,7 +53,7 @@ public class PageHttpTest {
     @Test
     void ADMIN은_admin_하위_페이지에_접근할_수_있다() {
         // given
-        String adminToken = createToken("admin@email.com", "password");
+        String adminToken = createToken("admin@dummy.com", "dummy");
 
         // when & then
         RestAssured.given()
@@ -66,7 +66,7 @@ public class PageHttpTest {
     @Test
     void USER는_admin_하위_페이지에_접근할_수_없다() {
         // given
-        String userToken = createToken("brown@email.com", "password");
+        String userToken = createToken("user@dummy.com", "dummy");
 
         // when & then
         RestAssured.given()

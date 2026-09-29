@@ -12,6 +12,6 @@ public record TimeResponse(
         LocalTime value
 ) {
     public static TimeResponse from(Time time) {
-        return new TimeResponse(time.getId(), time.getValue());
+        return new TimeResponse(time.getId(), time.getTimeValue());
     }
 }

@@ -1,28 +1,44 @@
 package roomescape.domain.reservation.entity;
 
+import jakarta.persistence.*;
+import roomescape.domain.member.entity.Member;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
 
 import java.time.LocalDate;
 
+@Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {
+                "date", "time_id", "theme_id"
+        })
+)
 public class Reservation {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+
+    @Column(nullable = false)
     private LocalDate date;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "time_id", nullable = false)
     private Time time;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "theme_id", nullable = false)
     private Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+    protected Reservation() {
     }
 
-    public Reservation(String name, LocalDate date, Time time, Theme theme) {
-        validateFields(name, date, time, theme);
-        this.name = name;
+    public Reservation(LocalDate date, Member member, Time time, Theme theme) {
+        validateFields(date, member, time, theme);
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -32,8 +48,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
@@ -48,13 +64,13 @@ public class Reservation {
         return theme;
     }
 
-    private void validateFields(String name, LocalDate date, Time time, Theme theme) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Reservation을 만들기 위해 name은 필수 필드입니다.");
-        }
-
+    private void validateFields(LocalDate date, Member member, Time time, Theme theme) {
         if (date == null) {
             throw new IllegalArgumentException("Reservation을 만들기 위해 date는 필수 필드입니다.");
+        }
+
+        if (member == null) {
+            throw new IllegalArgumentException("Reservation을 만들기 위해 member는 필수 필드입니다.");
         }
 
         if (date.isBefore(LocalDate.now())) {

@@ -1,7 +1,7 @@
 package roomescape.domain.member.web.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,8 +33,9 @@ public class MemberController {
 
         try {
             newMember = memberService.createMember(memberRequest.name(), memberRequest.email(), memberRequest.password());
-        } catch (DuplicateKeyException e) {
-            throw new ConflictException(null, Map.of("email", memberRequest.email()), "이미 가입된 이메일입니다.");
+        } catch (DataIntegrityViolationException e) {
+            Map<String, String> errorData = memberService.determineDuplicate(memberRequest.email(), memberRequest.name());
+            throw new ConflictException(null, Map.of(errorData.get("key"), errorData.get("value")), errorData.get("cause"));
         }
 
         return ResponseEntity.created(URI.create("/members/" + newMember.getId())).body(MemberResponse.from(newMember));

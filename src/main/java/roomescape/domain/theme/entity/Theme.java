@@ -1,17 +1,20 @@
 package roomescape.domain.theme.entity;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Theme {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true, length = 255)
     private String name;
+
+    @Column(nullable = false, length = 255)
     private String description;
 
-    public Theme() {
-    }
-
-    public Theme(Long id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
+    protected Theme() {
     }
 
     public Theme(String name, String description) {

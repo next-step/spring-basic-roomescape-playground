@@ -19,7 +19,7 @@ public class MemberTest {
         // name == null
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> new Member((String) null, email, password, role)
+                () -> new Member(null, email, password, role)
         );
 
         // name == ""
@@ -133,7 +133,7 @@ public class MemberTest {
         Member member = new Member(name, email, password, role);
 
         // then
-        assertThat(member.getName()).isEqualTo(name);
+        assertThat(member.getNickname()).isEqualTo(name);
         assertThat(member.getEmail()).isEqualTo(email);
         assertThat(member.getPassword()).isEqualTo(password);
         assertThat(member.getRole()).isEqualTo(role);

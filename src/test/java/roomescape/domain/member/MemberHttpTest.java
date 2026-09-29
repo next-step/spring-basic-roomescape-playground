@@ -100,8 +100,8 @@ public class MemberHttpTest {
     void 로그인에_성공하면_token_쿠키를_발급한다() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
+        params.put("email", "admin@dummy.com");
+        params.put("password", "dummy");
 
         // when
         String token = RestAssured.given()
@@ -174,7 +174,7 @@ public class MemberHttpTest {
     @Test
     void 로그인한_사용자의_이름을_조회한다() {
         // given
-        String token = createToken("admin@email.com", "password");
+        String token = createToken("admin@dummy.com", "dummy");
 
         // when & then
         RestAssured.given()
@@ -183,7 +183,7 @@ public class MemberHttpTest {
                 .when().get("/login/check")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("name", is("어드민"));
+                .body("name", is("더미_어드민"));
     }
 
     @Test
@@ -224,7 +224,7 @@ public class MemberHttpTest {
     void 잘못된_비밀번호로_로그인하면_401을_반환한다() {
         // given
         Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
+        params.put("email", "admin@dummy.com");
         params.put("password", "wrong-password");
 
         // when & then
@@ -248,7 +248,7 @@ public class MemberHttpTest {
     @Test
     void 로그아웃하면_기존_세션으로_사용자_이름을_조회할_수_없다() {
         // given
-        String token = createToken("admin@email.com", "password");
+        String token = createToken("admin@dummy.com", "dummy");
 
         RestAssured.given()
                 .cookie("token", token)

@@ -1,22 +1,31 @@
 package roomescape.domain.member.entity;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Member {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+
+    @Column(nullable = false, unique = true, length = 255)
+    private String nickname;
+
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
+
+    @Column(nullable = false, length = 255)
     private String password;
+
+    @Column(nullable = false, length = 255)
     private String role;
 
-    public Member(Long id, String name, String email, String role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
+    protected Member() {
     }
 
-    public Member(String name, String email, String password, String role) {
-        validateFields(name, email, password, role);
-        this.name = name;
+    public Member(String nickname, String email, String password, String role) {
+        validateFields(nickname, email, password, role);
+        this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.role = role;
@@ -26,8 +35,8 @@ public class Member {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getNickname() {
+        return nickname;
     }
 
     public String getEmail() {
@@ -42,9 +51,9 @@ public class Member {
         return role;
     }
 
-    private void validateFields(String name, String email, String password, String role) {
+    private void validateFields(String nickname, String email, String password, String role) {
 
-        if (name == null || name.isBlank()) {
+        if (nickname == null || nickname.isBlank()) {
             throw new IllegalArgumentException("Member를 생성하기 위해 name은 필수 필드입니다.");
         }
 

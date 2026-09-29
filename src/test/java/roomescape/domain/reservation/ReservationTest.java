@@ -2,6 +2,7 @@ package roomescape.domain.reservation;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.member.entity.Member;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.time.entity.Time;
@@ -13,30 +14,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReservationTest {
 
-    private final String name = "Alice";
+    private final Member alice = new Member("Alice", "alice@dummy.com", "dummy", "USER");
     private final LocalDate date = LocalDate.now().plusDays(1);
-    private final Time time = new Time(1L, LocalTime.of(10, 0));
-    private final Theme theme = new Theme(1L, "테마", "설명");
+    private final Time time = new Time(LocalTime.of(10, 0));
+    private final Theme theme = new Theme("dummy", "dummy");
 
     @Test
-    void Reservation은_name이_빈_채로_생성할_수_없다() {
+    void Reservation은_member가_빈_채로_생성할_수_없다() {
 
-        // name == null
+        // member == null
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> new Reservation(null, date, time, theme)
-        );
-
-        // name == ""
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> new Reservation("", date, time, theme)
-        );
-
-        // name == " "
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> new Reservation(" ", date, time, theme)
+                () -> new Reservation(date, null, time, theme)
         );
     }
 
@@ -46,7 +35,7 @@ public class ReservationTest {
         // date == null
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> new Reservation(name, null, time, theme)
+                () -> new Reservation(null, alice, time, theme)
         );
     }
 
@@ -56,7 +45,7 @@ public class ReservationTest {
         // date < today
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> new Reservation(name, LocalDate.now().minusDays(1), time, theme)
+                () -> new Reservation(LocalDate.now().minusDays(1), alice, time, theme)
         );
     }
 
@@ -66,7 +55,7 @@ public class ReservationTest {
         // time == null
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> new Reservation(name, date, null, theme)
+                () -> new Reservation(date, alice,  null, theme)
         );
     }
 
@@ -76,19 +65,17 @@ public class ReservationTest {
         // theme == null
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> new Reservation(name, date, time, null)
+                () -> new Reservation(date, alice, time, null)
         );
     }
 
     @Test
     void Reservation을_정상적으로_생성한_경우() {
         // given
-        Reservation reservation = new Reservation(name, date, time, theme);
+        Reservation reservation = new Reservation(date, alice,  time, theme);
 
         // then
-        assertThat(reservation.getName()).isEqualTo(name);
+        assertThat(reservation.getMember().getNickname()).isEqualTo(alice.getNickname());
         assertThat(reservation.getDate()).isEqualTo(date);
-        assertThat(reservation.getTime()).isEqualTo(time);
-        assertThat(reservation.getTheme()).isEqualTo(theme);
     }
 }

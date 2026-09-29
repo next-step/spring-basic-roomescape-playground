@@ -4,10 +4,13 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.repository.ThemeRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +21,14 @@ import static org.hamcrest.Matchers.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeHttpTest {
 
-    private final String name = "새테마";
-    private final String description = "새테마입니다.";
+    private final String name = "Dummy";
+    private final String description = "it is Dummy for Test";
 
     @LocalServerPort
     private int port;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @BeforeEach
     void setup() {
@@ -32,7 +38,7 @@ public class ThemeHttpTest {
     @Test
     void 테마_생성에_성공한다() {
         // given
-        String token = createToken("admin@email.com", "password");
+        String token = createToken("admin@dummy.com", "dummy");
         Map<String, String> params = themeParams(name, description);
 
         // when & then
@@ -52,7 +58,7 @@ public class ThemeHttpTest {
     @Test
     void 일반_유저는_테마를_생성할_수_없다() {
         // given
-        String token = createToken("brown@email.com", "password");
+        String token = createToken("user@dummy.com", "dummy");
         Map<String, String> params = themeParams(name, description);
 
         // when & then
@@ -68,7 +74,7 @@ public class ThemeHttpTest {
     @Test
     void 테마는_name이_빈_채로_생성할_수_없다() {
         // given
-        String token = createToken("admin@email.com", "password");
+        String token = createToken("admin@dummy.com", "dummy");
 
         // name == null
         postThemeExpectingBadRequest(token, themeParams(null, description));
@@ -83,7 +89,7 @@ public class ThemeHttpTest {
     @Test
     void 테마는_description이_빈_채로_생성할_수_없다() {
         // given
-        String token = createToken("admin@email.com", "password");
+        String token = createToken("admin@dummy.com", "dummy");
 
         // description == null
         postThemeExpectingBadRequest(token, themeParams(name, null));
@@ -97,25 +103,31 @@ public class ThemeHttpTest {
 
     @Test
     void 테마_목록_조회에_성공한다() {
-        // schema.sql 시드 테마 3건
+        // given
+        themeRepository.save(new Theme("테마A", "테마A입니다."));
+        themeRepository.save(new Theme("테마B", "테마B입니다."));
+
+        // when & then
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .when().get("/themes")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", is(3));
+                .body("size()", is(3))
+                .body("name", hasItems("테마A", "테마B"));
     }
 
     @Test
     void 테마_삭제에_성공한다() {
         // given
-        String token = createToken("admin@email.com", "password");
+        String token = createToken("admin@dummy.com", "dummy");
+        Theme savedTheme = themeRepository.save(new Theme(name, description));
 
         // when
         RestAssured.given()
                 .cookie("token", token)
                 .contentType(ContentType.JSON)
-                .when().delete("/themes/1")
+                .when().delete("/themes/" + savedTheme.getId())
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
@@ -125,7 +137,7 @@ public class ThemeHttpTest {
                 .when().get("/themes")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", is(2));
+                .body("size()", is(1));
     }
 
     private Map<String, String> themeParams(String name, String description) {

@@ -28,6 +28,6 @@ public class TimeTest {
         Time time = new Time(value);
 
         // then
-        assertThat(time.getValue()).isEqualTo(value);
+        assertThat(time.getTimeValue()).isEqualTo(value);
     }
 }

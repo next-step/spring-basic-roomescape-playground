@@ -1,13 +1,11 @@
 package roomescape.domain.auth.principal;
 
-import java.io.Serializable;
-
-public class LoginMember implements Serializable {
-
-    private Long id;
-    private String name;
-    private String email;
-    private String role;
+public record LoginMember (
+        Long id,
+        String name,
+        String email,
+        String role
+) {
 
     public LoginMember(Long id, String name, String email, String role) {
         validateFields(id, name, email, role);
@@ -15,22 +13,6 @@ public class LoginMember implements Serializable {
         this.name = name;
         this.email = email;
         this.role = role;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getRole() {
-        return role;
     }
 
     public boolean isAdmin() {
@@ -61,6 +43,5 @@ public class LoginMember implements Serializable {
         if (!role.equals("USER") && !role.equals("ADMIN")) {
             throw new IllegalArgumentException("잘못된 권한입니다.");
         }
-
     }
 }
