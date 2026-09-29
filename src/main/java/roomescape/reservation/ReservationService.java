@@ -2,6 +2,7 @@ package roomescape.reservation;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.login.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -37,6 +39,7 @@ public class ReservationService {
         this.waitingRepository = waitingRepository;
     }
 
+    @Transactional
     public ReservationResponse save(ReservationRequest reservationRequest, LoginMember loginMember) {
 
         boolean exists =
@@ -152,6 +155,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
     }
