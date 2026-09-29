@@ -37,7 +37,7 @@ public class MissionStepTest {
         String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
 
         Map<String, String> params = new HashMap<>();
-        params.put("date", "2024-03-01");
+        params.put("date", "2024-03-02");
         params.put("time", "1");
         params.put("theme", "1");
 
@@ -53,6 +53,7 @@ public class MissionStepTest {
         assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
 
         params.put("name", "브라운");
+        params.put("date", "2024-03-03");
 
         ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
                 .body(params)
@@ -200,6 +201,16 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        // 예약 대기 상태 확인
+        String status = myReservations.stream()
+                .filter(it -> it.getId() == waiting.getId())
+                .filter(it -> !it.getStatus().equals("예약"))
+                .findFirst()
+                .map(it -> it.getStatus())
+                .orElse(null);
+
+        assertThat(status).isEqualTo("1번째 예약대기");
     }
 
     @Test

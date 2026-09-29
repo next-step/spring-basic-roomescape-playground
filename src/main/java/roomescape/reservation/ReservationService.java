@@ -86,13 +86,13 @@ public class ReservationService {
                 .toList();
 
         List<MyReservationResponse> waitings = waitingRepository
-                .findByMemberId(memberId).stream()
+                .findWaitingsWithRankByMemberId(memberId).stream()
                 .map(it -> new MyReservationResponse(
-                        it.getId(),
-                        it.getTheme().getName(),
-                        it.getDate(),
-                        it.getTime().getValue(),
-                        "예약대기"
+                        it.getWaiting().getId(),
+                        it.getWaiting().getTheme().getName(),
+                        it.getWaiting().getDate(),
+                        it.getWaiting().getTime().getValue(),
+                        (it.getRank() + 1) + "번째 예약대기"
                 )).toList();
 
         List<MyReservationResponse> result = new ArrayList<>(reservations);
