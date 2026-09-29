@@ -80,6 +80,13 @@
 - [x] 필요한 조회 기능을 쿼리 메서드로 구현한다.
 - [x] 기존 Dao 대신 Repository를 사용하도록 Service와 Controller를 변경한다.
 
+### `예약 목록 조회`
+
+- [ ] GET /reservation-mine 요청 시 reservation-mine.html.html 화면을 반환한다.
+- [ ] 새로운 응답 DTO를 생성한다.
+- [ ] GET /reservations-mine 요청 시 새 DTO를 이용해 응답을 반환한다.
+
+
 ### `리뷰 반영`
 
 - [x] 최신 정보를 반영할 수 있도록 DB에서 다시 조회하게끔 `name`, `role` claim을 제거한다.
