@@ -157,14 +157,15 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll()
+        return reservationRepository.findAllWithDetails()
                                     .stream()
                                     .map(reservation -> {
                                         String reservationName;
 
                                         if (reservation.getMember() != null) {
                                             reservationName = reservation.getMember().getName();
-                                        } else {
+                                        }
+                                        else {
                                             reservationName = reservation.getName();
                                         }
 
