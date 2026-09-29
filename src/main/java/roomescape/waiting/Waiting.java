@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.waiting;
 
 import jakarta.persistence.*;
 import roomescape.member.Member;
@@ -6,13 +6,12 @@ import roomescape.theme.Theme;
 import roomescape.time.Time;
 
 @Entity
-public class Reservation {
+public class Waiting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
     private String date;
 
     @ManyToOne
@@ -24,32 +23,19 @@ public class Reservation {
     @ManyToOne
     private Member member;
 
-    public Reservation(Long id, String name, String date, Time time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+    public Waiting() {
+
     }
 
-    public Reservation(String name, String date, Time time, Theme theme, Member member) {
-        this.name = name;
+    public Waiting(String date, Time time, Theme theme, Member member) {
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.member = member;
     }
 
-    public Reservation() {
-
-    }
-
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getDate() {
@@ -64,5 +50,7 @@ public class Reservation {
         return theme;
     }
 
-    public Member getMember() {return member; }
+    public Member getMember() {
+        return member;
+    }
 }

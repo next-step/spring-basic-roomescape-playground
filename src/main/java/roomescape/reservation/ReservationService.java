@@ -1,30 +1,103 @@
 package roomescape.reservation;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import roomescape.member.Member;
+import roomescape.theme.Theme;
+import roomescape.theme.ThemeRepository;
+import roomescape.time.Time;
+import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
+    private final WaitingRepository waitingRepository;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository, ThemeRepository themeRepository, WaitingRepository waitingRepository) {
+        this.reservationRepository = reservationRepository;
+        this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
+        this.waitingRepository = waitingRepository;
     }
 
-    public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationDao.save(reservationRequest);
+    public ReservationResponse save(ReservationRequest reservationRequest, Member member) {
+        boolean exists = reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservationRequest.getDate(),
+                reservationRequest.getTime(),
+                reservationRequest.getTheme()
+        );
 
-        return new ReservationResponse(reservation.getId(), reservationRequest.getName(), reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
+        if (exists) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "이미 예약된 날짜와 시간입니다."
+            );
+        }
+
+        Time time = timeRepository.findById(reservationRequest.getTime()).orElseThrow();
+        Theme theme = themeRepository.findById(reservationRequest.getTheme()).orElseThrow();
+
+        String name;
+        if (member != null) {
+            name = member.getName();
+        }
+        else {
+            name = reservationRequest.getName();
+        }
+
+        Reservation reservation = new Reservation(
+                name,
+                reservationRequest.getDate(),
+                time,
+                theme,
+                member
+        );
+
+        Reservation saveReservation = reservationRepository.save(reservation);
+
+        return new ReservationResponse(saveReservation.getId(), name, reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
     public void deleteById(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationDao.findAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(it -> new ReservationResponse(it.getId(), it.getName(), it.getTheme().getName(), it.getDate(), it.getTime().getValue()))
                 .toList();
+    }
+
+    public List<MyReservationResponse> findMyReservations(Long memberId) {
+        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(memberId).stream()
+                .map(it -> new MyReservationResponse(
+                        it.getId(),
+                        it.getTheme().getName(),
+                        it.getDate(),
+                        it.getTime().getValue(),
+                        "예약"))
+                .toList();
+
+        List<MyReservationResponse> waitings = waitingRepository
+                .findWaitingsWithRankByMemberId(memberId).stream()
+                .map(it -> new MyReservationResponse(
+                        it.getWaiting().getId(),
+                        it.getWaiting().getTheme().getName(),
+                        it.getWaiting().getDate(),
+                        it.getWaiting().getTime().getValue(),
+                        (it.getRank() + 1) + "번째 예약대기"
+                )).toList();
+
+        List<MyReservationResponse> result = new ArrayList<>(reservations);
+        result.addAll(waitings);
+
+        return result;
     }
 }
