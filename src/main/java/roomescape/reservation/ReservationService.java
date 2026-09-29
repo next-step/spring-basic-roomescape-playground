@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.login.LoginMember;
 import roomescape.member.Member;
@@ -47,9 +48,7 @@ public class ReservationService {
                         );
 
         if (exists) {
-            throw new IllegalArgumentException(
-                    "이미 예약된 시간입니다."
-            );
+            throw new DuplicateReservationException();
         }
 
         Theme theme = themeRepository
@@ -84,7 +83,14 @@ public class ReservationService {
             );
         }
 
-        Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation savedReservation;
+
+        try {
+            savedReservation = reservationRepository.saveAndFlush(reservation);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateReservationException();
+        }
+
         String reservationName;
 
         if (savedReservation.getMember() != null) {
