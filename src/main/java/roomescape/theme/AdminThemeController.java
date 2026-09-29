@@ -15,12 +15,10 @@ public class AdminThemeController {
     }
 
     @PostMapping("/admin/themes")
-    public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
-        Theme newTheme = themeService.save(theme);
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
+        ThemeResponse newTheme = themeService.save(request);
 
-        return ResponseEntity
-                .created(URI.create("/admin/themes/" + newTheme.getId()))
-                .body(newTheme);
+        return ResponseEntity.created(URI.create("/admin/themes/" + newTheme.getId())).body(newTheme);
     }
 
     @DeleteMapping("/admin/themes/{id}")

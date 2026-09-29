@@ -15,17 +15,16 @@ public class AdminTimeController {
     }
 
     @PostMapping("/admin/times")
-    public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
+    public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest request) {
+        if (request.getValue() == null || request.getValue().isEmpty()) {
             throw new IllegalArgumentException();
         }
 
-        Time newTime = timeService.save(time);
+        TimeResponse newTime = timeService.save(request);
 
-        return ResponseEntity
-                .created(URI.create("/admin/times/" + newTime.getId()))
-                .body(newTime);
+        return ResponseEntity.created(URI.create("/admin/times/" + newTime.getId())).body(newTime);
     }
+
 
     @DeleteMapping("/admin/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

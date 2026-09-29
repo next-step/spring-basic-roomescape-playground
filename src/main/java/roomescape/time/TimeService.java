@@ -32,12 +32,23 @@ public class TimeService {
                     .toList();
     }
 
-    public List<Time> findAll() {
-        return timeRepository.findAllByDeletedFalse();
+    public List<TimeResponse> findAll() {
+        return timeRepository.findAllByDeletedFalse()
+                             .stream()
+                             .map(time ->
+                                     new TimeResponse(
+                                             time.getId(),
+                                             time.getValue()
+                                     )
+                             )
+                             .toList();
     }
 
-    public Time save(Time time) {
-        return timeRepository.save(time);
+    public TimeResponse save(TimeRequest request) {
+        Time time = new Time(request.getValue());
+        Time savedTime = timeRepository.save(time);
+
+        return new TimeResponse(savedTime.getId(), savedTime.getValue());
     }
 
     public void deleteById(Long id) {
