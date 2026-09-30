@@ -1,5 +1,6 @@
 package roomescape.reservation;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,8 +91,13 @@ public class ReservationService {
 
         try {
             savedReservation = reservationRepository.saveAndFlush(reservation);
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateReservationException();
+        }
+        catch (DataIntegrityViolationException e) {
+            if (isDuplicateReservationConstraint(e)) {
+                throw new DuplicateReservationException();
+            }
+
+            throw e;
         }
 
         String reservationName;
@@ -182,5 +188,23 @@ public class ReservationService {
                                         );
                                     })
                                     .toList();
+    }
+
+    private boolean isDuplicateReservationConstraint(DataIntegrityViolationException exception) {
+        Throwable cause = exception;
+
+        while (cause != null) {
+            if (cause instanceof ConstraintViolationException constraintException) {
+                String constraintName = constraintException.getConstraintName();
+
+                return constraintName != null && constraintName.equalsIgnoreCase(
+                        "uk_reservation_date_time_theme"
+                );
+            }
+
+            cause = cause.getCause();
+        }
+
+        return false;
     }
 }
