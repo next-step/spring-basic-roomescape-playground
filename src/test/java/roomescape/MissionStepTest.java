@@ -1,13 +1,19 @@
 package roomescape;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.member.Member;
+import roomescape.reservation.ReservationResponse;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,9 +25,48 @@ public class MissionStepTest {
 
     @Test
     void 일단계() {
+        String token = createToken("admin@email.com", "password");
+        assertThat(token).isNotBlank();
+    }
+
+    @Test
+    void 이단계() {
+        String token = createToken("admin@email.com", "password");  // 일단계에서 토큰을 추출하는 로직을 메서드로 따로 만들어서 활용하세요.
+
         Map<String, String> params = new HashMap<>();
-        params.put("email", "admin@email.com");
-        params.put("password", "password");
+        params.put("date", "2024-03-01");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(201);
+        assertThat(response.as(ReservationResponse.class).getName()).isEqualTo("어드민");
+
+        params.put("name", "브라운");
+
+        ExtractableResponse<Response> adminResponse = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then().log().all()
+                .extract();
+
+        assertThat(adminResponse.statusCode()).isEqualTo(201);
+        assertThat(adminResponse.as(ReservationResponse.class).getName()).isEqualTo("브라운");
+    }
+
+    private String createToken(String email, String password) {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -33,6 +78,81 @@ public class MissionStepTest {
 
         String token = response.headers().get("Set-Cookie").getValue().split(";")[0].split("=")[1];
 
-        assertThat(token).isNotBlank();
+        return token;
     }
+
+    @Test
+    void 삼단계() {
+        String brownToken = createToken("brown@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", brownToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+
+        String adminToken = createToken("admin@email.com", "password");
+
+        RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    private final long milliseconds = 1000;
+    private final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+    private String createExpiredToken(Long memberId) {
+        long now = new Date().getTime();
+        Date expiredDate = new Date(now - milliseconds);
+
+        return Jwts.builder()
+                .setSubject(memberId.toString())
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setExpiration(expiredDate)
+                .compact();
+    }
+
+    @Test
+    @DisplayName("만료된 토큰을 요청하면 예외이다.")
+    void expiredToken() {
+        String expiredToken = createExpiredToken(1L);
+
+        RestAssured.given().log().all()
+                .cookie("token", expiredToken)
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    @DisplayName("토큰이 없는 경우 401을 반환한다.")
+    void noToken() {
+        RestAssured.given().log().all()
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+
+    @Test
+    @DisplayName("잘못된 토큰일 경우 401을 반환한다.")
+    void wrongToken() {
+        RestAssured.given().log().all()
+                .cookie("token", "invalidToken")
+                .get("/admin")
+                .then().log().all()
+                .statusCode(401);
+    }
+
+    @Test
+    @DisplayName("로그인하지 않은 경우 401을 반환한다.")
+    void noLogin() {
+        RestAssured.given().log().all()
+                .get("/login/check")
+                .then().log().all()
+                .statusCode(401);
+    }
+
 }
