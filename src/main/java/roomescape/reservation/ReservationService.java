@@ -140,14 +140,13 @@ public class ReservationService {
                         )
                         .stream()
                         .map(waitingWithRank -> {
-                            var waiting = waitingWithRank.getWaiting();
                             long rank = waitingWithRank.getRank() + 1;
 
                             return new MyReservationResponse(
-                                    waiting.getId(),
-                                    waiting.getTheme().getName(),
-                                    waiting.getDate(),
-                                    waiting.getTime().getValue(),
+                                    waitingWithRank.getId(),
+                                    waitingWithRank.getTheme(),
+                                    waitingWithRank.getDate(),
+                                    waitingWithRank.getTime(),
                                     rank + "번째 예약대기"
                             );
                         })

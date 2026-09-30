@@ -31,11 +31,11 @@ public class Waiting {
     @Column(nullable = false)
     private String date;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_id", nullable = false)
     private Time time;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id", nullable = false)
     private Theme theme;
 
