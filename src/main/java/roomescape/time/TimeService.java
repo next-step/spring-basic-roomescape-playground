@@ -1,6 +1,7 @@
 package roomescape.time;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@Transactional(readOnly = true)
 public class TimeService {
 
     private final TimeRepository timeRepository;
@@ -44,6 +46,7 @@ public class TimeService {
                              .toList();
     }
 
+    @Transactional
     public TimeResponse save(TimeRequest request) {
         Time time = new Time(request.getValue());
         Time savedTime = timeRepository.save(time);
@@ -51,6 +54,7 @@ public class TimeService {
         return new TimeResponse(savedTime.getId(), savedTime.getValue());
     }
 
+    @Transactional
     public void deleteById(Long id) {
         Time time = timeRepository.findById(id).orElseThrow(NoSuchElementException::new);
         time.delete();
