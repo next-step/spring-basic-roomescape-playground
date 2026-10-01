@@ -34,8 +34,7 @@ public class MemberController {
         try {
             newMember = memberService.createMember(memberRequest.name(), memberRequest.email(), memberRequest.password());
         } catch (DataIntegrityViolationException e) {
-            Map<String, String> errorData = memberService.determineDuplicate(memberRequest.email(), memberRequest.name());
-            throw new ConflictException(errorData.get("cause"));
+            throw new ConflictException("이미 가입된 정보입니다.");
         }
 
         return ResponseEntity.created(URI.create("/members/" + newMember.getId())).body(MemberResponse.from(newMember));

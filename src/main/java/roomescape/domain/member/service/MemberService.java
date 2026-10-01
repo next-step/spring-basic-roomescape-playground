@@ -31,20 +31,4 @@ public class MemberService {
 
         return memberRepository.save(new Member(nickname, email, password, "USER"));
     }
-
-    public Map<String, String> determineDuplicate(String email, String nickname) {
-        Map<String, String> result = new HashMap<>();
-        if (memberRepository.existsByNickname(nickname)) {
-            result.put("key", "nickname");
-            result.put("value", nickname);
-            result.put("cause", "이미 사용 중인 닉네임입니다.");
-        }
-        if (memberRepository.existsByEmail(email)) {
-            result.put("key", "email");
-            result.put("value", email);
-            result.put("cause", "이미 가입된 정보입니다.");
-        }
-
-        return result;
-    }
 }
