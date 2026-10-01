@@ -17,7 +17,7 @@ public class TimeController {
     }
 
     @GetMapping("/times")
-    public List<Time> list() {
+    public List<TimeResponse> list() {
         return timeService.findAll();
     }
 
@@ -26,8 +26,6 @@ public class TimeController {
             @RequestParam String date,
             @RequestParam Long themeId
     ) {
-        return ResponseEntity.ok(
-                timeService.getAvailableTime(date, themeId)
-        );
+        return ResponseEntity.ok(timeService.getAvailableTime(date, themeId));
     }
 }

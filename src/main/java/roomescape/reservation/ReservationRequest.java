@@ -15,6 +15,7 @@ public class ReservationRequest {
         this.theme = theme;
         this.time = time;
     }
+
     public String getName() {
         return name;
     }

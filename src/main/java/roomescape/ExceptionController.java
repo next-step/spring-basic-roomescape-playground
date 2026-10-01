@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.login.LoginAuthenticationException;
+import roomescape.reservation.DuplicateReservationException;
 
 import java.util.NoSuchElementException;
 
@@ -36,5 +37,14 @@ public class ExceptionController {
     public ResponseEntity<Void> handleException(Exception e) {
         e.printStackTrace();
         return ResponseEntity.internalServerError().build();
+    }
+
+    @ExceptionHandler(DuplicateReservationException.class)
+    public ResponseEntity<Void> handleDuplicateReservationException(
+            DuplicateReservationException e
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .build();
     }
 }

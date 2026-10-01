@@ -1,11 +1,7 @@
 package roomescape.time;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -19,17 +15,16 @@ public class AdminTimeController {
     }
 
     @PostMapping("/admin/times")
-    public ResponseEntity<Time> create(@RequestBody Time time) {
-        if (time.getValue() == null || time.getValue().isEmpty()) {
+    public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest request) {
+        if (request.getValue() == null || request.getValue().isEmpty()) {
             throw new IllegalArgumentException();
         }
 
-        Time newTime = timeService.save(time);
+        TimeResponse newTime = timeService.save(request);
 
-        return ResponseEntity
-                .created(URI.create("/admin/times/" + newTime.getId()))
-                .body(newTime);
+        return ResponseEntity.created(URI.create("/admin/times/" + newTime.getId())).body(newTime);
     }
+
 
     @DeleteMapping("/admin/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

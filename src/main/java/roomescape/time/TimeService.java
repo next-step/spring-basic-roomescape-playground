@@ -1,44 +1,63 @@
 package roomescape.time;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationDao;
+import roomescape.reservation.ReservationRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
+@Transactional(readOnly = true)
 public class TimeService {
-    private final TimeDao timeDao;
-    private final ReservationDao reservationDao;
 
-    public TimeService(TimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
+    private final TimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
+
+    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
+        this.timeRepository = timeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
-        List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeDao.findAll();
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        List<Time> times = timeRepository.findAllByDeletedFalse();
 
         return times.stream()
-                .map(time -> new AvailableTime(
-                        time.getId(),
-                        time.getValue(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservation.getTime().getId().equals(time.getId()))
-                ))
-                .toList();
+                    .map(time -> new AvailableTime(
+                            time.getId(),
+                            time.getValue(),
+                            reservations.stream()
+                                        .anyMatch(reservation ->
+                                                reservation.getTime().getId().equals(time.getId()))))
+                    .toList();
     }
 
-    public List<Time> findAll() {
-        return timeDao.findAll();
+    public List<TimeResponse> findAll() {
+        return timeRepository.findAllByDeletedFalse()
+                             .stream()
+                             .map(time ->
+                                     new TimeResponse(
+                                             time.getId(),
+                                             time.getValue()
+                                     )
+                             )
+                             .toList();
     }
 
-    public Time save(Time time) {
-        return timeDao.save(time);
+    @Transactional
+    public TimeResponse save(TimeRequest request) {
+        Time time = new Time(request.getValue());
+        Time savedTime = timeRepository.save(time);
+
+        return new TimeResponse(savedTime.getId(), savedTime.getValue());
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        timeDao.deleteById(id);
+        Time time = timeRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        time.delete();
+        timeRepository.save(time);
     }
 }
