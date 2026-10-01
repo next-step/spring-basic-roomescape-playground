@@ -40,7 +40,7 @@ public class ThemeServiceConcurrencyTest {
                     readyLatch.countDown();
                     startLatch.await();
 
-                    themeService.saveTheme(1L, "Dummy", "It is Dummy for Concurrency Test");
+                    themeService.saveTheme("Dummy", "It is Dummy for Concurrency Test");
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

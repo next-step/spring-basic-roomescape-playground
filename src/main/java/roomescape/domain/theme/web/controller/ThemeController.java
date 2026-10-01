@@ -16,7 +16,6 @@ import roomescape.global.exception.ConflictException;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class ThemeController {
@@ -36,9 +35,9 @@ public class ThemeController {
         Theme newTheme;
 
         try {
-            newTheme = themeService.saveTheme(loginMember.id(), request.name(), request.description());
+            newTheme = themeService.saveTheme(request.name(), request.description());
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException(loginMember.id(), Map.of("name", request.name()), "이미 존재하는 테마 이름입니다.");
+            throw new ConflictException("이미 존재하는 테마 이름입니다.");
         }
 
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(ThemeResponse.from(newTheme));
@@ -56,7 +55,7 @@ public class ThemeController {
             @PathVariable(name = "id") Long themeId,
             @Login LoginMember loginMember
     ) {
-        themeService.deleteTheme(loginMember.id(), themeId);
+        themeService.deleteTheme(themeId);
         return ResponseEntity.noContent().build();
     }
 }

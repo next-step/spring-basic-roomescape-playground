@@ -20,7 +20,6 @@ import roomescape.global.exception.ConflictException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Validated
 @RestController
@@ -46,9 +45,9 @@ public class TimeController {
         Time newTime;
 
         try {
-            newTime = timeService.save(loginMember.id(), request.value());
+            newTime = timeService.save(request.value());
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException(loginMember.id(), Map.of("value", request.value()), "이미 존재하는 시간입니다.");
+            throw new ConflictException("이미 존재하는 시간입니다.");
         }
 
         return ResponseEntity.created(URI.create("/times/" + newTime.getId())).body(TimeResponse.from(newTime));

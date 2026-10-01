@@ -31,7 +31,7 @@ public class ReservationServiceTest {
                 NotFoundException.class,
 
                 // when
-                () -> reservationService.createReservation(1L, "더미_유저", LocalDate.of(9999, 12, 30), -1L, time)
+                () -> reservationService.createReservation("더미_유저", LocalDate.of(9999, 12, 30), -1L, time)
         );
     }
 
@@ -42,7 +42,7 @@ public class ReservationServiceTest {
                 NotFoundException.class,
 
                 // when
-                () -> reservationService.createReservation(1L, "더미_유저", LocalDate.of(9999, 12, 30), 1L, -1L)
+                () -> reservationService.createReservation("더미_유저", LocalDate.of(9999, 12, 30), 1L, -1L)
         );
     }
 
@@ -51,7 +51,7 @@ public class ReservationServiceTest {
         // then
         Assertions.assertThrows(
                 ConflictException.class,
-                () -> reservationService.createReservation(1L, "더미_어드민", LocalDate.of(9999, 12, 31), 1L, time)
+                () -> reservationService.createReservation("더미_어드민", LocalDate.of(9999, 12, 31), 1L, time)
         );
     }
 
@@ -60,7 +60,7 @@ public class ReservationServiceTest {
         // given
         LocalDate reserveDate = LocalDate.of(9999, 12, 30);
         // when
-        Reservation reservation = reservationService.createReservation(1L, "더미_유저", reserveDate, 1L, time);
+        Reservation reservation = reservationService.createReservation("더미_유저", reserveDate, 1L, time);
 
         // then
         assertThat(reservation).isNotNull();
@@ -75,14 +75,14 @@ public class ReservationServiceTest {
 
         // when
         Assertions.assertThrows(NotFoundException.class,
-                () -> reservationService.deleteById(1L, reservationId)
+                () -> reservationService.deleteById(reservationId)
         );
     }
 
     @Test
     void 정상적으로_deleteById를_호출한_경우_예약이_삭제된다() {
         // when
-        reservationService.deleteById(1L, 1L);
+        reservationService.deleteById(1L);
 
         // then
         List<Reservation> reservations = reservationService.findAllReservationByUser(2L);

@@ -2,6 +2,8 @@ package roomescape.domain.auth.web.support;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.domain.auth.principal.LoginMember;
@@ -12,6 +14,8 @@ import roomescape.global.exception.ForbiddenException;
 import roomescape.global.exception.UnauthorizedException;
 
 public class RoleInterceptor implements HandlerInterceptor {
+
+    private final Logger log = LoggerFactory.getLogger(RoleInterceptor.class);
 
     private final SessionManager sessionManager;
 
@@ -47,6 +51,8 @@ public class RoleInterceptor implements HandlerInterceptor {
         }
 
         if (adminOnly && !loginMember.isAdmin()) {
+            log.warn("[RoleInterceptor.preHandle] 관리자 권한이 없는 사용자(id={})가 관리자 전용 경로({} {})에 접근을 시도했습니다.",
+                    loginMember.id(), request.getMethod(), request.getRequestURI());
             throw new ForbiddenException();
         }
 

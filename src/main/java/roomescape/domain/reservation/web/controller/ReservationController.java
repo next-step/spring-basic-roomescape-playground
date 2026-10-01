@@ -1,6 +1,8 @@
 package roomescape.domain.reservation.web.controller;
 
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -22,11 +24,12 @@ import roomescape.global.exception.ConflictException;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 @RestController
 public class ReservationController {
+
+    private final Logger log = LoggerFactory.getLogger(ReservationController.class);
 
     private final ReservationService reservationService;
     private final ReserveWaitingService reserveWaitingService;
@@ -57,11 +60,7 @@ public class ReservationController {
                 newReservation = reserveByUser(loginMember, request);
             }
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException(
-                    loginMember.id(),
-                    Map.of("date", request.date(),  "themeId", request.theme(), "timeId", request.time()),
-                    "이미 예약이 존재합니다."
-            );
+            throw new ConflictException("이미 예약이 존재합니다.");
         }
         return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId())).body(ReservationResponse.from(newReservation));
     }
@@ -73,7 +72,7 @@ public class ReservationController {
             @PathVariable Long id,
             @Login LoginMember loginMember
     ) {
-        reservationService.deleteById(loginMember.id(), id);
+        reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -96,15 +95,17 @@ public class ReservationController {
 
     private Reservation reserveByAdmin(LoginMember loginMember, ReservationRequest request) {
         if (!StringUtils.hasText(request.name())) {
-            throw new BadRequestException(loginMember.id(), Map.of("ReservationRequest.name", "is Null"), "name 필드는 필수값입니다.");
+            throw new BadRequestException("name 필드는 필수값입니다.");
         }
-        return reservationService.createReservation(loginMember.id(), request.name(), request.date(), request.theme(), request.time());
+        return reservationService.createReservation(request.name(), request.date(), request.theme(), request.time());
     }
 
     private Reservation reserveByUser(LoginMember loginMember, ReservationRequest request) {
         if (StringUtils.hasText(request.name())) {
-            throw new BadRequestException(loginMember.id(), Map.of("name", request.name()), "HTTP 요청 바디의 형식이 잘못되었습니다.");
+            log.warn("[ReservationController.reserveByUser] 일반 사용자(id={})가 다른 사용자 명의(name={})로 예약을 시도했습니다.",
+                    loginMember.id(), request.name());
+            throw new BadRequestException("HTTP 요청 바디의 형식이 잘못되었습니다.");
         }
-        return reservationService.createReservation(loginMember.id(), loginMember.name(), request.date(), request.theme(), request.time());
+        return reservationService.createReservation(loginMember.name(), request.date(), request.theme(), request.time());
     }
 }

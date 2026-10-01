@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.time.entity.AvailableTime;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.service.TimeService;
+import roomescape.global.exception.ConflictException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,7 +31,7 @@ public class TimeServiceTest {
     void 이미_저장된_값으로_save를_호출하면_예외를_던진다() {
         // then
         Assertions.assertThrows(
-                DataIntegrityViolationException.class,
+                ConflictException.class,
 
                 // when
                 () -> timeService.save(LocalTime.of(0, 0, 0))

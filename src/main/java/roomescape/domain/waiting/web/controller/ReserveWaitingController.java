@@ -14,7 +14,6 @@ import roomescape.domain.waiting.web.dto.WaitingResponse;
 import roomescape.global.exception.ConflictException;
 
 import java.net.URI;
-import java.util.Map;
 
 @RestController
 public class ReserveWaitingController {
@@ -36,7 +35,7 @@ public class ReserveWaitingController {
         try {
              newReserveWaiting = reserveWaitingService.createReserveWaiting(loginMember.id(), request.date(), request.time(), request.theme());
         } catch(DataIntegrityViolationException e) {
-            throw new ConflictException(loginMember.id(), Map.of("date", request.date(), "timeId", request.time(), "themeId", request.theme()), "이미 예약 대기가 존재합니다.");
+            throw new ConflictException("이미 예약 대기가 존재합니다.");
         }
 
         return ResponseEntity.created(URI.create("/waitings/" + newReserveWaiting.reserveWaiting().getId()))

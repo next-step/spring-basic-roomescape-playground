@@ -22,11 +22,11 @@ public class MemberService {
     public Member createMember(String nickname, String email, String password) {
 
         if (memberRepository.existsByEmail(email)) {
-            throw new ConflictException(null, Map.of("email", email), "이미 가입된 정보입니다.");
+            throw new ConflictException("이미 가입된 정보입니다.");
         }
 
         if (memberRepository.existsByNickname(nickname)) {
-            throw new ConflictException(null, Map.of("nickname", nickname), "이미 사용 중인 닉네임입니다.");
+            throw new ConflictException("이미 사용 중인 닉네임입니다.");
         }
 
         return memberRepository.save(new Member(nickname, email, password, "USER"));
