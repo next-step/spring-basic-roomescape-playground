@@ -14,7 +14,6 @@ import roomescape.domain.member.web.dto.MemberResponse;
 import roomescape.global.exception.ConflictException;
 
 import java.net.URI;
-import java.util.Map;
 
 @RestController
 public class MemberController {

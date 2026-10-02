@@ -7,9 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.theme.service.ThemeService;
 import roomescape.domain.waiting.entity.ReserveWaiting;
-import roomescape.domain.waiting.service.ReserveWaitingService;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;

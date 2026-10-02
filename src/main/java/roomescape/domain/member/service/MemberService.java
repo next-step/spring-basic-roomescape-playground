@@ -6,9 +6,6 @@ import roomescape.domain.member.entity.Member;
 import roomescape.domain.member.repository.MemberRepository;
 import roomescape.global.exception.ConflictException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class MemberService {
 
