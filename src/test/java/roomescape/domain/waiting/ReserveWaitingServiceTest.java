@@ -57,7 +57,7 @@ public class ReserveWaitingServiceTest {
                 DataIntegrityViolationException.class,
 
                 // when
-                () -> reserveWaitingService.createReserveWaiting(memberId, date, -1L, themeId)
+                () -> reserveWaitingService.createReserveWaiting(memberId, date, timeId, -1L)
         );
     }
 
@@ -110,7 +110,7 @@ public class ReserveWaitingServiceTest {
         // when
         Assertions.assertThrows(
                 NotFoundException.class,
-                () -> reserveWaitingService.deleteReserveWaiting(1L, 2L)
+                () -> reserveWaitingService.deleteReserveWaiting(1L, 1L)
         );
     }
 

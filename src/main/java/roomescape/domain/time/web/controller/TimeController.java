@@ -1,5 +1,7 @@
 package roomescape.domain.time.web.controller;
 
+import auth.support.annotation.AdminOnly;
+import auth.support.annotation.Public;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -7,8 +9,6 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.auth.web.support.annotation.AdminOnly;
-import roomescape.domain.auth.web.support.annotation.Public;
 import roomescape.domain.time.entity.AvailableTime;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.service.TimeService;

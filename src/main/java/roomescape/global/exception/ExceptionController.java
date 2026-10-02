@@ -1,6 +1,8 @@
 package roomescape.global.exception;
 
+import auth.exception.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +40,28 @@ public class ExceptionController {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Void> handleConstraintViolationException(ConstraintViolationException e, HandlerMethod handlerMethod) {
+        String where = handlerMethod.getBeanType().getSimpleName() + "." + handlerMethod.getMethod().getName();
+
+        String detail = e.getConstraintViolations().stream()
+                .map(cv -> "%s = '%s' (%s)".formatted(cv.getPropertyPath(), cv.getInvalidValue(), cv.getMessage()))
+                .collect(Collectors.joining(","));
+
+        log.info("[{}] {}", where, detail);
+
+        return ResponseEntity.badRequest().build();
+    }
+
     @ExceptionHandler(RoomescapeException.class)
     public ResponseEntity<Void> handleRoomescapeException(RoomescapeException e, HandlerMethod handlerMethod) {
+        String where = handlerMethod.getBeanType().getSimpleName() + "." + handlerMethod.getMethod().getName();
+        log.info("[{}] {}",  where, e.getMessage());
+        return ResponseEntity.status(e.getHttpStatus()).build();
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<Void> handleAuthException(AuthException e, HandlerMethod handlerMethod) {
         String where = handlerMethod.getBeanType().getSimpleName() + "." + handlerMethod.getMethod().getName();
         log.info("[{}] {}",  where, e.getMessage());
         return ResponseEntity.status(e.getHttpStatus()).build();

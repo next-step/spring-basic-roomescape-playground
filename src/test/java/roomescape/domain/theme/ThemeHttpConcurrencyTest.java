@@ -4,10 +4,13 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.theme.entity.Theme;
+import roomescape.domain.theme.repository.ThemeRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +26,9 @@ public class ThemeHttpConcurrencyTest {
 
     @LocalServerPort
     private int port;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @BeforeEach
     void setup() {
@@ -78,6 +84,54 @@ public class ThemeHttpConcurrencyTest {
                 HttpStatus.CREATED.value(),
                 HttpStatus.CONFLICT.value()
         );
+    }
+
+    @Test
+    void 동일한_테마를_동시에_삭제_요청하면_500_없이_204_혹은_404를_응답한다() throws InterruptedException, ExecutionException {
+        // given
+        String token = createToken("admin@dummy.com", "dummy");
+        Theme savedTheme = themeRepository.save(new Theme("Dummy", "It is Dummy for Concurrency Test"));
+
+        int threadCount = 2;
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+
+        CountDownLatch readyLatch = new CountDownLatch(threadCount);
+        CountDownLatch startLatch = new CountDownLatch(1);
+
+        List<Future<Integer>> futures = new ArrayList<>();
+
+        for (int i = 0; i < threadCount; i++) {
+            futures.add(executor.submit(() -> {
+                readyLatch.countDown();
+                startLatch.await();
+
+                return RestAssured.given()
+                        .cookie("token", token)
+                        .contentType(ContentType.JSON)
+                        .when().delete("/themes/" + savedTheme.getId())
+                        .then()
+                        .extract().statusCode();
+            }));
+        }
+
+        // when
+        readyLatch.await();
+        startLatch.countDown();
+
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+
+        // then
+        List<Integer> statusCodes = new ArrayList<>();
+        for (Future<Integer> future : futures) {
+            statusCodes.add(future.get());
+        }
+
+        // 두 요청이 모두 삭제 전에 조회했다면 늦게 커밋한 쪽은 OptimisticLockingFailureException으로 204,
+        // 먼저 삭제가 커밋된 뒤에 조회했다면 NotFoundException으로 404를 응답한다.
+        assertThat(statusCodes)
+                .contains(HttpStatus.NO_CONTENT.value())
+                .isSubsetOf(HttpStatus.NO_CONTENT.value(), HttpStatus.NOT_FOUND.value());
     }
 
     private String createToken(String email, String password) {

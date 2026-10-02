@@ -158,6 +158,93 @@ public class ReservationHttpTest {
     }
 
     @Test
+    void 관리자가_존재하지_않는_테마로_예약하면_404를_반환한다() {
+        // given
+        String token = createToken("admin@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams("더미_유저", saveTime(), saveTheme());
+        params.put("theme", -1L);
+
+        // when & then
+        RestAssured.given()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().post("/reservations")
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void 관리자가_존재하지_않는_시간으로_예약하면_404를_반환한다() {
+        // given
+        String token = createToken("admin@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams("더미_유저", saveTime(), saveTheme());
+        params.put("time", -1L);
+
+        // when & then
+        RestAssured.given()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().post("/reservations")
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void 일반_유저가_존재하지_않는_테마로_예약하면_404를_반환한다() {
+        // given
+        String token = createToken("user@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams(null, saveTime(), saveTheme());
+        params.put("theme", -1L);
+
+        // when & then
+        RestAssured.given()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().post("/reservations")
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void 일반_유저가_존재하지_않는_시간으로_예약하면_404를_반환한다() {
+        // given
+        String token = createToken("user@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams(null, saveTime(), saveTheme());
+        params.put("time", -1L);
+
+        // when & then
+        RestAssured.given()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().post("/reservations")
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void 이미_예약된_날짜_시간_테마로_예약하면_409를_반환한다() {
+        // given
+        String token = createToken("admin@dummy.com", "dummy");
+
+        // data-test.sql
+        Map<String, Object> params = reservationParams("더미_어드민", findTime(1L), findTheme(1L));
+        params.put("date", LocalDate.of(9999, 12, 31).toString());
+
+        // when & then
+        RestAssured.given()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().post("/reservations")
+                .then()
+                .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
     void 예약_목록_조회에_성공한다() {
         // given
         String token = createToken("admin@dummy.com", "dummy");
@@ -233,6 +320,14 @@ public class ReservationHttpTest {
 
     private Theme saveTheme() {
         return themeRepository.save(new Theme("Dummy",  "it is Dummy for Test"));
+    }
+
+    private Time findTime(Long id) {
+        return timeRepository.findById(id).orElse(null);
+    }
+
+    private Theme findTheme(Long id) {
+        return themeRepository.findById(id).orElse(null);
     }
 
     private Map<String, Object> reservationParams(String name, Time time, Theme theme) {

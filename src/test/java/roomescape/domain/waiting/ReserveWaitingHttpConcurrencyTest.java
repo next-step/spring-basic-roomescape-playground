@@ -82,6 +82,54 @@ public class ReserveWaitingHttpConcurrencyTest {
         );
     }
 
+    @Test
+    void 동일한_예약_대기를_동시에_삭제_요청하면_500_없이_204_혹은_404를_응답한다() throws InterruptedException, ExecutionException {
+        // given
+        String token = createToken("user@dummy.com", "dummy");
+
+        int threadCount = 2;
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+
+        CountDownLatch readyLatch = new CountDownLatch(threadCount);
+        CountDownLatch startLatch = new CountDownLatch(1);
+
+        List<Future<Integer>> futures = new ArrayList<>();
+
+        for (int i = 0; i < threadCount; i++) {
+            futures.add(executor.submit(() -> {
+                readyLatch.countDown();
+                startLatch.await();
+
+                // data-test.sql
+                return RestAssured.given()
+                        .cookie("token", token)
+                        .contentType(ContentType.JSON)
+                        .when().delete("/waitings/1")
+                        .then()
+                        .extract().statusCode();
+            }));
+        }
+
+        // when
+        readyLatch.await();
+        startLatch.countDown();
+
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+
+        // then
+        List<Integer> statusCodes = new ArrayList<>();
+        for (Future<Integer> future : futures) {
+            statusCodes.add(future.get());
+        }
+
+        // 두 요청이 모두 삭제 전에 조회했다면 늦게 커밋한 쪽은 OptimisticLockingFailureException으로 204,
+        // 먼저 삭제가 커밋된 뒤에 조회했다면 NotFoundException으로 404를 응답한다.
+        assertThat(statusCodes)
+                .contains(HttpStatus.NO_CONTENT.value())
+                .isSubsetOf(HttpStatus.NO_CONTENT.value(), HttpStatus.NOT_FOUND.value());
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);

@@ -1,12 +1,12 @@
 package roomescape.domain.member.web.controller;
 
+import auth.support.annotation.Public;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.auth.web.support.annotation.Public;
 import roomescape.domain.member.entity.Member;
 import roomescape.domain.member.service.MemberService;
 import roomescape.domain.member.web.dto.MemberRequest;

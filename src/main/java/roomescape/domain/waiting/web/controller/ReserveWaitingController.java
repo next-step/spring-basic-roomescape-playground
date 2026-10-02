@@ -1,14 +1,14 @@
 package roomescape.domain.waiting.web.controller;
 
+import auth.principal.LoginMember;
+import auth.support.annotation.Login;
+import auth.support.annotation.LoginRequired;
 import jakarta.validation.Valid;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.auth.principal.LoginMember;
-import roomescape.domain.auth.web.support.annotation.Login;
-import roomescape.domain.auth.web.support.annotation.LoginRequired;
 import roomescape.domain.waiting.service.ReserveWaitingService;
 import roomescape.domain.waiting.service.result.WaitingWithRank;
 import roomescape.domain.waiting.web.dto.WaitingRequest;

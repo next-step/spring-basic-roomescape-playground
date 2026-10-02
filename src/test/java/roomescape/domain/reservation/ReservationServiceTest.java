@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.service.ReservationService;
+import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -51,7 +52,16 @@ public class ReservationServiceTest {
             );
         }
 
+        @Test
+        void createReservationByAdmin을_존재하지_않는_nickname으로_호출하면_예외가_발생한다() {
+            // then
+            Assertions.assertThrows(
+                    NotFoundException.class,
 
+                    // when
+                    () -> reservationService.createReservationByAdmin("존재하지_않는_유저", LocalDate.of(9999, 12, 30), 1L, time)
+            );
+        }
 
         @Test
         void 이미_예약한_날짜_시간_테마에_예약을_생성하면_예외를_던진다() {
@@ -59,6 +69,15 @@ public class ReservationServiceTest {
             Assertions.assertThrows(
                     DataIntegrityViolationException.class,
                     () -> reservationService.createReservationByAdmin("더미_어드민", LocalDate.of(9999, 12, 31), 1L, time)
+            );
+        }
+
+        @Test
+        void 예약자가_예약_대기_중인_날짜_시간_테마에_예약을_생성하면_예외를_던진다() {
+            // data-test.sql
+            Assertions.assertThrows(
+                    ConflictException.class,
+                    () -> reservationService.createReservationByAdmin("더미_유저", LocalDate.of(9999, 1, 1), 1L, time)
             );
         }
 
@@ -101,7 +120,16 @@ public class ReservationServiceTest {
             );
         }
 
+        @Test
+        void createReservationByUser를_존재하지_않는_memberId로_호출하면_예외가_발생한다() {
+            // then
+            Assertions.assertThrows(
+                    NotFoundException.class,
 
+                    // when
+                    () -> reservationService.createReservationByUser(-1L, LocalDate.of(9999, 12, 30), 1L, time)
+            );
+        }
 
         @Test
         void 이미_예약한_날짜_시간_테마에_예약을_생성하면_예외를_던진다() {
@@ -109,6 +137,15 @@ public class ReservationServiceTest {
             Assertions.assertThrows(
                     DataIntegrityViolationException.class,
                     () -> reservationService.createReservationByUser(2L, LocalDate.of(9999, 12, 31), 1L, time)
+            );
+        }
+
+        @Test
+        void 예약_대기_중인_날짜_시간_테마에_예약을_생성하면_예외를_던진다() {
+            // data-test.sql
+            Assertions.assertThrows(
+                    ConflictException.class,
+                    () -> reservationService.createReservationByUser(2L, LocalDate.of(9999, 1, 1), 1L, time)
             );
         }
 

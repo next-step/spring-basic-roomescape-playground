@@ -1,9 +1,9 @@
 package roomescape.domain.auth;
 
+import auth.principal.LoginMember;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import roomescape.domain.auth.principal.LoginMember;
 import roomescape.domain.auth.repository.AuthRepository;
 
 import java.util.Optional;

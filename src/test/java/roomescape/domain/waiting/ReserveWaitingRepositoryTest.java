@@ -125,7 +125,7 @@ public class ReserveWaitingRepositoryTest {
         Member member = saveMember("Alice");
 
         // when
-        Optional<ReserveWaiting> reserveWaiting = reserveWaitingRepository.findByIdAndMemberId(member.getId(), 1L);
+        Optional<ReserveWaiting> reserveWaiting = reserveWaitingRepository.findByIdAndMemberId(1L, member.getId());
 
         // then
         assertThat(reserveWaiting).isEmpty();
