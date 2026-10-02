@@ -7,7 +7,7 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.entity.AvailableTime;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.repository.TimeRepository;
-import roomescape.global.exception.ConflictException;
+import roomescape.global.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -44,17 +44,13 @@ public class TimeService {
 
     @Transactional
     public Time save(LocalTime value) {
-
-        if (timeRepository.existsByTimeValue(value)) {
-            throw new ConflictException("이미 존재하는 시간입니다.");
-        }
-
-        Time time = new Time(value);
-        return timeRepository.save(time);
+        return timeRepository.save(new Time(value));
     }
 
     @Transactional
-    public void deleteById(Long id) {
-        timeRepository.deleteById(id);
+    public void deleteById(Long timeId) {
+        Time foundTime = timeRepository.findById(timeId)
+                .orElseThrow(() -> new NotFoundException("해당하는 시각을 찾을 수 없습니다."));
+        timeRepository.delete(foundTime);
     }
 }

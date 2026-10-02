@@ -5,10 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.time.entity.AvailableTime;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.service.TimeService;
-import roomescape.global.exception.ConflictException;
+import roomescape.global.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,7 +31,7 @@ public class TimeServiceTest {
     void 이미_저장된_값으로_save를_호출하면_예외를_던진다() {
         // then
         Assertions.assertThrows(
-                ConflictException.class,
+                DataIntegrityViolationException.class,
 
                 // when
                 () -> timeService.save(LocalTime.of(0, 0, 0))
@@ -71,13 +72,12 @@ public class TimeServiceTest {
     }
 
     @Test
-    void 저장된_적_없는_ID로_deleteById를_호출하면_조용히_넘어간다() {
-        // when
-        timeService.deleteById(-1L);
-        List<Time> allTimes = timeService.findAll();
-
-        // then
-        assertThat(allTimes).hasSize(1);
+    void 저장된_적_없는_ID로_deleteById를_호출하면_예외를_던진다() {
+        Assertions.assertThrows(
+                NotFoundException.class,
+                // when
+                () -> timeService.deleteById(-1L)
+        );
     }
 
     @Test

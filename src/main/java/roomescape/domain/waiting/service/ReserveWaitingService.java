@@ -13,7 +13,6 @@ import roomescape.domain.waiting.entity.ReserveWaiting;
 import roomescape.domain.waiting.repository.ReserveWaitingRepository;
 import roomescape.domain.waiting.service.result.WaitingWithRank;
 import roomescape.global.exception.BadRequestException;
-import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -54,11 +53,7 @@ public class ReserveWaitingService {
         Theme foundTheme = getTheme(themeId);
 
         if (reservationRepository.existsByMemberAndDateAndTimeAndTheme(foundMember, date, foundTime, foundTheme)) {
-            throw new BadRequestException("이미 예약중입니다.");
-        }
-
-        if (reserveWaitingRepository.existsByMemberAndDateAndTimeAndTheme(foundMember, date, foundTime, foundTheme)) {
-            throw new ConflictException("이미 예약 대기가 존재합니다.");
+            throw new BadRequestException("이미 예약 중입니다.");
         }
 
         ReserveWaiting newReserveWaiting = reserveWaitingRepository.save(new ReserveWaiting(foundMember, date, foundTime, foundTheme));
@@ -79,14 +74,15 @@ public class ReserveWaitingService {
     }
 
     private Member getMember(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(() -> new NotFoundException("해당 사용자를 찾을 수 없습니다."));
+        return memberRepository.findByIdForUpdate(memberId)
+                .orElseThrow(() -> new NotFoundException("해당 사용자를 찾을 수 없습니다."));
     }
 
     private Time getTime(Long timeId) {
-        return timeRepository.findById(timeId).orElseThrow(() -> new NotFoundException("해당 시각을 찾을 수 없습니다."));
+        return timeRepository.getReferenceById(timeId);
     }
 
     private Theme getTheme(Long themeId) {
-        return themeRepository.findById(themeId).orElseThrow(() -> new NotFoundException("해당 테마를 찾을 수 없습니다."));
+        return themeRepository.getReferenceById(themeId);
     }
 }

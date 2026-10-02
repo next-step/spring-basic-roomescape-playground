@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.waiting.service.ReserveWaitingService;
 import roomescape.domain.waiting.service.result.WaitingWithRank;
 import roomescape.global.exception.BadRequestException;
-import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -43,7 +43,7 @@ public class ReserveWaitingServiceTest {
     void createReserveWaiting을_존재하지_않는_timeId로_호출하면_예외가_발생한다() {
         // then
         Assertions.assertThrows(
-                NotFoundException.class,
+                DataIntegrityViolationException.class,
 
                 // when
                 () -> reserveWaitingService.createReserveWaiting(memberId, date, -1L, themeId)
@@ -54,7 +54,7 @@ public class ReserveWaitingServiceTest {
     void createReserveWaiting을_존재하지_않는_themeId로_호출하면_예외가_발생한다() {
         // then
         Assertions.assertThrows(
-                NotFoundException.class,
+                DataIntegrityViolationException.class,
 
                 // when
                 () -> reserveWaitingService.createReserveWaiting(memberId, date, -1L, themeId)
@@ -76,7 +76,7 @@ public class ReserveWaitingServiceTest {
     void 이미_예약_대기한_조합으로_createReserveWaiting을_호출하면_예외가_발생한다() {
         // then
         Assertions.assertThrows(
-                ConflictException.class,
+                DataIntegrityViolationException.class,
                 () -> reserveWaitingService.createReserveWaiting(memberId, date, timeId, themeId)
         );
     }

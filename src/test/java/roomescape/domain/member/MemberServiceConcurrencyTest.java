@@ -23,7 +23,7 @@ public class MemberServiceConcurrencyTest {
     private MemberService memberService;
 
     @Test
-    void Member를_완전히_같은_레코드로_동시_저장__시_exists_검사를_통과하더라도_DataIntegrityViolationException이_던져진다() throws InterruptedException, ExecutionException {
+    void Member를_완전히_같은_레코드로_동시_저장_시_exists_검사를_통과하더라도_DataIntegrityViolationException이_던져진다() throws InterruptedException, ExecutionException {
         // given
         int threadCount = 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);

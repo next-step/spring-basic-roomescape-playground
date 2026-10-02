@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.service.ThemeService;
-import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class ThemeServiceTest {
     void 이미_있는_테마_이름으로_saveTheme를_호출하면_예외가_발생한다() {
         // then
         Assertions.assertThrows(
-                ConflictException.class,
+                DataIntegrityViolationException.class,
 
                 // when
                 () -> themeService.saveTheme("dummy", description)
