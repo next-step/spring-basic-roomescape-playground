@@ -226,6 +226,43 @@ public class TimeHttpTest {
                 .body("time", hasItems("00:00", "10:00", "12:00"));
     }
 
+    @Test
+    void 예약_가능_시간은_과거_날짜로_조회할_수_없다() {
+        // given
+        Theme theme = themeRepository.save(new Theme("Dummy", "it is Dummy for test."));
+
+        // date == 어제
+        getAvailableTimesExpectingBadRequest(LocalDate.now().minusDays(1).toString(), theme.getId());
+
+        // date == 먼 과거
+        getAvailableTimesExpectingBadRequest(LocalDate.of(1970, 1, 1).toString(), theme.getId());
+    }
+
+    @Test
+    void 오늘_날짜로_예약_가능_시간_조회에_성공한다() {
+        // given
+        Theme theme = themeRepository.save(new Theme("Dummy", "it is Dummy for test."));
+        String date = LocalDate.now().toString();
+
+        // when & then
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().get("/available-times?date=" + date + "&themeId=" + theme.getId())
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(1))
+                .body("time", hasItems("00:00"))
+                .body("booked", hasItems(false));
+    }
+
+    private void getAvailableTimesExpectingBadRequest(String date, Long themeId) {
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().get("/available-times?date=" + date + "&themeId=" + themeId)
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
     private String createToken(String email, String password) {
         Map<String, String> params = new HashMap<>();
         params.put("email", email);

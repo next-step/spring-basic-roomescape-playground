@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -97,6 +98,45 @@ public class ReservationHttpTest {
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
                 .body("name", is("더미_유저"));
+    }
+
+    @Test
+    void 관리자가_이름_없이_예약하면_400을_반환한다() {
+        // given
+        String token = createToken("admin@dummy.com", "dummy");
+        Time time = saveTime();
+        Theme theme = saveTheme();
+
+        // name == null
+        postReservationExpectingBadRequest(token, reservationParams(null, time, theme));
+
+        // name == ""
+        postReservationExpectingBadRequest(token, reservationParams("", time, theme));
+
+        // name == " "
+        postReservationExpectingBadRequest(token, reservationParams(" ", time, theme));
+    }
+
+    @Test
+    void 관리자가_이름을_지정하면_해당_사용자_명의로_예약된다() {
+        // given
+        String token = createToken("admin@dummy.com", "dummy");
+        Map<String, Object> params = reservationParams("더미_유저", saveTime(), saveTheme());
+
+        // when
+        RestAssured.given()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when().post("/reservations")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("name", is("더미_유저"));
+
+        // then
+        // TestDataLoader: 1번 회원은 더미_어드민, 2번 회원은 더미_유저(기존 예약 1건)
+        assertThat(reservationRepository.findAllByMember_Id(1L)).isEmpty();
+        assertThat(reservationRepository.findAllByMember_Id(2L)).hasSize(2);
     }
 
     @Test
