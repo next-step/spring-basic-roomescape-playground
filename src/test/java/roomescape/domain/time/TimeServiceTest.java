@@ -9,6 +9,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.time.entity.AvailableTime;
 import roomescape.domain.time.entity.Time;
 import roomescape.domain.time.service.TimeService;
+import roomescape.global.data.SchemaInitializer;
+import roomescape.global.data.SchemaInitializerDependency;
+import roomescape.global.data.TestDataLoader;
 import roomescape.global.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -19,7 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(TimeService.class)
+@Import({TimeService.class, SchemaInitializer.class, SchemaInitializerDependency.class, TestDataLoader.class})
 public class TimeServiceTest {
 
     private final LocalTime value = LocalTime.of(3, 0).truncatedTo(ChronoUnit.MINUTES);

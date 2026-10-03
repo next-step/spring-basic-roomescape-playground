@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.theme.entity.Theme;
 import roomescape.domain.theme.service.ThemeService;
+import roomescape.global.data.SchemaInitializer;
+import roomescape.global.data.SchemaInitializerDependency;
+import roomescape.global.data.TestDataLoader;
 import roomescape.global.exception.NotFoundException;
 
 import java.util.List;
@@ -15,7 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(ThemeService.class)
+@Import({ThemeService.class, SchemaInitializer.class, SchemaInitializerDependency.class, TestDataLoader.class})
 public class ThemeServiceTest {
 
     private final String name = "theme_name";

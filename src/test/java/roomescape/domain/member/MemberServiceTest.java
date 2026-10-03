@@ -7,12 +7,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.member.entity.Member;
 import roomescape.domain.member.service.MemberService;
+import roomescape.global.data.SchemaInitializer;
+import roomescape.global.data.SchemaInitializerDependency;
+import roomescape.global.data.TestDataLoader;
 import roomescape.global.exception.ConflictException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(MemberService.class)
+@Import({MemberService.class, SchemaInitializer.class, SchemaInitializerDependency.class, TestDataLoader.class})
 public class MemberServiceTest {
 
     @Autowired

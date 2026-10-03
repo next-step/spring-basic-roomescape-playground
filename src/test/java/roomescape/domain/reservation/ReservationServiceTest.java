@@ -10,6 +10,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.service.ReservationService;
+import roomescape.global.data.SchemaInitializer;
+import roomescape.global.data.SchemaInitializerDependency;
+import roomescape.global.data.TestDataLoader;
 import roomescape.global.exception.ConflictException;
 import roomescape.global.exception.NotFoundException;
 
@@ -19,7 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(ReservationService.class)
+@Import({ReservationService.class, SchemaInitializer.class, SchemaInitializerDependency.class, TestDataLoader.class})
 public class ReservationServiceTest {
 
     private final Long time = 1L;

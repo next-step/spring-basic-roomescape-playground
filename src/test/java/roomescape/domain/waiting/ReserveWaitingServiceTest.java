@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.domain.waiting.service.ReserveWaitingService;
 import roomescape.domain.waiting.service.result.WaitingWithRank;
+import roomescape.global.data.SchemaInitializer;
+import roomescape.global.data.SchemaInitializerDependency;
+import roomescape.global.data.TestDataLoader;
 import roomescape.global.exception.BadRequestException;
 import roomescape.global.exception.NotFoundException;
 
@@ -17,7 +20,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(ReserveWaitingService.class)
+@Import({ReserveWaitingService.class, SchemaInitializer.class, SchemaInitializerDependency.class, TestDataLoader.class})
 public class ReserveWaitingServiceTest {
 
     private final Long memberId = 2L;
