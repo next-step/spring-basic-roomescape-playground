@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
+import roomescape.reservation.ReservationRepository;
 import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
@@ -17,18 +18,24 @@ public class WaitingService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
+    private final ReservationRepository reservationRepository;
 
     public WaitingService(WaitingRepository waitingRepository,
                           TimeRepository timeRepository,
                           ThemeRepository themeRepository,
-                          MemberRepository memberRepository) {
+                          MemberRepository memberRepository, ReservationRepository reservationRepository) {
         this.waitingRepository = waitingRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public WaitingResponse createWaiting(WaitingRequest request, LoginMember loginMember) {
+        if (!reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.time(),request.theme())) {
+            throw new IllegalArgumentException("예약이 존재할때만 대기할 수 있습니다.");
+        }
+
         if (waitingRepository.existsByDateAndTimeIdAndThemeIdAndMemberId(
                 request.date(), request.time(), request.theme(), loginMember.id())) {
             throw new IllegalArgumentException("이미 대기 중인 예약입니다.");

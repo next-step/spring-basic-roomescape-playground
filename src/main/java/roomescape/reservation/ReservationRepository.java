@@ -15,4 +15,6 @@ public interface ReservationRepository extends CrudRepository<Reservation, Long>
     List<Reservation> findByDateAndThemeId(String date, Long themeId);
 
     List<Reservation> member(Member member);
+
+    boolean existsByDateAndTimeIdAndThemeId(String date, Long timeId, Long themeId);
 }
