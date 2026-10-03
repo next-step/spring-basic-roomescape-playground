@@ -1,9 +1,8 @@
 package roomescape.reservation;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 
 public record MyReservationResponse(
-        @JsonAlias("reservationId") Long id,
+        Long id,
         String theme,
         String date,
         String time,
