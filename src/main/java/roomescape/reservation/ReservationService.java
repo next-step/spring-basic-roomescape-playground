@@ -14,6 +14,7 @@ import roomescape.waiting.WaitingWithRank;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ReservationService {
@@ -97,7 +98,10 @@ public class ReservationService {
     }
 
 
-    public void deleteById(Long id) {
+    public void deleteById(Long id, LoginMember member) {
+        if (!Objects.equals(id, member.id()) && member.isUser()) {
+            throw new IllegalArgumentException("자신의 예약만 삭제가능합니다.");
+        }
         reservationRepository.deleteById(id);
     }
 
