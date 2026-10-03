@@ -57,3 +57,17 @@
   - getTime, getTheme 모두 DB 왕복하여 레코드 전체 조회중 -> getReferenceById로 수정
   - 프록시 객체로 변경함에 따라 컨트롤러에 try - catch 보강
   - 이외에 불필요 쿼리 없다고 판단됨.
+
+## Step 8
+`schema.sql`과 같은 src/main/resources 하위의 sql 파일 기반 세팅에서 SchemaInitializer로 DDL을, DataLoading로 DML을 애플리케이션 부팅 단계에서 주입하도록 변경
+
+## Step 9
+ubuntu 26.04 버전을 기준으로 
+1. java 17 유무 확인
+  1-1. java -version으로 java 유무가 확인되지 않았을 때엔 jdk 17 설치
+2. `./gradlew clean test bootJar --no-daemon`으로 테스트 실행
+   2-1. 테스트 실패 시 종료
+3. h2 유무 확인
+4. jar 방식으로 프로젝트 빌드 
+5. 8080 port 점유 중인 프로세스 유무 확인
+6. Spring boot 애플리케이션을 `application-prod.properties` 설정 파일을 주입하여 실행
