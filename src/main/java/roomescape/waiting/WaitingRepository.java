@@ -13,15 +13,15 @@ public interface WaitingRepository extends JpaRepository<Waiting, Long> {
 
     @EntityGraph(attributePaths = {"time", "theme"})
     @Query("""
-            select new roomescape.waiting.WaitingWithRank(w,
-                (select count(w2) from Waiting w2
-                 where w2.date = w.date
-                   and w2.time.id = w.time.id
-                   and w2.theme.id = w.theme.id
-                   and w2.id < w.id))
-            from Waiting w
-            where w.member.id = :memberId
-            order by w.id
+            select new roomescape.waiting.WaitingWithRank(myWaiting,
+                (select count(earlierWaiting) from Waiting earlierWaiting
+                 where earlierWaiting.date = myWaiting.date
+                   and earlierWaiting.time.id = myWaiting.time.id
+                   and earlierWaiting.theme.id = myWaiting.theme.id
+                   and earlierWaiting.id < myWaiting.id))
+            from Waiting myWaiting
+            where myWaiting.member.id = :memberId
+            order by myWaiting.id
             """)
     List<WaitingWithRank> findWaitingsWithRankByMemberId(@Param("memberId") Long memberId);
 }
