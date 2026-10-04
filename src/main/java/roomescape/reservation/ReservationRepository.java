@@ -5,6 +5,10 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+    boolean existsByDateAndTimeIdAndThemeId(String date, Long timeId, Long themeId);
+
+    boolean existsByMemberIdAndDateAndTimeIdAndThemeId(Long memberId, String date, Long timeId, Long themeId);
+
     @EntityGraph(attributePaths = {"member", "time", "theme"})
     List<Reservation> findAllByOrderByIdAsc();
 

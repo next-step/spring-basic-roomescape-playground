@@ -1,6 +1,6 @@
 # spring-basic-roomescape-playground
 
-Spring MVC 인증 및 JPA 전환 미션의 1~5단계를 구현한 방탈출 예약 관리 프로젝트입니다.
+Spring MVC 인증 및 JPA 전환 미션의 1~6단계를 구현한 방탈출 예약 관리 프로젝트입니다.
 JWT와 쿠키를 이용한 로그인, 로그인 회원 정보 주입, 관리자 페이지·API 접근 제한과 JPA 기반 데이터 저장·조회를 제공합니다.
 
 
@@ -223,6 +223,7 @@ JWT와 쿠키를 이용한 로그인, 로그인 회원 정보 주입, 관리자 
 
 - [x] 쿠키 누락, 토큰 검증 실패, 토큰에 해당하는 회원 미존재를 `InvalidTokenException`으로 구분한다.
 - [x] `InvalidTokenException` 발생 시 본문 없는 `401 Unauthorized`를 응답한다.
+- [x] `ResponseStatusException`의 상태 코드를 유지해 대기 취소의 403·404를 응답한다.
 - [x] 필수값 검증 실패 등 공통 예외 처리기에 전달된 나머지 예외는 본문 없는 `400 Bad Request`로 응답한다.
 
 ---
@@ -281,7 +282,7 @@ Cookie: token=<발급된 JWT>
 | 예약 생성 | POST | `/reservations` | `date`, `theme`, `time`, 선택값 `name` | `201`, 예약 정보, `Location` |
 | 예약 삭제 | DELETE | `/reservations/{id}` | 예약 ID | `204`, 본문 없음 |
 
-예약 생성은 로그인이 필요하다. `theme`, `time`에는 각각 테마와 시간의 ID를 전달한다.
+예약 생성은 로그인이 필요하며, 이미 예약된 날짜·시간·테마 조합은 `400`으로 거절한다. `theme`, `time`에는 각각 테마와 시간의 ID를 전달한다.
 
 예약자 이름을 생략한 요청 예시:
 
@@ -311,11 +312,26 @@ Cookie: token=<발급된 JWT>
 
 - `GET /reservation-mine`은 기존 내 예약 화면을 반환한다.
 - `GET /reservations-mine`은 쿠키로 확인한 회원 ID에 연결된 예약만 ID 오름차순으로 반환한다.
-- `MyReservationResponse`는 `reservationId`, `theme`, `date`, `time`, `status`를 담으며 현재 status는 `예약`이다.
-- 예약이 없으면 `200`과 빈 배열, 인증이 없거나 유효하지 않으면 `401`을 반환한다.
+- `MyReservationResponse`는 `id`, `reservationId`, `theme`, `date`, `time`, `status`를 담는다. 확정 예약의 status는 `예약`, 대기는 `N번째 예약대기`다. 대기의 reservationId는 null이며 id가 취소할 대기 ID다.
+- 본인의 확정 예약과 대기를 함께 반환한다. 둘 다 없으면 `200`과 빈 배열, 인증이 없거나 유효하지 않으면 `401`을 반환한다.
 - 이름만 입력한 예약은 member_id가 null이므로 로그인 회원의 목록에 포함되지 않는다.
 - 초기 데이터는 어드민 회원 예약 3건과 이름만 브라운인 예약 1건이다.
 - [5단계 개념·코드·구현 순서](docs/step5-my-reservations.md)
+
+### 예약 대기 (6단계)
+
+| 기능 | 메서드 | 경로 | 요청 | 성공 응답 |
+| --- | --- | --- | --- | --- |
+| 예약 대기 신청 | POST | `/waitings` | `date`, `time`, `theme`, 로그인 쿠키 | `201`, `id`, `waitingNumber`, `Location` |
+| 본인 대기 취소 | DELETE | `/waitings/{id}` | 대기 ID, 로그인 쿠키 | `204` |
+
+- `Waiting`은 회원·날짜·시간·테마를 저장한다. 이미 예약된 시간대에만 신청 가능하며, 본인 확정 예약 및 본인의 중복 대기는 `400`으로 거절한다.
+- `WaitingWithRank`와 Repository의 생성자 프로젝션 쿼리로 같은 시간대에서 먼저 생성된 대기 수를 계산한다. 표시 순번은 이 값 + 1이다.
+- 앞 대기가 취소되면 다음 조회에서 순번이 줄어든다. 다른 날짜·시간·테마는 순번 계산에서 제외한다.
+- 대기 취소는 소유자만 가능하다. 다른 회원은 `403`, 없는 대기는 `404`, 미인증은 `401`이다.
+- 확정 예약은 `(date, time_id, theme_id)`, 대기는 `(member_id, date, time_id, theme_id)` DB 유일성 제약으로 동시 중복 저장도 막는다. 사전 중복 검사와 제약 위반은 현재 예외 처리 정책에서 `400`이다.
+- 예약 취소 후 대기 자동 승급은 구현 범위에 포함하지 않는다.
+- [6단계 개념·파일별 변경 이유·구현 순서](docs/step6-waiting.md)
 
 ### 테마 및 시간
 
