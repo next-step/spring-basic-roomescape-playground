@@ -99,7 +99,9 @@ public class ReservationService {
 
 
     public void deleteById(Long id, LoginMember member) {
-        if (!Objects.equals(id, member.id()) && member.isUser()) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+        if (!Objects.equals(reservation.getMember().getId(), member.id()) && member.isUser()) {
             throw new IllegalArgumentException("자신의 예약만 삭제가능합니다.");
         }
         reservationRepository.deleteById(id);
