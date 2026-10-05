@@ -1,9 +1,6 @@
 package roomescape.member;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Member {
@@ -13,7 +10,10 @@ public class Member {
     private Long id;
 
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     private String password;
     private String role;
 
