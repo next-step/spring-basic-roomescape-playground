@@ -41,7 +41,7 @@ public class ReservationController {
         Member member = null;
 
         // 요청으로 들어온 게 null이면 사용자니까
-        if (reservationRequest.getName() == null) {
+        if (!loginMember.getRole().equals("ADMIN")) {
             member = memberService.findById(loginMember.getId());
         }
 

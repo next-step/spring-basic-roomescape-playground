@@ -515,4 +515,54 @@ public class MissionStepTest {
                 .then()
                 .statusCode(204);
     }
+
+    @Test
+    @DisplayName("일반 회원은 다른 이름으로 예약할 수 없다.")
+    void memberCannotReserveWithAnotherName() {
+        String token = createToken("brown@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "다른사람");
+        params.put("date", "2026-10-25");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> response = RestAssured.given()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/reservations")
+                .then()
+                .statusCode(201)
+                .extract();
+
+        assertThat(response.jsonPath().getString("name"))
+                .isEqualTo("브라운");
+    }
+
+    @Test
+    @DisplayName("관리자는 다른 이름으로 예약할 수 있다.")
+    void adminCanReserveWithAnotherName() {
+        String token = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "다른사람");
+        params.put("date", "2026-10-26");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        ExtractableResponse<Response> response = RestAssured.given()
+                .body(params)
+                .cookie("token", token)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/reservations")
+                .then()
+                .statusCode(201)
+                .extract();
+
+        assertThat(response.jsonPath().getString("name"))
+                .isEqualTo("다른사람");
+    }
 }
