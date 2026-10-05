@@ -65,7 +65,13 @@ public class ReservationService {
         return new ReservationResponse(saveReservation.getId(), name, reservation.getTheme().getName(), reservation.getDate(), reservation.getTime().getValue());
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(Long id, Long memberId) {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow();
+
+        if (!reservation.getMember().getId().equals(memberId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
         reservationRepository.deleteById(id);
     }
 

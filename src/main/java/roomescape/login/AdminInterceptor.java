@@ -20,6 +20,10 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (!isAdminRequest(request)) {
+            return true;
+        }
+
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
 
@@ -59,5 +63,20 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         return "";
+    }
+
+    private boolean isAdminRequest(HttpServletRequest request) {
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+
+        if (uri.equals("/admin") || uri.startsWith("/admin/")) {
+            return true;
+        }
+
+        if (uri.startsWith("/themes") || uri.startsWith("/times")) {
+            return method.equals("POST") || method.equals("DELETE");
+        }
+
+        return false;
     }
 }

@@ -311,4 +311,208 @@ public class MissionStepTest {
                 .then()
                 .statusCode(409);
     }
+
+    @Test
+    @DisplayName("테마 등록과 삭제는 관리자만 가능하다.")
+    void themeAuthorization() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "테스트 테마");
+        params.put("description", "테스트 설명");
+
+        String brownToken = createToken("brown@email.com", "password");
+        String adminToken = createToken("admin@email.com", "password");
+
+        // 1. 비로그인 등록 실패
+        RestAssured.given()
+                .body(params)
+                .contentType(ContentType.JSON)
+                .post("/themes")
+                .then()
+                .statusCode(401);
+
+        // 2. 일반 회원 등록 실패
+        RestAssured.given()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/themes")
+                .then()
+                .statusCode(401);
+
+        // 3. 관리자 등록 성공
+        ExtractableResponse<Response> response = RestAssured.given()
+                .body(params)
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .post("/themes")
+                .then()
+                .statusCode(201)
+                .extract();
+
+        Long themeId = response.jsonPath().getLong("id");
+
+        // 4. 비로그인 삭제 실패
+        RestAssured.given()
+                .delete("/themes/" + themeId)
+                .then()
+                .statusCode(401);
+
+        // 5. 일반 회원 삭제 실패
+        RestAssured.given()
+                .cookie("token", brownToken)
+                .delete("/themes/" + themeId)
+                .then()
+                .statusCode(401);
+
+        // 6. 삭제가 거절된 뒤에도 테마가 남아있는지 확인
+        List<Map<String, Object>> themes = RestAssured.given()
+                .get("/themes")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList(".");
+
+        assertThat(themes.stream()
+                .anyMatch(theme -> themeId.equals(
+                        ((Number) theme.get("id")).longValue())))
+                .isTrue();
+
+        // 7. 관리자 삭제 성공
+        RestAssured.given()
+                .cookie("token", adminToken)
+                .delete("/themes/" + themeId)
+                .then()
+                .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("시간 등록과 삭제는 관리자만 가능하다.")
+    void timeAuthorization() {
+        Map<String, String> params = new HashMap<>();
+        params.put("value", "23:00");
+
+        String brownToken = createToken("brown@email.com", "password");
+        String adminToken = createToken("admin@email.com", "password");
+
+        // 1. 비로그인 등록 실패
+        RestAssured.given()
+                .body(params)
+                .contentType(ContentType.JSON)
+                .post("/times")
+                .then()
+                .statusCode(401);
+
+        // 2. 일반 회원 등록 실패
+        RestAssured.given()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/times")
+                .then()
+                .statusCode(401);
+
+        // 3. 관리자 등록 성공
+        ExtractableResponse<Response> response = RestAssured.given()
+                .body(params)
+                .cookie("token", adminToken)
+                .contentType(ContentType.JSON)
+                .post("/times")
+                .then()
+                .statusCode(201)
+                .extract();
+
+        Long timeId = response.jsonPath().getLong("id");
+
+        // 4. 비로그인 삭제 실패
+        RestAssured.given()
+                .delete("/times/" + timeId)
+                .then()
+                .statusCode(401);
+
+        // 5. 일반 회원 삭제 실패
+        RestAssured.given()
+                .cookie("token", brownToken)
+                .delete("/times/" + timeId)
+                .then()
+                .statusCode(401);
+
+        // 6. 삭제가 거절된 뒤에도 시간이 남아있는지 확인
+        List<Map<String, Object>> times = RestAssured.given()
+                .get("/times")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList(".");
+
+        assertThat(times.stream()
+                .anyMatch(time -> timeId.equals(
+                        ((Number) time.get("id")).longValue())))
+                .isTrue();
+
+        // 7. 관리자 삭제 성공
+        RestAssured.given()
+                .cookie("token", adminToken)
+                .delete("/times/" + timeId)
+                .then()
+                .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("회원은 본인의 예약만 삭제할 수 있다.")
+    void reservationAuthorization() {
+        String brownToken = createToken("brown@email.com", "password");
+        String adminToken = createToken("admin@email.com", "password");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2026-10-20");
+        params.put("time", "1");
+        params.put("theme", "1");
+
+        // 1. brown 예약 생성
+        ExtractableResponse<Response> response = RestAssured.given()
+                .body(params)
+                .cookie("token", brownToken)
+                .contentType(ContentType.JSON)
+                .post("/reservations")
+                .then()
+                .statusCode(201)
+                .extract();
+
+        Long reservationId = response.jsonPath().getLong("id");
+
+        // 2. 비로그인 사용자는 삭제 실패
+        RestAssured.given()
+                .delete("/reservations/" + reservationId)
+                .then()
+                .statusCode(401);
+
+        // 3. 다른 회원은 삭제 실패
+        RestAssured.given()
+                .cookie("token", adminToken)
+                .delete("/reservations/" + reservationId)
+                .then()
+                .statusCode(403);
+
+        // 4. 삭제가 거절된 후에도 예약이 남아있는지 확인
+        List<ReservationResponse> reservations = RestAssured.given()
+                .get("/reservations")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList(".", ReservationResponse.class);
+
+        assertThat(reservations.stream()
+                .anyMatch(reservation -> reservation.getId().equals(reservationId)))
+                .isTrue();
+
+        // 5. 예약한 본인은 삭제 성공
+        RestAssured.given()
+                .cookie("token", brownToken)
+                .delete("/reservations/" + reservationId)
+                .then()
+                .statusCode(204);
+    }
 }
