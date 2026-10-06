@@ -38,11 +38,11 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
 
-        Member member = null;
+        Member member = memberService.findById(loginMember.getId());
 
         // 요청으로 들어온 게 null이면 사용자니까
-        if (!loginMember.getRole().equals("ADMIN")) {
-            member = memberService.findById(loginMember.getId());
+        if (loginMember.getRole().equals("ADMIN") && reservationRequest.getName() != null) {
+            member = null;
         }
 
         ReservationResponse reservation = reservationService.save(reservationRequest, member);
