@@ -15,10 +15,12 @@ public class Reservation {
     private String name;
     private String date;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Time time;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Theme theme;
 
     @ManyToOne
