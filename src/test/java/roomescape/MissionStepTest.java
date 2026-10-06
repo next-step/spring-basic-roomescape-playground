@@ -10,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.member.Member;
 import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 import roomescape.waiting.WaitingResponse;
@@ -177,13 +176,27 @@ public class MissionStepTest {
     void 육단계() {
         String brownToken = createToken("brown@email.com", "password");
 
+        Map<String, String> memberParams = new HashMap<>();
+        memberParams.put("name", "블랙");
+        memberParams.put("email", "black@email.com");
+        memberParams.put("password", "password");
+
+        RestAssured.given()
+                .body(memberParams)
+                .contentType(ContentType.JSON)
+                .post("/members")
+                .then()
+                .statusCode(201);
+
+        String blackToken = createToken("black@email.com", "password");
+
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-03-01");
         params.put("time", "1");
         params.put("theme", "1");
 
-        // 예약 대기 생성
-        WaitingResponse waiting = RestAssured.given().log().all()
+        // 브라운 대기 생성
+        WaitingResponse brownWaiting = RestAssured.given().log().all()
                 .body(params)
                 .cookie("token", brownToken)
                 .contentType(ContentType.JSON)
@@ -192,25 +205,59 @@ public class MissionStepTest {
                 .statusCode(201)
                 .extract().as(WaitingResponse.class);
 
-        // 내 예약 목록 조회
+        // 블랙 대기 생성
+        WaitingResponse blackWaiting = RestAssured.given().log().all()
+                .body(params)
+                .cookie("token", blackToken)
+                .contentType(ContentType.JSON)
+                .post("/waitings")
+                .then().log().all()
+                .statusCode(201)
+                .extract().as(WaitingResponse.class);
+
+        // 블랙 현재 대기 순위 조회
         List<MyReservationResponse> myReservations = RestAssured.given().log().all()
                 .body(params)
-                .cookie("token", brownToken)
+                .cookie("token", blackToken)
                 .contentType(ContentType.JSON)
                 .get("/reservations-mine")
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".", MyReservationResponse.class);
 
-        // 예약 대기 상태 확인
+        // 블랙이 2번쨰 대기자인지 확인
         String status = myReservations.stream()
-                .filter(it -> it.getId() == waiting.getId())
+                .filter(it -> it.getId().equals(blackWaiting.getId()))
                 .filter(it -> !it.getStatus().equals("예약"))
                 .findFirst()
                 .map(it -> it.getStatus())
                 .orElse(null);
 
-        assertThat(status).isEqualTo("1번째 예약대기");
+        assertThat(status).isEqualTo("2번째 예약대기");
+
+        // 첫 번째 대기자 브라운 취소
+        RestAssured.given()
+                .cookie("token", brownToken)
+                .delete("/waitings/" + brownWaiting.getId())
+                .then()
+                .statusCode(204);
+
+        // 블랙 대기 순위 다시 조회
+        List<MyReservationResponse> afterCancel = RestAssured.given()
+                .cookie("token", blackToken)
+                .get("/reservations-mine")
+                .then()
+                .statusCode(200)
+                .extract().jsonPath()
+                .getList(".", MyReservationResponse.class);
+
+        String afterStatus = afterCancel.stream()
+                .filter(it -> it.getId().equals(blackWaiting.getId()))
+                .findFirst()
+                .map(MyReservationResponse::getStatus)
+                .orElse(null);
+
+        assertThat(afterStatus).isEqualTo("1번째 예약대기");
     }
 
     @Test
