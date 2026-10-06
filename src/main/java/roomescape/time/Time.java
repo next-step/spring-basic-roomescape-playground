@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 public class Time {
+    private boolean deleted = false;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +24,10 @@ public class Time {
 
     public Time() {
 
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 
     public Long getId() {

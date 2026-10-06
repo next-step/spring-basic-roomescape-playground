@@ -2,6 +2,8 @@ package roomescape.theme;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ThemeRepository extends JpaRepository<Theme, Long> {
+import java.util.List;
 
+public interface ThemeRepository extends JpaRepository<Theme, Long> {
+    List<Theme> findAllByDeletedFalse();
 }

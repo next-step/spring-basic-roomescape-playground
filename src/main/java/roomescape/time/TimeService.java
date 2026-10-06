@@ -18,7 +18,7 @@ public class TimeService {
 
     public List<AvailableTime> getAvailableTime(String date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
-        List<Time> times = timeRepository.findAll();
+        List<Time> times = timeRepository.findAllByDeletedFalse();
 
         return times.stream()
                 .map(time -> new AvailableTime(
@@ -31,7 +31,7 @@ public class TimeService {
     }
 
     public List<Time> findAll() {
-        return timeRepository.findAll();
+        return timeRepository.findAllByDeletedFalse();
     }
 
     public Time save(Time time) {
@@ -39,6 +39,9 @@ public class TimeService {
     }
 
     public void deleteById(Long id) {
-        timeRepository.deleteById(id);
+        Time time = timeRepository.findById(id).orElseThrow();
+
+        time.delete();
+        timeRepository.save(time);
     }
 }

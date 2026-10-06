@@ -14,6 +14,7 @@ public class Theme {
 
     private String name;
     private String description;
+    private boolean deleted = false;
 
     public Theme() {
     }
@@ -27,6 +28,10 @@ public class Theme {
     public Theme(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 
     public Long getId() {
