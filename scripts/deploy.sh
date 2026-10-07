@@ -6,12 +6,18 @@ APP_DIR="${HOME}/roomescape/repository"
 DEPLOY_BRANCH="step3"
 PID_FILE="${HOME}/roomescape/run/application.pid"
 LOG_FILE="${HOME}/roomescape/logs/application.log"
+DATA_DIR="${HOME}/roomescape/data"
 
 PID_DIR="$(dirname "${PID_FILE}")"
 LOG_DIR="$(dirname "${LOG_FILE}")"
 
-if [[ ! -d "${PID_DIR}" || ! -d "${LOG_DIR}" ]]; then
+if [[ ! -d "${PID_DIR}" || ! -d "${LOG_DIR}" || ! -d "${DATA_DIR}" ]]; then
   echo "배포 디렉터리가 없습니다. setup.sh를 먼저 실행해 주세요."
+  exit 1
+fi
+
+if [[ ! -w "${DATA_DIR}" || ! -x "${DATA_DIR}" ]]; then
+  echo "데이터 디렉터리에 접근하거나 기록할 수 없습니다: ${DATA_DIR}"
   exit 1
 fi
 
@@ -88,6 +94,7 @@ if [[ -f "${PID_FILE}" ]]; then
 fi
 
 # 빌드된 애플리케이션 실행
+export ROOMESCAPE_DB_PATH="${DATA_DIR}/database"
 nohup java -jar "${JAR_FILE}" \
   --spring.profiles.active=prod \
   >> "${LOG_FILE}" 2>&1 &

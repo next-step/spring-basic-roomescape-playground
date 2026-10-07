@@ -34,13 +34,15 @@ echo "PID 파일 경로: ${PID_FILE}"
 
 # 필요한 디렉토리 및 파일 권한 설정
 LOG_DIR="${HOME}/roomescape/logs"
+DATA_DIR="${HOME}/roomescape/data"
 
-if ! mkdir -p "${PID_DIR}" "${LOG_DIR}"; then
+if ! mkdir -p "${PID_DIR}" "${LOG_DIR}" "${DATA_DIR}"; then
   echo "필요한 디렉터리를 생성하지 못했습니다."
   exit 1
 fi
 
 chmod u+rwx "${PID_DIR}" "${LOG_DIR}"
+chmod 700 "${DATA_DIR}"
 chmod u+x "${APP_DIR}/gradlew"
 chmod u+x "${APP_DIR}/scripts/setup.sh"
 chmod u+x "${APP_DIR}/scripts/deploy.sh"

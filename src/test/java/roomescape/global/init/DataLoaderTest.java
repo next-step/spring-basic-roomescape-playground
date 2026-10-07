@@ -9,7 +9,10 @@ import roomescape.member.MemberRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("prod")
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.datasource.url=jdbc:h2:mem:data-loader-test",
+        "spring.jpa.hibernate.ddl-auto=create-drop"
+})
 class DataLoaderTest {
 
     @Autowired
