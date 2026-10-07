@@ -7,6 +7,14 @@ DEPLOY_BRANCH="step3"
 PID_FILE="${HOME}/roomescape/run/application.pid"
 LOG_FILE="${HOME}/roomescape/logs/application.log"
 DATA_DIR="${HOME}/roomescape/data"
+SERVER_PORT="${SERVER_PORT:-8080}"
+READINESS_URL="http://127.0.0.1:${SERVER_PORT}/actuator/health/readiness"
+STARTUP_TIMEOUT=60
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "배포 상태 확인에 curl이 필요합니다. curl을 설치한 뒤 다시 실행해 주세요."
+  exit 1
+fi
 
 PID_DIR="$(dirname "${PID_FILE}")"
 LOG_DIR="$(dirname "${LOG_FILE}")"
@@ -97,18 +105,40 @@ fi
 export ROOMESCAPE_DB_PATH="${DATA_DIR}/database"
 nohup java -jar "${JAR_FILE}" \
   --spring.profiles.active=prod \
+  --server.port="${SERVER_PORT}" \
   >> "${LOG_FILE}" 2>&1 &
 
 NEW_PID=$!
 echo "${NEW_PID}" > "${PID_FILE}"
 
-sleep 3
+DEADLINE=$((SECONDS + STARTUP_TIMEOUT))
 
-if ! kill -0 "${NEW_PID}" 2>/dev/null; then
-  rm -f "${PID_FILE}"
-  echo "애플리케이션 실행에 실패했습니다. 로그를 확인하세요: ${LOG_FILE}"
-  exit 1
-fi
+while (( SECONDS < DEADLINE )); do
+  if ! kill -0 "${NEW_PID}" 2>/dev/null; then
+    rm -f "${PID_FILE}"
+    echo "애플리케이션이 준비되기 전에 종료됐습니다. ${LOG_FILE}"
+    exit 1
+  fi
 
-echo "애플리케이션을 실행했습니다: ${NEW_PID}"
-echo "로그 파일: ${LOG_FILE}"
+  REMAINING=$((DEADLINE - SECONDS))
+  REQUEST_TIMEOUT=$((REMAINING < 2 ? REMAINING : 2))
+  if (( REQUEST_TIMEOUT <= 0 )); then
+    break
+  fi
+
+  HTTP_STATUS="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+    --noproxy '*' --connect-timeout 1 --max-time "${REQUEST_TIMEOUT}" \
+    "${READINESS_URL}" || true)"
+
+  if [[ "${HTTP_STATUS}" == "200" ]] && kill -0 "${NEW_PID}" 2>/dev/null; then
+    echo "애플리케이션 준비가 완료됐습니다: ${NEW_PID}"
+    echo "로그 파일: ${LOG_FILE}"
+    exit 0
+  fi
+
+  sleep 1
+done
+
+echo "${STARTUP_TIMEOUT}초 안에 애플리케이션이 준비되지 않아 배포 확인에 실패했습니다."
+echo "PID: ${NEW_PID}, 로그 파일: ${LOG_FILE}"
+exit 1
